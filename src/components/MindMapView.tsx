@@ -2,7 +2,7 @@ import React, { useMemo, useState, useRef, useCallback, useEffect } from 'react'
 import { useApp } from '@/context/AppContext';
 import { Task } from '@/types';
 import { PriorityBadge, StatusBadge } from '@/components/TaskBadges';
-import { ChevronDown, ChevronRight, ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
+import { ChevronDown, ChevronRight, ZoomIn, ZoomOut, Maximize2, Plus, X, Check } from 'lucide-react';
 
 const STATUS_PROGRESS_COLORS: Record<string, string> = {
   todo: 'hsl(var(--muted-foreground))',

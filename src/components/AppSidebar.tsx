@@ -283,11 +283,7 @@ export default function AppSidebar() {
                   <Plus className="w-3.5 h-3.5" />
                 </button>
                 <button
-                  onClick={() => {
-                    if (confirm(`Supprimer l'espace "${space.name}" et tous ses projets ?`)) {
-                      deleteSpace(space.id);
-                    }
-                  }}
+                  onClick={() => setDeleteConfirm({ type: 'space', id: space.id, name: space.name })}
                   className="p-1 rounded hover:bg-destructive/20 text-sidebar-fg hover:text-destructive"
                   title="Supprimer l'espace"
                 >

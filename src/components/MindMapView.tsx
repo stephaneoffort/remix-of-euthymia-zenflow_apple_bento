@@ -189,6 +189,27 @@ export default function MindMapView() {
                 expandedIds={expandedIds}
                 toggleExpand={toggleExpand}
                 onSelectTask={setSelectedTaskId}
+                onAddSubtask={(parentTask, title) => {
+                  addTask({
+                    title,
+                    description: '',
+                    status: 'todo',
+                    priority: 'normal',
+                    dueDate: null,
+                    startDate: null,
+                    assigneeIds: [],
+                    tags: [],
+                    parentTaskId: parentTask.id,
+                    listId: parentTask.listId,
+                    comments: [],
+                    attachments: [],
+                    timeEstimate: null,
+                    timeLogged: null,
+                    aiSummary: null,
+                  });
+                  // Auto-expand the parent
+                  setExpandedIds(prev => new Set([...prev, parentTask.id]));
+                }}
               />
             ))}
           </div>

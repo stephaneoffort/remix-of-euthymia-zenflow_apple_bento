@@ -43,6 +43,114 @@ export type Database = {
           },
         ]
       }
+      chat_categories: {
+        Row: {
+          created_at: string
+          icon: string
+          id: string
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          icon?: string
+          id?: string
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          icon?: string
+          id?: string
+          name?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      chat_messages: {
+        Row: {
+          attachment_name: string | null
+          attachment_url: string | null
+          author_id: string
+          category_id: string
+          content: string
+          created_at: string
+          id: string
+        }
+        Insert: {
+          attachment_name?: string | null
+          attachment_url?: string | null
+          author_id: string
+          category_id: string
+          content: string
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          attachment_name?: string | null
+          attachment_url?: string | null
+          author_id?: string
+          category_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_messages_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "chat_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_reactions: {
+        Row: {
+          created_at: string
+          emoji: string
+          id: string
+          member_id: string
+          message_id: string
+        }
+        Insert: {
+          created_at?: string
+          emoji: string
+          id?: string
+          member_id: string
+          message_id: string
+        }
+        Update: {
+          created_at?: string
+          emoji?: string
+          id?: string
+          member_id?: string
+          message_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_reactions_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_reactions_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "chat_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comments: {
         Row: {
           author_id: string

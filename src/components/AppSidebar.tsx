@@ -280,22 +280,54 @@ export default function AppSidebar() {
             {expandedSpaces.has(space.id) && (
               <div className="ml-4">
                 {getProjectsForSpace(space.id).map(project => (
-                  <button
-                    key={project.id}
-                    onClick={() => {
-                      setSelectedProjectId(project.id);
-                      setQuickFilter('all');
-                      handleNavClick();
-                    }}
-                    className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors ${
-                      selectedProjectId === project.id
-                        ? 'bg-sidebar-active text-sidebar-fg-bright'
-                        : 'text-sidebar-fg hover:bg-sidebar-hover'
-                    }`}
-                  >
-                    <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: project.color }} />
-                    <span className="truncate">{project.name}</span>
-                  </button>
+                  editingProjectId === project.id ? (
+                    <div key={project.id} className="flex items-center gap-2 px-2 py-1.5">
+                      <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: project.color }} />
+                      <input
+                        autoFocus
+                        value={editingProjectName}
+                        onChange={e => setEditingProjectName(e.target.value)}
+                        onBlur={() => {
+                          if (editingProjectName.trim() && editingProjectName.trim() !== project.name) {
+                            renameProject(project.id, editingProjectName.trim());
+                          }
+                          setEditingProjectId(null);
+                        }}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter') {
+                            if (editingProjectName.trim() && editingProjectName.trim() !== project.name) {
+                              renameProject(project.id, editingProjectName.trim());
+                            }
+                            setEditingProjectId(null);
+                          }
+                          if (e.key === 'Escape') setEditingProjectId(null);
+                        }}
+                        className="flex-1 text-sm bg-sidebar-bg border border-sidebar-border-color rounded-md px-2 py-0.5 outline-none text-sidebar-fg-bright min-w-0"
+                      />
+                    </div>
+                  ) : (
+                    <button
+                      key={project.id}
+                      onClick={() => {
+                        setSelectedProjectId(project.id);
+                        setQuickFilter('all');
+                        handleNavClick();
+                      }}
+                      onDoubleClick={(e) => {
+                        e.preventDefault();
+                        setEditingProjectId(project.id);
+                        setEditingProjectName(project.name);
+                      }}
+                      className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors ${
+                        selectedProjectId === project.id
+                          ? 'bg-sidebar-active text-sidebar-fg-bright'
+                          : 'text-sidebar-fg hover:bg-sidebar-hover'
+                      }`}
+                    >
+                      <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: project.color }} />
+                      <span className="truncate">{project.name}</span>
+                    </button>
+                  )
                 ))}
 
                 {/* Add project form */}

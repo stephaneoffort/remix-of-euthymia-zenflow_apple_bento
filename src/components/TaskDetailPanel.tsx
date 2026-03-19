@@ -94,7 +94,12 @@ export default function TaskDetailPanel() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto scrollbar-thin p-3 sm:p-5 space-y-4 sm:space-y-6">
+      <div className={`flex-1 overflow-y-auto scrollbar-thin p-3 sm:p-5 ${expanded ? 'max-w-4xl mx-auto w-full' : ''}`}>
+      <div className={`space-y-4 sm:space-y-6 ${expanded ? 'grid grid-cols-1 lg:grid-cols-2 gap-6 space-y-0' : ''}`}>
+      {expanded ? (
+        <>
+          {/* Left column */}
+          <div className="space-y-4 sm:space-y-6">
         {/* Title */}
         <input
           value={task.title}

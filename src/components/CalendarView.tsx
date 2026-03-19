@@ -117,15 +117,26 @@ export default function CalendarView() {
           return (
             <div
               key={i}
-              className={`min-h-[48px] sm:min-h-[100px] p-1 sm:p-1.5 border-b border-r border-border ${
+              className={`group min-h-[48px] sm:min-h-[100px] p-1 sm:p-1.5 border-b border-r border-border ${
                 day.isCurrentMonth ? 'bg-card' : 'bg-muted/20'
               }`}
             >
-              <span className={`text-[10px] sm:text-xs font-medium inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full ${
-                isToday ? 'bg-primary text-primary-foreground' : day.isCurrentMonth ? 'text-foreground' : 'text-muted-foreground/50'
-              }`}>
-                {day.date.getDate()}
-              </span>
+              <div className="flex items-center justify-between">
+                <span className={`text-[10px] sm:text-xs font-medium inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full ${
+                  isToday ? 'bg-primary text-primary-foreground' : day.isCurrentMonth ? 'text-foreground' : 'text-muted-foreground/50'
+                }`}>
+                  {day.date.getDate()}
+                </span>
+                {day.isCurrentMonth && !isMobile && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setAddingForDate(dateStr); }}
+                    className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-muted transition-all"
+                    title="Ajouter une tâche"
+                  >
+                    <Plus className="w-3 h-3 text-muted-foreground" />
+                  </button>
+                )}
+              </div>
               <div className="mt-0.5 sm:mt-1 space-y-0.5">
                 {dayTasks.slice(0, maxTasks).map(t => (
                   <div
@@ -138,6 +149,20 @@ export default function CalendarView() {
                 ))}
                 {dayTasks.length > maxTasks && (
                   <span className="text-[9px] sm:text-[10px] text-muted-foreground px-1">+{dayTasks.length - maxTasks}</span>
+                )}
+                {addingForDate === dateStr && (
+                  <input
+                    autoFocus
+                    value={newTaskTitle}
+                    onChange={e => setNewTaskTitle(e.target.value)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') handleAddTask(dateStr);
+                      if (e.key === 'Escape') { setAddingForDate(null); setNewTaskTitle(''); }
+                    }}
+                    onBlur={() => { if (newTaskTitle.trim()) handleAddTask(dateStr); else { setAddingForDate(null); setNewTaskTitle(''); } }}
+                    placeholder="Tâche..."
+                    className="w-full text-[10px] sm:text-[11px] px-1 py-0.5 rounded border border-primary/40 bg-background text-foreground placeholder:text-muted-foreground outline-none focus:ring-1 focus:ring-primary"
+                  />
                 )}
               </div>
             </div>

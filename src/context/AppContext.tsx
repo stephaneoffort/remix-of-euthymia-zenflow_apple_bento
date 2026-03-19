@@ -648,6 +648,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     addTask,
     updateTask,
     deleteTask,
+    addAttachment,
+    deleteAttachment,
     moveTask,
     addSpace,
     addProject,

@@ -394,6 +394,66 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     renameProjectMutation.mutate({ id, name });
   }, [renameProjectMutation]);
 
+  // Delete space mutation (cascade: delete projects, task_lists, tasks)
+  const deleteSpaceMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const spaceProjects = projects.filter(p => p.spaceId === id);
+      for (const proj of spaceProjects) {
+        const projLists = lists.filter(l => l.projectId === proj.id);
+        for (const list of projLists) {
+          await supabase.from('task_assignees').delete().in('task_id', tasks.filter(t => t.listId === list.id).map(t => t.id));
+          await supabase.from('comments').delete().in('task_id', tasks.filter(t => t.listId === list.id).map(t => t.id));
+          await supabase.from('attachments').delete().in('task_id', tasks.filter(t => t.listId === list.id).map(t => t.id));
+          await supabase.from('tasks').delete().eq('list_id', list.id);
+        }
+        await supabase.from('task_lists').delete().eq('project_id', proj.id);
+      }
+      await supabase.from('projects').delete().eq('space_id', id);
+      const { error } = await supabase.from('spaces').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['spaces'] });
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      queryClient.invalidateQueries({ queryKey: ['lists'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      toast.success('Espace supprimé');
+    },
+    onError: () => toast.error('Erreur lors de la suppression'),
+  });
+
+  const deleteSpace = useCallback((id: string) => {
+    deleteSpaceMutation.mutate(id);
+  }, [deleteSpaceMutation]);
+
+  // Delete project mutation (cascade: delete task_lists, tasks)
+  const deleteProjectMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const projLists = lists.filter(l => l.projectId === id);
+      for (const list of projLists) {
+        await supabase.from('task_assignees').delete().in('task_id', tasks.filter(t => t.listId === list.id).map(t => t.id));
+        await supabase.from('comments').delete().in('task_id', tasks.filter(t => t.listId === list.id).map(t => t.id));
+        await supabase.from('attachments').delete().in('task_id', tasks.filter(t => t.listId === list.id).map(t => t.id));
+        await supabase.from('tasks').delete().eq('list_id', list.id);
+      }
+      await supabase.from('task_lists').delete().eq('project_id', id);
+      const { error } = await supabase.from('projects').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      queryClient.invalidateQueries({ queryKey: ['lists'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      toast.success('Projet supprimé');
+    },
+    onError: () => toast.error('Erreur lors de la suppression'),
+  });
+
+  const deleteProject = useCallback((id: string) => {
+    if (selectedProjectId === id) setSelectedProjectId(null);
+    deleteProjectMutation.mutate(id);
+  }, [deleteProjectMutation, selectedProjectId]);
+
   const addTask = useCallback((task: Omit<Task, 'id' | 'createdAt' | 'order'>) => {
     addTaskMutation.mutate(task);
   }, [addTaskMutation]);

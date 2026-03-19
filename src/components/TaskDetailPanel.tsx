@@ -5,6 +5,13 @@ import { PriorityBadge, StatusBadge, AvatarGroup } from '@/components/TaskBadges
 import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Clock, Paperclip, ChevronDown, Maximize2, Minimize2, CalendarPlus } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { generateGoogleCalendarUrl, generateOutlookCalendarUrl, generateYahooCalendarUrl } from '@/lib/calendarLinks';
+// Convert ISO/timestamp string to datetime-local input value (YYYY-MM-DDTHH:mm)
+function toDatetimeLocal(isoStr: string): string {
+  const d = new Date(isoStr);
+  if (isNaN(d.getTime())) return isoStr.slice(0, 16); // fallback for YYYY-MM-DD
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
 
 
 export default function TaskDetailPanel() {

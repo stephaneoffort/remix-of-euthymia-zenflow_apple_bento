@@ -540,6 +540,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     deleteTaskMutation.mutate(id);
   }, [deleteTaskMutation]);
 
+  const addAttachment = useCallback((taskId: string, name: string, url: string) => {
+    addAttachmentMutation.mutate({ taskId, name, url });
+  }, [addAttachmentMutation]);
+
+  const deleteAttachment = useCallback((attachmentId: string) => {
+    deleteAttachmentMutation.mutate(attachmentId);
+  }, [deleteAttachmentMutation]);
+
   const moveTask = useCallback((taskId: string, newStatus: string) => {
     updateTask(taskId, { status: newStatus as Status });
   }, [updateTask]);

@@ -17,9 +17,9 @@ const QUICK_FILTER_TITLES: Record<string, string> = {
 };
 
 export default function Index() {
-  const { selectedProjectId, selectedView, quickFilter, selectedTaskId } = useApp();
+  const { selectedProjectId, selectedView, quickFilter, selectedTaskId, projects } = useApp();
 
-  const project = PROJECTS.find(p => p.id === selectedProjectId);
+  const project = projects.find(p => p.id === selectedProjectId);
   const title = quickFilter !== 'all'
     ? QUICK_FILTER_TITLES[quickFilter]
     : project?.name || 'Toutes les tâches';

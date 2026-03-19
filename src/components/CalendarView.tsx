@@ -256,7 +256,7 @@ export default function CalendarView() {
     const listId = lists[0]?.id || 'l1';
     addTask({
       title: newTaskTitle.trim(), description: '', status: 'todo', priority: 'normal',
-      dueDate: dateStr, startDate: null, assigneeIds: [], tags: [],
+      dueDate: new Date(dateStr + 'T00:00:00').toISOString(), startDate: null, assigneeIds: [], tags: [],
       parentTaskId: null, listId, comments: [], attachments: [],
       timeEstimate: null, timeLogged: null, aiSummary: null,
     });

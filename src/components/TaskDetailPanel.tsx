@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useApp } from '@/context/AppContext';
 import { Status, Priority, PRIORITY_LABELS } from '@/types';
 import { PriorityBadge, StatusBadge, AvatarGroup } from '@/components/TaskBadges';
-import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Clock, Paperclip, ChevronDown, Maximize2, Minimize2, CalendarPlus } from 'lucide-react';
+import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Clock, Paperclip, ChevronDown, Maximize2, Minimize2, CalendarPlus, Link, Upload, Trash2, ExternalLink, FileText } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { generateGoogleCalendarUrl, generateOutlookCalendarUrl, generateYahooCalendarUrl } from '@/lib/calendarLinks';
+import { supabase } from '@/integrations/supabase/client';
 // Convert ISO/timestamp string to datetime-local input value (YYYY-MM-DDTHH:mm)
 function toDatetimeLocal(isoStr: string): string {
   const d = new Date(isoStr);
@@ -15,12 +16,17 @@ function toDatetimeLocal(isoStr: string): string {
 
 
 export default function TaskDetailPanel() {
-  const { selectedTaskId, setSelectedTaskId, getTaskById, updateTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks, teamMembers, allStatuses, getStatusLabel } = useApp();
+  const { selectedTaskId, setSelectedTaskId, getTaskById, updateTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks, teamMembers, allStatuses, getStatusLabel, addAttachment, deleteAttachment } = useApp();
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [addingSubtaskFor, setAddingSubtaskFor] = useState<string | null>(null);
   const [newComment, setNewComment] = useState('');
   const [editingField, setEditingField] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const [addingLink, setAddingLink] = useState(false);
+  const [newLinkUrl, setNewLinkUrl] = useState('');
+  const [newLinkName, setNewLinkName] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!selectedTaskId) return null;
   const task = getTaskById(selectedTaskId);
@@ -72,6 +78,39 @@ export default function TaskDetailPanel() {
     if (!st) return;
     updateTask(subtaskId, { status: st.status === 'done' ? 'todo' : 'done' });
   };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    try {
+      for (const file of Array.from(files)) {
+        const filePath = `${task.id}/${Date.now()}_${file.name}`;
+        const { error: uploadError } = await supabase.storage.from('task-attachments').upload(filePath, file);
+        if (uploadError) throw uploadError;
+        const { data: { publicUrl } } = supabase.storage.from('task-attachments').getPublicUrl(filePath);
+        addAttachment(task.id, file.name, publicUrl);
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleAddLink = () => {
+    if (!newLinkUrl.trim()) return;
+    let url = newLinkUrl.trim();
+    if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+    const name = newLinkName.trim() || new URL(url).hostname;
+    addAttachment(task.id, name, url);
+    setNewLinkUrl('');
+    setNewLinkName('');
+    setAddingLink(false);
+  };
+
+  const isLink = (url: string) => /^https?:\/\//i.test(url) && !url.includes('task-attachments');
 
   return (
     <div className={`fixed z-50 flex flex-col animate-slide-in bg-card border-l border-border shadow-xl transition-all duration-300 ${
@@ -215,6 +254,96 @@ export default function TaskDetailPanel() {
                     }
                   }}
                 />
+              </div>
+            </div>
+
+            {/* Attachments & Links */}
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1">
+                <Paperclip className="w-3 h-3" /> Pièces jointes ({task.attachments.length})
+              </label>
+
+              {task.attachments.length > 0 && (
+                <div className="space-y-1.5 mb-2">
+                  {task.attachments.map(att => (
+                    <div key={att.id} className="flex items-center gap-2 group px-2 py-1.5 rounded-md bg-muted/50 hover:bg-muted transition-colors">
+                      {isLink(att.url) ? (
+                        <Link className="w-3.5 h-3.5 text-primary shrink-0" />
+                      ) : (
+                        <FileText className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                      )}
+                      <a
+                        href={att.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-foreground hover:text-primary truncate flex-1 transition-colors"
+                      >
+                        {att.name}
+                      </a>
+                      <ExternalLink className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 shrink-0" />
+                      <button
+                        onClick={() => deleteAttachment(att.id)}
+                        className="p-0.5 opacity-0 group-hover:opacity-100 hover:text-destructive transition-all shrink-0"
+                        title="Supprimer"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Add link form */}
+              {addingLink && (
+                <div className="space-y-1.5 mb-2">
+                  <input
+                    autoFocus
+                    value={newLinkUrl}
+                    onChange={e => setNewLinkUrl(e.target.value)}
+                    placeholder="https://..."
+                    className="w-full text-sm bg-muted/50 border border-border rounded-md px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') handleAddLink();
+                      if (e.key === 'Escape') { setAddingLink(false); setNewLinkUrl(''); setNewLinkName(''); }
+                    }}
+                  />
+                  <input
+                    value={newLinkName}
+                    onChange={e => setNewLinkName(e.target.value)}
+                    placeholder="Nom du lien (optionnel)"
+                    className="w-full text-sm bg-muted/50 border border-border rounded-md px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') handleAddLink();
+                      if (e.key === 'Escape') { setAddingLink(false); setNewLinkUrl(''); setNewLinkName(''); }
+                    }}
+                  />
+                  <div className="flex gap-2">
+                    <button onClick={handleAddLink} disabled={!newLinkUrl.trim()} className="px-3 py-1 bg-primary text-primary-foreground text-xs font-medium rounded-md hover:opacity-90 disabled:opacity-50">
+                      Ajouter
+                    </button>
+                    <button onClick={() => { setAddingLink(false); setNewLinkUrl(''); setNewLinkName(''); }} className="px-3 py-1 text-xs text-muted-foreground hover:text-foreground">
+                      Annuler
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Action buttons */}
+              <div className="flex gap-2">
+                <input ref={fileInputRef} type="file" multiple onChange={handleFileUpload} className="hidden" />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Upload className="w-3.5 h-3.5" /> {uploading ? 'Envoi...' : 'Fichier'}
+                </button>
+                <button
+                  onClick={() => setAddingLink(true)}
+                  className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Link className="w-3.5 h-3.5" /> Lien
+                </button>
               </div>
             </div>
 

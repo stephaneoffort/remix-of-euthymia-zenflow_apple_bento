@@ -40,6 +40,8 @@ interface AppContextType extends AppState {
   addTask: (task: Omit<Task, 'id' | 'createdAt' | 'order'>) => void;
   updateTask: (id: string, updates: Partial<Task>) => void;
   deleteTask: (id: string) => void;
+  addAttachment: (taskId: string, name: string, url: string) => void;
+  deleteAttachment: (attachmentId: string) => void;
   moveTask: (taskId: string, newStatus: string) => void;
   addSpace: (name: string, icon: string) => void;
   addProject: (name: string, spaceId: string, color: string) => void;
@@ -292,6 +294,24 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks'] }),
   });
 
+  // Add attachment mutation
+  const addAttachmentMutation = useMutation({
+    mutationFn: async ({ taskId, name, url }: { taskId: string; name: string; url: string }) => {
+      const { error } = await supabase.from('attachments').insert({ task_id: taskId, name, url });
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks'] }),
+  });
+
+  // Delete attachment mutation
+  const deleteAttachmentMutation = useMutation({
+    mutationFn: async (attachmentId: string) => {
+      const { error } = await supabase.from('attachments').delete().eq('id', attachmentId);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks'] }),
+  });
+
   // Add space mutation
   const addSpaceMutation = useMutation({
     mutationFn: async ({ name, icon }: { name: string; icon: string }) => {
@@ -520,6 +540,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     deleteTaskMutation.mutate(id);
   }, [deleteTaskMutation]);
 
+  const addAttachment = useCallback((taskId: string, name: string, url: string) => {
+    addAttachmentMutation.mutate({ taskId, name, url });
+  }, [addAttachmentMutation]);
+
+  const deleteAttachment = useCallback((attachmentId: string) => {
+    deleteAttachmentMutation.mutate(attachmentId);
+  }, [deleteAttachmentMutation]);
+
   const moveTask = useCallback((taskId: string, newStatus: string) => {
     updateTask(taskId, { status: newStatus as Status });
   }, [updateTask]);
@@ -620,6 +648,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     addTask,
     updateTask,
     deleteTask,
+    addAttachment,
+    deleteAttachment,
     moveTask,
     addSpace,
     addProject,
@@ -638,7 +668,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     getMemberById,
     getTaskBreadcrumb,
     getStatusLabel,
-  }), [spaces, projects, lists, tasks, teamMembers, customStatuses, allStatuses, selectedProjectId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, addTask, updateTask, deleteTask, moveTask, addSpace, addProject, renameSpace, renameProject, deleteSpace, deleteProject, reorderSpaces, reorderProjects, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb, getStatusLabel]);
+  }), [spaces, projects, lists, tasks, teamMembers, customStatuses, allStatuses, selectedProjectId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, addTask, updateTask, deleteTask, addAttachment, deleteAttachment, moveTask, addSpace, addProject, renameSpace, renameProject, deleteSpace, deleteProject, reorderSpaces, reorderProjects, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb, getStatusLabel]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

@@ -449,11 +449,13 @@ export default function AppSidebar() {
             <AlertDialogCancel>Annuler</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={() => {
-                if (deleteConfirm?.type === 'space') {
-                  deleteSpace(deleteConfirm.id);
-                } else if (deleteConfirm?.type === 'project') {
-                  deleteProject(deleteConfirm.id);
+              onClick={(e) => {
+                e.preventDefault();
+                const dc = deleteConfirm;
+                if (dc?.type === 'space') {
+                  deleteSpace(dc.id);
+                } else if (dc?.type === 'project') {
+                  deleteProject(dc.id);
                 }
                 setDeleteConfirm(null);
               }}

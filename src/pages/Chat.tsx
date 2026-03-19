@@ -430,7 +430,7 @@ export default function Chat() {
         </div>
 
         {/* Input area */}
-        <div className="border-t border-border bg-card p-4">
+        <div className={`border-t border-border bg-card p-3 sm:p-4 ${isMobile ? 'pb-16' : ''}`}>
           <div className="relative">
             {/* Mention dropdown */}
             {filteredMentions.length > 0 && (

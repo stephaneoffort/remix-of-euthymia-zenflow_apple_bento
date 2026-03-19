@@ -140,7 +140,7 @@ export default function TaskDetailPanel() {
         <div>
           <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Assignée à</label>
           <div className="space-y-1">
-            {TEAM_MEMBERS.map(m => (
+            {teamMembers.map(m => (
               <label key={m.id} className="flex items-center gap-2 py-1 px-2 rounded hover:bg-muted/50 cursor-pointer text-sm">
                 <input
                   type="checkbox"

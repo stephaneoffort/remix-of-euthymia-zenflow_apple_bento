@@ -79,6 +79,39 @@ export default function TaskDetailPanel() {
     updateTask(subtaskId, { status: st.status === 'done' ? 'todo' : 'done' });
   };
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    try {
+      for (const file of Array.from(files)) {
+        const filePath = `${task.id}/${Date.now()}_${file.name}`;
+        const { error: uploadError } = await supabase.storage.from('task-attachments').upload(filePath, file);
+        if (uploadError) throw uploadError;
+        const { data: { publicUrl } } = supabase.storage.from('task-attachments').getPublicUrl(filePath);
+        addAttachment(task.id, file.name, publicUrl);
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleAddLink = () => {
+    if (!newLinkUrl.trim()) return;
+    let url = newLinkUrl.trim();
+    if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+    const name = newLinkName.trim() || new URL(url).hostname;
+    addAttachment(task.id, name, url);
+    setNewLinkUrl('');
+    setNewLinkName('');
+    setAddingLink(false);
+  };
+
+  const isLink = (url: string) => /^https?:\/\//i.test(url) && !url.includes('task-attachments');
+
   return (
     <div className={`fixed z-50 flex flex-col animate-slide-in bg-card border-l border-border shadow-xl transition-all duration-300 ${
       expanded ? 'inset-0' : 'inset-0 sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[520px]'

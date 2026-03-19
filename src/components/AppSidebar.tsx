@@ -113,6 +113,7 @@ export default function AppSidebar() {
             onClick={() => {
               setQuickFilter(f.key);
               if (f.key !== 'all') setSelectedProjectId(null);
+              handleNavClick();
             }}
             className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors ${
               quickFilter === f.key && !selectedProjectId

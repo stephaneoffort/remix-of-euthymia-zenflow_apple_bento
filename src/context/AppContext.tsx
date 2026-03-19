@@ -19,6 +19,8 @@ interface AppState {
   lists: TaskList[];
   tasks: Task[];
   teamMembers: TeamMember[];
+  customStatuses: CustomStatus[];
+  allStatuses: string[];
   selectedProjectId: string | null;
   selectedView: ViewType;
   quickFilter: QuickFilter;

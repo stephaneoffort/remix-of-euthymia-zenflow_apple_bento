@@ -47,42 +47,44 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/select-member" element={<SelectTeamMember />} />
-            <Route
-              path="/chat"
-              element={
-                <ProtectedRoute>
-                  <AppProvider>
-                    <Chat />
-                  </AppProvider>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/settings"
-              element={
-                <ProtectedRoute>
-                  <AppProvider>
-                    <Settings />
-                  </AppProvider>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <AppProvider>
-                    <Index />
-                  </AppProvider>
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/install" element={<Install />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/select-member" element={<SelectTeamMember />} />
+              <Route
+                path="/chat"
+                element={
+                  <ProtectedRoute>
+                    <AppProvider>
+                      <Chat />
+                    </AppProvider>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/settings"
+                element={
+                  <ProtectedRoute>
+                    <AppProvider>
+                      <Settings />
+                    </AppProvider>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <AppProvider>
+                      <Index />
+                    </AppProvider>
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/install" element={<Install />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </BrowserRouter>
       </AuthProvider>
     </TooltipProvider>

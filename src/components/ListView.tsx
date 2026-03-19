@@ -3,6 +3,7 @@ import { useApp } from '@/context/AppContext';
 import { STATUS_LABELS, PRIORITY_LABELS, Status, Priority } from '@/types';
 import { PriorityBadge, StatusBadge, AvatarGroup, SubtaskProgress } from '@/components/TaskBadges';
 import { ChevronRight, ChevronDown, ArrowUpDown } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 type SortKey = 'title' | 'priority' | 'dueDate' | 'status';
 
@@ -13,6 +14,7 @@ export default function ListView() {
   const [sortKey, setSortKey] = useState<SortKey>('priority');
   const [sortAsc, setSortAsc] = useState(true);
   const [expandedTasks, setExpandedTasks] = useState<Set<string>>(new Set());
+  const isMobile = useIsMobile();
 
   const filteredTasks = getFilteredTasks();
 
@@ -42,6 +44,65 @@ export default function ListView() {
 
   const getSubtasks = (parentId: string) => tasks.filter(t => t.parentTaskId === parentId);
 
+  // Mobile: card-based layout
+  if (isMobile) {
+    const renderCard = (task: typeof sorted[0], depth: number = 0) => {
+      const subtasks = getSubtasks(task.id);
+      const doneSubtasks = subtasks.filter(t => t.status === 'done');
+      const hasChildren = subtasks.length > 0;
+      const isExpanded = expandedTasks.has(task.id);
+      const isOverdue = task.dueDate && task.dueDate < new Date().toISOString().split('T')[0] && task.status !== 'done';
+
+      return (
+        <React.Fragment key={task.id}>
+          <div
+            className={`bg-card rounded-lg border p-3 ${isOverdue ? 'border-l-2 border-l-priority-urgent' : ''}`}
+            style={{ marginLeft: `${depth * 12}px` }}
+            onClick={() => setSelectedTaskId(task.id)}
+          >
+            <div className="flex items-start gap-2">
+              {hasChildren && (
+                <button
+                  onClick={e => { e.stopPropagation(); toggleExpand(task.id); }}
+                  className="p-0.5 mt-0.5 shrink-0"
+                >
+                  {isExpanded ? <ChevronDown className="w-4 h-4 text-muted-foreground" /> : <ChevronRight className="w-4 h-4 text-muted-foreground" />}
+                </button>
+              )}
+              <div className="flex-1 min-w-0">
+                <p className={`text-sm font-medium ${isOverdue ? 'text-priority-urgent' : 'text-foreground'}`}>{task.title}</p>
+                <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                  <StatusBadge status={task.status} />
+                  <PriorityBadge priority={task.priority} />
+                  <SubtaskProgress total={subtasks.length} done={doneSubtasks.length} />
+                </div>
+                <div className="flex items-center justify-between mt-1.5">
+                  {task.dueDate ? (
+                    <span className={`text-xs ${isOverdue ? 'text-priority-urgent font-medium' : 'text-muted-foreground'}`}>
+                      {new Date(task.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                    </span>
+                  ) : <span />}
+                  <AvatarGroup memberIds={task.assigneeIds} getMemberById={getMemberById} />
+                </div>
+              </div>
+            </div>
+          </div>
+          {isExpanded && subtasks.map(st => renderCard(st, depth + 1))}
+        </React.Fragment>
+      );
+    };
+
+    return (
+      <div className="p-3 overflow-auto h-full space-y-2">
+        {sorted.map(task => renderCard(task))}
+        {sorted.length === 0 && (
+          <p className="text-center py-12 text-muted-foreground">Aucune tâche trouvée</p>
+        )}
+      </div>
+    );
+  }
+
+  // Desktop: table layout
   const renderRow = (task: typeof sorted[0], depth: number = 0) => {
     const subtasks = getSubtasks(task.id);
     const doneSubtasks = subtasks.filter(t => t.status === 'done');
@@ -100,7 +161,7 @@ export default function ListView() {
   );
 
   return (
-    <div className="p-6 overflow-auto h-full">
+    <div className="p-4 sm:p-6 overflow-auto h-full">
       <div className="bg-card rounded-lg border overflow-hidden">
         <table className="w-full">
           <thead className="border-b border-border bg-muted/30">

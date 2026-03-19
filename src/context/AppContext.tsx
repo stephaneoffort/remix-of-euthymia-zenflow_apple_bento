@@ -42,6 +42,8 @@ interface AppContextType extends AppState {
   moveTask: (taskId: string, newStatus: string) => void;
   addSpace: (name: string, icon: string) => void;
   addProject: (name: string, spaceId: string, color: string) => void;
+  renameSpace: (id: string, name: string) => void;
+  renameProject: (id: string, name: string) => void;
   getSubtasks: (taskId: string) => Task[];
   getTaskById: (id: string) => Task | undefined;
   getListsForProject: (projectId: string) => TaskList[];
@@ -339,6 +341,32 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     addProjectMutation.mutate({ name, spaceId, color });
   }, [addProjectMutation]);
 
+  // Rename space mutation
+  const renameSpaceMutation = useMutation({
+    mutationFn: async ({ id, name }: { id: string; name: string }) => {
+      const { error } = await supabase.from('spaces').update({ name }).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['spaces'] }),
+  });
+
+  const renameSpace = useCallback((id: string, name: string) => {
+    renameSpaceMutation.mutate({ id, name });
+  }, [renameSpaceMutation]);
+
+  // Rename project mutation
+  const renameProjectMutation = useMutation({
+    mutationFn: async ({ id, name }: { id: string; name: string }) => {
+      const { error } = await supabase.from('projects').update({ name }).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['projects'] }),
+  });
+
+  const renameProject = useCallback((id: string, name: string) => {
+    renameProjectMutation.mutate({ id, name });
+  }, [renameProjectMutation]);
+
   const addTask = useCallback((task: Omit<Task, 'id' | 'createdAt' | 'order'>) => {
     addTaskMutation.mutate(task);
   }, [addTaskMutation]);
@@ -462,6 +490,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     moveTask,
     addSpace,
     addProject,
+    renameSpace,
+    renameProject,
     getSubtasks,
     getTaskById,
     getListsForProject,
@@ -471,7 +501,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     getMemberById,
     getTaskBreadcrumb,
     getStatusLabel,
-  }), [spaces, projects, lists, tasks, teamMembers, customStatuses, allStatuses, selectedProjectId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, addTask, updateTask, deleteTask, moveTask, addSpace, addProject, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb, getStatusLabel]);
+  }), [spaces, projects, lists, tasks, teamMembers, customStatuses, allStatuses, selectedProjectId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, addTask, updateTask, deleteTask, moveTask, addSpace, addProject, renameSpace, renameProject, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb, getStatusLabel]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

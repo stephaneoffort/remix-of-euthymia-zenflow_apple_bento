@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutGrid, List, Calendar, BarChart3, MessageCircle, Menu, Plus, Filter, Home } from 'lucide-react';
+import { LayoutGrid, List, Calendar, BarChart3, MessageCircle, Menu, Plus, Filter, Home, GitFork } from 'lucide-react';
 import { ViewType } from '@/types';
 import { useChatNotifications } from '@/hooks/useChatNotifications';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';

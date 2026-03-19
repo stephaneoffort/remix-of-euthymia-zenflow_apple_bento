@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, ChevronDown, LayoutGrid, List, Calendar, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus } from 'lucide-react';
+import { ChevronRight, ChevronDown, LayoutGrid, List, Calendar, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { supabase } from '@/integrations/supabase/client';
 import { QuickFilter, ViewType } from '@/types';
 
 const QUICK_FILTERS: { key: QuickFilter; label: string; icon: React.ReactNode }[] = [
@@ -334,9 +335,10 @@ export default function AppSidebar() {
         </div>
       </div>
 
-      {/* Current user + Logout */}
+      {/* Current user + Settings + Logout */}
       <div className="px-4 py-3 border-t border-sidebar-border-color mt-auto">
         <CurrentUserBadge />
+        <AdminSettingsLink />
         <LogoutButton />
       </div>
     </div>
@@ -368,6 +370,33 @@ function CurrentUserBadge() {
         <p className="text-xs text-sidebar-fg truncate">{member.role}</p>
       </div>
     </div>
+  );
+}
+
+function AdminSettingsLink() {
+  const { user } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .eq('role', 'admin')
+      .then(({ data }) => setIsAdmin(!!data && data.length > 0));
+  }, [user]);
+
+  if (!isAdmin) return null;
+
+  return (
+    <a
+      href="/settings"
+      className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors mb-0.5"
+    >
+      <Settings className="w-4 h-4" />
+      <span>Administration</span>
+    </a>
   );
 }
 

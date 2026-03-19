@@ -225,21 +225,39 @@ interface MindMapNodeProps {
   expandedIds: Set<string>;
   toggleExpand: (id: string) => void;
   onSelectTask: (id: string) => void;
+  onAddSubtask: (parentTask: Task, title: string) => void;
 }
 
-function MindMapNode({ node, depth, expandedIds, toggleExpand, onSelectTask }: MindMapNodeProps) {
+function MindMapNode({ node, depth, expandedIds, toggleExpand, onSelectTask, onAddSubtask }: MindMapNodeProps) {
   const { task, children, progress } = node;
   const hasChildren = children.length > 0;
   const isExpanded = expandedIds.has(task.id);
   const progressColor = STATUS_PROGRESS_COLORS[task.status] || 'hsl(var(--primary))';
+  const [isAdding, setIsAdding] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // Connector colors based on depth
+  useEffect(() => {
+    if (isAdding && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isAdding]);
+
+  const handleSubmit = () => {
+    const trimmed = newTitle.trim();
+    if (trimmed) {
+      onAddSubtask(task, trimmed);
+      setNewTitle('');
+      setIsAdding(false);
+    }
+  };
+
   const connectorColor = depth === 0 ? 'hsl(var(--primary))' : 'hsl(var(--border))';
 
   return (
     <div className="flex items-start gap-0">
       {/* Node card */}
-      <div data-node className="flex flex-col items-start">
+      <div data-node className="flex flex-col items-start gap-1">
         <div
           className="relative group flex items-center gap-2 px-3 py-2 rounded-lg border bg-card hover:shadow-md hover:border-primary/40 transition-all cursor-pointer"
           style={{
@@ -276,7 +294,6 @@ function MindMapNode({ node, depth, expandedIds, toggleExpand, onSelectTask }: M
               <PriorityBadge priority={task.priority} />
             </div>
 
-            {/* Progress bar for parents */}
             {hasChildren && (
               <div className="mt-1.5 flex items-center gap-2">
                 <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
@@ -297,20 +314,53 @@ function MindMapNode({ node, depth, expandedIds, toggleExpand, onSelectTask }: M
               </p>
             )}
           </div>
+
+          {/* Add subtask button */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsAdding(true);
+            }}
+            className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-muted transition-all shrink-0"
+            title="Ajouter une sous-tâche"
+          >
+            <Plus className="w-3.5 h-3.5 text-muted-foreground" />
+          </button>
         </div>
+
+        {/* Inline add subtask input */}
+        {isAdding && (
+          <div data-node className="flex items-center gap-1.5 ml-6" onClick={(e) => e.stopPropagation()}>
+            <input
+              ref={inputRef}
+              type="text"
+              value={newTitle}
+              onChange={(e) => setNewTitle(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleSubmit();
+                if (e.key === 'Escape') { setIsAdding(false); setNewTitle(''); }
+              }}
+              placeholder="Nom de la sous-tâche..."
+              className="px-2 py-1.5 text-xs border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary w-48"
+            />
+            <button onClick={handleSubmit} className="p-1 rounded hover:bg-primary/10 transition-colors" disabled={!newTitle.trim()}>
+              <Check className="w-3.5 h-3.5 text-primary" />
+            </button>
+            <button onClick={() => { setIsAdding(false); setNewTitle(''); }} className="p-1 rounded hover:bg-muted transition-colors">
+              <X className="w-3.5 h-3.5 text-muted-foreground" />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Children branch */}
       {hasChildren && isExpanded && (
         <div className="flex items-start ml-0">
-          {/* Horizontal connector */}
           <div className="flex flex-col items-start justify-start pt-4">
             <div className="w-6 h-px" style={{ backgroundColor: connectorColor }} />
           </div>
 
-          {/* Vertical line + children */}
           <div className="relative flex flex-col gap-2">
-            {/* Vertical connector line */}
             {children.length > 1 && (
               <div
                 className="absolute left-0 top-0 bottom-0 w-px"
@@ -318,9 +368,8 @@ function MindMapNode({ node, depth, expandedIds, toggleExpand, onSelectTask }: M
               />
             )}
 
-            {children.map((child, i) => (
+            {children.map((child) => (
               <div key={child.task.id} className="flex items-start">
-                {/* Branch connector */}
                 <div className="flex items-center shrink-0">
                   <div className="w-4 h-px" style={{ backgroundColor: 'hsl(var(--border))' }} />
                 </div>
@@ -331,6 +380,7 @@ function MindMapNode({ node, depth, expandedIds, toggleExpand, onSelectTask }: M
                   expandedIds={expandedIds}
                   toggleExpand={toggleExpand}
                   onSelectTask={onSelectTask}
+                  onAddSubtask={onAddSubtask}
                 />
               </div>
             ))}

@@ -334,12 +334,40 @@ export default function AppSidebar() {
         </div>
       </div>
 
-      {/* Logout */}
+      {/* Current user + Logout */}
       <div className="px-4 py-3 border-t border-sidebar-border-color mt-auto">
+        <CurrentUserBadge />
         <LogoutButton />
       </div>
     </div>
     </>
+  );
+}
+
+function CurrentUserBadge() {
+  const { teamMemberId } = useAuth();
+  const { teamMembers } = useApp();
+  const member = teamMembers.find(m => m.id === teamMemberId);
+
+  if (!member) return null;
+
+  return (
+    <div className="flex items-center gap-2.5 mb-2 px-2 py-1.5">
+      {member.avatarUrl ? (
+        <img src={member.avatarUrl} alt={member.name} className="w-8 h-8 rounded-full object-cover shrink-0" />
+      ) : (
+        <div
+          className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+          style={{ backgroundColor: member.avatarColor, color: 'white' }}
+        >
+          {member.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+        </div>
+      )}
+      <div className="min-w-0">
+        <p className="text-sm font-medium text-sidebar-fg-bright truncate">{member.name}</p>
+        <p className="text-xs text-sidebar-fg truncate">{member.role}</p>
+      </div>
+    </div>
   );
 }
 

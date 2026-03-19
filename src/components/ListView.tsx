@@ -46,6 +46,31 @@ export default function ListView() {
 
   const getSubtasks = (parentId: string) => tasks.filter(t => t.parentTaskId === parentId);
 
+  const handleAddTask = () => {
+    if (!newTaskTitle.trim()) return;
+    const lists = selectedProjectId ? getListsForProject(selectedProjectId) : [];
+    const listId = lists[0]?.id || 'l1';
+    addTask({
+      title: newTaskTitle.trim(),
+      description: '',
+      status: 'todo',
+      priority: 'normal',
+      dueDate: null,
+      startDate: null,
+      assigneeIds: [],
+      tags: [],
+      parentTaskId: null,
+      listId,
+      comments: [],
+      attachments: [],
+      timeEstimate: null,
+      timeLogged: null,
+      aiSummary: null,
+    });
+    setNewTaskTitle('');
+    setIsAdding(false);
+  };
+
   // Mobile: card-based layout
   if (isMobile) {
     const renderCard = (task: typeof sorted[0], depth: number = 0) => {

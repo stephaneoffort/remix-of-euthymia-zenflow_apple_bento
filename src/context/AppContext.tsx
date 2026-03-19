@@ -4,6 +4,15 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/context/AuthContext';
 
+export interface AdvancedFilters {
+  statuses: string[];
+  priorities: string[];
+  assigneeIds: string[];
+  tags: string[];
+}
+
+const EMPTY_FILTERS: AdvancedFilters = { statuses: [], priorities: [], assigneeIds: [], tags: [] };
+
 interface AppState {
   spaces: Space[];
   projects: Project[];
@@ -16,6 +25,7 @@ interface AppState {
   selectedTaskId: string | null;
   sidebarCollapsed: boolean;
   isLoading: boolean;
+  advancedFilters: AdvancedFilters;
 }
 
 interface AppContextType extends AppState {
@@ -38,6 +48,7 @@ interface AppContextType extends AppState {
   getFilteredTasks: () => Task[];
   getMemberById: (id: string) => TeamMember | undefined;
   getTaskBreadcrumb: (taskId: string) => Task[];
+  setAdvancedFilters: (filters: AdvancedFilters) => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -74,6 +85,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>(EMPTY_FILTERS);
 
   // Fetch spaces
   const { data: spaces = [] } = useQuery({
@@ -380,8 +392,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         filtered = filtered.filter(t => t.dueDate && t.dueDate < today && t.status !== 'done');
         break;
     }
+
+    // Advanced filters
+    if (advancedFilters.statuses.length > 0) {
+      filtered = filtered.filter(t => advancedFilters.statuses.includes(t.status));
+    }
+    if (advancedFilters.priorities.length > 0) {
+      filtered = filtered.filter(t => advancedFilters.priorities.includes(t.priority));
+    }
+    if (advancedFilters.assigneeIds.length > 0) {
+      filtered = filtered.filter(t => t.assigneeIds.some(id => advancedFilters.assigneeIds.includes(id)));
+    }
+    if (advancedFilters.tags.length > 0) {
+      filtered = filtered.filter(t => t.tags.some(tag => advancedFilters.tags.includes(tag)));
+    }
+
     return filtered;
-  }, [tasks, selectedProjectId, quickFilter, lists, teamMemberId]);
+  }, [tasks, selectedProjectId, quickFilter, lists, teamMemberId, advancedFilters]);
 
   const value = useMemo(() => ({
     spaces,
@@ -395,11 +422,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     selectedTaskId,
     sidebarCollapsed,
     isLoading,
+    advancedFilters,
     setSelectedProjectId,
     setSelectedView,
     setQuickFilter,
     setSelectedTaskId,
     setSidebarCollapsed,
+    setAdvancedFilters,
     addTask,
     updateTask,
     deleteTask,
@@ -414,7 +443,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     getFilteredTasks,
     getMemberById,
     getTaskBreadcrumb,
-  }), [spaces, projects, lists, tasks, teamMembers, selectedProjectId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, addTask, updateTask, deleteTask, moveTask, addSpace, addProject, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb]);
+  }), [spaces, projects, lists, tasks, teamMembers, selectedProjectId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, addTask, updateTask, deleteTask, moveTask, addSpace, addProject, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

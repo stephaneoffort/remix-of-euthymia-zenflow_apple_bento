@@ -133,7 +133,7 @@ function DroppableDay({ dateStr, isCurrentMonth, isToday, dayNum, children, isMo
 }
 
 export default function CalendarView() {
-  const { getFilteredTasks, setSelectedTaskId, addTask, updateTask, selectedProjectId, getListsForProject } = useApp();
+  const { getFilteredTasks, setSelectedTaskId, addTask, updateTask, selectedProjectId, getListsForProject, teamMembers } = useApp();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [addingForDate, setAddingForDate] = useState<string | null>(null);
   const [newTaskTitle, setNewTaskTitle] = useState('');

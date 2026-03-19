@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutGrid, List, Calendar, BarChart3, MessageCircle, Menu, Plus, Filter, Home } from 'lucide-react';
+import { LayoutGrid, List, Calendar, BarChart3, MessageCircle, Menu, Plus, Filter, Home, GitFork } from 'lucide-react';
 import { ViewType } from '@/types';
 import { useChatNotifications } from '@/hooks/useChatNotifications';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -11,7 +11,7 @@ const VIEW_ICONS: Record<ViewType, React.ReactNode> = {
   list: <List className="w-5 h-5" />,
   calendar: <Calendar className="w-5 h-5" />,
   workload: <BarChart3 className="w-5 h-5" />,
-  mindmap: <BarChart3 className="w-5 h-5" />,
+  mindmap: <GitFork className="w-5 h-5" />,
 };
 
 const VIEW_LABELS: Record<ViewType, string> = {
@@ -40,7 +40,7 @@ export default function MobileBottomNav() {
     if (!isHome) navigate('/');
   };
 
-  const views: ViewType[] = ['list', 'kanban', 'calendar', 'workload'];
+  const views: ViewType[] = ['list', 'kanban', 'calendar', 'workload', 'mindmap'];
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border safe-area-bottom">

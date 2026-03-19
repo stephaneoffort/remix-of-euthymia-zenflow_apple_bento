@@ -29,7 +29,7 @@ export default function AppSidebar() {
     spaces, selectedProjectId, setSelectedProjectId,
     selectedView, setSelectedView, quickFilter, setQuickFilter,
     getProjectsForSpace, teamMembers, sidebarCollapsed, setSidebarCollapsed,
-    tasks, addSpace, addProject, renameSpace, renameProject,
+    tasks, addSpace, addProject, renameSpace, renameProject, deleteSpace, deleteProject,
   } = useApp();
   const isMobile = useIsMobile();
 

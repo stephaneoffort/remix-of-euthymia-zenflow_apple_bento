@@ -4,6 +4,15 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/context/AuthContext';
 
+export interface AdvancedFilters {
+  statuses: string[];
+  priorities: string[];
+  assigneeIds: string[];
+  tags: string[];
+}
+
+const EMPTY_FILTERS: AdvancedFilters = { statuses: [], priorities: [], assigneeIds: [], tags: [] };
+
 interface AppState {
   spaces: Space[];
   projects: Project[];
@@ -16,6 +25,7 @@ interface AppState {
   selectedTaskId: string | null;
   sidebarCollapsed: boolean;
   isLoading: boolean;
+  advancedFilters: AdvancedFilters;
 }
 
 interface AppContextType extends AppState {

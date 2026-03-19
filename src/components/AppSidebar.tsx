@@ -544,8 +544,7 @@ function ChatLink({ handleNavClick }: { handleNavClick: () => void }) {
     </button>
   );
 }
-
-
+function CurrentUserBadge() {
   const { teamMemberId } = useAuth();
   const { teamMembers } = useApp();
   const member = teamMembers.find(m => m.id === teamMemberId);

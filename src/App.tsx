@@ -1,3 +1,4 @@
+import React, { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -5,13 +6,20 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { AppProvider } from "@/context/AppContext";
-import Index from "./pages/Index.tsx";
-import Auth from "./pages/Auth.tsx";
-import SelectTeamMember from "./pages/SelectTeamMember.tsx";
-import Settings from "./pages/Settings.tsx";
-import Chat from "./pages/Chat.tsx";
-import NotFound from "./pages/NotFound.tsx";
-import Install from "./pages/Install.tsx";
+
+const Index = lazy(() => import("./pages/Index.tsx"));
+const Auth = lazy(() => import("./pages/Auth.tsx"));
+const SelectTeamMember = lazy(() => import("./pages/SelectTeamMember.tsx"));
+const Settings = lazy(() => import("./pages/Settings.tsx"));
+const Chat = lazy(() => import("./pages/Chat.tsx"));
+const NotFound = lazy(() => import("./pages/NotFound.tsx"));
+const Install = lazy(() => import("./pages/Install.tsx"));
+
+const PageLoader = () => (
+  <div className="flex items-center justify-center h-screen bg-background">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+  </div>
+);
 
 const queryClient = new QueryClient();
 
@@ -39,42 +47,44 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/select-member" element={<SelectTeamMember />} />
-            <Route
-              path="/chat"
-              element={
-                <ProtectedRoute>
-                  <AppProvider>
-                    <Chat />
-                  </AppProvider>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/settings"
-              element={
-                <ProtectedRoute>
-                  <AppProvider>
-                    <Settings />
-                  </AppProvider>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <AppProvider>
-                    <Index />
-                  </AppProvider>
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/install" element={<Install />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/select-member" element={<SelectTeamMember />} />
+              <Route
+                path="/chat"
+                element={
+                  <ProtectedRoute>
+                    <AppProvider>
+                      <Chat />
+                    </AppProvider>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/settings"
+                element={
+                  <ProtectedRoute>
+                    <AppProvider>
+                      <Settings />
+                    </AppProvider>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <AppProvider>
+                      <Index />
+                    </AppProvider>
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/install" element={<Install />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </BrowserRouter>
       </AuthProvider>
     </TooltipProvider>

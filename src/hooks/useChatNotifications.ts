@@ -132,6 +132,9 @@ export function useChatNotifications() {
             [msg.category_id]: (prev[msg.category_id] || 0) + 1,
           }));
 
+          // Play notification sound
+          playNotificationSound();
+
           // Show toast only if not on chat page
           if (!isOnChatPage) {
             const authorName = membersCache.current[msg.author_id] || 'Quelqu\'un';

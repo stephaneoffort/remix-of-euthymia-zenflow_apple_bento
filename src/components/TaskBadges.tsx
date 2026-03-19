@@ -1,4 +1,4 @@
-import { Priority, Status } from '@/types';
+import { Priority } from '@/types';
 import { AlertCircle, ArrowUp, Minus, ArrowDown, Circle, Loader, Eye, CheckCircle, Ban } from 'lucide-react';
 
 export function PriorityBadge({ priority }: { priority: Priority }) {

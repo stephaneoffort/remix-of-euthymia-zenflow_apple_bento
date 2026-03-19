@@ -44,6 +44,7 @@ export default function Chat() {
   const { teamMemberId, user } = useAuth();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { unreadCounts, markCategoryRead } = useChatNotifications();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [messageText, setMessageText] = useState('');
   const [showEmojiFor, setShowEmojiFor] = useState<string | null>(null);

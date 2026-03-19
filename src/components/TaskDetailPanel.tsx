@@ -257,6 +257,96 @@ export default function TaskDetailPanel() {
               </div>
             </div>
 
+            {/* Attachments & Links */}
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1">
+                <Paperclip className="w-3 h-3" /> Pièces jointes ({task.attachments.length})
+              </label>
+
+              {task.attachments.length > 0 && (
+                <div className="space-y-1.5 mb-2">
+                  {task.attachments.map(att => (
+                    <div key={att.id} className="flex items-center gap-2 group px-2 py-1.5 rounded-md bg-muted/50 hover:bg-muted transition-colors">
+                      {isLink(att.url) ? (
+                        <Link className="w-3.5 h-3.5 text-primary shrink-0" />
+                      ) : (
+                        <FileText className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                      )}
+                      <a
+                        href={att.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-foreground hover:text-primary truncate flex-1 transition-colors"
+                      >
+                        {att.name}
+                      </a>
+                      <ExternalLink className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 shrink-0" />
+                      <button
+                        onClick={() => deleteAttachment(att.id)}
+                        className="p-0.5 opacity-0 group-hover:opacity-100 hover:text-destructive transition-all shrink-0"
+                        title="Supprimer"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Add link form */}
+              {addingLink && (
+                <div className="space-y-1.5 mb-2">
+                  <input
+                    autoFocus
+                    value={newLinkUrl}
+                    onChange={e => setNewLinkUrl(e.target.value)}
+                    placeholder="https://..."
+                    className="w-full text-sm bg-muted/50 border border-border rounded-md px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') handleAddLink();
+                      if (e.key === 'Escape') { setAddingLink(false); setNewLinkUrl(''); setNewLinkName(''); }
+                    }}
+                  />
+                  <input
+                    value={newLinkName}
+                    onChange={e => setNewLinkName(e.target.value)}
+                    placeholder="Nom du lien (optionnel)"
+                    className="w-full text-sm bg-muted/50 border border-border rounded-md px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') handleAddLink();
+                      if (e.key === 'Escape') { setAddingLink(false); setNewLinkUrl(''); setNewLinkName(''); }
+                    }}
+                  />
+                  <div className="flex gap-2">
+                    <button onClick={handleAddLink} disabled={!newLinkUrl.trim()} className="px-3 py-1 bg-primary text-primary-foreground text-xs font-medium rounded-md hover:opacity-90 disabled:opacity-50">
+                      Ajouter
+                    </button>
+                    <button onClick={() => { setAddingLink(false); setNewLinkUrl(''); setNewLinkName(''); }} className="px-3 py-1 text-xs text-muted-foreground hover:text-foreground">
+                      Annuler
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Action buttons */}
+              <div className="flex gap-2">
+                <input ref={fileInputRef} type="file" multiple onChange={handleFileUpload} className="hidden" />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Upload className="w-3.5 h-3.5" /> {uploading ? 'Envoi...' : 'Fichier'}
+                </button>
+                <button
+                  onClick={() => setAddingLink(true)}
+                  className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Link className="w-3.5 h-3.5" /> Lien
+                </button>
+              </div>
+            </div>
+
             {/* Time */}
             <div className="flex gap-3 sm:gap-4">
               <div className="flex-1">

@@ -376,7 +376,7 @@ function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {
   };
 
   const toggleExpand = (id: string) => {
-    setExpanded(prev => {
+    setExpandedNodes(prev => {
       const next = new Set(prev);
       next.has(id) ? next.delete(id) : next.add(id);
       return next;

@@ -369,37 +369,60 @@ function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {
     <div className="space-y-1" style={{ paddingLeft: depth > 0 ? `${Math.min(depth * 12, 36)}px` : '0' }}>
       {subtasks.map(st => {
         const children = getSubtasks(st.id);
+        const doneChildren = children.filter(c => c.status === 'done');
         const hasChildren = children.length > 0;
         const isExpanded = expanded.has(st.id);
+        const isOverdue = st.dueDate && st.dueDate < new Date().toISOString().split('T')[0] && st.status !== 'done';
 
         return (
           <div key={st.id}>
-            <div className="flex items-center gap-1.5 sm:gap-2 py-1.5 px-1.5 sm:px-2 rounded-md hover:bg-muted/50 group transition-colors">
-              {hasChildren ? (
-                <button onClick={() => toggleExpand(st.id)} className="p-0.5 shrink-0">
-                  {isExpanded ? <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" /> : <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />}
+            <div
+              className={`rounded-md hover:bg-muted/50 group transition-colors cursor-pointer ${isOverdue ? 'border-l-2 border-l-priority-urgent' : ''}`}
+              onClick={() => setSelectedTaskId(st.id)}
+            >
+              <div className="flex items-center gap-1.5 sm:gap-2 py-1.5 px-1.5 sm:px-2">
+                {hasChildren ? (
+                  <button onClick={e => { e.stopPropagation(); toggleExpand(st.id); }} className="p-0.5 shrink-0">
+                    {isExpanded ? <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" /> : <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />}
+                  </button>
+                ) : <span className="w-4.5 shrink-0" />}
+                <button
+                  onClick={e => { e.stopPropagation(); updateTask(st.id, { status: st.status === 'done' ? 'todo' : 'done' }); }}
+                  className="shrink-0"
+                >
+                  {st.status === 'done'
+                    ? <CheckCircle className="w-4 h-4 text-status-done" />
+                    : <Circle className="w-4 h-4 text-muted-foreground hover:text-primary" />}
                 </button>
-              ) : <span className="w-4.5 shrink-0" />}
-              <button onClick={() => updateTask(st.id, { status: st.status === 'done' ? 'todo' : 'done' })} className="shrink-0">
-                {st.status === 'done'
-                  ? <CheckCircle className="w-4 h-4 text-status-done" />
-                  : <Circle className="w-4 h-4 text-muted-foreground hover:text-primary" />}
-              </button>
-              <button
-                onClick={() => setSelectedTaskId(st.id)}
-                className={`flex-1 text-left text-sm truncate ${st.status === 'done' ? 'line-through text-muted-foreground' : 'text-foreground'} hover:text-primary transition-colors min-w-0`}
-              >
-                {st.title}
-              </button>
-              <div className="hidden sm:block">
-                <AvatarGroup memberIds={st.assigneeIds} getMemberById={getMemberById} />
+                <span
+                  className={`flex-1 text-left text-sm truncate ${st.status === 'done' ? 'line-through text-muted-foreground' : 'text-foreground'} hover:text-primary transition-colors min-w-0`}
+                >
+                  {st.title}
+                </span>
+                <button
+                  onClick={e => { e.stopPropagation(); setAddingFor(st.id); }}
+                  className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-muted rounded shrink-0"
+                >
+                  <Plus className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
               </div>
-              <button
-                onClick={() => setAddingFor(st.id)}
-                className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-muted rounded shrink-0"
-              >
-                <Plus className="w-3.5 h-3.5 text-muted-foreground" />
-              </button>
+              {/* Metadata row */}
+              <div className="flex items-center gap-1.5 flex-wrap pl-[30px] sm:pl-[34px] pb-1.5 text-[10px]">
+                <PriorityBadge priority={st.priority} />
+                {st.dueDate && (
+                  <span className={`${isOverdue ? 'text-priority-urgent font-medium' : 'text-muted-foreground'}`}>
+                    {new Date(st.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                  </span>
+                )}
+                {hasChildren && (
+                  <span className="text-muted-foreground">
+                    {doneChildren.length}/{children.length} sous-tâches
+                  </span>
+                )}
+                <div className="ml-auto">
+                  <AvatarGroup memberIds={st.assigneeIds} getMemberById={getMemberById} />
+                </div>
+              </div>
             </div>
 
             {addingFor === st.id && (

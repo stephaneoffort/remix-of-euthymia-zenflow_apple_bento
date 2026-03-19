@@ -164,6 +164,24 @@ export default function AppSidebar() {
           ))}
         </div>
       </div>
+
+      {/* Logout */}
+      <div className="px-4 py-3 border-t border-sidebar-border-color mt-auto">
+        <LogoutButton />
+      </div>
     </div>
+  );
+}
+
+function LogoutButton() {
+  const { signOut } = useAuth();
+  return (
+    <button
+      onClick={signOut}
+      className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors"
+    >
+      <LogOut className="w-4 h-4" />
+      <span>Déconnexion</span>
+    </button>
   );
 }

@@ -310,7 +310,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     switch (quickFilter) {
       case 'my_tasks':
-        filtered = filtered.filter(t => t.assigneeIds.includes('tm1'));
+        if (teamMemberId) {
+          filtered = filtered.filter(t => t.assigneeIds.includes(teamMemberId));
+        }
         break;
       case 'urgent':
         filtered = filtered.filter(t => t.priority === 'urgent');

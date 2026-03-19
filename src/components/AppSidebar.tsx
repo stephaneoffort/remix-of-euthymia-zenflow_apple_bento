@@ -231,12 +231,44 @@ export default function AppSidebar() {
             <div className="flex items-center group">
               <button
                 onClick={() => toggleSpace(space.id)}
-                className="flex-1 flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors"
+                className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors"
               >
                 {expandedSpaces.has(space.id) ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
                 <span>{space.icon}</span>
-                <span className="font-medium">{space.name}</span>
               </button>
+              {editingSpaceId === space.id ? (
+                <input
+                  autoFocus
+                  value={editingSpaceName}
+                  onChange={e => setEditingSpaceName(e.target.value)}
+                  onBlur={() => {
+                    if (editingSpaceName.trim() && editingSpaceName.trim() !== space.name) {
+                      renameSpace(space.id, editingSpaceName.trim());
+                    }
+                    setEditingSpaceId(null);
+                  }}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      if (editingSpaceName.trim() && editingSpaceName.trim() !== space.name) {
+                        renameSpace(space.id, editingSpaceName.trim());
+                      }
+                      setEditingSpaceId(null);
+                    }
+                    if (e.key === 'Escape') setEditingSpaceId(null);
+                  }}
+                  className="flex-1 text-sm bg-sidebar-bg border border-sidebar-border-color rounded-md px-2 py-0.5 outline-none text-sidebar-fg-bright font-medium min-w-0"
+                />
+              ) : (
+                <span
+                  className="flex-1 font-medium text-sm text-sidebar-fg cursor-pointer truncate"
+                  onDoubleClick={() => {
+                    setEditingSpaceId(space.id);
+                    setEditingSpaceName(space.name);
+                  }}
+                >
+                  {space.name}
+                </span>
+              )
               <button
                 onClick={() => setAddingProjectForSpace(space.id)}
                 className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-sidebar-hover text-sidebar-fg transition-all mr-1"

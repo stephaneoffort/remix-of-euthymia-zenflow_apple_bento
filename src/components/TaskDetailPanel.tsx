@@ -83,9 +83,14 @@ export default function TaskDetailPanel() {
             </React.Fragment>
           ))}
         </div>
-        <button onClick={() => setSelectedTaskId(null)} className="p-1.5 hover:bg-muted rounded-md transition-colors shrink-0 ml-2">
-          <X className="w-4 h-4" />
-        </button>
+        <div className="flex items-center gap-1 shrink-0 ml-2">
+          <button onClick={() => setExpanded(!expanded)} className="p-1.5 hover:bg-muted rounded-md transition-colors hidden sm:flex" title={expanded ? 'Réduire' : 'Agrandir'}>
+            {expanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+          </button>
+          <button onClick={() => setSelectedTaskId(null)} className="p-1.5 hover:bg-muted rounded-md transition-colors">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* Content */}

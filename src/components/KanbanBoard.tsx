@@ -121,7 +121,7 @@ export default function KanbanBoard() {
   };
 
   return (
-    <div className="flex gap-3 sm:gap-4 p-3 sm:p-6 overflow-x-auto h-full">
+    <div className="flex gap-3 sm:gap-4 p-3 sm:p-6 overflow-x-auto h-full snap-x snap-mandatory sm:snap-none">
       {columnOrder.map(status => (
         <div
           key={status}

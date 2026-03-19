@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useCallback, useMemo, useEf
 import { Task, Space, Project, TaskList, TeamMember, ViewType, QuickFilter, Status, Priority, Comment, Attachment } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '@/context/AuthContext';
 
 interface AppState {
   spaces: Space[];

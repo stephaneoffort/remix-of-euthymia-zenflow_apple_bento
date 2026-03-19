@@ -59,7 +59,7 @@ export default function Settings() {
 
       <div className="max-w-3xl mx-auto p-6">
         <Tabs defaultValue="members">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsList className="grid w-full grid-cols-3 mb-6">
             <TabsTrigger value="members" className="gap-2">
               <Users className="w-4 h-4" />
               Membres
@@ -67,6 +67,10 @@ export default function Settings() {
             <TabsTrigger value="statuses" className="gap-2">
               <ListChecks className="w-4 h-4" />
               Avancements
+            </TabsTrigger>
+            <TabsTrigger value="chat" className="gap-2">
+              <MessageCircle className="w-4 h-4" />
+              Chat
             </TabsTrigger>
           </TabsList>
 
@@ -76,6 +80,10 @@ export default function Settings() {
 
           <TabsContent value="statuses">
             <StatusesPanel />
+          </TabsContent>
+
+          <TabsContent value="chat">
+            <ChatCategoriesPanel />
           </TabsContent>
         </Tabs>
       </div>

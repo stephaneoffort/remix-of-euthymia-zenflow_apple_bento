@@ -62,7 +62,7 @@ function buildTree(tasks: Task[]): TreeNode[] {
 }
 
 export default function MindMapView() {
-  const { getFilteredTasks, setSelectedTaskId } = useApp();
+  const { getFilteredTasks, setSelectedTaskId, addTask, tasks: allTasks } = useApp();
   const tasks = getFilteredTasks();
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [zoom, setZoom] = useState(1);

@@ -3,10 +3,10 @@ import { useApp } from '@/context/AppContext';
 import { Status, Priority, STATUS_LABELS, PRIORITY_LABELS } from '@/types';
 import { PriorityBadge, StatusBadge, AvatarGroup } from '@/components/TaskBadges';
 import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Clock, Paperclip, ChevronDown } from 'lucide-react';
-import { TEAM_MEMBERS } from '@/data/sampleData';
+
 
 export default function TaskDetailPanel() {
-  const { selectedTaskId, setSelectedTaskId, getTaskById, updateTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks } = useApp();
+  const { selectedTaskId, setSelectedTaskId, getTaskById, updateTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks, teamMembers } = useApp();
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [addingSubtaskFor, setAddingSubtaskFor] = useState<string | null>(null);
   const [newComment, setNewComment] = useState('');
@@ -140,7 +140,7 @@ export default function TaskDetailPanel() {
         <div>
           <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Assignée à</label>
           <div className="space-y-1">
-            {TEAM_MEMBERS.map(m => (
+            {teamMembers.map(m => (
               <label key={m.id} className="flex items-center gap-2 py-1 px-2 rounded hover:bg-muted/50 cursor-pointer text-sm">
                 <input
                   type="checkbox"

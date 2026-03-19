@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X } from 'lucide-react';
+import InviteMemberDialog from '@/components/InviteMemberDialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -192,10 +193,22 @@ function MembersPanel() {
     cancelEditing();
   };
 
+  const handleMemberAdded = () => {
+    supabase.from('team_members').select('*').then(({ data }) => {
+      if (data) {
+        setMembers(data.map((m: any) => ({
+          id: m.id, name: m.name, role: m.role,
+          avatarColor: m.avatar_color, avatarUrl: m.avatar_url, email: m.email,
+        })));
+      }
+    });
+  };
+
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-base">Gestion des membres</CardTitle>
+        <InviteMemberDialog onMemberAdded={handleMemberAdded} />
       </CardHeader>
       <CardContent className="space-y-2">
         {members.length === 0 && (

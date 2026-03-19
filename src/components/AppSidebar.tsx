@@ -166,12 +166,12 @@ export default function AppSidebar() {
       {/* Views */}
       <div className="px-3 py-3 border-b border-sidebar-border-color">
         <p className="text-xs font-semibold text-sidebar-fg uppercase tracking-wider px-2 mb-2">Vues</p>
-        <div className="flex gap-1">
+        <div className="flex flex-wrap gap-1">
           {VIEW_OPTIONS.map(v => (
             <button
               key={v.key}
               onClick={() => setSelectedView(v.key)}
-              className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              className={`flex items-center justify-center gap-1 px-2 py-1.5 rounded-md text-xs font-medium transition-colors ${
                 selectedView === v.key
                   ? 'bg-sidebar-active text-sidebar-fg-bright'
                   : 'text-sidebar-fg hover:bg-sidebar-hover'

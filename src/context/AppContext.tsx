@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
-import { Task, Space, Project, TaskList, TeamMember, ViewType, QuickFilter, Status, Priority } from '@/types';
-import { SPACES, PROJECTS, LISTS, INITIAL_TASKS, TEAM_MEMBERS } from '@/data/sampleData';
+import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
+import { Task, Space, Project, TaskList, TeamMember, ViewType, QuickFilter, Status, Priority, Comment, Attachment } from '@/types';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface AppState {
   spaces: Space[];
@@ -13,6 +14,7 @@ interface AppState {
   quickFilter: QuickFilter;
   selectedTaskId: string | null;
   sidebarCollapsed: boolean;
+  isLoading: boolean;
 }
 
 interface AppContextType extends AppState {
@@ -37,40 +39,234 @@ interface AppContextType extends AppState {
 
 const AppContext = createContext<AppContextType | null>(null);
 
-let nextId = 100;
-const genId = () => `t_${nextId++}`;
+// Helper: convert DB row to Task
+function dbToTask(row: any, assigneeIds: string[], comments: Comment[], attachments: Attachment[]): Task {
+  return {
+    id: row.id,
+    title: row.title,
+    description: row.description,
+    status: row.status as Status,
+    priority: row.priority as Priority,
+    dueDate: row.due_date,
+    startDate: row.start_date,
+    assigneeIds,
+    tags: row.tags || [],
+    parentTaskId: row.parent_task_id,
+    listId: row.list_id,
+    comments,
+    attachments,
+    timeEstimate: row.time_estimate,
+    timeLogged: row.time_logged,
+    aiSummary: row.ai_summary,
+    createdAt: row.created_at,
+    order: row.sort_order,
+  };
+}
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS);
+  const queryClient = useQueryClient();
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>('p1');
   const [selectedView, setSelectedView] = useState<ViewType>('kanban');
   const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
+  // Fetch spaces
+  const { data: spaces = [] } = useQuery({
+    queryKey: ['spaces'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('spaces').select('*').order('sort_order');
+      if (error) throw error;
+      return data.map(s => ({ id: s.id, name: s.name, icon: s.icon, order: s.sort_order })) as Space[];
+    },
+  });
+
+  // Fetch projects
+  const { data: projects = [] } = useQuery({
+    queryKey: ['projects'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('projects').select('*').order('sort_order');
+      if (error) throw error;
+      return data.map(p => ({ id: p.id, name: p.name, spaceId: p.space_id, color: p.color, order: p.sort_order })) as Project[];
+    },
+  });
+
+  // Fetch lists
+  const { data: lists = [] } = useQuery({
+    queryKey: ['task_lists'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('task_lists').select('*').order('sort_order');
+      if (error) throw error;
+      return data.map(l => ({ id: l.id, name: l.name, projectId: l.project_id, order: l.sort_order })) as TaskList[];
+    },
+  });
+
+  // Fetch team members
+  const { data: teamMembers = [] } = useQuery({
+    queryKey: ['team_members'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('team_members').select('*');
+      if (error) throw error;
+      return data.map(m => ({ id: m.id, name: m.name, role: m.role, avatarColor: m.avatar_color, email: m.email })) as TeamMember[];
+    },
+  });
+
+  // Fetch all tasks with assignees, comments, attachments
+  const { data: tasks = [], isLoading } = useQuery({
+    queryKey: ['tasks'],
+    queryFn: async () => {
+      const [tasksRes, assigneesRes, commentsRes, attachmentsRes] = await Promise.all([
+        supabase.from('tasks').select('*').order('sort_order'),
+        supabase.from('task_assignees').select('*'),
+        supabase.from('comments').select('*').order('created_at'),
+        supabase.from('attachments').select('*'),
+      ]);
+      if (tasksRes.error) throw tasksRes.error;
+      if (assigneesRes.error) throw assigneesRes.error;
+      if (commentsRes.error) throw commentsRes.error;
+      if (attachmentsRes.error) throw attachmentsRes.error;
+
+      // Group assignees by task
+      const assigneeMap = new Map<string, string[]>();
+      assigneesRes.data.forEach(a => {
+        if (!assigneeMap.has(a.task_id)) assigneeMap.set(a.task_id, []);
+        assigneeMap.get(a.task_id)!.push(a.member_id);
+      });
+
+      // Group comments by task
+      const commentMap = new Map<string, Comment[]>();
+      commentsRes.data.forEach(c => {
+        if (!commentMap.has(c.task_id)) commentMap.set(c.task_id, []);
+        commentMap.get(c.task_id)!.push({ id: c.id, authorId: c.author_id, content: c.content, createdAt: c.created_at });
+      });
+
+      // Group attachments by task
+      const attachmentMap = new Map<string, Attachment[]>();
+      attachmentsRes.data.forEach(a => {
+        if (!attachmentMap.has(a.task_id)) attachmentMap.set(a.task_id, []);
+        attachmentMap.get(a.task_id)!.push({ id: a.id, name: a.name, url: a.url });
+      });
+
+      return tasksRes.data.map(row =>
+        dbToTask(row, assigneeMap.get(row.id) || [], commentMap.get(row.id) || [], attachmentMap.get(row.id) || [])
+      );
+    },
+  });
+
+  // Add task mutation
+  const addTaskMutation = useMutation({
+    mutationFn: async (task: Omit<Task, 'id' | 'createdAt' | 'order'>) => {
+      const { data, error } = await supabase.from('tasks').insert({
+        title: task.title,
+        description: task.description,
+        status: task.status,
+        priority: task.priority,
+        due_date: task.dueDate,
+        start_date: task.startDate,
+        parent_task_id: task.parentTaskId,
+        list_id: task.listId,
+        tags: task.tags,
+        time_estimate: task.timeEstimate,
+        time_logged: task.timeLogged,
+        ai_summary: task.aiSummary,
+        sort_order: tasks.length,
+      }).select().single();
+      if (error) throw error;
+
+      // Insert assignees
+      if (task.assigneeIds.length > 0) {
+        const { error: aErr } = await supabase.from('task_assignees').insert(
+          task.assigneeIds.map(mid => ({ task_id: data.id, member_id: mid }))
+        );
+        if (aErr) throw aErr;
+      }
+      return data;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks'] }),
+  });
+
+  // Update task mutation
+  const updateTaskMutation = useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: Partial<Task> }) => {
+      const dbUpdates: any = {};
+      if (updates.title !== undefined) dbUpdates.title = updates.title;
+      if (updates.description !== undefined) dbUpdates.description = updates.description;
+      if (updates.status !== undefined) dbUpdates.status = updates.status;
+      if (updates.priority !== undefined) dbUpdates.priority = updates.priority;
+      if (updates.dueDate !== undefined) dbUpdates.due_date = updates.dueDate;
+      if (updates.startDate !== undefined) dbUpdates.start_date = updates.startDate;
+      if (updates.tags !== undefined) dbUpdates.tags = updates.tags;
+      if (updates.timeEstimate !== undefined) dbUpdates.time_estimate = updates.timeEstimate;
+      if (updates.timeLogged !== undefined) dbUpdates.time_logged = updates.timeLogged;
+      if (updates.aiSummary !== undefined) dbUpdates.ai_summary = updates.aiSummary;
+
+      if (Object.keys(dbUpdates).length > 0) {
+        const { error } = await supabase.from('tasks').update(dbUpdates).eq('id', id);
+        if (error) throw error;
+      }
+
+      // Handle assignee changes
+      if (updates.assigneeIds !== undefined) {
+        await supabase.from('task_assignees').delete().eq('task_id', id);
+        if (updates.assigneeIds.length > 0) {
+          const { error } = await supabase.from('task_assignees').insert(
+            updates.assigneeIds.map(mid => ({ task_id: id, member_id: mid }))
+          );
+          if (error) throw error;
+        }
+      }
+
+      // Handle comment additions
+      if (updates.comments !== undefined) {
+        const existingTask = tasks.find(t => t.id === id);
+        const existingIds = new Set(existingTask?.comments.map(c => c.id) || []);
+        const newComments = updates.comments.filter(c => !existingIds.has(c.id));
+        for (const c of newComments) {
+          const { error } = await supabase.from('comments').insert({
+            id: c.id,
+            task_id: id,
+            author_id: c.authorId,
+            content: c.content,
+          });
+          if (error) throw error;
+        }
+      }
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks'] }),
+  });
+
+  // Delete task mutation
+  const deleteTaskMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('tasks').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks'] }),
+  });
+
   const addTask = useCallback((task: Omit<Task, 'id' | 'createdAt' | 'order'>) => {
-    setTasks(prev => [...prev, { ...task, id: genId(), createdAt: new Date().toISOString(), order: prev.length }]);
-  }, []);
+    addTaskMutation.mutate(task);
+  }, [addTaskMutation]);
 
   const updateTask = useCallback((id: string, updates: Partial<Task>) => {
-    setTasks(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
-  }, []);
+    // Optimistic update for responsiveness
+    queryClient.setQueryData<Task[]>(['tasks'], old => {
+      if (!old) return old;
+      return old.map(t => {
+        if (t.id !== id) return t;
+        return { ...t, ...updates };
+      });
+    });
+    updateTaskMutation.mutate({ id, updates });
+  }, [updateTaskMutation, queryClient]);
 
   const deleteTask = useCallback((id: string) => {
-    setTasks(prev => {
-      const idsToRemove = new Set<string>();
-      const collectChildren = (parentId: string) => {
-        idsToRemove.add(parentId);
-        prev.filter(t => t.parentTaskId === parentId).forEach(t => collectChildren(t.id));
-      };
-      collectChildren(id);
-      return prev.filter(t => !idsToRemove.has(t.id));
-    });
-  }, []);
+    deleteTaskMutation.mutate(id);
+  }, [deleteTaskMutation]);
 
   const moveTask = useCallback((taskId: string, newStatus: Status) => {
-    setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: newStatus } : t));
-  }, []);
+    updateTask(taskId, { status: newStatus });
+  }, [updateTask]);
 
   const getSubtasks = useCallback((taskId: string) => {
     return tasks.filter(t => t.parentTaskId === taskId).sort((a, b) => a.order - b.order);
@@ -79,17 +275,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const getTaskById = useCallback((id: string) => tasks.find(t => t.id === id), [tasks]);
 
   const getListsForProject = useCallback((projectId: string) =>
-    LISTS.filter(l => l.projectId === projectId).sort((a, b) => a.order - b.order), []);
+    lists.filter(l => l.projectId === projectId).sort((a, b) => a.order - b.order), [lists]);
 
   const getProjectsForSpace = useCallback((spaceId: string) =>
-    PROJECTS.filter(p => p.spaceId === spaceId).sort((a, b) => a.order - b.order), []);
+    projects.filter(p => p.spaceId === spaceId).sort((a, b) => a.order - b.order), [projects]);
 
   const getTasksForProject = useCallback((projectId: string) => {
-    const listIds = new Set(LISTS.filter(l => l.projectId === projectId).map(l => l.id));
+    const listIds = new Set(lists.filter(l => l.projectId === projectId).map(l => l.id));
     return tasks.filter(t => listIds.has(t.listId) && !t.parentTaskId);
-  }, [tasks]);
+  }, [tasks, lists]);
 
-  const getMemberById = useCallback((id: string) => TEAM_MEMBERS.find(m => m.id === id), []);
+  const getMemberById = useCallback((id: string) => teamMembers.find(m => m.id === id), [teamMembers]);
 
   const getTaskBreadcrumb = useCallback((taskId: string): Task[] => {
     const trail: Task[] = [];
@@ -106,7 +302,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const today = new Date().toISOString().split('T')[0];
 
     if (selectedProjectId && quickFilter === 'all') {
-      const listIds = new Set(LISTS.filter(l => l.projectId === selectedProjectId).map(l => l.id));
+      const listIds = new Set(lists.filter(l => l.projectId === selectedProjectId).map(l => l.id));
       filtered = filtered.filter(t => listIds.has(t.listId));
     }
 
@@ -125,19 +321,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         break;
     }
     return filtered;
-  }, [tasks, selectedProjectId, quickFilter]);
+  }, [tasks, selectedProjectId, quickFilter, lists]);
 
   const value = useMemo(() => ({
-    spaces: SPACES,
-    projects: PROJECTS,
-    lists: LISTS,
+    spaces,
+    projects,
+    lists,
     tasks,
-    teamMembers: TEAM_MEMBERS,
+    teamMembers,
     selectedProjectId,
     selectedView,
     quickFilter,
     selectedTaskId,
     sidebarCollapsed,
+    isLoading,
     setSelectedProjectId,
     setSelectedView,
     setQuickFilter,
@@ -155,7 +352,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     getFilteredTasks,
     getMemberById,
     getTaskBreadcrumb,
-  }), [tasks, selectedProjectId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, addTask, updateTask, deleteTask, moveTask, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb]);
+  }), [spaces, projects, lists, tasks, teamMembers, selectedProjectId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, addTask, updateTask, deleteTask, moveTask, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

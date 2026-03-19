@@ -80,12 +80,12 @@ export default function Chat() {
     }
   }, [categories, selectedCategory]);
 
-  // Mark category as read when selected and messages load
+  // Mark category as read when selected
   useEffect(() => {
     if (selectedCategory && teamMemberId) {
       markCategoryRead(selectedCategory);
     }
-  }, [selectedCategory, messages, teamMemberId, markCategoryRead]);
+  }, [selectedCategory, teamMemberId, markCategoryRead]);
 
   // Fetch messages for selected category
   const { data: messages = [] } = useQuery({

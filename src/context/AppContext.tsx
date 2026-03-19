@@ -40,6 +40,8 @@ interface AppContextType extends AppState {
   addTask: (task: Omit<Task, 'id' | 'createdAt' | 'order'>) => void;
   updateTask: (id: string, updates: Partial<Task>) => void;
   deleteTask: (id: string) => void;
+  addAttachment: (taskId: string, name: string, url: string) => void;
+  deleteAttachment: (attachmentId: string) => void;
   moveTask: (taskId: string, newStatus: string) => void;
   addSpace: (name: string, icon: string) => void;
   addProject: (name: string, spaceId: string, color: string) => void;

@@ -4,6 +4,7 @@ import AppSidebar from '@/components/AppSidebar';
 import KanbanBoard from '@/components/KanbanBoard';
 import ListView from '@/components/ListView';
 import CalendarView from '@/components/CalendarView';
+import WorkloadView from '@/components/WorkloadView';
 import TaskDetailPanel from '@/components/TaskDetailPanel';
 import TaskFilterBar from '@/components/TaskFilterBar';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -61,6 +62,7 @@ export default function Index() {
           {selectedView === 'kanban' && <KanbanBoard />}
           {selectedView === 'list' && <ListView />}
           {selectedView === 'calendar' && <CalendarView />}
+          {selectedView === 'workload' && <WorkloadView />}
         </main>
       </div>
 

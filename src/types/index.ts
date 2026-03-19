@@ -89,6 +89,6 @@ export interface Space {
   order: number;
 }
 
-export type ViewType = 'kanban' | 'list' | 'calendar';
+export type ViewType = 'kanban' | 'list' | 'calendar' | 'workload';
 
 export type QuickFilter = 'all' | 'my_tasks' | 'urgent' | 'today' | 'overdue';

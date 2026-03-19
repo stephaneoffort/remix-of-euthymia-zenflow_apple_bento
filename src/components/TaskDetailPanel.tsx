@@ -3,7 +3,7 @@ import { useApp } from '@/context/AppContext';
 import { Status, Priority, STATUS_LABELS, PRIORITY_LABELS } from '@/types';
 import { PriorityBadge, StatusBadge, AvatarGroup } from '@/components/TaskBadges';
 import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Clock, Paperclip, ChevronDown } from 'lucide-react';
-import { TEAM_MEMBERS } from '@/data/sampleData';
+
 
 export default function TaskDetailPanel() {
   const { selectedTaskId, setSelectedTaskId, getTaskById, updateTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks } = useApp();

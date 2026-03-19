@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useApp } from '@/context/AppContext';
 import { Task } from '@/types';
 import { PriorityBadge, AvatarGroup, SubtaskProgress } from '@/components/TaskBadges';
-import { Plus, GripVertical, GripHorizontal } from 'lucide-react';
+import { Plus, GripVertical, GripHorizontal, ChevronRight } from 'lucide-react';
 
 const STATUS_COLORS: Record<string, string> = {
   todo: 'bg-status-todo',

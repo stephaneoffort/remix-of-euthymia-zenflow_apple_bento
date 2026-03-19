@@ -189,6 +189,7 @@ export default function AppSidebar() {
         <LogoutButton />
       </div>
     </div>
+    </>
   );
 }
 

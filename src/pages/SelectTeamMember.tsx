@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -21,6 +21,23 @@ export default function SelectTeamMember() {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  // Pre-fill from OAuth user metadata (Google, Apple, etc.)
+  useEffect(() => {
+    if (!user) return;
+    const meta = user.user_metadata;
+    if (meta?.full_name) {
+      const parts = (meta.full_name as string).split(' ');
+      if (!firstName) setFirstName(parts[0] || '');
+      if (!lastName) setLastName(parts.slice(1).join(' ') || '');
+    }
+    if (meta?.avatar_url && !avatarPreview) {
+      setAvatarPreview(meta.avatar_url as string);
+    }
+    if (user.email && !username) {
+      setUsername(user.email.split('@')[0]);
+    }
+  }, [user]);
 
   if (loading) {
     return (

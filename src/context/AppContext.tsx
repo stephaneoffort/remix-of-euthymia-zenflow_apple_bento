@@ -347,7 +347,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const { error } = await supabase.from('spaces').update({ name }).eq('id', id);
       if (error) throw error;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['spaces'] }),
+    onMutate: async ({ id, name }) => {
+      await queryClient.cancelQueries({ queryKey: ['spaces'] });
+      const previous = queryClient.getQueryData(['spaces']);
+      queryClient.setQueryData(['spaces'], (old: any) =>
+        old?.map((s: any) => s.id === id ? { ...s, name } : s)
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      queryClient.setQueryData(['spaces'], context?.previous);
+      toast.error('Erreur lors du renommage');
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['spaces'] }),
   });
 
   const renameSpace = useCallback((id: string, name: string) => {
@@ -360,7 +372,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const { error } = await supabase.from('projects').update({ name }).eq('id', id);
       if (error) throw error;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['projects'] }),
+    onMutate: async ({ id, name }) => {
+      await queryClient.cancelQueries({ queryKey: ['projects'] });
+      const previous = queryClient.getQueryData(['projects']);
+      queryClient.setQueryData(['projects'], (old: any) =>
+        old?.map((p: any) => p.id === id ? { ...p, name } : p)
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      queryClient.setQueryData(['projects'], context?.previous);
+      toast.error('Erreur lors du renommage');
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['projects'] }),
   });
 
   const renameProject = useCallback((id: string, name: string) => {

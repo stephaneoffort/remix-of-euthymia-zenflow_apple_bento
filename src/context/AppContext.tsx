@@ -48,6 +48,7 @@ interface AppContextType extends AppState {
   getFilteredTasks: () => Task[];
   getMemberById: (id: string) => TeamMember | undefined;
   getTaskBreadcrumb: (taskId: string) => Task[];
+  setAdvancedFilters: (filters: AdvancedFilters) => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);

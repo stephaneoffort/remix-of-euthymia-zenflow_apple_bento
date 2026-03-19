@@ -1,8 +1,12 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useApp } from '@/context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { STATUS_LABELS, PRIORITY_LABELS, Priority } from '@/types';
+import { PriorityBadge, StatusBadge } from '@/components/TaskBadges';
+import { ArrowLeft, Calendar, Clock } from 'lucide-react';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend,
@@ -24,8 +28,9 @@ const PRIORITY_COLORS: Record<string, string> = {
 };
 
 export default function WorkloadView() {
-  const { getFilteredTasks, teamMembers } = useApp();
+  const { getFilteredTasks, teamMembers, setSelectedTaskId } = useApp();
   const tasks = getFilteredTasks();
+  const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
 
   const memberData = useMemo(() => {
     return teamMembers.map(member => {
@@ -47,6 +52,7 @@ export default function WorkloadView() {
 
       return {
         member,
+        memberTasks,
         total,
         done,
         completionRate,
@@ -61,6 +67,7 @@ export default function WorkloadView() {
   const barData = useMemo(() =>
     memberData.map(d => ({
       name: d.member.name.split(' ')[0],
+      memberId: d.member.id,
       'À faire': d.byStatus['todo'] || 0,
       'En cours': d.byStatus['in_progress'] || 0,
       'En revue': d.byStatus['in_review'] || 0,
@@ -82,6 +89,116 @@ export default function WorkloadView() {
 
   const unassigned = tasks.filter(t => t.assigneeIds.length === 0).length;
 
+  // Member detail view
+  const selectedMember = selectedMemberId
+    ? memberData.find(d => d.member.id === selectedMemberId)
+    : null;
+
+  if (selectedMember) {
+    return (
+      <div className="h-full overflow-y-auto p-4 sm:p-6 space-y-4">
+        {/* Header */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setSelectedMemberId(null)}
+            className="p-1.5 rounded-md hover:bg-muted transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 text-muted-foreground" />
+          </button>
+          <div
+            className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0"
+            style={{ backgroundColor: selectedMember.member.avatarColor }}
+          >
+            {selectedMember.member.name.charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <h3 className="font-semibold text-foreground">{selectedMember.member.name}</h3>
+            <p className="text-xs text-muted-foreground">
+              {selectedMember.total} tâche{selectedMember.total !== 1 ? 's' : ''} · {selectedMember.completionRate}% terminé
+            </p>
+          </div>
+        </div>
+
+        {/* Stats row */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <SummaryCard label="Total" value={selectedMember.total} />
+          <SummaryCard label="Terminées" value={selectedMember.done} />
+          <SummaryCard label="En cours" value={selectedMember.byStatus['in_progress'] || 0} />
+          <SummaryCard label="Bloquées" value={selectedMember.byStatus['blocked'] || 0} />
+        </div>
+
+        {/* Progress */}
+        <Card>
+          <CardContent className="pt-4 pb-4 space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Progression globale</span>
+              <span className="font-medium text-foreground">{selectedMember.completionRate}%</span>
+            </div>
+            <Progress value={selectedMember.completionRate} className="h-2.5" />
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              {(['urgent', 'high', 'normal', 'low'] as const).map(p => {
+                const count = selectedMember.byPriority[p] || 0;
+                if (!count) return null;
+                return (
+                  <span
+                    key={p}
+                    className="inline-flex items-center text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+                    style={{ backgroundColor: `${PRIORITY_COLORS[p]}20`, color: PRIORITY_COLORS[p] }}
+                  >
+                    {PRIORITY_LABELS[p]}: {count}
+                  </span>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Task list */}
+        <div className="space-y-1">
+          <h4 className="text-sm font-semibold text-foreground px-1">Tâches assignées</h4>
+          <div className="divide-y divide-border rounded-lg border border-border bg-card overflow-hidden">
+            {selectedMember.memberTasks.length === 0 && (
+              <p className="text-sm text-muted-foreground p-4 text-center">Aucune tâche assignée</p>
+            )}
+            {selectedMember.memberTasks
+              .sort((a, b) => {
+                const priorityOrder = { urgent: 0, high: 1, normal: 2, low: 3 };
+                return (priorityOrder[a.priority] ?? 2) - (priorityOrder[b.priority] ?? 2);
+              })
+              .map(task => (
+                <button
+                  key={task.id}
+                  onClick={() => setSelectedTaskId(task.id)}
+                  className="w-full text-left px-4 py-3 hover:bg-muted/50 transition-colors flex items-center gap-3"
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">{task.title}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <StatusBadge status={task.status} />
+                      <PriorityBadge priority={task.priority} />
+                      {task.dueDate && (
+                        <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+                          <Calendar className="w-3 h-3" />
+                          {format(new Date(task.dueDate), 'd MMM', { locale: fr })}
+                        </span>
+                      )}
+                      {task.timeEstimate && (
+                        <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+                          <Clock className="w-3 h-3" />
+                          {formatMinutes(task.timeEstimate)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </button>
+              ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Overview
   return (
     <div className="h-full overflow-y-auto p-4 sm:p-6 space-y-6">
       {/* Summary cards */}
@@ -102,7 +219,16 @@ export default function WorkloadView() {
           <CardContent>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={barData} barSize={20}>
+                <BarChart
+                  data={barData}
+                  barSize={20}
+                  onClick={(data) => {
+                    if (data?.activePayload?.[0]?.payload?.memberId) {
+                      setSelectedMemberId(data.activePayload[0].payload.memberId);
+                    }
+                  }}
+                  className="cursor-pointer"
+                >
                   <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                   <XAxis dataKey="name" className="text-xs fill-muted-foreground" tick={{ fontSize: 12 }} />
                   <YAxis allowDecimals={false} className="text-xs fill-muted-foreground" tick={{ fontSize: 12 }} />
@@ -160,7 +286,11 @@ export default function WorkloadView() {
       {/* Per-member detail cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {memberData.map(({ member, total, done, completionRate, byPriority, timeEstimated, timeLogged }) => (
-          <Card key={member.id}>
+          <Card
+            key={member.id}
+            className="cursor-pointer hover:border-primary/40 hover:shadow-md transition-all"
+            onClick={() => setSelectedMemberId(member.id)}
+          >
             <CardContent className="pt-4 pb-4 space-y-3">
               <div className="flex items-center gap-3">
                 <div

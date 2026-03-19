@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
 import { PRIORITY_LABELS, Status, Priority } from '@/types';
 import { PriorityBadge, StatusBadge, AvatarGroup, SubtaskProgress } from '@/components/TaskBadges';
-import { ChevronRight, ChevronDown, ArrowUpDown } from 'lucide-react';
+import { ChevronRight, ChevronDown, ArrowUpDown, Plus } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 type SortKey = 'title' | 'priority' | 'dueDate' | 'status';
@@ -10,10 +10,12 @@ type SortKey = 'title' | 'priority' | 'dueDate' | 'status';
 const PRIORITY_ORDER: Priority[] = ['urgent', 'high', 'normal', 'low'];
 
 export default function ListView() {
-  const { getFilteredTasks, setSelectedTaskId, getMemberById, tasks } = useApp();
+  const { getFilteredTasks, setSelectedTaskId, getMemberById, tasks, addTask, selectedProjectId, getListsForProject } = useApp();
   const [sortKey, setSortKey] = useState<SortKey>('priority');
   const [sortAsc, setSortAsc] = useState(true);
   const [expandedTasks, setExpandedTasks] = useState<Set<string>>(new Set());
+  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [isAdding, setIsAdding] = useState(false);
   const isMobile = useIsMobile();
 
   const filteredTasks = getFilteredTasks();
@@ -43,6 +45,31 @@ export default function ListView() {
   };
 
   const getSubtasks = (parentId: string) => tasks.filter(t => t.parentTaskId === parentId);
+
+  const handleAddTask = () => {
+    if (!newTaskTitle.trim()) return;
+    const lists = selectedProjectId ? getListsForProject(selectedProjectId) : [];
+    const listId = lists[0]?.id || 'l1';
+    addTask({
+      title: newTaskTitle.trim(),
+      description: '',
+      status: 'todo',
+      priority: 'normal',
+      dueDate: null,
+      startDate: null,
+      assigneeIds: [],
+      tags: [],
+      parentTaskId: null,
+      listId,
+      comments: [],
+      attachments: [],
+      timeEstimate: null,
+      timeLogged: null,
+      aiSummary: null,
+    });
+    setNewTaskTitle('');
+    setIsAdding(false);
+  };
 
   // Mobile: card-based layout
   if (isMobile) {
@@ -95,8 +122,33 @@ export default function ListView() {
     return (
       <div className="p-3 overflow-auto h-full space-y-2">
         {sorted.map(task => renderCard(task))}
-        {sorted.length === 0 && (
+        {sorted.length === 0 && !isAdding && (
           <p className="text-center py-12 text-muted-foreground">Aucune tâche trouvée</p>
+        )}
+        {isAdding ? (
+          <div className="flex items-center gap-2 p-2 bg-card rounded-lg border border-border">
+            <input
+              autoFocus
+              value={newTaskTitle}
+              onChange={e => setNewTaskTitle(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter') handleAddTask();
+                if (e.key === 'Escape') { setIsAdding(false); setNewTaskTitle(''); }
+              }}
+              placeholder="Nom de la tâche..."
+              className="flex-1 text-sm bg-transparent outline-none text-foreground placeholder:text-muted-foreground"
+            />
+            <button onClick={handleAddTask} disabled={!newTaskTitle.trim()} className="px-3 py-1 text-xs rounded-md bg-primary text-primary-foreground disabled:opacity-50">Ajouter</button>
+            <button onClick={() => { setIsAdding(false); setNewTaskTitle(''); }} className="px-2 py-1 text-xs text-muted-foreground hover:text-foreground">Annuler</button>
+          </div>
+        ) : (
+          <button
+            onClick={() => setIsAdding(true)}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg border border-dashed border-border text-sm text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Ajouter une tâche
+          </button>
         )}
       </div>
     );
@@ -175,8 +227,41 @@ export default function ListView() {
           </thead>
           <tbody>
             {sorted.map(task => renderRow(task))}
-            {sorted.length === 0 && (
+            {sorted.length === 0 && !isAdding && (
               <tr><td colSpan={5} className="text-center py-12 text-muted-foreground">Aucune tâche trouvée</td></tr>
+            )}
+            {isAdding ? (
+              <tr className="border-b border-border">
+                <td colSpan={5} className="py-2 px-3">
+                  <div className="flex items-center gap-2">
+                    <input
+                      autoFocus
+                      value={newTaskTitle}
+                      onChange={e => setNewTaskTitle(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') handleAddTask();
+                        if (e.key === 'Escape') { setIsAdding(false); setNewTaskTitle(''); }
+                      }}
+                      placeholder="Nom de la tâche..."
+                      className="flex-1 text-sm bg-transparent outline-none text-foreground placeholder:text-muted-foreground"
+                    />
+                    <button onClick={handleAddTask} disabled={!newTaskTitle.trim()} className="px-3 py-1 text-xs rounded-md bg-primary text-primary-foreground disabled:opacity-50">Ajouter</button>
+                    <button onClick={() => { setIsAdding(false); setNewTaskTitle(''); }} className="px-2 py-1 text-xs text-muted-foreground hover:text-foreground">Annuler</button>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              <tr>
+                <td colSpan={5} className="py-1 px-3">
+                  <button
+                    onClick={() => setIsAdding(true)}
+                    className="w-full flex items-center gap-2 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Ajouter une tâche
+                  </button>
+                </td>
+              </tr>
             )}
           </tbody>
         </table>

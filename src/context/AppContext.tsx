@@ -359,8 +359,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     deleteTaskMutation.mutate(id);
   }, [deleteTaskMutation]);
 
-  const moveTask = useCallback((taskId: string, newStatus: Status) => {
-    updateTask(taskId, { status: newStatus });
+  const moveTask = useCallback((taskId: string, newStatus: string) => {
+    updateTask(taskId, { status: newStatus as Status });
   }, [updateTask]);
 
   const getSubtasks = useCallback((taskId: string) => {

@@ -294,6 +294,24 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks'] }),
   });
 
+  // Add attachment mutation
+  const addAttachmentMutation = useMutation({
+    mutationFn: async ({ taskId, name, url }: { taskId: string; name: string; url: string }) => {
+      const { error } = await supabase.from('attachments').insert({ task_id: taskId, name, url });
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks'] }),
+  });
+
+  // Delete attachment mutation
+  const deleteAttachmentMutation = useMutation({
+    mutationFn: async (attachmentId: string) => {
+      const { error } = await supabase.from('attachments').delete().eq('id', attachmentId);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks'] }),
+  });
+
   // Add space mutation
   const addSpaceMutation = useMutation({
     mutationFn: async ({ name, icon }: { name: string; icon: string }) => {

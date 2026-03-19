@@ -8,6 +8,7 @@ import { AppProvider } from "@/context/AppContext";
 import Index from "./pages/Index.tsx";
 import Auth from "./pages/Auth.tsx";
 import SelectTeamMember from "./pages/SelectTeamMember.tsx";
+import Settings from "./pages/Settings.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -39,6 +40,16 @@ const App = () => (
           <Routes>
             <Route path="/auth" element={<Auth />} />
             <Route path="/select-member" element={<SelectTeamMember />} />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <AppProvider>
+                    <Settings />
+                  </AppProvider>
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/"
               element={

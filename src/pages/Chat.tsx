@@ -56,6 +56,8 @@ export default function Chat() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [showCategories, setShowCategories] = useState(true);
+  const isMobile = useIsMobile();
 
   // Check admin
   useEffect(() => {

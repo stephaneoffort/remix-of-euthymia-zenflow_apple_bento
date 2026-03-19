@@ -8,8 +8,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface CustomStatus {
   id: string;
@@ -84,6 +85,12 @@ export default function Settings() {
 function MembersPanel() {
   const { teamMembers } = useApp();
   const [roles, setRoles] = useState<Record<string, string[]>>({});
+  const [editingMember, setEditingMember] = useState<string | null>(null);
+  const [editRole, setEditRole] = useState('');
+  const [editName, setEditName] = useState('');
+  const [members, setMembers] = useState(teamMembers);
+
+  useEffect(() => { setMembers(teamMembers); }, [teamMembers]);
 
   useEffect(() => {
     supabase
@@ -99,7 +106,6 @@ function MembersPanel() {
       });
   }, []);
 
-  // Get profiles to map team_member_id -> user_id
   const [profiles, setProfiles] = useState<{ id: string; team_member_id: string | null }[]>([]);
   useEffect(() => {
     supabase.from('profiles').select('id, team_member_id').then(({ data }) => {
@@ -111,6 +117,16 @@ function MembersPanel() {
     return profiles.find(p => p.team_member_id === memberId)?.id;
   };
 
+  const refreshRoles = async () => {
+    const { data } = await supabase.from('user_roles').select('user_id, role');
+    const map: Record<string, string[]> = {};
+    data?.forEach((r: any) => {
+      if (!map[r.user_id]) map[r.user_id] = [];
+      map[r.user_id].push(r.role);
+    });
+    setRoles(map);
+  };
+
   const handleDeleteMember = async (memberId: string) => {
     if (!confirm('Supprimer ce membre de l\'équipe ?')) return;
     const { error } = await supabase.from('team_members').delete().eq('id', memberId);
@@ -118,7 +134,7 @@ function MembersPanel() {
       toast.error(error.message);
     } else {
       toast.success('Membre supprimé');
-      window.location.reload();
+      setMembers(prev => prev.filter(m => m.id !== memberId));
     }
   };
 
@@ -138,14 +154,42 @@ function MembersPanel() {
       if (error) { toast.error(error.message); return; }
       toast.success('Rôle admin attribué');
     }
-    // Refresh roles
-    const { data } = await supabase.from('user_roles').select('user_id, role');
-    const map: Record<string, string[]> = {};
-    data?.forEach((r: any) => {
-      if (!map[r.user_id]) map[r.user_id] = [];
-      map[r.user_id].push(r.role);
-    });
-    setRoles(map);
+    await refreshRoles();
+  };
+
+  const startEditing = (m: typeof members[0]) => {
+    setEditingMember(m.id);
+    setEditRole(m.role);
+    setEditName(m.name);
+  };
+
+  const cancelEditing = () => {
+    setEditingMember(null);
+    setEditRole('');
+    setEditName('');
+  };
+
+  const handleSaveEdit = async (memberId: string) => {
+    const updates: Record<string, string> = {};
+    const member = members.find(m => m.id === memberId);
+    if (!member) return;
+
+    if (editName.trim() && editName.trim() !== member.name) updates.name = editName.trim();
+    if (editRole.trim() && editRole.trim() !== member.role) updates.role = editRole.trim();
+
+    if (Object.keys(updates).length === 0) {
+      cancelEditing();
+      return;
+    }
+
+    const { error } = await supabase.from('team_members').update(updates).eq('id', memberId);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success('Membre mis à jour');
+      setMembers(prev => prev.map(m => m.id === memberId ? { ...m, ...updates } : m));
+    }
+    cancelEditing();
   };
 
   return (
@@ -154,12 +198,13 @@ function MembersPanel() {
         <CardTitle className="text-base">Gestion des membres</CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
-        {teamMembers.length === 0 && (
+        {members.length === 0 && (
           <p className="text-sm text-muted-foreground">Aucun membre</p>
         )}
-        {teamMembers.map(m => {
+        {members.map(m => {
           const userId = getUserIdForMember(m.id);
           const memberIsAdmin = userId ? roles[userId]?.includes('admin') : false;
+          const isEditing = editingMember === m.id;
 
           return (
             <div key={m.id} className="flex items-center gap-3 p-3 rounded-lg border border-border">
@@ -173,30 +218,81 @@ function MembersPanel() {
                   {m.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                 </div>
               )}
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-foreground text-sm truncate">{m.name}</p>
-                <p className="text-xs text-muted-foreground truncate">{m.role} · {m.email}</p>
-              </div>
+
+              {isEditing ? (
+                <div className="flex-1 min-w-0 space-y-1.5">
+                  <Input
+                    value={editName}
+                    onChange={e => setEditName(e.target.value)}
+                    placeholder="Nom"
+                    className="h-8 text-sm"
+                  />
+                  <Input
+                    value={editRole}
+                    onChange={e => setEditRole(e.target.value)}
+                    placeholder="Fonction (ex: Développeur, Designer...)"
+                    className="h-8 text-sm"
+                  />
+                </div>
+              ) : (
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-foreground text-sm truncate">{m.name}</p>
+                  <p className="text-xs text-muted-foreground truncate">{m.role} · {m.email}</p>
+                </div>
+              )}
+
               <div className="flex items-center gap-1.5 shrink-0">
-                {userId && (
-                  <Button
-                    variant={memberIsAdmin ? 'default' : 'outline'}
-                    size="sm"
-                    className="text-xs gap-1"
-                    onClick={() => handleToggleAdmin(m.id)}
-                  >
-                    <Shield className="w-3 h-3" />
-                    Admin
-                  </Button>
+                {isEditing ? (
+                  <>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                      onClick={() => handleSaveEdit(m.id)}
+                    >
+                      <Check className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                      onClick={cancelEditing}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-xs h-8 w-8 p-0"
+                      onClick={() => startEditing(m)}
+                      title="Modifier"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                    </Button>
+                    {userId && (
+                      <Button
+                        variant={memberIsAdmin ? 'default' : 'outline'}
+                        size="sm"
+                        className="text-xs gap-1"
+                        onClick={() => handleToggleAdmin(m.id)}
+                      >
+                        <Shield className="w-3 h-3" />
+                        Admin
+                      </Button>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8 p-0"
+                      onClick={() => handleDeleteMember(m.id)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </>
                 )}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                  onClick={() => handleDeleteMember(m.id)}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
               </div>
             </div>
           );

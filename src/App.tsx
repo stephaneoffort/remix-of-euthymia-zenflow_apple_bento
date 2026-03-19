@@ -9,6 +9,7 @@ import Index from "./pages/Index.tsx";
 import Auth from "./pages/Auth.tsx";
 import SelectTeamMember from "./pages/SelectTeamMember.tsx";
 import Settings from "./pages/Settings.tsx";
+import Chat from "./pages/Chat.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();

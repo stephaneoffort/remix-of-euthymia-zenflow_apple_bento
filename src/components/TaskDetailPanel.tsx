@@ -133,18 +133,18 @@ export default function TaskDetailPanel() {
               <div>
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">Date de début</label>
                 <input
-                  type="date"
-                  value={task.startDate || ''}
-                  onChange={e => updateTask(task.id, { startDate: e.target.value || null })}
+                  type="datetime-local"
+                  value={task.startDate ? toDatetimeLocal(task.startDate) : ''}
+                  onChange={e => updateTask(task.id, { startDate: e.target.value ? new Date(e.target.value).toISOString() : null })}
                   className="w-full text-sm bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
                 />
               </div>
               <div>
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">Échéance</label>
                 <input
-                  type="date"
-                  value={task.dueDate || ''}
-                  onChange={e => updateTask(task.id, { dueDate: e.target.value || null })}
+                  type="datetime-local"
+                  value={task.dueDate ? toDatetimeLocal(task.dueDate) : ''}
+                  onChange={e => updateTask(task.id, { dueDate: e.target.value ? new Date(e.target.value).toISOString() : null })}
                   className="w-full text-sm bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
                 />
               </div>

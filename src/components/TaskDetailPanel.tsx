@@ -389,7 +389,7 @@ function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {
         const children = getSubtasks(st.id);
         const doneChildren = children.filter(c => c.status === 'done');
         const hasChildren = children.length > 0;
-        const isExpanded = expanded.has(st.id);
+        const isExpanded = expandedNodes.has(st.id);
         const isOverdue = st.dueDate && st.dueDate < new Date().toISOString().split('T')[0] && st.status !== 'done';
 
         return (

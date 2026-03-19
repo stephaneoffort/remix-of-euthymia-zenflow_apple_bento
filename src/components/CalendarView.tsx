@@ -59,6 +59,31 @@ export default function CalendarView() {
   const dayLabels = isMobile ? DAYS_FR_SHORT : DAYS_FR;
   const monthLabel = isMobile ? MONTHS_FR_SHORT[month] : MONTHS_FR[month];
 
+  const handleAddTask = (dateStr: string) => {
+    if (!newTaskTitle.trim()) return;
+    const lists = selectedProjectId ? getListsForProject(selectedProjectId) : [];
+    const listId = lists[0]?.id || 'l1';
+    addTask({
+      title: newTaskTitle.trim(),
+      description: '',
+      status: 'todo',
+      priority: 'normal',
+      dueDate: dateStr,
+      startDate: null,
+      assigneeIds: [],
+      tags: [],
+      parentTaskId: null,
+      listId,
+      comments: [],
+      attachments: [],
+      timeEstimate: null,
+      timeLogged: null,
+      aiSummary: null,
+    });
+    setNewTaskTitle('');
+    setAddingForDate(null);
+  };
+
   return (
     <div className="p-2 sm:p-6 h-full flex flex-col">
       {/* Header */}

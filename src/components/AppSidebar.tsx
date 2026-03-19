@@ -372,6 +372,33 @@ function CurrentUserBadge() {
   );
 }
 
+function AdminSettingsLink() {
+  const { user } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .eq('role', 'admin')
+      .then(({ data }) => setIsAdmin(!!data && data.length > 0));
+  }, [user]);
+
+  if (!isAdmin) return null;
+
+  return (
+    <a
+      href="/settings"
+      className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors mb-0.5"
+    >
+      <Settings className="w-4 h-4" />
+      <span>Administration</span>
+    </a>
+  );
+}
+
 function LogoutButton() {
   const { signOut } = useAuth();
   return (

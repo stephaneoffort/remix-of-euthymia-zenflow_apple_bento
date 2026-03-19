@@ -270,7 +270,7 @@ export default function CalendarView() {
     const { active, over } = event;
     if (!over) return;
     const task = tasks.find(t => t.id === active.id);
-    if (task && task.dueDate !== over.id) updateTask(active.id as string, { dueDate: over.id as string });
+    if (task && (!task.dueDate || task.dueDate.slice(0, 10) !== over.id)) updateTask(active.id as string, { dueDate: new Date((over.id as string) + 'T00:00:00').toISOString() });
   };
 
   const exportToICS = () => {

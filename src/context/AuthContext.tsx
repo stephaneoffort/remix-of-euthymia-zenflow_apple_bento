@@ -28,14 +28,63 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSession(session);
         setUser(session?.user ?? null);
         if (session?.user) {
-          // Fetch profile to get team_member_id
           setTimeout(async () => {
+            // Check if profile already has a team_member_id
             const { data } = await supabase
               .from('profiles')
               .select('team_member_id')
               .eq('id', session.user.id)
               .single();
-            setTeamMemberId(data?.team_member_id ?? null);
+
+            if (data?.team_member_id) {
+              setTeamMemberId(data.team_member_id);
+            } else {
+              // Try to create profile from pending signup data
+              const pending = localStorage.getItem('pending_profile');
+              if (pending) {
+                try {
+                  const p = JSON.parse(pending);
+                  const memberId = `tm_${Date.now()}`;
+                  const fullName = `${p.firstName} ${p.lastName}`;
+                  let avatarUrl: string | null = null;
+
+                  // Upload avatar if stored
+                  const avatarData = localStorage.getItem('pending_avatar');
+                  const avatarName = localStorage.getItem('pending_avatar_name');
+                  if (avatarData && avatarName) {
+                    const res = await fetch(avatarData);
+                    const blob = await res.blob();
+                    const ext = avatarName.split('.').pop();
+                    const path = `${session.user.id}/${memberId}.${ext}`;
+                    await supabase.storage.from('avatars').upload(path, blob, { upsert: true });
+                    const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path);
+                    avatarUrl = urlData.publicUrl;
+                  }
+
+                  await supabase.from('team_members').insert({
+                    id: memberId,
+                    name: fullName,
+                    role: p.role,
+                    avatar_color: p.avatarColor,
+                    avatar_url: avatarUrl,
+                    email: p.email || session.user.email || p.username,
+                  });
+
+                  await supabase.from('profiles').update({ team_member_id: memberId }).eq('id', session.user.id);
+                  setTeamMemberId(memberId);
+
+                  // Cleanup
+                  localStorage.removeItem('pending_profile');
+                  localStorage.removeItem('pending_avatar');
+                  localStorage.removeItem('pending_avatar_name');
+                } catch (err) {
+                  console.error('Error creating profile from pending data:', err);
+                  setTeamMemberId(null);
+                }
+              } else {
+                setTeamMemberId(null);
+              }
+            }
           }, 0);
         } else {
           setTeamMemberId(null);

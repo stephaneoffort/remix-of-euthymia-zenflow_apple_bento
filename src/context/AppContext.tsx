@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useCallback, useMemo, useEf
 import { Task, Space, Project, TaskList, TeamMember, ViewType, QuickFilter, Status, Priority, Comment, Attachment } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '@/context/AuthContext';
 
 interface AppState {
   spaces: Space[];
@@ -65,6 +66,7 @@ function dbToTask(row: any, assigneeIds: string[], comments: Comment[], attachme
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
+  const { teamMemberId } = useAuth();
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>('p1');
   const [selectedView, setSelectedView] = useState<ViewType>('kanban');
   const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');
@@ -308,7 +310,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     switch (quickFilter) {
       case 'my_tasks':
-        filtered = filtered.filter(t => t.assigneeIds.includes('tm1'));
+        if (teamMemberId) {
+          filtered = filtered.filter(t => t.assigneeIds.includes(teamMemberId));
+        }
         break;
       case 'urgent':
         filtered = filtered.filter(t => t.priority === 'urgent');
@@ -321,7 +325,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         break;
     }
     return filtered;
-  }, [tasks, selectedProjectId, quickFilter, lists]);
+  }, [tasks, selectedProjectId, quickFilter, lists, teamMemberId]);
 
   const value = useMemo(() => ({
     spaces,

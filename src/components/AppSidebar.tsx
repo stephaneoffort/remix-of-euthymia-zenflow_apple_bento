@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { ChevronRight, ChevronDown, LayoutGrid, List, Calendar, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft } from 'lucide-react';
+import { ChevronRight, ChevronDown, LayoutGrid, List, Calendar, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
 import { QuickFilter, ViewType } from '@/types';
 
 const QUICK_FILTERS: { key: QuickFilter; label: string; icon: React.ReactNode }[] = [
@@ -163,6 +164,24 @@ export default function AppSidebar() {
           ))}
         </div>
       </div>
+
+      {/* Logout */}
+      <div className="px-4 py-3 border-t border-sidebar-border-color mt-auto">
+        <LogoutButton />
+      </div>
     </div>
+  );
+}
+
+function LogoutButton() {
+  const { signOut } = useAuth();
+  return (
+    <button
+      onClick={signOut}
+      className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors"
+    >
+      <LogOut className="w-4 h-4" />
+      <span>Déconnexion</span>
+    </button>
   );
 }

@@ -26,8 +26,14 @@ export default function AppSidebar() {
     getProjectsForSpace, teamMembers, sidebarCollapsed, setSidebarCollapsed,
     tasks,
   } = useApp();
+  const isMobile = useIsMobile();
 
   const [expandedSpaces, setExpandedSpaces] = useState<Set<string>>(new Set(spaces.map(s => s.id)));
+
+  // Auto-collapse on mobile
+  useEffect(() => {
+    if (isMobile) setSidebarCollapsed(true);
+  }, [isMobile]);
 
   const toggleSpace = (id: string) => {
     setExpandedSpaces(prev => {
@@ -42,6 +48,10 @@ export default function AppSidebar() {
     return t.dueDate && t.dueDate < today && t.status !== 'done';
   }).length;
 
+  const handleNavClick = () => {
+    if (isMobile) setSidebarCollapsed(true);
+  };
+
   if (sidebarCollapsed) {
     return (
       <div className="w-12 bg-sidebar-bg flex flex-col items-center py-3 border-r border-sidebar-border-color shrink-0">
@@ -53,7 +63,15 @@ export default function AppSidebar() {
   }
 
   return (
-    <div className="w-64 bg-sidebar-bg flex flex-col border-r border-sidebar-border-color shrink-0 h-screen">
+    <>
+      {/* Overlay for mobile */}
+      {isMobile && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40"
+          onClick={() => setSidebarCollapsed(true)}
+        />
+      )}
+      <div className={`${isMobile ? 'fixed inset-y-0 left-0 z-50' : ''} w-64 bg-sidebar-bg flex flex-col border-r border-sidebar-border-color shrink-0 h-screen`}>
       {/* Header */}
       <div className="px-4 py-4 flex items-center justify-between border-b border-sidebar-border-color">
         <div>

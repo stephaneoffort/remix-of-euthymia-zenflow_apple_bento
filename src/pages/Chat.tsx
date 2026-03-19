@@ -484,6 +484,10 @@ export default function Chat() {
           </div>
         </div>
       </div>
+      )}
+
+      {/* Mobile bottom navigation */}
+      {isMobile && <MobileBottomNav />}
     </div>
   );
 }

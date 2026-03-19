@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ChevronRight, ChevronDown, LayoutGrid, List, Calendar, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle } from 'lucide-react';
+import { ChevronRight, ChevronDown, LayoutGrid, List, Calendar, BarChart3, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';

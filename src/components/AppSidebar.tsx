@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, ChevronDown, LayoutGrid, List, Calendar, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -375,6 +376,7 @@ function CurrentUserBadge() {
 
 function AdminSettingsLink() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -390,13 +392,13 @@ function AdminSettingsLink() {
   if (!isAdmin) return null;
 
   return (
-    <a
-      href="/settings"
+    <button
+      onClick={() => navigate('/settings')}
       className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors mb-0.5"
     >
       <Settings className="w-4 h-4" />
       <span>Administration</span>
-    </a>
+    </button>
   );
 }
 

@@ -81,6 +81,30 @@ export default function AppSidebar() {
     });
   };
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+
+  const handleSpaceDragEnd = useCallback((event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = spaces.findIndex(s => s.id === active.id);
+    const newIndex = spaces.findIndex(s => s.id === over.id);
+    const newOrder = arrayMove(spaces, oldIndex, newIndex);
+    reorderSpaces(newOrder.map(s => s.id));
+  }, [spaces, reorderSpaces]);
+
+  const handleProjectDragEnd = useCallback((event: DragEndEvent, spaceId: string) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const spaceProjects = getProjectsForSpace(spaceId);
+    const oldIndex = spaceProjects.findIndex(p => p.id === active.id);
+    const newIndex = spaceProjects.findIndex(p => p.id === over.id);
+    const newOrder = arrayMove(spaceProjects, oldIndex, newIndex);
+    reorderProjects(spaceId, newOrder.map(p => p.id));
+  }, [getProjectsForSpace, reorderProjects]);
+
   const overdueCount = tasks.filter(t => {
     const today = new Date().toISOString().split('T')[0];
     return t.dueDate && t.dueDate < today && t.status !== 'done';

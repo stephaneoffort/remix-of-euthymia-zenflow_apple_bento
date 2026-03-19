@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useApp } from '@/context/AppContext';
 import { PriorityBadge } from '@/components/TaskBadges';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const DAYS_FR = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
@@ -10,8 +10,10 @@ const MONTHS_FR = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juill
 const MONTHS_FR_SHORT = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
 
 export default function CalendarView() {
-  const { getFilteredTasks, setSelectedTaskId } = useApp();
+  const { getFilteredTasks, setSelectedTaskId, addTask, selectedProjectId, getListsForProject } = useApp();
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [addingForDate, setAddingForDate] = useState<string | null>(null);
+  const [newTaskTitle, setNewTaskTitle] = useState('');
   const isMobile = useIsMobile();
 
   const year = currentDate.getFullYear();

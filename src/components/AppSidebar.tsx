@@ -432,6 +432,37 @@ export default function AppSidebar() {
         <AdminSettingsLink />
         <LogoutButton />
       </div>
+
+      {/* Delete confirmation dialog */}
+      <AlertDialog open={!!deleteConfirm} onOpenChange={(open) => { if (!open) setDeleteConfirm(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteConfirm?.type === 'space'
+                ? `Supprimer l'espace "${deleteConfirm?.name}" et tous ses projets ?`
+                : `Supprimer le projet "${deleteConfirm?.name}" et toutes ses tâches ?`}
+              {' '}Cette action est irréversible.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                if (deleteConfirm?.type === 'space') {
+                  deleteSpace(deleteConfirm.id);
+                } else if (deleteConfirm?.type === 'project') {
+                  deleteProject(deleteConfirm.id);
+                }
+                setDeleteConfirm(null);
+              }}
+            >
+              Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
     </>
   );

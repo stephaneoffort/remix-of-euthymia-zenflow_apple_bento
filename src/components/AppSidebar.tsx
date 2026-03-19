@@ -46,6 +46,7 @@ export default function AppSidebar() {
     reorderSpaces, reorderProjects,
   } = useApp();
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   const [expandedSpaces, setExpandedSpaces] = useState<Set<string>>(new Set(spaces.map(s => s.id)));
   const [addingSpace, setAddingSpace] = useState(false);

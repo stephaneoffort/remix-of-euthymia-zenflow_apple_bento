@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
 import { Status, Priority, PRIORITY_LABELS } from '@/types';
 import { PriorityBadge, StatusBadge, AvatarGroup } from '@/components/TaskBadges';
-import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Clock, Paperclip, ChevronDown, Maximize2, Minimize2 } from 'lucide-react';
+import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Clock, Paperclip, ChevronDown, Maximize2, Minimize2, CalendarPlus } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { generateGoogleCalendarUrl, generateOutlookCalendarUrl, generateYahooCalendarUrl } from '@/lib/calendarLinks';
 
 
 export default function TaskDetailPanel() {

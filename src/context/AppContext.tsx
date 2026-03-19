@@ -66,6 +66,7 @@ function dbToTask(row: any, assigneeIds: string[], comments: Comment[], attachme
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
+  const { teamMemberId } = useAuth();
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>('p1');
   const [selectedView, setSelectedView] = useState<ViewType>('kanban');
   const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');

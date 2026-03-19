@@ -334,9 +334,10 @@ export default function AppSidebar() {
         </div>
       </div>
 
-      {/* Current user + Logout */}
+      {/* Current user + Settings + Logout */}
       <div className="px-4 py-3 border-t border-sidebar-border-color mt-auto">
         <CurrentUserBadge />
+        <AdminSettingsLink />
         <LogoutButton />
       </div>
     </div>

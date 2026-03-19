@@ -193,10 +193,22 @@ function MembersPanel() {
     cancelEditing();
   };
 
+  const handleMemberAdded = () => {
+    supabase.from('team_members').select('*').then(({ data }) => {
+      if (data) {
+        setMembers(data.map((m: any) => ({
+          id: m.id, name: m.name, role: m.role,
+          avatarColor: m.avatar_color, avatarUrl: m.avatar_url, email: m.email,
+        })));
+      }
+    });
+  };
+
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-base">Gestion des membres</CardTitle>
+        <InviteMemberDialog onMemberAdded={handleMemberAdded} />
       </CardHeader>
       <CardContent className="space-y-2">
         {members.length === 0 && (

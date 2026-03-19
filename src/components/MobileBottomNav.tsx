@@ -11,7 +11,7 @@ const VIEW_ICONS: Record<ViewType, React.ReactNode> = {
   list: <List className="w-5 h-5" />,
   calendar: <Calendar className="w-5 h-5" />,
   workload: <BarChart3 className="w-5 h-5" />,
-  mindmap: <BarChart3 className="w-5 h-5" />,
+  mindmap: <GitFork className="w-5 h-5" />,
 };
 
 const VIEW_LABELS: Record<ViewType, string> = {

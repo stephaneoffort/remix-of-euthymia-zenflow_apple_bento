@@ -276,6 +276,7 @@ export default function CalendarView() {
                     key={t.id}
                     task={t}
                     onClick={() => setSelectedTaskId(t.id)}
+                    members={teamMembers}
                   />
                 ))}
                 {dayTasks.length > maxTasks && (

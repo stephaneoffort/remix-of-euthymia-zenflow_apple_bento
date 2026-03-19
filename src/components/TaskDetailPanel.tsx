@@ -11,6 +11,7 @@ export default function TaskDetailPanel() {
   const [addingSubtaskFor, setAddingSubtaskFor] = useState<string | null>(null);
   const [newComment, setNewComment] = useState('');
   const [editingField, setEditingField] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState(false);
 
   if (!selectedTaskId) return null;
   const task = getTaskById(selectedTaskId);

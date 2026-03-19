@@ -85,6 +85,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>(EMPTY_FILTERS);
 
   // Fetch spaces
   const { data: spaces = [] } = useQuery({

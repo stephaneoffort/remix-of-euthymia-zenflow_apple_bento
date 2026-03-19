@@ -14,7 +14,282 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      attachments: {
+        Row: {
+          id: string
+          name: string
+          task_id: string
+          url: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          task_id: string
+          url: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          task_id?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attachments_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      comments: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string
+          id: string
+          task_id: string
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string
+          id?: string
+          task_id: string
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          color: string
+          id: string
+          name: string
+          sort_order: number
+          space_id: string
+        }
+        Insert: {
+          color: string
+          id: string
+          name: string
+          sort_order?: number
+          space_id: string
+        }
+        Update: {
+          color?: string
+          id?: string
+          name?: string
+          sort_order?: number
+          space_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_space_id_fkey"
+            columns: ["space_id"]
+            isOneToOne: false
+            referencedRelation: "spaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      spaces: {
+        Row: {
+          icon: string
+          id: string
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          icon: string
+          id: string
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          icon?: string
+          id?: string
+          name?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      task_assignees: {
+        Row: {
+          member_id: string
+          task_id: string
+        }
+        Insert: {
+          member_id: string
+          task_id: string
+        }
+        Update: {
+          member_id?: string
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_assignees_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_assignees_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_lists: {
+        Row: {
+          id: string
+          name: string
+          project_id: string
+          sort_order: number
+        }
+        Insert: {
+          id: string
+          name: string
+          project_id: string
+          sort_order?: number
+        }
+        Update: {
+          id?: string
+          name?: string
+          project_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_lists_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tasks: {
+        Row: {
+          ai_summary: string | null
+          created_at: string
+          description: string
+          due_date: string | null
+          id: string
+          list_id: string
+          parent_task_id: string | null
+          priority: string
+          sort_order: number
+          start_date: string | null
+          status: string
+          tags: string[]
+          time_estimate: number | null
+          time_logged: number | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          ai_summary?: string | null
+          created_at?: string
+          description?: string
+          due_date?: string | null
+          id?: string
+          list_id: string
+          parent_task_id?: string | null
+          priority?: string
+          sort_order?: number
+          start_date?: string | null
+          status?: string
+          tags?: string[]
+          time_estimate?: number | null
+          time_logged?: number | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          ai_summary?: string | null
+          created_at?: string
+          description?: string
+          due_date?: string | null
+          id?: string
+          list_id?: string
+          parent_task_id?: string | null
+          priority?: string
+          sort_order?: number
+          start_date?: string | null
+          status?: string
+          tags?: string[]
+          time_estimate?: number | null
+          time_logged?: number | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "task_lists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_parent_task_id_fkey"
+            columns: ["parent_task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_members: {
+        Row: {
+          avatar_color: string
+          email: string
+          id: string
+          name: string
+          role: string
+        }
+        Insert: {
+          avatar_color: string
+          email: string
+          id: string
+          name: string
+          role: string
+        }
+        Update: {
+          avatar_color?: string
+          email?: string
+          id?: string
+          name?: string
+          role?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -151,6 +151,39 @@ export type Database = {
           },
         ]
       }
+      chat_read_status: {
+        Row: {
+          category_id: string
+          last_read_at: string
+          member_id: string
+        }
+        Insert: {
+          category_id: string
+          last_read_at?: string
+          member_id: string
+        }
+        Update: {
+          category_id?: string
+          last_read_at?: string
+          member_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_read_status_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "chat_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_read_status_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comments: {
         Row: {
           author_id: string

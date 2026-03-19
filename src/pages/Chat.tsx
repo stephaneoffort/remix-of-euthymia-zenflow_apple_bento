@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Hash, Send, Paperclip, Smile, X, Plus, Trash2, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useChatNotifications } from '@/hooks/useChatNotifications';
 
 interface ChatCategory {
   id: string;
@@ -43,6 +44,7 @@ export default function Chat() {
   const { teamMemberId, user } = useAuth();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { unreadCounts, markCategoryRead } = useChatNotifications();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [messageText, setMessageText] = useState('');
   const [showEmojiFor, setShowEmojiFor] = useState<string | null>(null);
@@ -77,6 +79,13 @@ export default function Chat() {
       setSelectedCategory(categories[0].id);
     }
   }, [categories, selectedCategory]);
+
+  // Mark category as read when selected
+  useEffect(() => {
+    if (selectedCategory && teamMemberId) {
+      markCategoryRead(selectedCategory);
+    }
+  }, [selectedCategory, teamMemberId, markCategoryRead]);
 
   // Fetch messages for selected category
   const { data: messages = [] } = useQuery({
@@ -255,20 +264,28 @@ export default function Chat() {
           </button>
         </div>
         <div className="flex-1 overflow-y-auto p-2 space-y-0.5">
-          {categories.map(cat => (
-            <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
-              className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${
-                selectedCategory === cat.id
-                  ? 'bg-primary/10 text-primary font-medium'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-              }`}
-            >
-              <span>{cat.icon}</span>
-              <span>{cat.name}</span>
-            </button>
-          ))}
+          {categories.map(cat => {
+            const unread = unreadCounts[cat.id] || 0;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${
+                  selectedCategory === cat.id
+                    ? 'bg-primary/10 text-primary font-medium'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                }`}
+              >
+                <span>{cat.icon}</span>
+                <span className="flex-1 text-left">{cat.name}</span>
+                {unread > 0 && (
+                  <span className="text-[10px] bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 min-w-[18px] text-center font-medium">
+                    {unread > 99 ? '99+' : unread}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
         {isAdmin && (
           <div className="p-3 border-t border-border">

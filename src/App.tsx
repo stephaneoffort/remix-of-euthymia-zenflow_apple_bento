@@ -46,7 +46,9 @@ const App = () => (
               path="/chat"
               element={
                 <ProtectedRoute>
-                  <Chat />
+                  <AppProvider>
+                    <Chat />
+                  </AppProvider>
                 </ProtectedRoute>
               }
             />

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ChevronRight, ChevronDown, LayoutGrid, List, Calendar, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical } from 'lucide-react';
+import { ChevronRight, ChevronDown, LayoutGrid, List, Calendar, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
@@ -46,6 +46,7 @@ export default function AppSidebar() {
     reorderSpaces, reorderProjects,
   } = useApp();
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   const [expandedSpaces, setExpandedSpaces] = useState<Set<string>>(new Set(spaces.map(s => s.id)));
   const [addingSpace, setAddingSpace] = useState(false);
@@ -205,6 +206,13 @@ export default function AppSidebar() {
             )}
           </button>
         ))}
+        <button
+          onClick={() => { navigate('/chat'); handleNavClick(); }}
+          className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors mt-1"
+        >
+          <MessageCircle className="w-4 h-4" />
+          Chat d'équipe
+        </button>
       </div>
 
       {/* Spaces & Projects */}

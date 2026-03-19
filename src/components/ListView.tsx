@@ -122,8 +122,33 @@ export default function ListView() {
     return (
       <div className="p-3 overflow-auto h-full space-y-2">
         {sorted.map(task => renderCard(task))}
-        {sorted.length === 0 && (
+        {sorted.length === 0 && !isAdding && (
           <p className="text-center py-12 text-muted-foreground">Aucune tâche trouvée</p>
+        )}
+        {isAdding ? (
+          <div className="flex items-center gap-2 p-2 bg-card rounded-lg border border-border">
+            <input
+              autoFocus
+              value={newTaskTitle}
+              onChange={e => setNewTaskTitle(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter') handleAddTask();
+                if (e.key === 'Escape') { setIsAdding(false); setNewTaskTitle(''); }
+              }}
+              placeholder="Nom de la tâche..."
+              className="flex-1 text-sm bg-transparent outline-none text-foreground placeholder:text-muted-foreground"
+            />
+            <button onClick={handleAddTask} disabled={!newTaskTitle.trim()} className="px-3 py-1 text-xs rounded-md bg-primary text-primary-foreground disabled:opacity-50">Ajouter</button>
+            <button onClick={() => { setIsAdding(false); setNewTaskTitle(''); }} className="px-2 py-1 text-xs text-muted-foreground hover:text-foreground">Annuler</button>
+          </div>
+        ) : (
+          <button
+            onClick={() => setIsAdding(true)}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg border border-dashed border-border text-sm text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Ajouter une tâche
+          </button>
         )}
       </div>
     );

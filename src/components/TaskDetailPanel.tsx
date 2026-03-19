@@ -65,7 +65,9 @@ export default function TaskDetailPanel() {
   };
 
   return (
-    <div className="fixed inset-0 sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[520px] bg-card border-l border-border shadow-xl z-50 flex flex-col animate-slide-in">
+    <div className={`fixed z-50 flex flex-col animate-slide-in bg-card border-l border-border shadow-xl transition-all duration-300 ${
+      expanded ? 'inset-0' : 'inset-0 sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[520px]'
+    }`}>
       {/* Header */}
       <div className="flex items-center justify-between px-3 sm:px-5 py-3 sm:py-4 border-b border-border">
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground min-w-0 overflow-x-auto">

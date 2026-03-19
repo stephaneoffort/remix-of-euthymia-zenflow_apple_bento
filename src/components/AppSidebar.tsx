@@ -40,6 +40,10 @@ export default function AppSidebar() {
   const [addingProjectForSpace, setAddingProjectForSpace] = useState<string | null>(null);
   const [newProjectName, setNewProjectName] = useState('');
   const [newProjectColor, setNewProjectColor] = useState(PROJECT_COLORS[0]);
+  const [editingSpaceId, setEditingSpaceId] = useState<string | null>(null);
+  const [editingSpaceName, setEditingSpaceName] = useState('');
+  const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
+  const [editingProjectName, setEditingProjectName] = useState('');
 
   useEffect(() => {
     if (isMobile) setSidebarCollapsed(true);

@@ -20,6 +20,15 @@ export default function KanbanBoard() {
   const [dropTargetColumn, setDropTargetColumn] = useState<string | null>(null);
   const [newTaskStatus, setNewTaskStatus] = useState<string | null>(null);
   const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [collapsedColumns, setCollapsedColumns] = useState<Set<string>>(new Set());
+
+  const toggleColumnCollapse = (status: string) => {
+    setCollapsedColumns(prev => {
+      const next = new Set(prev);
+      next.has(status) ? next.delete(status) : next.add(status);
+      return next;
+    });
+  };
 
   // Sync column order when allStatuses changes (new custom statuses added/removed)
   useEffect(() => {

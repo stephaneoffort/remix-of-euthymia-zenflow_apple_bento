@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
 import { PRIORITY_LABELS, Status, Priority } from '@/types';
 import { PriorityBadge, StatusBadge, AvatarGroup, SubtaskProgress } from '@/components/TaskBadges';
-import { ChevronRight, ChevronDown, ArrowUpDown } from 'lucide-react';
+import { ChevronRight, ChevronDown, ArrowUpDown, Plus } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 type SortKey = 'title' | 'priority' | 'dueDate' | 'status';
@@ -10,10 +10,12 @@ type SortKey = 'title' | 'priority' | 'dueDate' | 'status';
 const PRIORITY_ORDER: Priority[] = ['urgent', 'high', 'normal', 'low'];
 
 export default function ListView() {
-  const { getFilteredTasks, setSelectedTaskId, getMemberById, tasks } = useApp();
+  const { getFilteredTasks, setSelectedTaskId, getMemberById, tasks, addTask, selectedProjectId, getListsForProject } = useApp();
   const [sortKey, setSortKey] = useState<SortKey>('priority');
   const [sortAsc, setSortAsc] = useState(true);
   const [expandedTasks, setExpandedTasks] = useState<Set<string>>(new Set());
+  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [isAdding, setIsAdding] = useState(false);
   const isMobile = useIsMobile();
 
   const filteredTasks = getFilteredTasks();

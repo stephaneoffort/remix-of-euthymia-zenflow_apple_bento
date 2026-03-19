@@ -130,6 +130,28 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     },
   });
 
+  // Fetch custom statuses
+  const { data: customStatuses = [] } = useQuery({
+    queryKey: ['custom_statuses'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('custom_statuses').select('*').order('sort_order');
+      if (error) throw error;
+      return data.map(s => ({ id: s.id, label: s.label, sortOrder: s.sort_order })) as CustomStatus[];
+    },
+  });
+
+  // Compute all statuses (default + custom)
+  const allStatuses = useMemo(() => {
+    const custom = customStatuses.map(cs => cs.id);
+    return [...DEFAULT_STATUSES, ...custom];
+  }, [customStatuses]);
+
+  const getStatusLabel = useCallback((status: string) => {
+    if (STATUS_LABELS[status]) return STATUS_LABELS[status];
+    const custom = customStatuses.find(cs => cs.id === status);
+    return custom?.label || status;
+  }, [customStatuses]);
+
   // Fetch all tasks with assignees, comments, attachments
   const { data: tasks = [], isLoading } = useQuery({
     queryKey: ['tasks'],

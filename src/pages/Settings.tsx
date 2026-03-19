@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle } from 'lucide-react';
 import InviteMemberDialog from '@/components/InviteMemberDialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -59,7 +59,7 @@ export default function Settings() {
 
       <div className="max-w-3xl mx-auto p-6">
         <Tabs defaultValue="members">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsList className="grid w-full grid-cols-3 mb-6">
             <TabsTrigger value="members" className="gap-2">
               <Users className="w-4 h-4" />
               Membres
@@ -67,6 +67,10 @@ export default function Settings() {
             <TabsTrigger value="statuses" className="gap-2">
               <ListChecks className="w-4 h-4" />
               Avancements
+            </TabsTrigger>
+            <TabsTrigger value="chat" className="gap-2">
+              <MessageCircle className="w-4 h-4" />
+              Chat
             </TabsTrigger>
           </TabsList>
 
@@ -76,6 +80,10 @@ export default function Settings() {
 
           <TabsContent value="statuses">
             <StatusesPanel />
+          </TabsContent>
+
+          <TabsContent value="chat">
+            <ChatCategoriesPanel />
           </TabsContent>
         </Tabs>
       </div>
@@ -405,6 +413,178 @@ function StatusesPanel() {
             <Plus className="w-4 h-4" />
             Ajouter
           </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+interface ChatCategory {
+  id: string;
+  name: string;
+  icon: string;
+  sort_order: number;
+}
+
+const CHAT_ICONS = ['💬', '📢', '🛟', '🎲', '🎯', '💡', '🔥', '📊', '🎨', '🤝'];
+
+function ChatCategoriesPanel() {
+  const [categories, setCategories] = useState<ChatCategory[]>([]);
+  const [newName, setNewName] = useState('');
+  const [newIcon, setNewIcon] = useState('💬');
+  const [adding, setAdding] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editIcon, setEditIcon] = useState('');
+
+  const fetchCategories = async () => {
+    const { data } = await supabase.from('chat_categories').select('*').order('sort_order');
+    setCategories(data || []);
+  };
+
+  useEffect(() => { fetchCategories(); }, []);
+
+  const handleAdd = async () => {
+    if (!newName.trim()) return;
+    setAdding(true);
+    const { error } = await supabase.from('chat_categories').insert({
+      name: newName.trim(),
+      icon: newIcon,
+      sort_order: categories.length,
+    });
+    if (error) {
+      toast.error(error.message);
+    } else {
+      setNewName('');
+      setNewIcon('💬');
+      toast.success('Catégorie ajoutée');
+      fetchCategories();
+    }
+    setAdding(false);
+  };
+
+  const handleDelete = async (id: string) => {
+    const { error } = await supabase.from('chat_categories').delete().eq('id', id);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success('Catégorie supprimée');
+      fetchCategories();
+    }
+  };
+
+  const startEdit = (cat: ChatCategory) => {
+    setEditingId(cat.id);
+    setEditName(cat.name);
+    setEditIcon(cat.icon);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingId || !editName.trim()) return;
+    const { error } = await supabase.from('chat_categories').update({ name: editName.trim(), icon: editIcon }).eq('id', editingId);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success('Catégorie modifiée');
+      fetchCategories();
+    }
+    setEditingId(null);
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base">Catégories du chat</CardTitle>
+        <p className="text-sm text-muted-foreground">
+          Gérez les canaux de discussion disponibles pour l'équipe.
+        </p>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {categories.map(cat => (
+          <div key={cat.id} className="flex items-center gap-2 px-3 py-2 rounded-md border border-border text-sm">
+            {editingId === cat.id ? (
+              <>
+                <div className="flex gap-0.5 shrink-0">
+                  {CHAT_ICONS.map(icon => (
+                    <button
+                      key={icon}
+                      onClick={() => setEditIcon(icon)}
+                      className={`w-7 h-7 rounded text-sm flex items-center justify-center transition-colors ${
+                        editIcon === icon ? 'bg-primary/10 ring-1 ring-primary' : 'hover:bg-muted'
+                      }`}
+                    >
+                      {icon}
+                    </button>
+                  ))}
+                </div>
+                <Input
+                  value={editName}
+                  onChange={e => setEditName(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleSaveEdit()}
+                  className="flex-1 h-8 text-sm"
+                  autoFocus
+                />
+                <Button variant="default" size="sm" className="h-8 w-8 p-0" onClick={handleSaveEdit}>
+                  <Check className="w-4 h-4" />
+                </Button>
+                <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={() => setEditingId(null)}>
+                  <X className="w-4 h-4" />
+                </Button>
+              </>
+            ) : (
+              <>
+                <span>{cat.icon}</span>
+                <span className="flex-1 text-foreground">{cat.name}</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 w-7 p-0"
+                  onClick={() => startEdit(cat)}
+                  title="Renommer"
+                >
+                  <Pencil className="w-3.5 h-3.5" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10 h-7 w-7 p-0"
+                  onClick={() => handleDelete(cat.id)}
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </Button>
+              </>
+            )}
+          </div>
+        ))}
+
+        {/* Add new category */}
+        <div className="pt-2 border-t border-border space-y-2">
+          <div className="flex gap-0.5 flex-wrap">
+            {CHAT_ICONS.map(icon => (
+              <button
+                key={icon}
+                onClick={() => setNewIcon(icon)}
+                className={`w-7 h-7 rounded text-sm flex items-center justify-center transition-colors ${
+                  newIcon === icon ? 'bg-primary/10 ring-1 ring-primary' : 'hover:bg-muted'
+                }`}
+              >
+                {icon}
+              </button>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <Input
+              value={newName}
+              onChange={e => setNewName(e.target.value)}
+              placeholder="Nouvelle catégorie..."
+              onKeyDown={e => e.key === 'Enter' && handleAdd()}
+              className="flex-1"
+            />
+            <Button onClick={handleAdd} disabled={adding || !newName.trim()} size="sm" className="gap-1">
+              <Plus className="w-4 h-4" />
+              Ajouter
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

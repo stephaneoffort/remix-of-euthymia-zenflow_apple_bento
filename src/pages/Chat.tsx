@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Hash, Send, Paperclip, Smile, X, Plus, Trash2, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useChatNotifications } from '@/hooks/useChatNotifications';
 
 interface ChatCategory {
   id: string;

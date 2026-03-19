@@ -527,7 +527,7 @@ export default function AppSidebar() {
 
 function ChatLink({ handleNavClick }: { handleNavClick: () => void }) {
   const navigate = useNavigate();
-  const { unreadCount } = useChatNotifications();
+  const { totalUnread } = useChatNotifications();
 
   return (
     <button
@@ -536,9 +536,9 @@ function ChatLink({ handleNavClick }: { handleNavClick: () => void }) {
     >
       <MessageCircle className="w-4 h-4" />
       Chat d'équipe
-      {unreadCount > 0 && (
+      {totalUnread > 0 && (
         <span className="ml-auto text-xs bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
-          {unreadCount > 99 ? '99+' : unreadCount}
+          {totalUnread > 99 ? '99+' : totalUnread}
         </span>
       )}
     </button>

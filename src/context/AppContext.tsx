@@ -248,6 +248,60 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks'] }),
   });
 
+  // Add space mutation
+  const addSpaceMutation = useMutation({
+    mutationFn: async ({ name, icon }: { name: string; icon: string }) => {
+      const id = `s_${Date.now()}`;
+      const { error } = await supabase.from('spaces').insert({
+        id,
+        name,
+        icon,
+        sort_order: spaces.length,
+      });
+      if (error) throw error;
+      return id;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['spaces'] }),
+  });
+
+  // Add project mutation
+  const addProjectMutation = useMutation({
+    mutationFn: async ({ name, spaceId, color }: { name: string; spaceId: string; color: string }) => {
+      const projectId = `p_${Date.now()}`;
+      const listId = `l_${Date.now()}`;
+      // Create project
+      const { error: pErr } = await supabase.from('projects').insert({
+        id: projectId,
+        name,
+        space_id: spaceId,
+        color,
+        sort_order: projects.length,
+      });
+      if (pErr) throw pErr;
+      // Create default task list
+      const { error: lErr } = await supabase.from('task_lists').insert({
+        id: listId,
+        name: 'Général',
+        project_id: projectId,
+        sort_order: 0,
+      });
+      if (lErr) throw lErr;
+      return projectId;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      queryClient.invalidateQueries({ queryKey: ['task_lists'] });
+    },
+  });
+
+  const addSpace = useCallback((name: string, icon: string) => {
+    addSpaceMutation.mutate({ name, icon });
+  }, [addSpaceMutation]);
+
+  const addProject = useCallback((name: string, spaceId: string, color: string) => {
+    addProjectMutation.mutate({ name, spaceId, color });
+  }, [addProjectMutation]);
+
   const addTask = useCallback((task: Omit<Task, 'id' | 'createdAt' | 'order'>) => {
     addTaskMutation.mutate(task);
   }, [addTaskMutation]);

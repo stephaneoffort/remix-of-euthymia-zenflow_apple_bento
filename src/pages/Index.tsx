@@ -5,7 +5,7 @@ import KanbanBoard from '@/components/KanbanBoard';
 import ListView from '@/components/ListView';
 import CalendarView from '@/components/CalendarView';
 import TaskDetailPanel from '@/components/TaskDetailPanel';
-import { PROJECTS } from '@/data/sampleData';
+
 import { Sparkles } from 'lucide-react';
 
 const QUICK_FILTER_TITLES: Record<string, string> = {

@@ -2,10 +2,12 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Hash, Send, Paperclip, Smile, X, Plus, Trash2, Settings } from 'lucide-react';
+import { Hash, Send, Paperclip, Smile, X, Plus, Trash2, Settings, ArrowLeft, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useChatNotifications } from '@/hooks/useChatNotifications';
+import { useIsMobile } from '@/hooks/use-mobile';
+import MobileBottomNav from '@/components/MobileBottomNav';
 
 interface ChatCategory {
   id: string;

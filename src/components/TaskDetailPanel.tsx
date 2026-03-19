@@ -6,7 +6,7 @@ import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Cl
 
 
 export default function TaskDetailPanel() {
-  const { selectedTaskId, setSelectedTaskId, getTaskById, updateTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks, teamMembers } = useApp();
+  const { selectedTaskId, setSelectedTaskId, getTaskById, updateTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks, teamMembers, allStatuses, getStatusLabel } = useApp();
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [addingSubtaskFor, setAddingSubtaskFor] = useState<string | null>(null);
   const [newComment, setNewComment] = useState('');

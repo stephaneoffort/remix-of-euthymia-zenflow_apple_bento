@@ -341,6 +341,32 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     addProjectMutation.mutate({ name, spaceId, color });
   }, [addProjectMutation]);
 
+  // Rename space mutation
+  const renameSpaceMutation = useMutation({
+    mutationFn: async ({ id, name }: { id: string; name: string }) => {
+      const { error } = await supabase.from('spaces').update({ name }).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['spaces'] }),
+  });
+
+  const renameSpace = useCallback((id: string, name: string) => {
+    renameSpaceMutation.mutate({ id, name });
+  }, [renameSpaceMutation]);
+
+  // Rename project mutation
+  const renameProjectMutation = useMutation({
+    mutationFn: async ({ id, name }: { id: string; name: string }) => {
+      const { error } = await supabase.from('projects').update({ name }).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['projects'] }),
+  });
+
+  const renameProject = useCallback((id: string, name: string) => {
+    renameProjectMutation.mutate({ id, name });
+  }, [renameProjectMutation]);
+
   const addTask = useCallback((task: Omit<Task, 'id' | 'createdAt' | 'order'>) => {
     addTaskMutation.mutate(task);
   }, [addTaskMutation]);

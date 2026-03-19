@@ -2,6 +2,9 @@ import React, { useState, useMemo } from 'react';
 import { useApp } from '@/context/AppContext';
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { Badge } from '@/components/ui/badge';
+import { PRIORITY_LABELS, type Task } from '@/types';
 import {
   DndContext,
   DragOverlay,
@@ -19,23 +22,72 @@ const DAYS_FR_SHORT = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
 const MONTHS_FR = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
 const MONTHS_FR_SHORT = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
 
-function DraggableTask({ task, onClick }: { task: { id: string; title: string }; onClick: () => void }) {
+const PRIORITY_COLORS: Record<string, string> = {
+  urgent: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+  high: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
+  normal: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+  low: 'bg-muted text-muted-foreground',
+};
+
+function DraggableTask({ task, onClick, members }: { task: Task; onClick: () => void; members: { id: string; name: string; avatarColor: string }[] }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: task.id,
   });
 
+  const assignees = members.filter(m => task.assigneeIds.includes(m.id));
+
   return (
-    <div
-      ref={setNodeRef}
-      {...listeners}
-      {...attributes}
-      onClick={(e) => { e.stopPropagation(); onClick(); }}
-      className={`text-[9px] sm:text-[11px] px-1 sm:px-1.5 py-0.5 rounded bg-primary/10 text-primary truncate cursor-grab hover:bg-primary/20 transition-colors ${
-        isDragging ? 'opacity-30' : ''
-      }`}
-    >
-      {task.title}
-    </div>
+    <HoverCard openDelay={300} closeDelay={100}>
+      <HoverCardTrigger asChild>
+        <div
+          ref={setNodeRef}
+          {...listeners}
+          {...attributes}
+          onClick={(e) => { e.stopPropagation(); onClick(); }}
+          className={`text-[9px] sm:text-[11px] px-1 sm:px-1.5 py-0.5 rounded bg-primary/10 text-primary truncate cursor-grab hover:bg-primary/20 transition-colors ${
+            isDragging ? 'opacity-30' : ''
+          }`}
+        >
+          {task.title}
+        </div>
+      </HoverCardTrigger>
+      <HoverCardContent side="right" align="start" className="w-64 p-3 space-y-2 text-xs z-50">
+        <p className="font-semibold text-sm text-foreground leading-tight">{task.title}</p>
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.normal}`}>
+            {PRIORITY_LABELS[task.priority] || task.priority}
+          </span>
+          <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-muted text-muted-foreground">
+            {task.status === 'todo' ? 'À faire' : task.status === 'in_progress' ? 'En cours' : task.status === 'in_review' ? 'En revue' : task.status === 'done' ? 'Terminé' : task.status}
+          </span>
+        </div>
+        {assignees.length > 0 && (
+          <div className="flex items-center gap-1.5">
+            <span className="text-muted-foreground">Assigné :</span>
+            <div className="flex items-center gap-1">
+              {assignees.map(a => (
+                <span key={a.id} className="inline-flex items-center gap-1">
+                  <span className="w-4 h-4 rounded-full text-[8px] font-bold text-white flex items-center justify-center" style={{ backgroundColor: a.avatarColor }}>
+                    {a.name.charAt(0).toUpperCase()}
+                  </span>
+                  <span className="text-foreground">{a.name.split(' ')[0]}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+        {task.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {task.tags.map(tag => (
+              <Badge key={tag} variant="secondary" className="text-[9px] px-1.5 py-0">{tag}</Badge>
+            ))}
+          </div>
+        )}
+        {task.dueDate && (
+          <p className="text-muted-foreground">Échéance : {new Date(task.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</p>
+        )}
+      </HoverCardContent>
+    </HoverCard>
   );
 }
 

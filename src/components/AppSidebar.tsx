@@ -376,6 +376,7 @@ function CurrentUserBadge() {
 
 function AdminSettingsLink() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -391,13 +392,13 @@ function AdminSettingsLink() {
   if (!isAdmin) return null;
 
   return (
-    <a
-      href="/settings"
+    <button
+      onClick={() => navigate('/settings')}
       className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors mb-0.5"
     >
       <Settings className="w-4 h-4" />
       <span>Administration</span>
-    </a>
+    </button>
   );
 }
 

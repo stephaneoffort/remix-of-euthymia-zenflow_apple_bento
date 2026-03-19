@@ -233,8 +233,10 @@ export default function CalendarView() {
     const map = new Map<string, Task[]>();
     tasks.forEach(t => {
       if (t.dueDate) {
-        if (!map.has(t.dueDate)) map.set(t.dueDate, []);
-        map.get(t.dueDate)!.push(t);
+        // Extract YYYY-MM-DD from timestamp or date string
+        const dateKey = t.dueDate.length > 10 ? t.dueDate.slice(0, 10) : t.dueDate;
+        if (!map.has(dateKey)) map.set(dateKey, []);
+        map.get(dateKey)!.push(t);
       }
     });
     return map;

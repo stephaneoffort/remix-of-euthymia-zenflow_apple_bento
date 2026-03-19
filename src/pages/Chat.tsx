@@ -332,7 +332,7 @@ export default function Chat() {
           </header>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-4 scrollbar-thin">
           {messages.length === 0 && (
             <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
               Aucun message. Soyez le premier à écrire ! 🎉

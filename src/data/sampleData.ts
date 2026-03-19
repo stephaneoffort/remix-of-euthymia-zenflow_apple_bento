@@ -1,11 +1,11 @@
 import { Space, Project, TaskList, Task, TeamMember } from '@/types';
 
 export const TEAM_MEMBERS: TeamMember[] = [
-  { id: 'tm1', name: 'Stéphane Faure', role: 'Directeur', avatarColor: '#0F766E', email: 'stephane.faure@euthymia.fr' },
-  { id: 'tm2', name: 'Stéphane Offort', role: 'Coordinateur', avatarColor: '#7C3AED', email: 'stephane.offort@euthymia.fr' },
-  { id: 'tm3', name: 'Julien Cazabonne', role: 'Formateur', avatarColor: '#2563EB', email: 'julien@euthymia.fr' },
-  { id: 'tm4', name: 'Cécile', role: 'Assistante', avatarColor: '#DB2777', email: 'cecile@euthymia.fr' },
-  { id: 'tm5', name: 'Sébastien', role: 'Communication', avatarColor: '#EA580C', email: 'sebastien@euthymia.fr' },
+  { id: 'tm1', name: 'Stéphane Faure', role: 'Directeur', avatarColor: '#0F766E', avatarUrl: null, email: 'stephane.faure@euthymia.fr' },
+  { id: 'tm2', name: 'Stéphane Offort', role: 'Coordinateur', avatarColor: '#7C3AED', avatarUrl: null, email: 'stephane.offort@euthymia.fr' },
+  { id: 'tm3', name: 'Julien Cazabonne', role: 'Formateur', avatarColor: '#2563EB', avatarUrl: null, email: 'julien@euthymia.fr' },
+  { id: 'tm4', name: 'Cécile', role: 'Assistante', avatarColor: '#DB2777', avatarUrl: null, email: 'cecile@euthymia.fr' },
+  { id: 'tm5', name: 'Sébastien', role: 'Communication', avatarColor: '#EA580C', avatarUrl: null, email: 'sebastien@euthymia.fr' },
 ];
 
 export const SPACES: Space[] = [

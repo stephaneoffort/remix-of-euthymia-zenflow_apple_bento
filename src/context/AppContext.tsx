@@ -325,7 +325,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         break;
     }
     return filtered;
-  }, [tasks, selectedProjectId, quickFilter, lists]);
+  }, [tasks, selectedProjectId, quickFilter, lists, teamMemberId]);
 
   const value = useMemo(() => ({
     spaces,

@@ -28,6 +28,8 @@ interface AppContextType extends AppState {
   updateTask: (id: string, updates: Partial<Task>) => void;
   deleteTask: (id: string) => void;
   moveTask: (taskId: string, newStatus: Status) => void;
+  addSpace: (name: string, icon: string) => void;
+  addProject: (name: string, spaceId: string, color: string) => void;
   getSubtasks: (taskId: string) => Task[];
   getTaskById: (id: string) => Task | undefined;
   getListsForProject: (projectId: string) => TaskList[];

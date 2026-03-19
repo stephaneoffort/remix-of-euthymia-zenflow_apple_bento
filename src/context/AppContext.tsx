@@ -422,11 +422,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     selectedTaskId,
     sidebarCollapsed,
     isLoading,
+    advancedFilters,
     setSelectedProjectId,
     setSelectedView,
     setQuickFilter,
     setSelectedTaskId,
     setSidebarCollapsed,
+    setAdvancedFilters,
     addTask,
     updateTask,
     deleteTask,
@@ -441,7 +443,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     getFilteredTasks,
     getMemberById,
     getTaskBreadcrumb,
-  }), [spaces, projects, lists, tasks, teamMembers, selectedProjectId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, addTask, updateTask, deleteTask, moveTask, addSpace, addProject, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb]);
+  }), [spaces, projects, lists, tasks, teamMembers, selectedProjectId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, addTask, updateTask, deleteTask, moveTask, addSpace, addProject, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

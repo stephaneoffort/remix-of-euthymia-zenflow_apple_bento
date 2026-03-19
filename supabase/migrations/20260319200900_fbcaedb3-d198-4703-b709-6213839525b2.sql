@@ -1,0 +1,1 @@
+CREATE POLICY "Spaces can be updated by everyone" ON public.spaces FOR UPDATE TO public USING (true);

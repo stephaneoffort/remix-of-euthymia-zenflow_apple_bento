@@ -319,27 +319,39 @@ export default function AppSidebar() {
                       />
                     </div>
                   ) : (
-                    <button
-                      key={project.id}
-                      onClick={() => {
-                        setSelectedProjectId(project.id);
-                        setQuickFilter('all');
-                        handleNavClick();
-                      }}
-                      onDoubleClick={(e) => {
-                        e.preventDefault();
-                        setEditingProjectId(project.id);
-                        setEditingProjectName(project.name);
-                      }}
-                      className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors ${
-                        selectedProjectId === project.id
-                          ? 'bg-sidebar-active text-sidebar-fg-bright'
-                          : 'text-sidebar-fg hover:bg-sidebar-hover'
-                      }`}
-                    >
-                      <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: project.color }} />
-                      <span className="truncate">{project.name}</span>
-                    </button>
+                    <div key={project.id} className="flex items-center group/project">
+                      <button
+                        onClick={() => {
+                          setSelectedProjectId(project.id);
+                          setQuickFilter('all');
+                          handleNavClick();
+                        }}
+                        onDoubleClick={(e) => {
+                          e.preventDefault();
+                          setEditingProjectId(project.id);
+                          setEditingProjectName(project.name);
+                        }}
+                        className={`flex-1 flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors ${
+                          selectedProjectId === project.id
+                            ? 'bg-sidebar-active text-sidebar-fg-bright'
+                            : 'text-sidebar-fg hover:bg-sidebar-hover'
+                        }`}
+                      >
+                        <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: project.color }} />
+                        <span className="truncate">{project.name}</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (confirm(`Supprimer le projet "${project.name}" et toutes ses tâches ?`)) {
+                            deleteProject(project.id);
+                          }
+                        }}
+                        className="opacity-0 group-hover/project:opacity-100 p-1 rounded hover:bg-destructive/20 text-sidebar-fg hover:text-destructive transition-all mr-1"
+                        title="Supprimer le projet"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
                   )
                 ))}
 

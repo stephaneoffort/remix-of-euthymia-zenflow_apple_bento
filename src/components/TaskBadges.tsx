@@ -39,16 +39,24 @@ export function AvatarGroup({ memberIds, getMemberById }: { memberIds: string[];
       {memberIds.map(id => {
         const m = getMemberById(id);
         if (!m) return null;
-        return (
-          <div
-            key={id}
-            title={m.name}
-            className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ring-2 ring-card"
-            style={{ backgroundColor: m.avatarColor, color: 'white' }}
-          >
-            {m.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
-          </div>
-        );
+        return m.avatarUrl ? (
+            <img
+              key={id}
+              src={m.avatarUrl}
+              alt={m.name}
+              title={m.name}
+              className="w-6 h-6 rounded-full object-cover ring-2 ring-card"
+            />
+          ) : (
+            <div
+              key={id}
+              title={m.name}
+              className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ring-2 ring-card"
+              style={{ backgroundColor: m.avatarColor, color: 'white' }}
+            >
+              {m.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
+            </div>
+          );
       })}
     </div>
   );

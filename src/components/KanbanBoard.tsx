@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
-import { Status, STATUS_LABELS, Task } from '@/types';
+import { Task, DEFAULT_STATUSES } from '@/types';
 import { PriorityBadge, AvatarGroup, SubtaskProgress } from '@/components/TaskBadges';
 import { Plus, GripVertical } from 'lucide-react';
 
-const STATUS_ORDER: Status[] = ['todo', 'in_progress', 'in_review', 'done', 'blocked'];
-const STATUS_COLORS: Record<Status, string> = {
+const STATUS_COLORS: Record<string, string> = {
   todo: 'bg-status-todo',
   in_progress: 'bg-status-progress',
   in_review: 'bg-status-review',
@@ -14,24 +13,24 @@ const STATUS_COLORS: Record<Status, string> = {
 };
 
 export default function KanbanBoard() {
-  const { getFilteredTasks, moveTask, setSelectedTaskId, getMemberById, getSubtasks, addTask, selectedProjectId, getListsForProject, tasks } = useApp();
+  const { getFilteredTasks, moveTask, setSelectedTaskId, getMemberById, addTask, selectedProjectId, getListsForProject, tasks, allStatuses, getStatusLabel } = useApp();
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
-  const [newTaskStatus, setNewTaskStatus] = useState<Status | null>(null);
+  const [newTaskStatus, setNewTaskStatus] = useState<string | null>(null);
   const [newTaskTitle, setNewTaskTitle] = useState('');
 
   const filteredTasks = getFilteredTasks();
 
-  const tasksByStatus = STATUS_ORDER.reduce((acc, status) => {
+  const tasksByStatus = allStatuses.reduce((acc, status) => {
     acc[status] = filteredTasks.filter(t => t.status === status);
     return acc;
-  }, {} as Record<Status, Task[]>);
+  }, {} as Record<string, Task[]>);
 
   const handleDragStart = (e: React.DragEvent, taskId: string) => {
     setDraggedTaskId(taskId);
     e.dataTransfer.effectAllowed = 'move';
   };
 
-  const handleDrop = (e: React.DragEvent, status: Status) => {
+  const handleDrop = (e: React.DragEvent, status: string) => {
     e.preventDefault();
     if (draggedTaskId) {
       moveTask(draggedTaskId, status);
@@ -39,14 +38,14 @@ export default function KanbanBoard() {
     }
   };
 
-  const handleAddTask = (status: Status) => {
+  const handleAddTask = (status: string) => {
     if (!newTaskTitle.trim()) return;
     const lists = selectedProjectId ? getListsForProject(selectedProjectId) : [];
     const listId = lists[0]?.id || 'l1';
     addTask({
       title: newTaskTitle.trim(),
       description: '',
-      status,
+      status: status as any,
       priority: 'normal',
       dueDate: null,
       startDate: null,
@@ -64,9 +63,13 @@ export default function KanbanBoard() {
     setNewTaskStatus(null);
   };
 
+  const getStatusColor = (status: string) => {
+    return STATUS_COLORS[status] || 'bg-primary';
+  };
+
   return (
     <div className="flex gap-3 sm:gap-4 p-3 sm:p-6 overflow-x-auto h-full">
-      {STATUS_ORDER.map(status => (
+      {allStatuses.map(status => (
         <div
           key={status}
           className="flex flex-col w-60 sm:w-72 shrink-0"
@@ -75,9 +78,9 @@ export default function KanbanBoard() {
         >
           {/* Column header */}
           <div className="flex items-center gap-2 mb-3 px-1">
-            <div className={`w-2.5 h-2.5 rounded-full ${STATUS_COLORS[status]}`} />
-            <h3 className="font-semibold text-xs sm:text-sm text-foreground">{STATUS_LABELS[status]}</h3>
-            <span className="text-xs text-muted-foreground ml-1">{tasksByStatus[status].length}</span>
+            <div className={`w-2.5 h-2.5 rounded-full ${getStatusColor(status)}`} />
+            <h3 className="font-semibold text-xs sm:text-sm text-foreground">{getStatusLabel(status)}</h3>
+            <span className="text-xs text-muted-foreground ml-1">{tasksByStatus[status]?.length || 0}</span>
             <button
               onClick={() => setNewTaskStatus(status)}
               className="ml-auto p-1 rounded hover:bg-muted transition-colors text-muted-foreground"
@@ -88,7 +91,7 @@ export default function KanbanBoard() {
 
           {/* Cards */}
           <div className="flex-1 space-y-2 overflow-y-auto scrollbar-thin">
-            {tasksByStatus[status].map(task => {
+            {(tasksByStatus[status] || []).map(task => {
               const subtasks = tasks.filter(t => t.parentTaskId === task.id);
               const doneSubtasks = subtasks.filter(t => t.status === 'done');
               const isOverdue = task.dueDate && task.dueDate < new Date().toISOString().split('T')[0] && task.status !== 'done';

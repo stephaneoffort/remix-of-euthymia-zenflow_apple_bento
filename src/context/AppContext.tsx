@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
-import { Task, Space, Project, TaskList, TeamMember, ViewType, QuickFilter, Status, Priority, Comment, Attachment } from '@/types';
+import { Task, Space, Project, TaskList, TeamMember, ViewType, QuickFilter, Status, Priority, Comment, Attachment, CustomStatus, DEFAULT_STATUSES, STATUS_LABELS } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/context/AuthContext';
@@ -19,6 +19,8 @@ interface AppState {
   lists: TaskList[];
   tasks: Task[];
   teamMembers: TeamMember[];
+  customStatuses: CustomStatus[];
+  allStatuses: string[];
   selectedProjectId: string | null;
   selectedView: ViewType;
   quickFilter: QuickFilter;
@@ -37,7 +39,7 @@ interface AppContextType extends AppState {
   addTask: (task: Omit<Task, 'id' | 'createdAt' | 'order'>) => void;
   updateTask: (id: string, updates: Partial<Task>) => void;
   deleteTask: (id: string) => void;
-  moveTask: (taskId: string, newStatus: Status) => void;
+  moveTask: (taskId: string, newStatus: string) => void;
   addSpace: (name: string, icon: string) => void;
   addProject: (name: string, spaceId: string, color: string) => void;
   getSubtasks: (taskId: string) => Task[];
@@ -49,6 +51,7 @@ interface AppContextType extends AppState {
   getMemberById: (id: string) => TeamMember | undefined;
   getTaskBreadcrumb: (taskId: string) => Task[];
   setAdvancedFilters: (filters: AdvancedFilters) => void;
+  getStatusLabel: (status: string) => string;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -126,6 +129,28 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       return data.map(m => ({ id: m.id, name: m.name, role: m.role, avatarColor: m.avatar_color, avatarUrl: m.avatar_url, email: m.email })) as TeamMember[];
     },
   });
+
+  // Fetch custom statuses
+  const { data: customStatuses = [] } = useQuery({
+    queryKey: ['custom_statuses'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('custom_statuses').select('*').order('sort_order');
+      if (error) throw error;
+      return data.map(s => ({ id: s.id, label: s.label, sortOrder: s.sort_order })) as CustomStatus[];
+    },
+  });
+
+  // Compute all statuses (default + custom)
+  const allStatuses = useMemo(() => {
+    const custom = customStatuses.map(cs => cs.id);
+    return [...DEFAULT_STATUSES, ...custom];
+  }, [customStatuses]);
+
+  const getStatusLabel = useCallback((status: string) => {
+    if (STATUS_LABELS[status]) return STATUS_LABELS[status];
+    const custom = customStatuses.find(cs => cs.id === status);
+    return custom?.label || status;
+  }, [customStatuses]);
 
   // Fetch all tasks with assignees, comments, attachments
   const { data: tasks = [], isLoading } = useQuery({
@@ -334,8 +359,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     deleteTaskMutation.mutate(id);
   }, [deleteTaskMutation]);
 
-  const moveTask = useCallback((taskId: string, newStatus: Status) => {
-    updateTask(taskId, { status: newStatus });
+  const moveTask = useCallback((taskId: string, newStatus: string) => {
+    updateTask(taskId, { status: newStatus as Status });
   }, [updateTask]);
 
   const getSubtasks = useCallback((taskId: string) => {
@@ -416,6 +441,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     lists,
     tasks,
     teamMembers,
+    customStatuses,
+    allStatuses,
     selectedProjectId,
     selectedView,
     quickFilter,
@@ -443,7 +470,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     getFilteredTasks,
     getMemberById,
     getTaskBreadcrumb,
-  }), [spaces, projects, lists, tasks, teamMembers, selectedProjectId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, addTask, updateTask, deleteTask, moveTask, addSpace, addProject, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb]);
+    getStatusLabel,
+  }), [spaces, projects, lists, tasks, teamMembers, customStatuses, allStatuses, selectedProjectId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, addTask, updateTask, deleteTask, moveTask, addSpace, addProject, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb, getStatusLabel]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

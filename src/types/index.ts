@@ -1,7 +1,9 @@
 export type Priority = 'urgent' | 'high' | 'normal' | 'low';
-export type Status = 'todo' | 'in_progress' | 'in_review' | 'done' | 'blocked';
+export type Status = 'todo' | 'in_progress' | 'in_review' | 'done' | 'blocked' | (string & {});
 
-export const STATUS_LABELS: Record<Status, string> = {
+export const DEFAULT_STATUSES: Status[] = ['todo', 'in_progress', 'in_review', 'done', 'blocked'];
+
+export const STATUS_LABELS: Record<string, string> = {
   todo: 'À faire',
   in_progress: 'En cours',
   in_review: 'En revue',
@@ -15,6 +17,12 @@ export const PRIORITY_LABELS: Record<Priority, string> = {
   normal: 'Normale',
   low: 'Basse',
 };
+
+export interface CustomStatus {
+  id: string;
+  label: string;
+  sortOrder: number;
+}
 
 export interface TeamMember {
   id: string;

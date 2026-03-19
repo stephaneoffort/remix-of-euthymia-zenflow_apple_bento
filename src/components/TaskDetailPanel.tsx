@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
-import { Status, Priority, STATUS_LABELS, PRIORITY_LABELS } from '@/types';
+import { Status, Priority, PRIORITY_LABELS } from '@/types';
 import { PriorityBadge, StatusBadge, AvatarGroup } from '@/components/TaskBadges';
 import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Clock, Paperclip, ChevronDown, Maximize2, Minimize2 } from 'lucide-react';
 
 
 export default function TaskDetailPanel() {
-  const { selectedTaskId, setSelectedTaskId, getTaskById, updateTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks, teamMembers } = useApp();
+  const { selectedTaskId, setSelectedTaskId, getTaskById, updateTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks, teamMembers, allStatuses, getStatusLabel } = useApp();
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [addingSubtaskFor, setAddingSubtaskFor] = useState<string | null>(null);
   const [newComment, setNewComment] = useState('');
@@ -115,7 +115,7 @@ export default function TaskDetailPanel() {
                   onChange={e => updateTask(task.id, { status: e.target.value as Status })}
                   className="w-full text-sm bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
                 >
-                  {Object.entries(STATUS_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+                  {allStatuses.map(s => <option key={s} value={s}>{getStatusLabel(s)}</option>)}
                 </select>
               </div>
               <div>

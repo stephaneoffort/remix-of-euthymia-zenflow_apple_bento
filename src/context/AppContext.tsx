@@ -111,7 +111,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     queryFn: async () => {
       const { data, error } = await supabase.from('team_members').select('*');
       if (error) throw error;
-      return data.map(m => ({ id: m.id, name: m.name, role: m.role, avatarColor: m.avatar_color, email: m.email })) as TeamMember[];
+      return data.map(m => ({ id: m.id, name: m.name, role: m.role, avatarColor: m.avatar_color, avatarUrl: m.avatar_url, email: m.email })) as TeamMember[];
     },
   });
 

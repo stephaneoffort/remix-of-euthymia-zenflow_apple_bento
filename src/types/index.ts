@@ -21,6 +21,7 @@ export interface TeamMember {
   name: string;
   role: string;
   avatarColor: string;
+  avatarUrl: string | null;
   email: string;
 }
 

@@ -269,13 +269,26 @@ export default function AppSidebar() {
                   {space.name}
                 </span>
               )}
-              <button
-                onClick={() => setAddingProjectForSpace(space.id)}
-                className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-sidebar-hover text-sidebar-fg transition-all mr-1"
-                title="Ajouter un projet"
-              >
-                <Plus className="w-3.5 h-3.5" />
-              </button>
+              <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-all mr-1">
+                <button
+                  onClick={() => setAddingProjectForSpace(space.id)}
+                  className="p-1 rounded hover:bg-sidebar-hover text-sidebar-fg"
+                  title="Ajouter un projet"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  onClick={() => {
+                    if (confirm(`Supprimer l'espace "${space.name}" et tous ses projets ?`)) {
+                      deleteSpace(space.id);
+                    }
+                  }}
+                  className="p-1 rounded hover:bg-destructive/20 text-sidebar-fg hover:text-destructive"
+                  title="Supprimer l'espace"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
             {expandedSpaces.has(space.id) && (
               <div className="ml-4">

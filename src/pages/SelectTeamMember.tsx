@@ -74,7 +74,7 @@ export default function SelectTeamMember() {
       const memberId = `tm_${Date.now()}`;
       let avatarUrl: string | null = null;
 
-      // Upload avatar if provided
+      // Upload avatar if file provided, or use OAuth avatar URL
       if (avatarFile) {
         const ext = avatarFile.name.split('.').pop();
         const path = `${user.id}/${memberId}.${ext}`;
@@ -84,6 +84,9 @@ export default function SelectTeamMember() {
         if (uploadErr) throw uploadErr;
         const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path);
         avatarUrl = urlData.publicUrl;
+      } else if (avatarPreview && avatarPreview.startsWith('http')) {
+        // Use OAuth provider avatar URL directly
+        avatarUrl = avatarPreview;
       }
 
       // Create team member

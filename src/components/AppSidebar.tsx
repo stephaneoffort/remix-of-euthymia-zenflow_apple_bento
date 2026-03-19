@@ -205,6 +205,13 @@ export default function AppSidebar() {
             )}
           </button>
         ))}
+        <button
+          onClick={() => { navigate('/chat'); handleNavClick(); }}
+          className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors mt-1"
+        >
+          <MessageCircle className="w-4 h-4" />
+          Chat d'équipe
+        </button>
       </div>
 
       {/* Spaces & Projects */}

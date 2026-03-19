@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Filter, X, ChevronDown } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
-import { Status, Priority, STATUS_LABELS, PRIORITY_LABELS } from '@/types';
+import { Priority, PRIORITY_LABELS } from '@/types';
 import {
   Popover,
   PopoverContent,
@@ -32,10 +32,9 @@ function FilterChip({ label, values, displayValues, onRemove, onClear }: FilterC
 }
 
 export default function TaskFilterBar() {
-  const { advancedFilters, setAdvancedFilters, teamMembers, tasks } = useApp();
+  const { advancedFilters, setAdvancedFilters, teamMembers, tasks, allStatuses, getStatusLabel } = useApp();
   const [openFilter, setOpenFilter] = useState<FilterType | null>(null);
 
-  const allStatuses: Status[] = ['todo', 'in_progress', 'in_review', 'done', 'blocked'];
   const allPriorities: Priority[] = ['urgent', 'high', 'normal', 'low'];
   const allTags = Array.from(new Set(tasks.flatMap(t => t.tags))).sort();
 
@@ -59,12 +58,11 @@ export default function TaskFilterBar() {
 
   return (
     <div className="flex items-center gap-2 flex-wrap">
-      {/* Filter buttons */}
       <FilterDropdown
         label="Avancement"
         open={openFilter === 'status'}
         onOpenChange={(o) => setOpenFilter(o ? 'status' : null)}
-        options={allStatuses.map(s => ({ value: s, label: STATUS_LABELS[s] }))}
+        options={allStatuses.map(s => ({ value: s, label: getStatusLabel(s) }))}
         selected={advancedFilters.statuses}
         onToggle={(v) => toggleValue('statuses', v)}
       />
@@ -98,12 +96,11 @@ export default function TaskFilterBar() {
         />
       )}
 
-      {/* Active filter chips */}
       {advancedFilters.statuses.length > 0 && (
         <FilterChip
           label="Avancement"
           values={advancedFilters.statuses}
-          displayValues={advancedFilters.statuses.map(s => STATUS_LABELS[s as Status])}
+          displayValues={advancedFilters.statuses.map(s => getStatusLabel(s))}
           onRemove={(v) => toggleValue('statuses', v)}
           onClear={() => setAdvancedFilters({ ...advancedFilters, statuses: [] })}
         />

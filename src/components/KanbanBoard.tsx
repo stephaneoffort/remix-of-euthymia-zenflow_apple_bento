@@ -65,18 +65,18 @@ export default function KanbanBoard() {
   };
 
   return (
-    <div className="flex gap-4 p-6 overflow-x-auto h-full">
+    <div className="flex gap-3 sm:gap-4 p-3 sm:p-6 overflow-x-auto h-full">
       {STATUS_ORDER.map(status => (
         <div
           key={status}
-          className="flex flex-col w-72 shrink-0"
+          className="flex flex-col w-60 sm:w-72 shrink-0"
           onDragOver={e => e.preventDefault()}
           onDrop={e => handleDrop(e, status)}
         >
           {/* Column header */}
           <div className="flex items-center gap-2 mb-3 px-1">
             <div className={`w-2.5 h-2.5 rounded-full ${STATUS_COLORS[status]}`} />
-            <h3 className="font-semibold text-sm text-foreground">{STATUS_LABELS[status]}</h3>
+            <h3 className="font-semibold text-xs sm:text-sm text-foreground">{STATUS_LABELS[status]}</h3>
             <span className="text-xs text-muted-foreground ml-1">{tasksByStatus[status].length}</span>
             <button
               onClick={() => setNewTaskStatus(status)}
@@ -99,24 +99,24 @@ export default function KanbanBoard() {
                   draggable
                   onDragStart={e => handleDragStart(e, task.id)}
                   onClick={() => setSelectedTaskId(task.id)}
-                  className={`bg-card rounded-lg border p-3 cursor-pointer hover:shadow-md transition-shadow group ${
+                  className={`bg-card rounded-lg border p-2.5 sm:p-3 cursor-pointer hover:shadow-md transition-shadow group ${
                     draggedTaskId === task.id ? 'opacity-50' : ''
                   } ${isOverdue ? 'border-l-2 border-l-priority-urgent' : ''}`}
                 >
                   <div className="flex items-start gap-1.5">
-                    <GripVertical className="w-4 h-4 text-muted-foreground/40 opacity-0 group-hover:opacity-100 mt-0.5 shrink-0 cursor-grab" />
+                    <GripVertical className="w-4 h-4 text-muted-foreground/40 opacity-0 group-hover:opacity-100 mt-0.5 shrink-0 cursor-grab hidden sm:block" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground leading-snug mb-2">{task.title}</p>
-                      <div className="flex items-center gap-2 flex-wrap">
+                      <p className="text-xs sm:text-sm font-medium text-foreground leading-snug mb-1.5 sm:mb-2">{task.title}</p>
+                      <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                         <PriorityBadge priority={task.priority} />
                         {task.dueDate && (
-                          <span className={`text-xs ${isOverdue ? 'text-priority-urgent font-medium' : 'text-muted-foreground'}`}>
+                          <span className={`text-[10px] sm:text-xs ${isOverdue ? 'text-priority-urgent font-medium' : 'text-muted-foreground'}`}>
                             {new Date(task.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                           </span>
                         )}
                         <SubtaskProgress total={subtasks.length} done={doneSubtasks.length} />
                       </div>
-                      <div className="flex items-center justify-between mt-2">
+                      <div className="flex items-center justify-between mt-1.5 sm:mt-2">
                         <div className="flex gap-1 flex-wrap">
                           {task.tags.slice(0, 2).map(tag => (
                             <span key={tag} className="text-[10px] bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full">{tag}</span>
@@ -132,7 +132,7 @@ export default function KanbanBoard() {
 
             {/* Inline add task */}
             {newTaskStatus === status && (
-              <div className="bg-card rounded-lg border p-3">
+              <div className="bg-card rounded-lg border p-2.5 sm:p-3">
                 <input
                   autoFocus
                   value={newTaskTitle}

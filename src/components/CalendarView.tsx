@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useApp } from '@/context/AppContext';
-import { ChevronLeft, ChevronRight, Plus, Download } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Download, Calendar as CalendarIcon } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
@@ -20,6 +20,7 @@ import {
 
 const DAYS_FR = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 const DAYS_FR_SHORT = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+const DAYS_FR_FULL = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
 const MONTHS_FR = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
 const MONTHS_FR_SHORT = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
 
@@ -30,11 +31,17 @@ const PRIORITY_COLORS: Record<string, string> = {
   low: 'bg-muted text-muted-foreground',
 };
 
-function DraggableTask({ task, onClick, members }: { task: Task; onClick: () => void; members: { id: string; name: string; avatarColor: string }[] }) {
-  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
-    id: task.id,
-  });
+const STATUS_LABELS: Record<string, string> = {
+  todo: 'À faire',
+  in_progress: 'En cours',
+  in_review: 'En revue',
+  done: 'Terminé',
+};
 
+// ─── Desktop components ───
+
+function DraggableTask({ task, onClick, members }: { task: Task; onClick: () => void; members: { id: string; name: string; avatarColor: string }[] }) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: task.id });
   const assignees = members.filter(m => task.assigneeIds.includes(m.id));
 
   return (
@@ -45,9 +52,7 @@ function DraggableTask({ task, onClick, members }: { task: Task; onClick: () => 
           {...listeners}
           {...attributes}
           onClick={(e) => { e.stopPropagation(); onClick(); }}
-          className={`text-[9px] sm:text-[11px] px-1 sm:px-1.5 py-0.5 rounded bg-primary/10 text-primary truncate cursor-grab hover:bg-primary/20 transition-colors ${
-            isDragging ? 'opacity-30' : ''
-          }`}
+          className={`text-[11px] px-1.5 py-0.5 rounded bg-primary/10 text-primary truncate cursor-grab hover:bg-primary/20 transition-colors ${isDragging ? 'opacity-30' : ''}`}
         >
           {task.title}
         </div>
@@ -59,7 +64,7 @@ function DraggableTask({ task, onClick, members }: { task: Task; onClick: () => 
             {PRIORITY_LABELS[task.priority] || task.priority}
           </span>
           <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-muted text-muted-foreground">
-            {task.status === 'todo' ? 'À faire' : task.status === 'in_progress' ? 'En cours' : task.status === 'in_review' ? 'En revue' : task.status === 'done' ? 'Terminé' : task.status}
+            {STATUS_LABELS[task.status] || task.status}
           </span>
         </div>
         {assignees.length > 0 && (
@@ -92,31 +97,25 @@ function DraggableTask({ task, onClick, members }: { task: Task; onClick: () => 
   );
 }
 
-function DroppableDay({ dateStr, isCurrentMonth, isToday, dayNum, children, isMobile, onAddClick }: {
-  dateStr: string;
-  isCurrentMonth: boolean;
-  isToday: boolean;
-  dayNum: number;
-  children: React.ReactNode;
-  isMobile: boolean;
-  onAddClick: () => void;
+function DroppableDay({ dateStr, isCurrentMonth, isToday, dayNum, children, onAddClick }: {
+  dateStr: string; isCurrentMonth: boolean; isToday: boolean; dayNum: number; children: React.ReactNode; onAddClick: () => void;
 }) {
   const { isOver, setNodeRef } = useDroppable({ id: dateStr });
 
   return (
     <div
       ref={setNodeRef}
-      className={`group min-h-[48px] sm:min-h-[100px] p-1 sm:p-1.5 border-b border-r border-border transition-colors ${
+      className={`group min-h-[100px] p-1.5 border-b border-r border-border transition-colors ${
         isCurrentMonth ? 'bg-card' : 'bg-muted/20'
       } ${isOver ? 'bg-primary/10 ring-1 ring-inset ring-primary/30' : ''}`}
     >
       <div className="flex items-center justify-between">
-        <span className={`text-[10px] sm:text-xs font-medium inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full ${
+        <span className={`text-xs font-medium inline-flex items-center justify-center w-6 h-6 rounded-full ${
           isToday ? 'bg-primary text-primary-foreground' : isCurrentMonth ? 'text-foreground' : 'text-muted-foreground/50'
         }`}>
           {dayNum}
         </span>
-        {isCurrentMonth && !isMobile && (
+        {isCurrentMonth && (
           <button
             onClick={(e) => { e.stopPropagation(); onAddClick(); }}
             className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-muted transition-all"
@@ -126,16 +125,77 @@ function DroppableDay({ dateStr, isCurrentMonth, isToday, dayNum, children, isMo
           </button>
         )}
       </div>
-      <div className="mt-0.5 sm:mt-1 space-y-0.5">
-        {children}
-      </div>
+      <div className="mt-1 space-y-0.5">{children}</div>
     </div>
   );
 }
 
+// ─── Mobile components ───
+
+function MobileTaskCard({ task, onClick, members }: { task: Task; onClick: () => void; members: { id: string; name: string; avatarColor: string }[] }) {
+  const assignees = members.filter(m => task.assigneeIds.includes(m.id));
+
+  return (
+    <button
+      onClick={onClick}
+      className="w-full text-left p-3 rounded-lg bg-card border border-border hover:border-primary/30 hover:bg-accent/30 transition-colors"
+    >
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-sm font-medium text-foreground leading-tight flex-1">{task.title}</p>
+        <span className={`shrink-0 px-1.5 py-0.5 rounded text-[10px] font-medium ${PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.normal}`}>
+          {PRIORITY_LABELS[task.priority] || task.priority}
+        </span>
+      </div>
+      <div className="flex items-center gap-2 mt-2">
+        <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-muted text-muted-foreground">
+          {STATUS_LABELS[task.status] || task.status}
+        </span>
+        {assignees.length > 0 && (
+          <div className="flex -space-x-1">
+            {assignees.slice(0, 3).map(a => (
+              <span key={a.id} className="w-5 h-5 rounded-full text-[9px] font-bold text-white flex items-center justify-center border-2 border-card" style={{ backgroundColor: a.avatarColor }}>
+                {a.name.charAt(0).toUpperCase()}
+              </span>
+            ))}
+          </div>
+        )}
+        {task.tags.length > 0 && (
+          <div className="flex gap-1 overflow-hidden flex-1">
+            {task.tags.slice(0, 2).map(tag => (
+              <Badge key={tag} variant="secondary" className="text-[9px] px-1 py-0 shrink-0">{tag}</Badge>
+            ))}
+          </div>
+        )}
+      </div>
+    </button>
+  );
+}
+
+function getWeekDays(date: Date): Date[] {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day; // Monday start
+  const monday = new Date(d);
+  monday.setDate(d.getDate() + diff);
+  const days: Date[] = [];
+  for (let i = 0; i < 7; i++) {
+    const dd = new Date(monday);
+    dd.setDate(monday.getDate() + i);
+    days.push(dd);
+  }
+  return days;
+}
+
+function toDateStr(d: Date): string {
+  return d.toISOString().split('T')[0];
+}
+
+// ─── Main component ───
+
 export default function CalendarView() {
   const { getFilteredTasks, setSelectedTaskId, addTask, updateTask, selectedProjectId, getListsForProject, teamMembers } = useApp();
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDay, setSelectedDay] = useState(new Date());
   const [addingForDate, setAddingForDate] = useState<string | null>(null);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
@@ -157,8 +217,7 @@ export default function CalendarView() {
 
     const days: { date: Date; isCurrentMonth: boolean }[] = [];
     for (let i = startDay - 1; i >= 0; i--) {
-      const d = new Date(year, month, -i);
-      days.push({ date: d, isCurrentMonth: false });
+      days.push({ date: new Date(year, month, -i), isCurrentMonth: false });
     }
     for (let i = 1; i <= lastDay.getDate(); i++) {
       days.push({ date: new Date(year, month, i), isCurrentMonth: true });
@@ -171,174 +230,236 @@ export default function CalendarView() {
   }, [year, month]);
 
   const tasksByDate = useMemo(() => {
-    const map = new Map<string, typeof tasks>();
+    const map = new Map<string, Task[]>();
     tasks.forEach(t => {
       if (t.dueDate) {
-        const key = t.dueDate;
-        if (!map.has(key)) map.set(key, []);
-        map.get(key)!.push(t);
+        if (!map.has(t.dueDate)) map.set(t.dueDate, []);
+        map.get(t.dueDate)!.push(t);
       }
     });
     return map;
   }, [tasks]);
 
-  const today = new Date().toISOString().split('T')[0];
-  const maxTasks = isMobile ? 1 : 3;
-  const dayLabels = isMobile ? DAYS_FR_SHORT : DAYS_FR;
-  const monthLabel = isMobile ? MONTHS_FR_SHORT[month] : MONTHS_FR[month];
-
+  const today = toDateStr(new Date());
   const activeTask = activeTaskId ? tasks.find(t => t.id === activeTaskId) : null;
+
+  // Mobile: week days
+  const weekDays = useMemo(() => getWeekDays(selectedDay), [selectedDay]);
+  const selectedDateStr = toDateStr(selectedDay);
+  const selectedDayTasks = tasksByDate.get(selectedDateStr) || [];
 
   const handleAddTask = (dateStr: string) => {
     if (!newTaskTitle.trim()) return;
     const lists = selectedProjectId ? getListsForProject(selectedProjectId) : [];
     const listId = lists[0]?.id || 'l1';
     addTask({
-      title: newTaskTitle.trim(),
-      description: '',
-      status: 'todo',
-      priority: 'normal',
-      dueDate: dateStr,
-      startDate: null,
-      assigneeIds: [],
-      tags: [],
-      parentTaskId: null,
-      listId,
-      comments: [],
-      attachments: [],
-      timeEstimate: null,
-      timeLogged: null,
-      aiSummary: null,
+      title: newTaskTitle.trim(), description: '', status: 'todo', priority: 'normal',
+      dueDate: dateStr, startDate: null, assigneeIds: [], tags: [],
+      parentTaskId: null, listId, comments: [], attachments: [],
+      timeEstimate: null, timeLogged: null, aiSummary: null,
     });
     setNewTaskTitle('');
     setAddingForDate(null);
   };
 
-  const handleDragStart = (event: DragStartEvent) => {
-    setActiveTaskId(event.active.id as string);
-  };
-
+  const handleDragStart = (event: DragStartEvent) => setActiveTaskId(event.active.id as string);
   const handleDragEnd = (event: DragEndEvent) => {
     setActiveTaskId(null);
     const { active, over } = event;
     if (!over) return;
-
-    const taskId = active.id as string;
-    const newDate = over.id as string;
-    const task = tasks.find(t => t.id === taskId);
-    if (task && task.dueDate !== newDate) {
-      updateTask(taskId, { dueDate: newDate });
-    }
+    const task = tasks.find(t => t.id === active.id);
+    if (task && task.dueDate !== over.id) updateTask(active.id as string, { dueDate: over.id as string });
   };
 
   const exportToICS = () => {
     const tasksWithDue = tasks.filter(t => t.dueDate);
     if (tasksWithDue.length === 0) return;
-
     const escapeICS = (str: string) => str.replace(/[\\;,\n]/g, (m) => m === '\n' ? '\\n' : `\\${m}`);
     const formatDate = (dateStr: string) => dateStr.replace(/-/g, '');
-
     const events = tasksWithDue.map(t => {
       const dtStart = formatDate(t.dueDate!);
-      const uid = `${t.id}@euthymia`;
       return [
-        'BEGIN:VEVENT',
-        `UID:${uid}`,
-        `DTSTART;VALUE=DATE:${dtStart}`,
-        `DTEND;VALUE=DATE:${dtStart}`,
-        `SUMMARY:${escapeICS(t.title)}`,
-        t.description ? `DESCRIPTION:${escapeICS(t.description)}` : '',
+        'BEGIN:VEVENT', `UID:${t.id}@euthymia`, `DTSTART;VALUE=DATE:${dtStart}`, `DTEND;VALUE=DATE:${dtStart}`,
+        `SUMMARY:${escapeICS(t.title)}`, t.description ? `DESCRIPTION:${escapeICS(t.description)}` : '',
         `STATUS:${t.status === 'done' ? 'COMPLETED' : 'NEEDS-ACTION'}`,
         `PRIORITY:${t.priority === 'urgent' ? 1 : t.priority === 'high' ? 3 : t.priority === 'normal' ? 5 : 9}`,
         'END:VEVENT',
       ].filter(Boolean).join('\r\n');
     });
-
-    const ics = [
-      'BEGIN:VCALENDAR',
-      'VERSION:2.0',
-      'PRODID:-//Euthymia//Tasks//FR',
-      'CALSCALE:GREGORIAN',
-      'METHOD:PUBLISH',
-      'X-WR-CALNAME:Euthymia - Tâches',
-      ...events,
-      'END:VCALENDAR',
-    ].join('\r\n');
-
+    const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Euthymia//Tasks//FR', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', 'X-WR-CALNAME:Euthymia - Tâches', ...events, 'END:VCALENDAR'].join('\r\n');
     const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'euthymia-taches.ics';
-    a.click();
+    const a = document.createElement('a'); a.href = url; a.download = 'euthymia-taches.ics'; a.click();
     URL.revokeObjectURL(url);
   };
 
+  const navigateWeek = (dir: number) => {
+    const d = new Date(selectedDay);
+    d.setDate(d.getDate() + dir * 7);
+    setSelectedDay(d);
+  };
+
+  // ─── Mobile layout: week strip + agenda ───
+  if (isMobile) {
+    const dayOfWeek = selectedDay.getDay();
+    const frDayIndex = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+
+    return (
+      <div className="flex flex-col h-full">
+        {/* Header */}
+        <div className="flex items-center justify-between px-3 py-2">
+          <h2 className="text-sm font-bold text-foreground">
+            {MONTHS_FR_SHORT[selectedDay.getMonth()]} {selectedDay.getFullYear()}
+          </h2>
+          <div className="flex items-center gap-1">
+            <button onClick={exportToICS} className="p-1.5 hover:bg-muted rounded-md transition-colors">
+              <Download className="w-4 h-4 text-muted-foreground" />
+            </button>
+            <button onClick={() => navigateWeek(-1)} className="p-1.5 hover:bg-muted rounded-md transition-colors">
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button onClick={() => setSelectedDay(new Date())} className="px-2 py-1 text-xs hover:bg-muted rounded-md transition-colors font-medium">
+              Auj.
+            </button>
+            <button onClick={() => navigateWeek(1)} className="p-1.5 hover:bg-muted rounded-md transition-colors">
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* Week strip */}
+        <div className="grid grid-cols-7 gap-1 px-2 pb-2">
+          {weekDays.map((d, i) => {
+            const ds = toDateStr(d);
+            const isSelected = ds === selectedDateStr;
+            const isToday = ds === today;
+            const hasTasks = tasksByDate.has(ds);
+
+            return (
+              <button
+                key={i}
+                onClick={() => setSelectedDay(new Date(d))}
+                className={`flex flex-col items-center py-1.5 rounded-xl transition-all ${
+                  isSelected
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : isToday
+                    ? 'bg-accent text-accent-foreground'
+                    : 'hover:bg-muted'
+                }`}
+              >
+                <span className={`text-[10px] font-medium ${isSelected ? 'text-primary-foreground' : 'text-muted-foreground'}`}>
+                  {DAYS_FR_SHORT[i]}
+                </span>
+                <span className={`text-sm font-bold mt-0.5 ${isSelected ? 'text-primary-foreground' : 'text-foreground'}`}>
+                  {d.getDate()}
+                </span>
+                {hasTasks && !isSelected && (
+                  <span className="w-1 h-1 rounded-full bg-primary mt-0.5" />
+                )}
+                {hasTasks && isSelected && (
+                  <span className="w-1 h-1 rounded-full bg-primary-foreground mt-0.5" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Day label */}
+        <div className="px-3 py-1.5 border-t border-border bg-muted/30">
+          <p className="text-xs font-semibold text-foreground">
+            {DAYS_FR_FULL[frDayIndex]} {selectedDay.getDate()} {MONTHS_FR[selectedDay.getMonth()]}
+          </p>
+        </div>
+
+        {/* Task list (agenda) */}
+        <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2">
+          {selectedDayTasks.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+              <CalendarIcon className="w-10 h-10 mb-3 opacity-30" />
+              <p className="text-sm font-medium">Aucune tâche</p>
+              <p className="text-xs mt-1">Appuyez sur + pour en ajouter une</p>
+            </div>
+          ) : (
+            selectedDayTasks.map(t => (
+              <MobileTaskCard key={t.id} task={t} onClick={() => setSelectedTaskId(t.id)} members={teamMembers} />
+            ))
+          )}
+
+          {/* Inline add */}
+          {addingForDate === selectedDateStr ? (
+            <input
+              autoFocus
+              value={newTaskTitle}
+              onChange={e => setNewTaskTitle(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter') handleAddTask(selectedDateStr);
+                if (e.key === 'Escape') { setAddingForDate(null); setNewTaskTitle(''); }
+              }}
+              onBlur={() => { if (newTaskTitle.trim()) handleAddTask(selectedDateStr); else { setAddingForDate(null); setNewTaskTitle(''); } }}
+              placeholder="Nouvelle tâche..."
+              className="w-full text-sm px-3 py-2.5 rounded-lg border border-primary/40 bg-background text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/30"
+            />
+          ) : (
+            <button
+              onClick={() => setAddingForDate(selectedDateStr)}
+              className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg border border-dashed border-border text-muted-foreground hover:border-primary/30 hover:text-primary transition-colors text-sm"
+            >
+              <Plus className="w-4 h-4" />
+              Ajouter une tâche
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Desktop layout: full month grid ───
+  const monthLabel = MONTHS_FR[month];
+
   return (
-    <div className="p-2 sm:p-6 h-full flex flex-col">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-2 sm:mb-4">
-        <h2 className="text-sm sm:text-lg font-bold text-foreground">
-          {monthLabel} {year}
-        </h2>
-        <div className="flex items-center gap-1 sm:gap-2">
+    <div className="p-6 h-full flex flex-col">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-bold text-foreground">{monthLabel} {year}</h2>
+        <div className="flex items-center gap-2">
           <Tooltip>
             <TooltipTrigger asChild>
-              <button
-                onClick={exportToICS}
-                className="p-1.5 sm:p-2 hover:bg-muted rounded-md transition-colors"
-                title="Exporter vers Google Agenda / iCal"
-              >
+              <button onClick={exportToICS} className="p-2 hover:bg-muted rounded-md transition-colors" title="Exporter vers Google Agenda / iCal">
                 <Download className="w-4 h-4 text-muted-foreground" />
               </button>
             </TooltipTrigger>
             <TooltipContent>Exporter (.ics) – Google Agenda, Outlook, Apple…</TooltipContent>
           </Tooltip>
-          <div className="flex gap-0.5 sm:gap-1">
-            <button onClick={() => setCurrentDate(new Date(year, month - 1, 1))} className="p-1.5 sm:p-2 hover:bg-muted rounded-md transition-colors">
+          <div className="flex gap-1">
+            <button onClick={() => setCurrentDate(new Date(year, month - 1, 1))} className="p-2 hover:bg-muted rounded-md transition-colors">
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <button onClick={() => setCurrentDate(new Date())} className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm hover:bg-muted rounded-md transition-colors font-medium">
-              {isMobile ? 'Auj.' : "Aujourd'hui"}
+            <button onClick={() => setCurrentDate(new Date())} className="px-3 py-1.5 text-sm hover:bg-muted rounded-md transition-colors font-medium">
+              Aujourd'hui
             </button>
-            <button onClick={() => setCurrentDate(new Date(year, month + 1, 1))} className="p-1.5 sm:p-2 hover:bg-muted rounded-md transition-colors">
+            <button onClick={() => setCurrentDate(new Date(year, month + 1, 1))} className="p-2 hover:bg-muted rounded-md transition-colors">
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Grid */}
       <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <div className="grid grid-cols-7 border border-border rounded-lg overflow-hidden flex-1">
-          {dayLabels.map((d, i) => (
-            <div key={i} className="py-1 sm:py-2 text-center text-[10px] sm:text-xs font-semibold text-muted-foreground bg-muted/30 border-b border-border">{d}</div>
+          {DAYS_FR.map((d, i) => (
+            <div key={i} className="py-2 text-center text-xs font-semibold text-muted-foreground bg-muted/30 border-b border-border">{d}</div>
           ))}
           {calendarDays.map((day, i) => {
-            const dateStr = day.date.toISOString().split('T')[0];
+            const dateStr = toDateStr(day.date);
             const dayTasks = tasksByDate.get(dateStr) || [];
             const isToday = dateStr === today;
 
             return (
-              <DroppableDay
-                key={i}
-                dateStr={dateStr}
-                isCurrentMonth={day.isCurrentMonth}
-                isToday={isToday}
-                dayNum={day.date.getDate()}
-                isMobile={isMobile}
-                onAddClick={() => setAddingForDate(dateStr)}
-              >
-                {dayTasks.slice(0, maxTasks).map(t => (
-                  <DraggableTask
-                    key={t.id}
-                    task={t}
-                    onClick={() => setSelectedTaskId(t.id)}
-                    members={teamMembers}
-                  />
+              <DroppableDay key={i} dateStr={dateStr} isCurrentMonth={day.isCurrentMonth} isToday={isToday} dayNum={day.date.getDate()} onAddClick={() => setAddingForDate(dateStr)}>
+                {dayTasks.slice(0, 3).map(t => (
+                  <DraggableTask key={t.id} task={t} onClick={() => setSelectedTaskId(t.id)} members={teamMembers} />
                 ))}
-                {dayTasks.length > maxTasks && (
-                  <span className="text-[9px] sm:text-[10px] text-muted-foreground px-1">+{dayTasks.length - maxTasks}</span>
+                {dayTasks.length > 3 && (
+                  <span className="text-[10px] text-muted-foreground px-1">+{dayTasks.length - 3}</span>
                 )}
                 {addingForDate === dateStr && (
                   <input
@@ -351,7 +472,7 @@ export default function CalendarView() {
                     }}
                     onBlur={() => { if (newTaskTitle.trim()) handleAddTask(dateStr); else { setAddingForDate(null); setNewTaskTitle(''); } }}
                     placeholder="Tâche..."
-                    className="w-full text-[10px] sm:text-[11px] px-1 py-0.5 rounded border border-primary/40 bg-background text-foreground placeholder:text-muted-foreground outline-none focus:ring-1 focus:ring-primary"
+                    className="w-full text-[11px] px-1 py-0.5 rounded border border-primary/40 bg-background text-foreground placeholder:text-muted-foreground outline-none focus:ring-1 focus:ring-primary"
                   />
                 )}
               </DroppableDay>

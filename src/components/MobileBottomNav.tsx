@@ -40,7 +40,7 @@ export default function MobileBottomNav() {
     if (!isHome) navigate('/');
   };
 
-  const views: ViewType[] = ['list', 'kanban', 'calendar', 'workload'];
+  const views: ViewType[] = ['list', 'kanban', 'calendar', 'workload', 'mindmap'];
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border safe-area-bottom">

@@ -342,11 +342,7 @@ export default function AppSidebar() {
                         <span className="truncate">{project.name}</span>
                       </button>
                       <button
-                        onClick={() => {
-                          if (confirm(`Supprimer le projet "${project.name}" et toutes ses tâches ?`)) {
-                            deleteProject(project.id);
-                          }
-                        }}
+                        onClick={() => setDeleteConfirm({ type: 'project', id: project.id, name: project.name })}
                         className="opacity-0 group-hover/project:opacity-100 p-1 rounded hover:bg-destructive/20 text-sidebar-fg hover:text-destructive transition-all mr-1"
                         title="Supprimer le projet"
                       >

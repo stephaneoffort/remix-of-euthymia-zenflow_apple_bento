@@ -90,7 +90,7 @@ function DraggableTask({ task, onClick, members }: { task: Task; onClick: () => 
           </div>
         )}
         {task.dueDate && (
-          <p className="text-muted-foreground">Échéance : {new Date(task.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</p>
+          <p className="text-muted-foreground">Échéance : {new Date(task.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}{task.dueDate.includes('T') && !task.dueDate.endsWith('T00:00:00.000Z') ? ` à ${new Date(task.dueDate).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}` : ''}</p>
         )}
       </HoverCardContent>
     </HoverCard>

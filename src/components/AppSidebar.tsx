@@ -6,6 +6,10 @@ import { useAuth } from '@/context/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
 import { QuickFilter, ViewType } from '@/types';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 const QUICK_FILTERS: { key: QuickFilter; label: string; icon: React.ReactNode }[] = [
   { key: 'all', label: 'Toutes les tâches', icon: <LayoutGrid className="w-4 h-4" /> },
@@ -44,6 +48,7 @@ export default function AppSidebar() {
   const [editingSpaceName, setEditingSpaceName] = useState('');
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
   const [editingProjectName, setEditingProjectName] = useState('');
+  const [deleteConfirm, setDeleteConfirm] = useState<{ type: 'space' | 'project'; id: string; name: string } | null>(null);
 
   useEffect(() => {
     if (isMobile) setSidebarCollapsed(true);
@@ -278,11 +283,7 @@ export default function AppSidebar() {
                   <Plus className="w-3.5 h-3.5" />
                 </button>
                 <button
-                  onClick={() => {
-                    if (confirm(`Supprimer l'espace "${space.name}" et tous ses projets ?`)) {
-                      deleteSpace(space.id);
-                    }
-                  }}
+                  onClick={() => setDeleteConfirm({ type: 'space', id: space.id, name: space.name })}
                   className="p-1 rounded hover:bg-destructive/20 text-sidebar-fg hover:text-destructive"
                   title="Supprimer l'espace"
                 >
@@ -341,11 +342,7 @@ export default function AppSidebar() {
                         <span className="truncate">{project.name}</span>
                       </button>
                       <button
-                        onClick={() => {
-                          if (confirm(`Supprimer le projet "${project.name}" et toutes ses tâches ?`)) {
-                            deleteProject(project.id);
-                          }
-                        }}
+                        onClick={() => setDeleteConfirm({ type: 'project', id: project.id, name: project.name })}
                         className="opacity-0 group-hover/project:opacity-100 p-1 rounded hover:bg-destructive/20 text-sidebar-fg hover:text-destructive transition-all mr-1"
                         title="Supprimer le projet"
                       >
@@ -435,6 +432,39 @@ export default function AppSidebar() {
         <AdminSettingsLink />
         <LogoutButton />
       </div>
+
+      {/* Delete confirmation dialog */}
+      <AlertDialog open={!!deleteConfirm} onOpenChange={(open) => { if (!open) setDeleteConfirm(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteConfirm?.type === 'space'
+                ? `Supprimer l'espace "${deleteConfirm?.name}" et tous ses projets ?`
+                : `Supprimer le projet "${deleteConfirm?.name}" et toutes ses tâches ?`}
+              {' '}Cette action est irréversible.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={(e) => {
+                e.preventDefault();
+                const dc = deleteConfirm;
+                if (dc?.type === 'space') {
+                  deleteSpace(dc.id);
+                } else if (dc?.type === 'project') {
+                  deleteProject(dc.id);
+                }
+                setDeleteConfirm(null);
+              }}
+            >
+              Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
     </>
   );

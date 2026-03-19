@@ -1,24 +1,99 @@
 import React, { useState, useMemo } from 'react';
 import { useApp } from '@/context/AppContext';
-import { PriorityBadge } from '@/components/TaskBadges';
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  useDroppable,
+  useDraggable,
+  type DragStartEvent,
+  type DragEndEvent,
+} from '@dnd-kit/core';
 
 const DAYS_FR = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 const DAYS_FR_SHORT = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
 const MONTHS_FR = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
 const MONTHS_FR_SHORT = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
 
+function DraggableTask({ task, onClick }: { task: { id: string; title: string }; onClick: () => void }) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: task.id,
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      onClick={(e) => { e.stopPropagation(); onClick(); }}
+      className={`text-[9px] sm:text-[11px] px-1 sm:px-1.5 py-0.5 rounded bg-primary/10 text-primary truncate cursor-grab hover:bg-primary/20 transition-colors ${
+        isDragging ? 'opacity-30' : ''
+      }`}
+    >
+      {task.title}
+    </div>
+  );
+}
+
+function DroppableDay({ dateStr, isCurrentMonth, isToday, dayNum, children, isMobile, onAddClick }: {
+  dateStr: string;
+  isCurrentMonth: boolean;
+  isToday: boolean;
+  dayNum: number;
+  children: React.ReactNode;
+  isMobile: boolean;
+  onAddClick: () => void;
+}) {
+  const { isOver, setNodeRef } = useDroppable({ id: dateStr });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`group min-h-[48px] sm:min-h-[100px] p-1 sm:p-1.5 border-b border-r border-border transition-colors ${
+        isCurrentMonth ? 'bg-card' : 'bg-muted/20'
+      } ${isOver ? 'bg-primary/10 ring-1 ring-inset ring-primary/30' : ''}`}
+    >
+      <div className="flex items-center justify-between">
+        <span className={`text-[10px] sm:text-xs font-medium inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full ${
+          isToday ? 'bg-primary text-primary-foreground' : isCurrentMonth ? 'text-foreground' : 'text-muted-foreground/50'
+        }`}>
+          {dayNum}
+        </span>
+        {isCurrentMonth && !isMobile && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onAddClick(); }}
+            className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-muted transition-all"
+            title="Ajouter une tâche"
+          >
+            <Plus className="w-3 h-3 text-muted-foreground" />
+          </button>
+        )}
+      </div>
+      <div className="mt-0.5 sm:mt-1 space-y-0.5">
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export default function CalendarView() {
-  const { getFilteredTasks, setSelectedTaskId, addTask, selectedProjectId, getListsForProject } = useApp();
+  const { getFilteredTasks, setSelectedTaskId, addTask, updateTask, selectedProjectId, getListsForProject } = useApp();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [addingForDate, setAddingForDate] = useState<string | null>(null);
   const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
   const isMobile = useIsMobile();
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+  );
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
-
   const tasks = getFilteredTasks();
 
   const calendarDays = useMemo(() => {
@@ -59,6 +134,8 @@ export default function CalendarView() {
   const dayLabels = isMobile ? DAYS_FR_SHORT : DAYS_FR;
   const monthLabel = isMobile ? MONTHS_FR_SHORT[month] : MONTHS_FR[month];
 
+  const activeTask = activeTaskId ? tasks.find(t => t.id === activeTaskId) : null;
+
   const handleAddTask = (dateStr: string) => {
     if (!newTaskTitle.trim()) return;
     const lists = selectedProjectId ? getListsForProject(selectedProjectId) : [];
@@ -84,6 +161,23 @@ export default function CalendarView() {
     setAddingForDate(null);
   };
 
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveTaskId(event.active.id as string);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    setActiveTaskId(null);
+    const { active, over } = event;
+    if (!over) return;
+
+    const taskId = active.id as string;
+    const newDate = over.id as string;
+    const task = tasks.find(t => t.id === taskId);
+    if (task && task.dueDate !== newDate) {
+      updateTask(taskId, { dueDate: newDate });
+    }
+  };
+
   return (
     <div className="p-2 sm:p-6 h-full flex flex-col">
       {/* Header */}
@@ -105,47 +199,32 @@ export default function CalendarView() {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-7 border border-border rounded-lg overflow-hidden flex-1">
-        {dayLabels.map((d, i) => (
-          <div key={i} className="py-1 sm:py-2 text-center text-[10px] sm:text-xs font-semibold text-muted-foreground bg-muted/30 border-b border-border">{d}</div>
-        ))}
-        {calendarDays.map((day, i) => {
-          const dateStr = day.date.toISOString().split('T')[0];
-          const dayTasks = tasksByDate.get(dateStr) || [];
-          const isToday = dateStr === today;
+      <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+        <div className="grid grid-cols-7 border border-border rounded-lg overflow-hidden flex-1">
+          {dayLabels.map((d, i) => (
+            <div key={i} className="py-1 sm:py-2 text-center text-[10px] sm:text-xs font-semibold text-muted-foreground bg-muted/30 border-b border-border">{d}</div>
+          ))}
+          {calendarDays.map((day, i) => {
+            const dateStr = day.date.toISOString().split('T')[0];
+            const dayTasks = tasksByDate.get(dateStr) || [];
+            const isToday = dateStr === today;
 
-          return (
-            <div
-              key={i}
-              className={`group min-h-[48px] sm:min-h-[100px] p-1 sm:p-1.5 border-b border-r border-border ${
-                day.isCurrentMonth ? 'bg-card' : 'bg-muted/20'
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <span className={`text-[10px] sm:text-xs font-medium inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full ${
-                  isToday ? 'bg-primary text-primary-foreground' : day.isCurrentMonth ? 'text-foreground' : 'text-muted-foreground/50'
-                }`}>
-                  {day.date.getDate()}
-                </span>
-                {day.isCurrentMonth && !isMobile && (
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setAddingForDate(dateStr); }}
-                    className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-muted transition-all"
-                    title="Ajouter une tâche"
-                  >
-                    <Plus className="w-3 h-3 text-muted-foreground" />
-                  </button>
-                )}
-              </div>
-              <div className="mt-0.5 sm:mt-1 space-y-0.5">
+            return (
+              <DroppableDay
+                key={i}
+                dateStr={dateStr}
+                isCurrentMonth={day.isCurrentMonth}
+                isToday={isToday}
+                dayNum={day.date.getDate()}
+                isMobile={isMobile}
+                onAddClick={() => setAddingForDate(dateStr)}
+              >
                 {dayTasks.slice(0, maxTasks).map(t => (
-                  <div
+                  <DraggableTask
                     key={t.id}
+                    task={t}
                     onClick={() => setSelectedTaskId(t.id)}
-                    className="text-[9px] sm:text-[11px] px-1 sm:px-1.5 py-0.5 rounded bg-primary/10 text-primary truncate cursor-pointer hover:bg-primary/20 transition-colors"
-                  >
-                    {t.title}
-                  </div>
+                  />
                 ))}
                 {dayTasks.length > maxTasks && (
                   <span className="text-[9px] sm:text-[10px] text-muted-foreground px-1">+{dayTasks.length - maxTasks}</span>
@@ -164,11 +243,19 @@ export default function CalendarView() {
                     className="w-full text-[10px] sm:text-[11px] px-1 py-0.5 rounded border border-primary/40 bg-background text-foreground placeholder:text-muted-foreground outline-none focus:ring-1 focus:ring-primary"
                   />
                 )}
-              </div>
+              </DroppableDay>
+            );
+          })}
+        </div>
+
+        <DragOverlay>
+          {activeTask ? (
+            <div className="text-[11px] px-1.5 py-0.5 rounded bg-primary/20 text-primary shadow-lg border border-primary/30 max-w-[150px] truncate">
+              {activeTask.title}
             </div>
-          );
-        })}
-      </div>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
     </div>
   );
 }

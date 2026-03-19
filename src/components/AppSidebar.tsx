@@ -525,7 +525,27 @@ export default function AppSidebar() {
   );
 }
 
-function CurrentUserBadge() {
+function ChatLink({ handleNavClick }: { handleNavClick: () => void }) {
+  const navigate = useNavigate();
+  const { unreadCount } = useChatNotifications();
+
+  return (
+    <button
+      onClick={() => { navigate('/chat'); handleNavClick(); }}
+      className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors mt-1"
+    >
+      <MessageCircle className="w-4 h-4" />
+      Chat d'équipe
+      {unreadCount > 0 && (
+        <span className="ml-auto text-xs bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
+          {unreadCount > 99 ? '99+' : unreadCount}
+        </span>
+      )}
+    </button>
+  );
+}
+
+
   const { teamMemberId } = useAuth();
   const { teamMembers } = useApp();
   const member = teamMembers.find(m => m.id === teamMemberId);

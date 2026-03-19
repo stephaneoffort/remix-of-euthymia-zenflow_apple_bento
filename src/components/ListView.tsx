@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
-import { STATUS_LABELS, PRIORITY_LABELS, Status, Priority } from '@/types';
+import { PRIORITY_LABELS, Status, Priority } from '@/types';
 import { PriorityBadge, StatusBadge, AvatarGroup, SubtaskProgress } from '@/components/TaskBadges';
 import { ChevronRight, ChevronDown, ArrowUpDown } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';

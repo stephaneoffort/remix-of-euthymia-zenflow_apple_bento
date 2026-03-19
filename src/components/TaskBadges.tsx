@@ -16,15 +16,15 @@ export function PriorityBadge({ priority }: { priority: Priority }) {
   );
 }
 
-export function StatusBadge({ status }: { status: Status }) {
-  const config: Record<Status, { label: string; className: string; icon: React.ReactNode }> = {
+export function StatusBadge({ status }: { status: string }) {
+  const config: Record<string, { label: string; className: string; icon: React.ReactNode }> = {
     todo: { label: 'À faire', className: 'bg-status-todo/15 text-status-todo', icon: <Circle className="w-3 h-3" /> },
     in_progress: { label: 'En cours', className: 'bg-status-progress/15 text-status-progress', icon: <Loader className="w-3 h-3" /> },
     in_review: { label: 'En revue', className: 'bg-status-review/15 text-status-review', icon: <Eye className="w-3 h-3" /> },
     done: { label: 'Terminé', className: 'bg-status-done/15 text-status-done', icon: <CheckCircle className="w-3 h-3" /> },
     blocked: { label: 'Bloqué', className: 'bg-status-blocked/15 text-status-blocked', icon: <Ban className="w-3 h-3" /> },
   };
-  const c = config[status];
+  const c = config[status] || { label: status, className: 'bg-primary/15 text-primary', icon: <Circle className="w-3 h-3" /> };
   return (
     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${c.className}`}>
       {c.icon}{c.label}

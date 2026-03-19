@@ -33,6 +33,7 @@ const VIEW_OPTIONS: { key: ViewType; label: string; icon: React.ReactNode }[] = 
   { key: 'list', label: 'Liste', icon: <List className="w-4 h-4" /> },
   { key: 'calendar', label: 'Calendrier', icon: <Calendar className="w-4 h-4" /> },
   { key: 'workload', label: 'Charge', icon: <BarChart3 className="w-4 h-4" /> },
+  { key: 'mindmap', label: 'Carte', icon: <GitFork className="w-4 h-4" /> },
 ];
 
 const SPACE_ICONS = ['📁', '🚀', '💡', '🎯', '📊', '🛠️', '📚', '🌟', '🧘', '🎨'];

@@ -64,6 +64,7 @@ export default function Index() {
           {selectedView === 'list' && <ListView />}
           {selectedView === 'calendar' && <CalendarView />}
           {selectedView === 'workload' && <WorkloadView />}
+          {selectedView === 'mindmap' && <MindMapView />}
         </main>
       </div>
 

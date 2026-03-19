@@ -339,6 +339,8 @@ export default function TaskDetailPanel() {
 
         </div>
       </div>
+    </div>
+  );
 }
 
 function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {

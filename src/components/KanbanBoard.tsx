@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useApp } from '@/context/AppContext';
-import { Task, DEFAULT_STATUSES } from '@/types';
+import { Task } from '@/types';
 import { PriorityBadge, AvatarGroup, SubtaskProgress } from '@/components/TaskBadges';
-import { Plus, GripVertical } from 'lucide-react';
+import { Plus, GripVertical, GripHorizontal } from 'lucide-react';
 
 const STATUS_COLORS: Record<string, string> = {
   todo: 'bg-status-todo',
@@ -15,27 +15,80 @@ const STATUS_COLORS: Record<string, string> = {
 export default function KanbanBoard() {
   const { getFilteredTasks, moveTask, setSelectedTaskId, getMemberById, addTask, selectedProjectId, getListsForProject, tasks, allStatuses, getStatusLabel } = useApp();
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
+  const [draggedColumn, setDraggedColumn] = useState<string | null>(null);
+  const [columnOrder, setColumnOrder] = useState<string[]>(allStatuses);
+  const [dropTargetColumn, setDropTargetColumn] = useState<string | null>(null);
   const [newTaskStatus, setNewTaskStatus] = useState<string | null>(null);
   const [newTaskTitle, setNewTaskTitle] = useState('');
 
+  // Sync column order when allStatuses changes (new custom statuses added/removed)
+  useEffect(() => {
+    setColumnOrder(prev => {
+      const existing = new Set(allStatuses);
+      const kept = prev.filter(s => existing.has(s));
+      const newOnes = allStatuses.filter(s => !kept.includes(s));
+      return [...kept, ...newOnes];
+    });
+  }, [allStatuses]);
+
   const filteredTasks = getFilteredTasks();
 
-  const tasksByStatus = allStatuses.reduce((acc, status) => {
+  const tasksByStatus = columnOrder.reduce((acc, status) => {
     acc[status] = filteredTasks.filter(t => t.status === status);
     return acc;
   }, {} as Record<string, Task[]>);
 
-  const handleDragStart = (e: React.DragEvent, taskId: string) => {
+  // Task drag handlers
+  const handleTaskDragStart = (e: React.DragEvent, taskId: string) => {
     setDraggedTaskId(taskId);
+    e.dataTransfer.setData('type', 'task');
     e.dataTransfer.effectAllowed = 'move';
   };
 
-  const handleDrop = (e: React.DragEvent, status: string) => {
+  const handleTaskDrop = (e: React.DragEvent, status: string) => {
     e.preventDefault();
     if (draggedTaskId) {
       moveTask(draggedTaskId, status);
       setDraggedTaskId(null);
     }
+  };
+
+  // Column drag handlers
+  const handleColumnDragStart = (e: React.DragEvent, status: string) => {
+    e.stopPropagation();
+    setDraggedColumn(status);
+    e.dataTransfer.setData('type', 'column');
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleColumnDragOver = (e: React.DragEvent, status: string) => {
+    e.preventDefault();
+    if (draggedColumn && draggedColumn !== status) {
+      setDropTargetColumn(status);
+    }
+  };
+
+  const handleColumnDrop = useCallback((e: React.DragEvent, targetStatus: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (draggedColumn && draggedColumn !== targetStatus) {
+      setColumnOrder(prev => {
+        const next = [...prev];
+        const fromIdx = next.indexOf(draggedColumn);
+        const toIdx = next.indexOf(targetStatus);
+        if (fromIdx === -1 || toIdx === -1) return prev;
+        next.splice(fromIdx, 1);
+        next.splice(toIdx, 0, draggedColumn);
+        return next;
+      });
+    }
+    setDraggedColumn(null);
+    setDropTargetColumn(null);
+  }, [draggedColumn]);
+
+  const handleColumnDragEnd = () => {
+    setDraggedColumn(null);
+    setDropTargetColumn(null);
   };
 
   const handleAddTask = (status: string) => {
@@ -69,17 +122,39 @@ export default function KanbanBoard() {
 
   return (
     <div className="flex gap-3 sm:gap-4 p-3 sm:p-6 overflow-x-auto h-full">
-      {allStatuses.map(status => (
+      {columnOrder.map(status => (
         <div
           key={status}
-          className="flex flex-col w-60 sm:w-72 shrink-0"
-          onDragOver={e => e.preventDefault()}
-          onDrop={e => handleDrop(e, status)}
+          className={`flex flex-col w-60 sm:w-72 shrink-0 rounded-lg transition-all duration-200 ${
+            draggedColumn === status ? 'opacity-40 scale-[0.97]' : ''
+          } ${dropTargetColumn === status && draggedColumn ? 'ring-2 ring-primary/40 ring-offset-2 ring-offset-background' : ''}`}
+          onDragOver={e => {
+            e.preventDefault();
+            if (draggedColumn) {
+              handleColumnDragOver(e, status);
+            }
+          }}
+          onDrop={e => {
+            if (draggedColumn) {
+              handleColumnDrop(e, status);
+            } else {
+              handleTaskDrop(e, status);
+            }
+          }}
+          onDragLeave={() => {
+            if (dropTargetColumn === status) setDropTargetColumn(null);
+          }}
         >
           {/* Column header */}
-          <div className="flex items-center gap-2 mb-3 px-1">
+          <div
+            draggable
+            onDragStart={e => handleColumnDragStart(e, status)}
+            onDragEnd={handleColumnDragEnd}
+            className="flex items-center gap-2 mb-3 px-1 group/header cursor-grab active:cursor-grabbing"
+          >
+            <GripHorizontal className="w-3.5 h-3.5 text-muted-foreground/30 opacity-0 group-hover/header:opacity-100 transition-opacity shrink-0 hidden sm:block" />
             <div className={`w-2.5 h-2.5 rounded-full ${getStatusColor(status)}`} />
-            <h3 className="font-semibold text-xs sm:text-sm text-foreground">{getStatusLabel(status)}</h3>
+            <h3 className="font-semibold text-xs sm:text-sm text-foreground select-none">{getStatusLabel(status)}</h3>
             <span className="text-xs text-muted-foreground ml-1">{tasksByStatus[status]?.length || 0}</span>
             <button
               onClick={() => setNewTaskStatus(status)}
@@ -100,7 +175,8 @@ export default function KanbanBoard() {
                 <div
                   key={task.id}
                   draggable
-                  onDragStart={e => handleDragStart(e, task.id)}
+                  onDragStart={e => handleTaskDragStart(e, task.id)}
+                  onDragEnd={() => setDraggedTaskId(null)}
                   onClick={() => setSelectedTaskId(task.id)}
                   className={`bg-card rounded-lg border p-2.5 sm:p-3 cursor-pointer hover:shadow-md transition-shadow group ${
                     draggedTaskId === task.id ? 'opacity-50' : ''

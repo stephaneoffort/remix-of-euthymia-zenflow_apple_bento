@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, ChevronDown, LayoutGrid, List, Calendar, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut } from 'lucide-react';
+import { ChevronRight, ChevronDown, LayoutGrid, List, Calendar, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -19,21 +19,38 @@ const VIEW_OPTIONS: { key: ViewType; label: string; icon: React.ReactNode }[] = 
   { key: 'calendar', label: 'Calendrier', icon: <Calendar className="w-4 h-4" /> },
 ];
 
+const SPACE_ICONS = ['📁', '🚀', '💡', '🎯', '📊', '🛠️', '📚', '🌟', '🧘', '🎨'];
+const PROJECT_COLORS = ['#4f46e5', '#0891b2', '#059669', '#d97706', '#dc2626', '#7c3aed', '#db2777', '#0d9488'];
+
 export default function AppSidebar() {
   const {
     spaces, selectedProjectId, setSelectedProjectId,
     selectedView, setSelectedView, quickFilter, setQuickFilter,
     getProjectsForSpace, teamMembers, sidebarCollapsed, setSidebarCollapsed,
-    tasks,
+    tasks, addSpace, addProject,
   } = useApp();
   const isMobile = useIsMobile();
 
   const [expandedSpaces, setExpandedSpaces] = useState<Set<string>>(new Set(spaces.map(s => s.id)));
+  const [addingSpace, setAddingSpace] = useState(false);
+  const [newSpaceName, setNewSpaceName] = useState('');
+  const [newSpaceIcon, setNewSpaceIcon] = useState('📁');
+  const [addingProjectForSpace, setAddingProjectForSpace] = useState<string | null>(null);
+  const [newProjectName, setNewProjectName] = useState('');
+  const [newProjectColor, setNewProjectColor] = useState(PROJECT_COLORS[0]);
 
-  // Auto-collapse on mobile
   useEffect(() => {
     if (isMobile) setSidebarCollapsed(true);
   }, [isMobile]);
+
+  // Keep new spaces expanded
+  useEffect(() => {
+    setExpandedSpaces(prev => {
+      const next = new Set(prev);
+      spaces.forEach(s => next.add(s.id));
+      return next;
+    });
+  }, [spaces]);
 
   const toggleSpace = (id: string) => {
     setExpandedSpaces(prev => {
@@ -52,6 +69,22 @@ export default function AppSidebar() {
     if (isMobile) setSidebarCollapsed(true);
   };
 
+  const handleAddSpace = () => {
+    if (!newSpaceName.trim()) return;
+    addSpace(newSpaceName.trim(), newSpaceIcon);
+    setNewSpaceName('');
+    setNewSpaceIcon('📁');
+    setAddingSpace(false);
+  };
+
+  const handleAddProject = (spaceId: string) => {
+    if (!newProjectName.trim()) return;
+    addProject(newProjectName.trim(), spaceId, newProjectColor);
+    setNewProjectName('');
+    setNewProjectColor(PROJECT_COLORS[0]);
+    setAddingProjectForSpace(null);
+  };
+
   if (sidebarCollapsed) {
     return (
       <div className="w-12 bg-sidebar-bg flex flex-col items-center py-3 border-r border-sidebar-border-color shrink-0">
@@ -64,7 +97,6 @@ export default function AppSidebar() {
 
   return (
     <>
-      {/* Overlay for mobile */}
       {isMobile && (
         <div
           className="fixed inset-0 bg-black/50 z-40"
@@ -132,17 +164,81 @@ export default function AppSidebar() {
 
       {/* Spaces & Projects */}
       <div className="flex-1 overflow-y-auto scrollbar-thin px-3 py-3">
-        <p className="text-xs font-semibold text-sidebar-fg uppercase tracking-wider px-2 mb-2">Espaces</p>
+        <div className="flex items-center justify-between px-2 mb-2">
+          <p className="text-xs font-semibold text-sidebar-fg uppercase tracking-wider">Espaces</p>
+          <button
+            onClick={() => setAddingSpace(true)}
+            className="p-0.5 rounded hover:bg-sidebar-hover text-sidebar-fg transition-colors"
+            title="Ajouter un espace"
+          >
+            <Plus className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        {/* Add space form */}
+        {addingSpace && (
+          <div className="mb-2 mx-2 bg-sidebar-hover rounded-md p-2 space-y-2">
+            <div className="flex gap-1 flex-wrap">
+              {SPACE_ICONS.map(icon => (
+                <button
+                  key={icon}
+                  onClick={() => setNewSpaceIcon(icon)}
+                  className={`w-7 h-7 rounded text-sm flex items-center justify-center transition-colors ${
+                    newSpaceIcon === icon ? 'bg-sidebar-active ring-1 ring-primary' : 'hover:bg-sidebar-bg'
+                  }`}
+                >
+                  {icon}
+                </button>
+              ))}
+            </div>
+            <input
+              autoFocus
+              value={newSpaceName}
+              onChange={e => setNewSpaceName(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter') handleAddSpace();
+                if (e.key === 'Escape') { setAddingSpace(false); setNewSpaceName(''); }
+              }}
+              placeholder="Nom de l'espace..."
+              className="w-full text-sm bg-sidebar-bg border border-sidebar-border-color rounded-md px-2 py-1 outline-none text-sidebar-fg-bright placeholder:text-sidebar-fg"
+            />
+            <div className="flex gap-1">
+              <button
+                onClick={handleAddSpace}
+                disabled={!newSpaceName.trim()}
+                className="flex-1 text-xs bg-primary text-primary-foreground rounded-md py-1 font-medium hover:opacity-90 disabled:opacity-50"
+              >
+                Créer
+              </button>
+              <button
+                onClick={() => { setAddingSpace(false); setNewSpaceName(''); }}
+                className="flex-1 text-xs text-sidebar-fg rounded-md py-1 hover:bg-sidebar-bg"
+              >
+                Annuler
+              </button>
+            </div>
+          </div>
+        )}
+
         {spaces.map(space => (
           <div key={space.id} className="mb-1">
-            <button
-              onClick={() => toggleSpace(space.id)}
-              className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors"
-            >
-              {expandedSpaces.has(space.id) ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
-              <span>{space.icon}</span>
-              <span className="font-medium">{space.name}</span>
-            </button>
+            <div className="flex items-center group">
+              <button
+                onClick={() => toggleSpace(space.id)}
+                className="flex-1 flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors"
+              >
+                {expandedSpaces.has(space.id) ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+                <span>{space.icon}</span>
+                <span className="font-medium">{space.name}</span>
+              </button>
+              <button
+                onClick={() => setAddingProjectForSpace(space.id)}
+                className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-sidebar-hover text-sidebar-fg transition-all mr-1"
+                title="Ajouter un projet"
+              >
+                <Plus className="w-3.5 h-3.5" />
+              </button>
+            </div>
             {expandedSpaces.has(space.id) && (
               <div className="ml-4">
                 {getProjectsForSpace(space.id).map(project => (
@@ -163,6 +259,48 @@ export default function AppSidebar() {
                     <span className="truncate">{project.name}</span>
                   </button>
                 ))}
+
+                {/* Add project form */}
+                {addingProjectForSpace === space.id && (
+                  <div className="mt-1 bg-sidebar-hover rounded-md p-2 space-y-2">
+                    <input
+                      autoFocus
+                      value={newProjectName}
+                      onChange={e => setNewProjectName(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') handleAddProject(space.id);
+                        if (e.key === 'Escape') { setAddingProjectForSpace(null); setNewProjectName(''); }
+                      }}
+                      placeholder="Nom du projet..."
+                      className="w-full text-sm bg-sidebar-bg border border-sidebar-border-color rounded-md px-2 py-1 outline-none text-sidebar-fg-bright placeholder:text-sidebar-fg"
+                    />
+                    <div className="flex gap-1 flex-wrap">
+                      {PROJECT_COLORS.map(color => (
+                        <button
+                          key={color}
+                          onClick={() => setNewProjectColor(color)}
+                          className={`w-5 h-5 rounded-sm transition-all ${newProjectColor === color ? 'ring-2 ring-primary ring-offset-1 ring-offset-sidebar-bg' : ''}`}
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
+                    </div>
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => handleAddProject(space.id)}
+                        disabled={!newProjectName.trim()}
+                        className="flex-1 text-xs bg-primary text-primary-foreground rounded-md py-1 font-medium hover:opacity-90 disabled:opacity-50"
+                      >
+                        Créer
+                      </button>
+                      <button
+                        onClick={() => { setAddingProjectForSpace(null); setNewProjectName(''); }}
+                        className="flex-1 text-xs text-sidebar-fg rounded-md py-1 hover:bg-sidebar-bg"
+                      >
+                        Annuler
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

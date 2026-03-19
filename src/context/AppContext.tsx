@@ -47,6 +47,8 @@ interface AppContextType extends AppState {
   renameProject: (id: string, name: string) => void;
   deleteSpace: (id: string) => void;
   deleteProject: (id: string) => void;
+  reorderSpaces: (orderedIds: string[]) => void;
+  reorderProjects: (spaceId: string, orderedIds: string[]) => void;
   getSubtasks: (taskId: string) => Task[];
   getTaskById: (id: string) => Task | undefined;
   getListsForProject: (projectId: string) => TaskList[];

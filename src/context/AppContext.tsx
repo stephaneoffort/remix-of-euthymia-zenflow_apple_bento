@@ -392,8 +392,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         filtered = filtered.filter(t => t.dueDate && t.dueDate < today && t.status !== 'done');
         break;
     }
+
+    // Advanced filters
+    if (advancedFilters.statuses.length > 0) {
+      filtered = filtered.filter(t => advancedFilters.statuses.includes(t.status));
+    }
+    if (advancedFilters.priorities.length > 0) {
+      filtered = filtered.filter(t => advancedFilters.priorities.includes(t.priority));
+    }
+    if (advancedFilters.assigneeIds.length > 0) {
+      filtered = filtered.filter(t => t.assigneeIds.some(id => advancedFilters.assigneeIds.includes(id)));
+    }
+    if (advancedFilters.tags.length > 0) {
+      filtered = filtered.filter(t => t.tags.some(tag => advancedFilters.tags.includes(tag)));
+    }
+
     return filtered;
-  }, [tasks, selectedProjectId, quickFilter, lists, teamMemberId]);
+  }, [tasks, selectedProjectId, quickFilter, lists, teamMemberId, advancedFilters]);
 
   const value = useMemo(() => ({
     spaces,

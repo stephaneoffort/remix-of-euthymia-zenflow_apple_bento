@@ -121,11 +121,11 @@ export default function KanbanBoard() {
   };
 
   return (
-    <div className="flex gap-3 sm:gap-4 p-3 sm:p-6 overflow-x-auto h-full">
+    <div className="flex gap-3 sm:gap-4 p-3 sm:p-6 overflow-x-auto h-full snap-x snap-mandatory sm:snap-none">
       {columnOrder.map(status => (
         <div
           key={status}
-          className={`flex flex-col w-60 sm:w-72 shrink-0 rounded-lg transition-all duration-200 ${
+          className={`flex flex-col w-[85vw] sm:w-72 shrink-0 rounded-lg snap-center sm:snap-align-none transition-all duration-200 ${
             draggedColumn === status ? 'opacity-40 scale-[0.97]' : ''
           } ${dropTargetColumn === status && draggedColumn ? 'ring-2 ring-primary/40 ring-offset-2 ring-offset-background' : ''}`}
           onDragOver={e => {

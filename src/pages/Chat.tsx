@@ -2,10 +2,12 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Hash, Send, Paperclip, Smile, X, Plus, Trash2, Settings } from 'lucide-react';
+import { Hash, Send, Paperclip, Smile, X, Plus, Trash2, Settings, ArrowLeft, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useChatNotifications } from '@/hooks/useChatNotifications';
+import { useIsMobile } from '@/hooks/use-mobile';
+import MobileBottomNav from '@/components/MobileBottomNav';
 
 interface ChatCategory {
   id: string;
@@ -54,6 +56,8 @@ export default function Chat() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [showCategories, setShowCategories] = useState(true);
+  const isMobile = useIsMobile();
 
   // Check admin
   useEffect(() => {
@@ -253,67 +257,82 @@ export default function Chat() {
 
   const currentCategory = categories.find(c => c.id === selectedCategory);
 
+  const handleSelectCategory = (id: string) => {
+    setSelectedCategory(id);
+    if (isMobile) setShowCategories(false);
+  };
+
   return (
     <div className="flex h-screen bg-background">
-      {/* Category sidebar */}
-      <div className="w-60 bg-card border-r border-border flex flex-col shrink-0">
-        <div className="p-4 border-b border-border flex items-center justify-between">
-          <h2 className="font-bold text-foreground">💬 Chat</h2>
-          <button onClick={() => navigate('/')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-            ← Retour
-          </button>
-        </div>
-        <div className="flex-1 overflow-y-auto p-2 space-y-0.5">
-          {categories.map(cat => {
-            const unread = unreadCounts[cat.id] || 0;
-            return (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${
-                  selectedCategory === cat.id
-                    ? 'bg-primary/10 text-primary font-medium'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                }`}
-              >
-                <span>{cat.icon}</span>
-                <span className="flex-1 text-left">{cat.name}</span>
-                {unread > 0 && (
-                  <span className="text-[10px] bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 min-w-[18px] text-center font-medium">
-                    {unread > 99 ? '99+' : unread}
-                  </span>
-                )}
+      {/* Category sidebar - full screen on mobile when visible */}
+      {(!isMobile || showCategories) && (
+        <div className={`${isMobile ? 'absolute inset-0 z-30' : 'w-60'} bg-card border-r border-border flex flex-col shrink-0`}>
+          <div className="p-4 border-b border-border flex items-center justify-between">
+            <h2 className="font-bold text-foreground">💬 Chat</h2>
+            {!isMobile && (
+              <button onClick={() => navigate('/')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                ← Retour
               </button>
-            );
-          })}
-        </div>
-        {isAdmin && (
-          <div className="p-3 border-t border-border">
-            <button
-              onClick={() => navigate('/settings')}
-              className="w-full flex items-center gap-2 px-3 py-1.5 rounded-md text-xs text-muted-foreground hover:bg-muted transition-colors"
-            >
-              <Settings className="w-3.5 h-3.5" />
-              Gérer les catégories
-            </button>
+            )}
           </div>
-        )}
-      </div>
+          <div className="flex-1 overflow-y-auto p-2 space-y-0.5">
+            {categories.map(cat => {
+              const unread = unreadCounts[cat.id] || 0;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => handleSelectCategory(cat.id)}
+                  className={`w-full flex items-center gap-2 px-3 py-2.5 sm:py-2 rounded-md text-sm transition-colors ${
+                    selectedCategory === cat.id
+                      ? 'bg-primary/10 text-primary font-medium'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  }`}
+                >
+                  <span>{cat.icon}</span>
+                  <span className="flex-1 text-left">{cat.name}</span>
+                  {unread > 0 && (
+                    <span className="text-[10px] bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 min-w-[18px] text-center font-medium">
+                      {unread > 99 ? '99+' : unread}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          {isAdmin && (
+            <div className="p-3 border-t border-border">
+              <button
+                onClick={() => navigate('/settings')}
+                className="w-full flex items-center gap-2 px-3 py-1.5 rounded-md text-xs text-muted-foreground hover:bg-muted transition-colors"
+              >
+                <Settings className="w-3.5 h-3.5" />
+                Gérer les catégories
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Main chat area */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Header */}
-        <header className="h-14 border-b border-border bg-card flex items-center px-6 gap-3 shrink-0">
-          {currentCategory && (
-            <>
-              <span className="text-lg">{currentCategory.icon}</span>
-              <h3 className="font-semibold text-foreground">{currentCategory.name}</h3>
-            </>
-          )}
-        </header>
+      {(!isMobile || !showCategories) && (
+        <div className="flex-1 flex flex-col min-w-0">
+          {/* Header */}
+          <header className="h-12 sm:h-14 border-b border-border bg-card flex items-center px-3 sm:px-6 gap-3 shrink-0">
+            {isMobile && (
+              <button onClick={() => setShowCategories(true)} className="p-1.5 rounded-md hover:bg-muted transition-colors">
+                <ArrowLeft className="w-5 h-5 text-muted-foreground" />
+              </button>
+            )}
+            {currentCategory && (
+              <>
+                <span className="text-lg">{currentCategory.icon}</span>
+                <h3 className="font-semibold text-foreground text-sm sm:text-base">{currentCategory.name}</h3>
+              </>
+            )}
+          </header>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-4 scrollbar-thin">
           {messages.length === 0 && (
             <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
               Aucun message. Soyez le premier à écrire ! 🎉
@@ -411,7 +430,7 @@ export default function Chat() {
         </div>
 
         {/* Input area */}
-        <div className="border-t border-border bg-card p-4">
+        <div className={`border-t border-border bg-card p-3 sm:p-4 ${isMobile ? 'pb-16' : ''}`}>
           <div className="relative">
             {/* Mention dropdown */}
             {filteredMentions.length > 0 && (
@@ -465,6 +484,10 @@ export default function Chat() {
           </div>
         </div>
       </div>
+      )}
+
+      {/* Mobile bottom navigation */}
+      {isMobile && <MobileBottomNav />}
     </div>
   );
 }

@@ -39,7 +39,7 @@ interface AppContextType extends AppState {
   addTask: (task: Omit<Task, 'id' | 'createdAt' | 'order'>) => void;
   updateTask: (id: string, updates: Partial<Task>) => void;
   deleteTask: (id: string) => void;
-  moveTask: (taskId: string, newStatus: Status) => void;
+  moveTask: (taskId: string, newStatus: string) => void;
   addSpace: (name: string, icon: string) => void;
   addProject: (name: string, spaceId: string, color: string) => void;
   getSubtasks: (taskId: string) => Task[];
@@ -51,6 +51,7 @@ interface AppContextType extends AppState {
   getMemberById: (id: string) => TeamMember | undefined;
   getTaskBreadcrumb: (taskId: string) => Task[];
   setAdvancedFilters: (filters: AdvancedFilters) => void;
+  getStatusLabel: (status: string) => string;
 }
 
 const AppContext = createContext<AppContextType | null>(null);

@@ -231,6 +231,49 @@ export default function CalendarView() {
     }
   };
 
+  const exportToICS = () => {
+    const tasksWithDue = tasks.filter(t => t.dueDate);
+    if (tasksWithDue.length === 0) return;
+
+    const escapeICS = (str: string) => str.replace(/[\\;,\n]/g, (m) => m === '\n' ? '\\n' : `\\${m}`);
+    const formatDate = (dateStr: string) => dateStr.replace(/-/g, '');
+
+    const events = tasksWithDue.map(t => {
+      const dtStart = formatDate(t.dueDate!);
+      const uid = `${t.id}@euthymia`;
+      return [
+        'BEGIN:VEVENT',
+        `UID:${uid}`,
+        `DTSTART;VALUE=DATE:${dtStart}`,
+        `DTEND;VALUE=DATE:${dtStart}`,
+        `SUMMARY:${escapeICS(t.title)}`,
+        t.description ? `DESCRIPTION:${escapeICS(t.description)}` : '',
+        `STATUS:${t.status === 'done' ? 'COMPLETED' : 'NEEDS-ACTION'}`,
+        `PRIORITY:${t.priority === 'urgent' ? 1 : t.priority === 'high' ? 3 : t.priority === 'normal' ? 5 : 9}`,
+        'END:VEVENT',
+      ].filter(Boolean).join('\r\n');
+    });
+
+    const ics = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Euthymia//Tasks//FR',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      'X-WR-CALNAME:Euthymia - Tâches',
+      ...events,
+      'END:VCALENDAR',
+    ].join('\r\n');
+
+    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'euthymia-taches.ics';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="p-2 sm:p-6 h-full flex flex-col">
       {/* Header */}
@@ -238,16 +281,30 @@ export default function CalendarView() {
         <h2 className="text-sm sm:text-lg font-bold text-foreground">
           {monthLabel} {year}
         </h2>
-        <div className="flex gap-0.5 sm:gap-1">
-          <button onClick={() => setCurrentDate(new Date(year, month - 1, 1))} className="p-1.5 sm:p-2 hover:bg-muted rounded-md transition-colors">
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <button onClick={() => setCurrentDate(new Date())} className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm hover:bg-muted rounded-md transition-colors font-medium">
-            {isMobile ? 'Auj.' : "Aujourd'hui"}
-          </button>
-          <button onClick={() => setCurrentDate(new Date(year, month + 1, 1))} className="p-1.5 sm:p-2 hover:bg-muted rounded-md transition-colors">
-            <ChevronRight className="w-4 h-4" />
-          </button>
+        <div className="flex items-center gap-1 sm:gap-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={exportToICS}
+                className="p-1.5 sm:p-2 hover:bg-muted rounded-md transition-colors"
+                title="Exporter vers Google Agenda / iCal"
+              >
+                <Download className="w-4 h-4 text-muted-foreground" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>Exporter (.ics) – Google Agenda, Outlook, Apple…</TooltipContent>
+          </Tooltip>
+          <div className="flex gap-0.5 sm:gap-1">
+            <button onClick={() => setCurrentDate(new Date(year, month - 1, 1))} className="p-1.5 sm:p-2 hover:bg-muted rounded-md transition-colors">
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button onClick={() => setCurrentDate(new Date())} className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm hover:bg-muted rounded-md transition-colors font-medium">
+              {isMobile ? 'Auj.' : "Aujourd'hui"}
+            </button>
+            <button onClick={() => setCurrentDate(new Date(year, month + 1, 1))} className="p-1.5 sm:p-2 hover:bg-muted rounded-md transition-colors">
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 

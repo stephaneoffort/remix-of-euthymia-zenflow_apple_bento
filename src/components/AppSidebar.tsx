@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronRight, ChevronDown, LayoutGrid, List, Calendar, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2 } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { ChevronRight, ChevronDown, LayoutGrid, List, Calendar, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
@@ -10,6 +10,15 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import {
+  DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove, SortableContext, sortableKeyboardCoordinates,
+  useSortable, verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 const QUICK_FILTERS: { key: QuickFilter; label: string; icon: React.ReactNode }[] = [
   { key: 'all', label: 'Toutes les tâches', icon: <LayoutGrid className="w-4 h-4" /> },
@@ -34,6 +43,7 @@ export default function AppSidebar() {
     selectedView, setSelectedView, quickFilter, setQuickFilter,
     getProjectsForSpace, teamMembers, sidebarCollapsed, setSidebarCollapsed,
     tasks, addSpace, addProject, renameSpace, renameProject, deleteSpace, deleteProject,
+    reorderSpaces, reorderProjects,
   } = useApp();
   const isMobile = useIsMobile();
 
@@ -70,6 +80,30 @@ export default function AppSidebar() {
       return next;
     });
   };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+
+  const handleSpaceDragEnd = useCallback((event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = spaces.findIndex(s => s.id === active.id);
+    const newIndex = spaces.findIndex(s => s.id === over.id);
+    const newOrder = arrayMove(spaces, oldIndex, newIndex);
+    reorderSpaces(newOrder.map(s => s.id));
+  }, [spaces, reorderSpaces]);
+
+  const handleProjectDragEnd = useCallback((event: DragEndEvent, spaceId: string) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const spaceProjects = getProjectsForSpace(spaceId);
+    const oldIndex = spaceProjects.findIndex(p => p.id === active.id);
+    const newIndex = spaceProjects.findIndex(p => p.id === over.id);
+    const newOrder = arrayMove(spaceProjects, oldIndex, newIndex);
+    reorderProjects(spaceId, newOrder.map(p => p.id));
+  }, [getProjectsForSpace, reorderProjects]);
 
   const overdueCount = tasks.filter(t => {
     const today = new Date().toISOString().split('T')[0];
@@ -231,172 +265,188 @@ export default function AppSidebar() {
           </div>
         )}
 
-        {spaces.map(space => (
-          <div key={space.id} className="mb-1">
-            <div className="flex items-center group">
-              <button
-                onClick={() => toggleSpace(space.id)}
-                className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors"
-              >
-                {expandedSpaces.has(space.id) ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
-                <span>{space.icon}</span>
-              </button>
-              {editingSpaceId === space.id ? (
-                <input
-                  autoFocus
-                  value={editingSpaceName}
-                  onChange={e => setEditingSpaceName(e.target.value)}
-                  onBlur={() => {
-                    if (editingSpaceName.trim() && editingSpaceName.trim() !== space.name) {
-                      renameSpace(space.id, editingSpaceName.trim());
-                    }
-                    setEditingSpaceId(null);
-                  }}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter') {
-                      if (editingSpaceName.trim() && editingSpaceName.trim() !== space.name) {
-                        renameSpace(space.id, editingSpaceName.trim());
-                      }
-                      setEditingSpaceId(null);
-                    }
-                    if (e.key === 'Escape') setEditingSpaceId(null);
-                  }}
-                  className="flex-1 text-sm bg-sidebar-bg border border-sidebar-border-color rounded-md px-2 py-0.5 outline-none text-sidebar-fg-bright font-medium min-w-0"
-                />
-              ) : (
-                <span
-                  className="flex-1 font-medium text-sm text-sidebar-fg cursor-pointer truncate"
-                  onDoubleClick={() => {
-                    setEditingSpaceId(space.id);
-                    setEditingSpaceName(space.name);
-                  }}
-                >
-                  {space.name}
-                </span>
-              )}
-              <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-all mr-1">
-                <button
-                  onClick={() => setAddingProjectForSpace(space.id)}
-                  className="p-1 rounded hover:bg-sidebar-hover text-sidebar-fg"
-                  title="Ajouter un projet"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                </button>
-                <button
-                  onClick={() => setDeleteConfirm({ type: 'space', id: space.id, name: space.name })}
-                  className="p-1 rounded hover:bg-destructive/20 text-sidebar-fg hover:text-destructive"
-                  title="Supprimer l'espace"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-            {expandedSpaces.has(space.id) && (
-              <div className="ml-4">
-                {getProjectsForSpace(space.id).map(project => (
-                  editingProjectId === project.id ? (
-                    <div key={project.id} className="flex items-center gap-2 px-2 py-1.5">
-                      <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: project.color }} />
-                      <input
-                        autoFocus
-                        value={editingProjectName}
-                        onChange={e => setEditingProjectName(e.target.value)}
-                        onBlur={() => {
-                          if (editingProjectName.trim() && editingProjectName.trim() !== project.name) {
-                            renameProject(project.id, editingProjectName.trim());
-                          }
-                          setEditingProjectId(null);
-                        }}
-                        onKeyDown={e => {
-                          if (e.key === 'Enter') {
-                            if (editingProjectName.trim() && editingProjectName.trim() !== project.name) {
-                              renameProject(project.id, editingProjectName.trim());
-                            }
-                            setEditingProjectId(null);
-                          }
-                          if (e.key === 'Escape') setEditingProjectId(null);
-                        }}
-                        className="flex-1 text-sm bg-sidebar-bg border border-sidebar-border-color rounded-md px-2 py-0.5 outline-none text-sidebar-fg-bright min-w-0"
-                      />
-                    </div>
-                  ) : (
-                    <div key={project.id} className="flex items-center group/project">
-                      <button
-                        onClick={() => {
-                          setSelectedProjectId(project.id);
-                          setQuickFilter('all');
-                          handleNavClick();
-                        }}
-                        onDoubleClick={(e) => {
-                          e.preventDefault();
-                          setEditingProjectId(project.id);
-                          setEditingProjectName(project.name);
-                        }}
-                        className={`flex-1 flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors ${
-                          selectedProjectId === project.id
-                            ? 'bg-sidebar-active text-sidebar-fg-bright'
-                            : 'text-sidebar-fg hover:bg-sidebar-hover'
-                        }`}
-                      >
-                        <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: project.color }} />
-                        <span className="truncate">{project.name}</span>
-                      </button>
-                      <button
-                        onClick={() => setDeleteConfirm({ type: 'project', id: project.id, name: project.name })}
-                        className="opacity-0 group-hover/project:opacity-100 p-1 rounded hover:bg-destructive/20 text-sidebar-fg hover:text-destructive transition-all mr-1"
-                        title="Supprimer le projet"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
-                    </div>
-                  )
-                ))}
-
-                {/* Add project form */}
-                {addingProjectForSpace === space.id && (
-                  <div className="mt-1 bg-sidebar-hover rounded-md p-2 space-y-2">
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleSpaceDragEnd}
+        >
+          <SortableContext items={spaces.map(s => s.id)} strategy={verticalListSortingStrategy}>
+            {spaces.map(space => (
+              <SortableSpace key={space.id} space={space}>
+                <div className="flex items-center group">
+                  <button
+                    onClick={() => toggleSpace(space.id)}
+                    className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors"
+                  >
+                    {expandedSpaces.has(space.id) ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+                    <span>{space.icon}</span>
+                  </button>
+                  {editingSpaceId === space.id ? (
                     <input
                       autoFocus
-                      value={newProjectName}
-                      onChange={e => setNewProjectName(e.target.value)}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter') handleAddProject(space.id);
-                        if (e.key === 'Escape') { setAddingProjectForSpace(null); setNewProjectName(''); }
+                      value={editingSpaceName}
+                      onChange={e => setEditingSpaceName(e.target.value)}
+                      onBlur={() => {
+                        if (editingSpaceName.trim() && editingSpaceName.trim() !== space.name) {
+                          renameSpace(space.id, editingSpaceName.trim());
+                        }
+                        setEditingSpaceId(null);
                       }}
-                      placeholder="Nom du projet..."
-                      className="w-full text-sm bg-sidebar-bg border border-sidebar-border-color rounded-md px-2 py-1 outline-none text-sidebar-fg-bright placeholder:text-sidebar-fg"
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                          if (editingSpaceName.trim() && editingSpaceName.trim() !== space.name) {
+                            renameSpace(space.id, editingSpaceName.trim());
+                          }
+                          setEditingSpaceId(null);
+                        }
+                        if (e.key === 'Escape') setEditingSpaceId(null);
+                      }}
+                      className="flex-1 text-sm bg-sidebar-bg border border-sidebar-border-color rounded-md px-2 py-0.5 outline-none text-sidebar-fg-bright font-medium min-w-0"
                     />
-                    <div className="flex gap-1 flex-wrap">
-                      {PROJECT_COLORS.map(color => (
-                        <button
-                          key={color}
-                          onClick={() => setNewProjectColor(color)}
-                          className={`w-5 h-5 rounded-sm transition-all ${newProjectColor === color ? 'ring-2 ring-primary ring-offset-1 ring-offset-sidebar-bg' : ''}`}
-                          style={{ backgroundColor: color }}
+                  ) : (
+                    <span
+                      className="flex-1 font-medium text-sm text-sidebar-fg cursor-pointer truncate"
+                      onDoubleClick={() => {
+                        setEditingSpaceId(space.id);
+                        setEditingSpaceName(space.name);
+                      }}
+                    >
+                      {space.name}
+                    </span>
+                  )}
+                  <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-all mr-1">
+                    <button
+                      onClick={() => setAddingProjectForSpace(space.id)}
+                      className="p-1 rounded hover:bg-sidebar-hover text-sidebar-fg"
+                      title="Ajouter un projet"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => setDeleteConfirm({ type: 'space', id: space.id, name: space.name })}
+                      className="p-1 rounded hover:bg-destructive/20 text-sidebar-fg hover:text-destructive"
+                      title="Supprimer l'espace"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+                {expandedSpaces.has(space.id) && (
+                  <div className="ml-4">
+                    <DndContext
+                      sensors={sensors}
+                      collisionDetection={closestCenter}
+                      onDragEnd={(event) => handleProjectDragEnd(event, space.id)}
+                    >
+                      <SortableContext items={getProjectsForSpace(space.id).map(p => p.id)} strategy={verticalListSortingStrategy}>
+                        {getProjectsForSpace(space.id).map(project => (
+                          editingProjectId === project.id ? (
+                            <div key={project.id} className="flex items-center gap-2 px-2 py-1.5">
+                              <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: project.color }} />
+                              <input
+                                autoFocus
+                                value={editingProjectName}
+                                onChange={e => setEditingProjectName(e.target.value)}
+                                onBlur={() => {
+                                  if (editingProjectName.trim() && editingProjectName.trim() !== project.name) {
+                                    renameProject(project.id, editingProjectName.trim());
+                                  }
+                                  setEditingProjectId(null);
+                                }}
+                                onKeyDown={e => {
+                                  if (e.key === 'Enter') {
+                                    if (editingProjectName.trim() && editingProjectName.trim() !== project.name) {
+                                      renameProject(project.id, editingProjectName.trim());
+                                    }
+                                    setEditingProjectId(null);
+                                  }
+                                  if (e.key === 'Escape') setEditingProjectId(null);
+                                }}
+                                className="flex-1 text-sm bg-sidebar-bg border border-sidebar-border-color rounded-md px-2 py-0.5 outline-none text-sidebar-fg-bright min-w-0"
+                              />
+                            </div>
+                          ) : (
+                            <SortableProject key={project.id} id={project.id}>
+                              <button
+                                onClick={() => {
+                                  setSelectedProjectId(project.id);
+                                  setQuickFilter('all');
+                                  handleNavClick();
+                                }}
+                                onDoubleClick={(e) => {
+                                  e.preventDefault();
+                                  setEditingProjectId(project.id);
+                                  setEditingProjectName(project.name);
+                                }}
+                                className={`flex-1 flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors ${
+                                  selectedProjectId === project.id
+                                    ? 'bg-sidebar-active text-sidebar-fg-bright'
+                                    : 'text-sidebar-fg hover:bg-sidebar-hover'
+                                }`}
+                              >
+                                <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: project.color }} />
+                                <span className="truncate">{project.name}</span>
+                              </button>
+                              <button
+                                onClick={() => setDeleteConfirm({ type: 'project', id: project.id, name: project.name })}
+                                className="opacity-0 group-hover/project:opacity-100 p-1 rounded hover:bg-destructive/20 text-sidebar-fg hover:text-destructive transition-all mr-1"
+                                title="Supprimer le projet"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            </SortableProject>
+                          )
+                        ))}
+                      </SortableContext>
+                    </DndContext>
+
+                    {/* Add project form */}
+                    {addingProjectForSpace === space.id && (
+                      <div className="mt-1 bg-sidebar-hover rounded-md p-2 space-y-2">
+                        <input
+                          autoFocus
+                          value={newProjectName}
+                          onChange={e => setNewProjectName(e.target.value)}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter') handleAddProject(space.id);
+                            if (e.key === 'Escape') { setAddingProjectForSpace(null); setNewProjectName(''); }
+                          }}
+                          placeholder="Nom du projet..."
+                          className="w-full text-sm bg-sidebar-bg border border-sidebar-border-color rounded-md px-2 py-1 outline-none text-sidebar-fg-bright placeholder:text-sidebar-fg"
                         />
-                      ))}
-                    </div>
-                    <div className="flex gap-1">
-                      <button
-                        onClick={() => handleAddProject(space.id)}
-                        disabled={!newProjectName.trim()}
-                        className="flex-1 text-xs bg-primary text-primary-foreground rounded-md py-1 font-medium hover:opacity-90 disabled:opacity-50"
-                      >
-                        Créer
-                      </button>
-                      <button
-                        onClick={() => { setAddingProjectForSpace(null); setNewProjectName(''); }}
-                        className="flex-1 text-xs text-sidebar-fg rounded-md py-1 hover:bg-sidebar-bg"
-                      >
-                        Annuler
-                      </button>
-                    </div>
+                        <div className="flex gap-1 flex-wrap">
+                          {PROJECT_COLORS.map(color => (
+                            <button
+                              key={color}
+                              onClick={() => setNewProjectColor(color)}
+                              className={`w-5 h-5 rounded-sm transition-all ${newProjectColor === color ? 'ring-2 ring-primary ring-offset-1 ring-offset-sidebar-bg' : ''}`}
+                              style={{ backgroundColor: color }}
+                            />
+                          ))}
+                        </div>
+                        <div className="flex gap-1">
+                          <button
+                            onClick={() => handleAddProject(space.id)}
+                            disabled={!newProjectName.trim()}
+                            className="flex-1 text-xs bg-primary text-primary-foreground rounded-md py-1 font-medium hover:opacity-90 disabled:opacity-50"
+                          >
+                            Créer
+                          </button>
+                          <button
+                            onClick={() => { setAddingProjectForSpace(null); setNewProjectName(''); }}
+                            className="flex-1 text-xs text-sidebar-fg rounded-md py-1 hover:bg-sidebar-bg"
+                          >
+                            Annuler
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
-              </div>
-            )}
-          </div>
-        ))}
+              </SortableSpace>
+            ))}
+          </SortableContext>
+        </DndContext>
       </div>
 
       {/* Team */}
@@ -535,5 +585,41 @@ function LogoutButton() {
       <LogOut className="w-4 h-4" />
       <span>Déconnexion</span>
     </button>
+  );
+}
+
+// Sortable wrapper for spaces
+function SortableSpace({ space, children }: { space: { id: string }; children: React.ReactNode }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: space.id });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+  return (
+    <div ref={setNodeRef} style={style} className="mb-1 relative group/drag">
+      <div {...attributes} {...listeners} className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 opacity-0 group-hover/drag:opacity-60 cursor-grab active:cursor-grabbing z-10 p-0.5">
+        <GripVertical className="w-3 h-3 text-sidebar-fg" />
+      </div>
+      {children}
+    </div>
+  );
+}
+
+// Sortable wrapper for projects
+function SortableProject({ id, children }: { id: string; children: React.ReactNode }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+  return (
+    <div ref={setNodeRef} style={style} className="flex items-center group/project relative">
+      <div {...attributes} {...listeners} className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2.5 opacity-0 group-hover/project:opacity-60 cursor-grab active:cursor-grabbing z-10 p-0.5">
+        <GripVertical className="w-3 h-3 text-sidebar-fg" />
+      </div>
+      {children}
+    </div>
   );
 }

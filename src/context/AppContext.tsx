@@ -47,6 +47,8 @@ interface AppContextType extends AppState {
   renameProject: (id: string, name: string) => void;
   deleteSpace: (id: string) => void;
   deleteProject: (id: string) => void;
+  reorderSpaces: (orderedIds: string[]) => void;
+  reorderProjects: (spaceId: string, orderedIds: string[]) => void;
   getSubtasks: (taskId: string) => Task[];
   getTaskById: (id: string) => Task | undefined;
   getListsForProject: (projectId: string) => TaskList[];
@@ -454,6 +456,50 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     deleteProjectMutation.mutate(id);
   }, [deleteProjectMutation, selectedProjectId]);
 
+  // Reorder spaces mutation
+  const reorderSpacesMutation = useMutation({
+    mutationFn: async (orderedIds: string[]) => {
+      const updates = orderedIds.map((id, index) =>
+        supabase.from('spaces').update({ sort_order: index }).eq('id', id)
+      );
+      await Promise.all(updates);
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['spaces'] }),
+  });
+
+  const reorderSpaces = useCallback((orderedIds: string[]) => {
+    queryClient.setQueryData<Space[]>(['spaces'], old => {
+      if (!old) return old;
+      return orderedIds.map((id, i) => {
+        const s = old.find(sp => sp.id === id)!;
+        return { ...s, order: i };
+      });
+    });
+    reorderSpacesMutation.mutate(orderedIds);
+  }, [reorderSpacesMutation, queryClient]);
+
+  // Reorder projects mutation
+  const reorderProjectsMutation = useMutation({
+    mutationFn: async ({ orderedIds }: { spaceId: string; orderedIds: string[] }) => {
+      const updates = orderedIds.map((id, index) =>
+        supabase.from('projects').update({ sort_order: index }).eq('id', id)
+      );
+      await Promise.all(updates);
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['projects'] }),
+  });
+
+  const reorderProjects = useCallback((spaceId: string, orderedIds: string[]) => {
+    queryClient.setQueryData<Project[]>(['projects'], old => {
+      if (!old) return old;
+      return old.map(p => {
+        const idx = orderedIds.indexOf(p.id);
+        return idx >= 0 ? { ...p, order: idx } : p;
+      });
+    });
+    reorderProjectsMutation.mutate({ spaceId, orderedIds });
+  }, [reorderProjectsMutation, queryClient]);
+
   const addTask = useCallback((task: Omit<Task, 'id' | 'createdAt' | 'order'>) => {
     addTaskMutation.mutate(task);
   }, [addTaskMutation]);
@@ -581,6 +627,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     renameProject,
     deleteSpace,
     deleteProject,
+    reorderSpaces,
+    reorderProjects,
     getSubtasks,
     getTaskById,
     getListsForProject,
@@ -590,7 +638,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     getMemberById,
     getTaskBreadcrumb,
     getStatusLabel,
-  }), [spaces, projects, lists, tasks, teamMembers, customStatuses, allStatuses, selectedProjectId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, addTask, updateTask, deleteTask, moveTask, addSpace, addProject, renameSpace, renameProject, deleteSpace, deleteProject, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb, getStatusLabel]);
+  }), [spaces, projects, lists, tasks, teamMembers, customStatuses, allStatuses, selectedProjectId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, addTask, updateTask, deleteTask, moveTask, addSpace, addProject, renameSpace, renameProject, deleteSpace, deleteProject, reorderSpaces, reorderProjects, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb, getStatusLabel]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

@@ -6,6 +6,10 @@ import { useAuth } from '@/context/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
 import { QuickFilter, ViewType } from '@/types';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 const QUICK_FILTERS: { key: QuickFilter; label: string; icon: React.ReactNode }[] = [
   { key: 'all', label: 'Toutes les tâches', icon: <LayoutGrid className="w-4 h-4" /> },

@@ -268,7 +268,7 @@ export default function AppSidebar() {
                 >
                   {space.name}
                 </span>
-              )
+              )}
               <button
                 onClick={() => setAddingProjectForSpace(space.id)}
                 className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-sidebar-hover text-sidebar-fg transition-all mr-1"

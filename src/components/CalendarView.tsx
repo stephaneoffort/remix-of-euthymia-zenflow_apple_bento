@@ -90,7 +90,7 @@ function DraggableTask({ task, onClick, members }: { task: Task; onClick: () => 
           </div>
         )}
         {task.dueDate && (
-          <p className="text-muted-foreground">Échéance : {new Date(task.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</p>
+          <p className="text-muted-foreground">Échéance : {new Date(task.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}{task.dueDate.includes('T') && !task.dueDate.endsWith('T00:00:00.000Z') ? ` à ${new Date(task.dueDate).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}` : ''}</p>
         )}
       </HoverCardContent>
     </HoverCard>
@@ -233,8 +233,10 @@ export default function CalendarView() {
     const map = new Map<string, Task[]>();
     tasks.forEach(t => {
       if (t.dueDate) {
-        if (!map.has(t.dueDate)) map.set(t.dueDate, []);
-        map.get(t.dueDate)!.push(t);
+        // Extract YYYY-MM-DD from timestamp or date string
+        const dateKey = t.dueDate.length > 10 ? t.dueDate.slice(0, 10) : t.dueDate;
+        if (!map.has(dateKey)) map.set(dateKey, []);
+        map.get(dateKey)!.push(t);
       }
     });
     return map;
@@ -254,7 +256,7 @@ export default function CalendarView() {
     const listId = lists[0]?.id || 'l1';
     addTask({
       title: newTaskTitle.trim(), description: '', status: 'todo', priority: 'normal',
-      dueDate: dateStr, startDate: null, assigneeIds: [], tags: [],
+      dueDate: new Date(dateStr + 'T00:00:00').toISOString(), startDate: null, assigneeIds: [], tags: [],
       parentTaskId: null, listId, comments: [], attachments: [],
       timeEstimate: null, timeLogged: null, aiSummary: null,
     });
@@ -268,7 +270,7 @@ export default function CalendarView() {
     const { active, over } = event;
     if (!over) return;
     const task = tasks.find(t => t.id === active.id);
-    if (task && task.dueDate !== over.id) updateTask(active.id as string, { dueDate: over.id as string });
+    if (task && (!task.dueDate || task.dueDate.slice(0, 10) !== over.id)) updateTask(active.id as string, { dueDate: new Date((over.id as string) + 'T00:00:00').toISOString() });
   };
 
   const exportToICS = () => {

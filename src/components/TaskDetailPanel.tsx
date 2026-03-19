@@ -5,6 +5,13 @@ import { PriorityBadge, StatusBadge, AvatarGroup } from '@/components/TaskBadges
 import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Clock, Paperclip, ChevronDown, Maximize2, Minimize2, CalendarPlus } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { generateGoogleCalendarUrl, generateOutlookCalendarUrl, generateYahooCalendarUrl } from '@/lib/calendarLinks';
+// Convert ISO/timestamp string to datetime-local input value (YYYY-MM-DDTHH:mm)
+function toDatetimeLocal(isoStr: string): string {
+  const d = new Date(isoStr);
+  if (isNaN(d.getTime())) return isoStr.slice(0, 16); // fallback for YYYY-MM-DD
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
 
 
 export default function TaskDetailPanel() {
@@ -133,18 +140,18 @@ export default function TaskDetailPanel() {
               <div>
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">Date de début</label>
                 <input
-                  type="date"
-                  value={task.startDate || ''}
-                  onChange={e => updateTask(task.id, { startDate: e.target.value || null })}
+                  type="datetime-local"
+                  value={task.startDate ? toDatetimeLocal(task.startDate) : ''}
+                  onChange={e => updateTask(task.id, { startDate: e.target.value ? new Date(e.target.value).toISOString() : null })}
                   className="w-full text-sm bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
                 />
               </div>
               <div>
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">Échéance</label>
                 <input
-                  type="date"
-                  value={task.dueDate || ''}
-                  onChange={e => updateTask(task.id, { dueDate: e.target.value || null })}
+                  type="datetime-local"
+                  value={task.dueDate ? toDatetimeLocal(task.dueDate) : ''}
+                  onChange={e => updateTask(task.id, { dueDate: e.target.value ? new Date(e.target.value).toISOString() : null })}
                   className="w-full text-sm bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
                 />
               </div>

@@ -10,6 +10,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import MobileBottomNav from '@/components/MobileBottomNav';
 import { usePresence } from '@/hooks/usePresence';
 import AudioWaveformPlayer from '@/components/AudioWaveformPlayer';
+import LiveWaveform from '@/components/LiveWaveform';
 
 interface ChatCategory {
   id: string;
@@ -88,6 +89,7 @@ export default function Chat() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const recordingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [recordingStream, setRecordingStream] = useState<MediaStream | null>(null);
 
   // Check admin
   useEffect(() => {
@@ -401,6 +403,7 @@ export default function Chat() {
 
       mediaRecorder.start();
       setIsRecording(true);
+      setRecordingStream(stream);
       setRecordingDuration(0);
       recordingTimerRef.current = setInterval(() => setRecordingDuration(d => d + 1), 1000);
     } catch {
@@ -411,6 +414,7 @@ export default function Chat() {
   const stopRecording = () => {
     mediaRecorderRef.current?.stop();
     setIsRecording(false);
+    setRecordingStream(null);
     if (recordingTimerRef.current) { clearInterval(recordingTimerRef.current); recordingTimerRef.current = null; }
   };
 
@@ -422,6 +426,7 @@ export default function Chat() {
       mediaRecorderRef.current.stop();
     }
     setIsRecording(false);
+    setRecordingStream(null);
     if (recordingTimerRef.current) { clearInterval(recordingTimerRef.current); recordingTimerRef.current = null; }
     audioChunksRef.current = [];
   };
@@ -807,8 +812,8 @@ export default function Chat() {
                   <>
                     <div className="flex-1 flex items-center gap-3 px-4 py-2.5 rounded-lg border border-destructive/50 bg-destructive/5">
                       <span className="w-2.5 h-2.5 rounded-full bg-destructive animate-pulse shrink-0" />
+                      {recordingStream && <LiveWaveform stream={recordingStream} />}
                       <span className="text-sm font-medium text-destructive">{formatDuration(recordingDuration)}</span>
-                      <span className="text-xs text-muted-foreground">Enregistrement...</span>
                     </div>
                     <button
                       onClick={cancelRecording}

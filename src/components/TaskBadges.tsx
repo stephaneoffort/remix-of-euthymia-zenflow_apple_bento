@@ -32,6 +32,23 @@ export function StatusBadge({ status }: { status: string }) {
   );
 }
 
+const STATUS_CIRCLE_CLASSES: Record<string, string> = {
+  todo: 'text-status-todo',
+  in_progress: 'text-status-progress',
+  in_review: 'text-status-review',
+  done: 'text-status-done',
+  blocked: 'text-status-blocked',
+};
+
+export function StatusCircle({ status, className = 'w-4 h-4' }: { status: string; className?: string }) {
+  const colorClass = STATUS_CIRCLE_CLASSES[status] || 'text-muted-foreground';
+  if (status === 'done') return <CheckCircle className={`${className} ${colorClass}`} />;
+  if (status === 'blocked') return <Ban className={`${className} ${colorClass}`} />;
+  if (status === 'in_progress') return <Loader className={`${className} ${colorClass}`} />;
+  if (status === 'in_review') return <Eye className={`${className} ${colorClass}`} />;
+  return <Circle className={`${className} ${colorClass}`} />;
+}
+
 export function AvatarGroup({ memberIds, getMemberById }: { memberIds: string[]; getMemberById: (id: string) => any }) {
   if (!memberIds.length) return <span className="text-xs text-muted-foreground">—</span>;
   return (

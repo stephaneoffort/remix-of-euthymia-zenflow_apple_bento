@@ -10,13 +10,19 @@ type SortKey = 'title' | 'priority' | 'dueDate' | 'status';
 const PRIORITY_ORDER: Priority[] = ['urgent', 'high', 'normal', 'low'];
 
 export default function ListView() {
-  const { getFilteredTasks, setSelectedTaskId, getMemberById, tasks, addTask, selectedProjectId, getListsForProject } = useApp();
+  const { getFilteredTasks, setSelectedTaskId, getMemberById, tasks, addTask, selectedProjectId, getListsForProject, lists, projects } = useApp();
   const [sortKey, setSortKey] = useState<SortKey>('priority');
   const [sortAsc, setSortAsc] = useState(true);
   const [expandedTasks, setExpandedTasks] = useState<Set<string>>(new Set());
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const isMobile = useIsMobile();
+
+  const getProjectForTask = (listId: string) => {
+    const list = lists.find(l => l.id === listId);
+    if (!list) return null;
+    return projects.find(p => p.id === list.projectId) || null;
+  };
 
   const filteredTasks = getFilteredTasks();
 
@@ -97,6 +103,15 @@ export default function ListView() {
                 </button>
               )}
               <div className="flex-1 min-w-0">
+                {!selectedProjectId && (() => {
+                  const proj = getProjectForTask(task.listId);
+                  return proj ? (
+                    <span className="text-[10px] text-muted-foreground flex items-center gap-1 mb-0.5">
+                      <span className="w-1.5 h-1.5 rounded-sm shrink-0" style={{ backgroundColor: proj.color }} />
+                      {proj.name}
+                    </span>
+                  ) : null;
+                })()}
                 <p className={`text-sm font-medium ${isOverdue ? 'text-priority-urgent' : 'text-foreground'}`}>{task.title}</p>
                 <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                   <StatusBadge status={task.status} />
@@ -178,8 +193,21 @@ export default function ListView() {
                   {isExpanded ? <ChevronDown className="w-4 h-4 text-muted-foreground" /> : <ChevronRight className="w-4 h-4 text-muted-foreground" />}
                 </button>
               ) : <span className="w-5" />}
-              <span className={`text-sm font-medium ${isOverdue ? 'text-priority-urgent' : 'text-foreground'}`}>{task.title}</span>
-              <SubtaskProgress total={subtasks.length} done={doneSubtasks.length} />
+              <div className="flex flex-col min-w-0">
+                {!selectedProjectId && (() => {
+                  const proj = getProjectForTask(task.listId);
+                  return proj ? (
+                    <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-sm shrink-0" style={{ backgroundColor: proj.color }} />
+                      {proj.name}
+                    </span>
+                  ) : null;
+                })()}
+                <div className="flex items-center gap-2">
+                  <span className={`text-sm font-medium ${isOverdue ? 'text-priority-urgent' : 'text-foreground'}`}>{task.title}</span>
+                  <SubtaskProgress total={subtasks.length} done={doneSubtasks.length} />
+                </div>
+              </div>
             </div>
           </td>
           <td className="py-2.5 px-3"><StatusBadge status={task.status} /></td>

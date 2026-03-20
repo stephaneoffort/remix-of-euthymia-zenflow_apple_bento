@@ -14,7 +14,14 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function KanbanBoard() {
-  const { getFilteredTasks, moveTask, setSelectedTaskId, getMemberById, addTask, selectedProjectId, getListsForProject, tasks, allStatuses, getStatusLabel, getTasksForProject, projects } = useApp();
+  const { getFilteredTasks, moveTask, setSelectedTaskId, getMemberById, addTask, selectedProjectId, selectedSpaceId, getListsForProject, tasks, allStatuses, getStatusLabel, getTasksForProject, projects, lists } = useApp();
+
+  const getProjectName = useCallback((listId: string) => {
+    const list = lists.find(l => l.id === listId);
+    if (!list) return null;
+    const project = projects.find(p => p.id === list.projectId);
+    return project || null;
+  }, [lists, projects]);
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
   const [draggedColumn, setDraggedColumn] = useState<string | null>(null);
   const [columnOrder, setColumnOrder] = useState<string[]>(allStatuses);
@@ -249,6 +256,15 @@ export default function KanbanBoard() {
                 <div className="flex items-start gap-1.5">
                   <GripVertical className="w-4 h-4 text-muted-foreground/40 opacity-0 group-hover:opacity-100 mt-0.5 shrink-0 cursor-grab hidden sm:block" />
                   <div className="flex-1 min-w-0">
+                    {!selectedProjectId && (() => {
+                      const proj = getProjectName(task.listId);
+                      return proj ? (
+                        <span className="text-[10px] text-muted-foreground flex items-center gap-1 mb-1">
+                          <span className="w-1.5 h-1.5 rounded-sm shrink-0" style={{ backgroundColor: proj.color }} />
+                          {proj.name}
+                        </span>
+                      ) : null;
+                    })()}
                     <p className="text-xs sm:text-sm font-medium text-foreground leading-snug mb-1.5 sm:mb-2">{task.title}</p>
                     <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                       <PriorityBadge priority={task.priority} />

@@ -259,6 +259,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         time_estimate: task.timeEstimate,
         time_logged: task.timeLogged,
         ai_summary: task.aiSummary,
+        recurrence: task.recurrence || null,
         sort_order: tasks.length,
       }).select().single();
       if (error) throw error;

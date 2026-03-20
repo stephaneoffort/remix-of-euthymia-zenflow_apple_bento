@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
-import { ChevronRight, ChevronDown, LayoutGrid, List, Calendar, BarChart3, GitFork, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle, Shield, Crown, Lock } from 'lucide-react';
+import { ChevronRight, ChevronDown, LayoutGrid, List, Calendar, BarChart3, GitFork, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle, Shield, Crown, Lock, Sun, Moon, SunMoon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
@@ -10,6 +10,7 @@ import { QuickFilter, ViewType } from '@/types';
 import { useChatNotifications } from '@/hooks/useChatNotifications';
 import { usePresence } from '@/hooks/usePresence';
 import SpaceAccessDialog from '@/components/SpaceAccessDialog';
+import { useThemeMode } from '@/context/ThemeContext';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -549,6 +550,7 @@ export default function AppSidebar() {
       {/* Current user + Settings + Logout */}
       <div className="px-4 py-3 border-t border-sidebar-border-color mt-auto">
         <CurrentUserBadge />
+        <ThemeSwitcher />
         <div className="flex items-center gap-1 mt-1">
           <AdminSettingsLink />
           <LogoutButton />
@@ -623,6 +625,35 @@ function ChatLink({ handleNavClick }: { handleNavClick: () => void }) {
     </button>
   );
 }
+function ThemeSwitcher() {
+  const { theme, setTheme } = useThemeMode();
+  const options: { key: 'light' | 'dark' | 'mixed'; label: string; icon: React.ReactNode }[] = [
+    { key: 'light', label: 'Clair', icon: <Sun className="w-3.5 h-3.5" /> },
+    { key: 'dark', label: 'Sombre', icon: <Moon className="w-3.5 h-3.5" /> },
+    { key: 'mixed', label: 'Mixte', icon: <SunMoon className="w-3.5 h-3.5" /> },
+  ];
+
+  return (
+    <div className="flex items-center gap-0.5 px-1 py-1 rounded-md bg-sidebar-hover/50 mb-1">
+      {options.map(opt => (
+        <button
+          key={opt.key}
+          onClick={() => setTheme(opt.key)}
+          className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors flex-1 justify-center ${
+            theme === opt.key
+              ? 'bg-sidebar-active text-white'
+              : 'text-sidebar-fg hover:text-sidebar-fg-bright'
+          }`}
+          title={opt.label}
+        >
+          {opt.icon}
+          <span className="hidden md:inline">{opt.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function CurrentUserBadge() {
   const { teamMemberId } = useAuth();
   const { teamMembers } = useApp();

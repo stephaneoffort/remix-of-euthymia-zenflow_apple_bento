@@ -757,7 +757,7 @@ export default function Chat() {
               const prevMsg = displayMessages[i - 1];
               const showAuthor = !prevMsg || prevMsg.author_id !== msg.author_id ||
                 new Date(msg.created_at).getTime() - new Date(prevMsg.created_at).getTime() > 300000;
-              const rGroups = chatMode === 'channel' ? groupedReactions(msg.id) : {};
+              const rGroups = groupedReactions(msg.id);
 
               return (
                 <div key={msg.id} className={`group ${showAuthor ? 'mt-4' : 'mt-0.5'}`}>

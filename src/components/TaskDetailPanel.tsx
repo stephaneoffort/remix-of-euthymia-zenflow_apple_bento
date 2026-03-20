@@ -227,12 +227,11 @@ export default function TaskDetailPanel() {
             {/* Description */}
             <div>
               <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">Description</label>
-              <textarea
-                value={task.description}
-                onChange={e => updateTask(task.id, { description: e.target.value })}
-                rows={expanded ? 6 : 3}
+              <RichTextEditor
+                content={task.description}
+                onChange={(html) => updateTask(task.id, { description: html })}
                 placeholder="Ajouter une description..."
-                className="w-full text-sm bg-muted/50 border border-border rounded-md px-3 py-2 outline-none focus:ring-1 focus:ring-ring resize-none"
+                editorClassName={expanded ? 'min-h-[120px]' : 'min-h-[60px]'}
               />
             </div>
 

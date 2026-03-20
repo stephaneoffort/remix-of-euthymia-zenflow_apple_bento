@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useApp } from '@/context/AppContext';
 import { Status, Priority, PRIORITY_LABELS } from '@/types';
 import { PriorityBadge, StatusBadge, AvatarGroup } from '@/components/TaskBadges';
-import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Clock, Paperclip, ChevronDown, Maximize2, Minimize2, CalendarPlus, Link, Upload, Trash2, ExternalLink, FileText } from 'lucide-react';
+import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Clock, Paperclip, ChevronDown, Maximize2, Minimize2, CalendarPlus, Link, Upload, Trash2, ExternalLink, FileText, Send } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { generateGoogleCalendarUrl, generateOutlookCalendarUrl, generateYahooCalendarUrl } from '@/lib/calendarLinks';
 import { supabase } from '@/integrations/supabase/client';
@@ -448,6 +448,13 @@ export default function TaskDetailPanel() {
                     placeholder="Titre de la sous-tâche..."
                     className="flex-1 text-sm bg-muted/50 border border-border rounded-md px-2.5 py-1.5 outline-none"
                   />
+                  <button
+                    onClick={() => handleAddSubtask(task.id)}
+                    disabled={!newSubtaskTitle.trim()}
+                    className="p-1.5 rounded-md bg-primary text-primary-foreground disabled:opacity-50"
+                  >
+                    <Send className="w-4 h-4" />
+                  </button>
                 </div>
               ) : (
                 <button
@@ -622,6 +629,13 @@ function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {
                   placeholder="Sous-tâche..."
                   className="flex-1 text-sm bg-muted/50 border border-border rounded-md px-2.5 py-1 outline-none min-w-0"
                 />
+                <button
+                  onClick={() => handleAdd(st.id)}
+                  disabled={!newTitle.trim()}
+                  className="p-1.5 rounded-md bg-primary text-primary-foreground disabled:opacity-50"
+                >
+                  <Send className="w-4 h-4" />
+                </button>
               </div>
             )}
 

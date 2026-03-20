@@ -71,7 +71,7 @@ export interface Task {
   timeEstimate: number | null; // minutes
   timeLogged: number | null;
   aiSummary: string | null;
-  recurrence: Recurrence;
+  recurrence?: Recurrence;
   createdAt: string;
   order: number;
 }

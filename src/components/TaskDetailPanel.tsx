@@ -29,12 +29,24 @@ export default function TaskDetailPanel() {
   const [newLinkName, setNewLinkName] = useState('');
   const [uploading, setUploading] = useState(false);
   const [descriptionDraft, setDescriptionDraft] = useState('');
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const task = selectedTaskId ? getTaskById(selectedTaskId) : null;
 
   useEffect(() => {
     setDescriptionDraft(task?.description ?? '');
   }, [task?.id, task?.description]);
+
+  useEffect(() => {
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, []);
+
+  const debouncedSaveDescription = useCallback((html: string, taskId: string) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      updateTask(taskId, { description: html });
+    }, 1500);
+  }, [updateTask]);
 
   if (!selectedTaskId) return null;
   if (!task) return null;

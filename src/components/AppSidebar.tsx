@@ -633,14 +633,23 @@ function AdminSettingsLink() {
 function LogoutButton() {
   const { signOut } = useAuth();
   return (
-    <button
-      onClick={signOut}
-      className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors md:w-full"
-      title="Déconnexion"
-    >
-      <LogOut className="w-4 h-4" />
-      <span className="hidden md:inline">Déconnexion</span>
-    </button>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            onClick={signOut}
+            className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors md:w-full"
+            title="Déconnexion"
+          >
+            <LogOut className="w-4 h-4" />
+            <span className="hidden md:inline">Déconnexion</span>
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="md:hidden">
+          Déconnexion
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
 

@@ -738,14 +738,20 @@ export default function Chat() {
                     rows={1}
                   />
                 </div>
-                <input ref={fileInputRef} type="file" accept="*/*" className="hidden" onChange={handleFileUpload} />
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="p-2.5 rounded-lg border border-input hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                <input
+                  ref={fileInputRef}
+                  id="chat-file-upload"
+                  type="file"
+                  onChange={handleFileUpload}
+                  className="sr-only"
+                />
+                <label
+                  htmlFor="chat-file-upload"
+                  className="p-2.5 rounded-lg border border-input hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                   title="Joindre un fichier"
                 >
                   <Paperclip className="w-4 h-4" />
-                </button>
+                </label>
                 <button
                   onClick={handleSend}
                   disabled={!messageText.trim() || sendMutation.isPending}

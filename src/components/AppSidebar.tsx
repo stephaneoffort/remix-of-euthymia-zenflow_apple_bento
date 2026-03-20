@@ -505,13 +505,33 @@ export default function AppSidebar() {
                                 <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: project.color }} />
                                 <span className="flex-1 min-w-0 truncate">{project.name}</span>
                               </button>
-                              <button
-                                onClick={() => setDeleteConfirm({ type: 'project', id: project.id, name: project.name })}
-                                className="opacity-0 group-hover/project:opacity-100 p-1 rounded hover:bg-destructive/20 text-sidebar-fg hover:text-destructive transition-all mr-1"
-                                title="Supprimer le projet"
-                              >
-                                <Trash2 className="w-3 h-3" />
-                              </button>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <button
+                                    className="p-1 rounded hover:bg-sidebar-hover text-sidebar-fg opacity-40 group-hover/project:opacity-100 transition-opacity mr-1"
+                                    onClick={e => e.stopPropagation()}
+                                  >
+                                    <MoreHorizontal className="w-3.5 h-3.5" />
+                                  </button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-44">
+                                  <DropdownMenuItem onClick={() => {
+                                    setEditingProjectId(project.id);
+                                    setEditingProjectName(project.name);
+                                  }}>
+                                    <Settings className="w-4 h-4 mr-2" />
+                                    Renommer
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem
+                                    onClick={() => setDeleteConfirm({ type: 'project', id: project.id, name: project.name })}
+                                    className="text-destructive focus:text-destructive"
+                                  >
+                                    <Trash2 className="w-4 h-4 mr-2" />
+                                    Supprimer
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
                             </SortableProject>
                           )
                         ))}

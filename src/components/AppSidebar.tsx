@@ -413,29 +413,41 @@ export default function AppSidebar() {
                       {space.isPrivate && <Lock className="w-3 h-3 text-sidebar-fg shrink-0" />}
                     </span>
                   )}
-                  <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-all mr-1">
-                    <button
-                      onClick={() => setAccessDialogSpace({ id: space.id, name: space.name, isPrivate: space.isPrivate })}
-                      className="p-1 rounded hover:bg-sidebar-hover text-sidebar-fg"
-                      title="Gérer les accès"
-                    >
-                      <Shield className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={() => setAddingProjectForSpace(space.id)}
-                      className="p-1 rounded hover:bg-sidebar-hover text-sidebar-fg"
-                      title="Ajouter un projet"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={() => setDeleteConfirm({ type: 'space', id: space.id, name: space.name })}
-                      className="p-1 rounded hover:bg-destructive/20 text-sidebar-fg hover:text-destructive"
-                      title="Supprimer l'espace"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        className="p-1 rounded hover:bg-sidebar-hover text-sidebar-fg opacity-40 group-hover:opacity-100 transition-opacity mr-1"
+                        onClick={e => e.stopPropagation()}
+                      >
+                        <MoreHorizontal className="w-4 h-4" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuItem onClick={() => setAccessDialogSpace({ id: space.id, name: space.name, isPrivate: space.isPrivate })}>
+                        <Shield className="w-4 h-4 mr-2" />
+                        Gérer les accès
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setAddingProjectForSpace(space.id)}>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Ajouter un projet
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => {
+                        setEditingSpaceId(space.id);
+                        setEditingSpaceName(space.name);
+                      }}>
+                        <Settings className="w-4 h-4 mr-2" />
+                        Renommer
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={() => setDeleteConfirm({ type: 'space', id: space.id, name: space.name })}
+                        className="text-destructive focus:text-destructive"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Supprimer
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
                 {expandedSpaces.has(space.id) && (
                   <div className="ml-4">

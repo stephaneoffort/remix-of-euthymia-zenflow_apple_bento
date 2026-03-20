@@ -36,14 +36,12 @@ const COLORS = [
 ];
 
 const ToolbarButton = forwardRef<HTMLButtonElement, {
-  active, onClick, title, children, disabled,
-}>(({
   active?: boolean;
   onClick: () => void;
   title: string;
   children: React.ReactNode;
   disabled?: boolean;
-}, ref) => {
+}>(({ active, onClick, title, children, disabled }, ref) => {
   return (
     <button
       ref={ref}

@@ -28,21 +28,21 @@ export default function TaskDetailPanel() {
   const [newLinkUrl, setNewLinkUrl] = useState('');
   const [newLinkName, setNewLinkName] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [descriptionDraft, setDescriptionDraft] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const task = selectedTaskId ? getTaskById(selectedTaskId) : null;
+
+  useEffect(() => {
+    setDescriptionDraft(task?.description ?? '');
+  }, [task?.id, task?.description]);
 
   if (!selectedTaskId) return null;
-  const task = getTaskById(selectedTaskId);
   if (!task) return null;
 
   const breadcrumb = getTaskBreadcrumb(task.id);
   const subtasks = getSubtasks(task.id);
   const doneSubtasks = subtasks.filter(t => t.status === 'done');
   const allSubtasksDone = subtasks.length > 0 && doneSubtasks.length === subtasks.length;
-  const [descriptionDraft, setDescriptionDraft] = useState(task.description);
-
-  useEffect(() => {
-    setDescriptionDraft(task.description);
-  }, [task.id, task.description]);
 
   const handleAddSubtask = (parentId: string) => {
     if (!newSubtaskTitle.trim()) return;
@@ -234,7 +234,7 @@ export default function TaskDetailPanel() {
               <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">Description</label>
               <RichTextEditor
                 key={task.id}
-                content={task.description}
+                content={descriptionDraft}
                 onChange={setDescriptionDraft}
                 onBlur={(html) => {
                   if (html !== task.description) {

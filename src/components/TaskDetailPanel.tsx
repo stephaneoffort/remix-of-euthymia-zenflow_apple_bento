@@ -7,6 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { generateGoogleCalendarUrl, generateOutlookCalendarUrl, generateYahooCalendarUrl } from '@/lib/calendarLinks';
 import { supabase } from '@/integrations/supabase/client';
 import TaskChecklist from '@/components/TaskChecklist';
+import RichTextEditor, { RichTextDisplay } from '@/components/RichTextEditor';
 // Convert ISO/timestamp string to datetime-local input value (YYYY-MM-DDTHH:mm)
 function toDatetimeLocal(isoStr: string): string {
   const d = new Date(isoStr);
@@ -226,12 +227,11 @@ export default function TaskDetailPanel() {
             {/* Description */}
             <div>
               <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">Description</label>
-              <textarea
-                value={task.description}
-                onChange={e => updateTask(task.id, { description: e.target.value })}
-                rows={expanded ? 6 : 3}
+              <RichTextEditor
+                content={task.description}
+                onChange={(html) => updateTask(task.id, { description: html })}
                 placeholder="Ajouter une description..."
-                className="w-full text-sm bg-muted/50 border border-border rounded-md px-3 py-2 outline-none focus:ring-1 focus:ring-ring resize-none"
+                editorClassName={expanded ? 'min-h-[120px]' : 'min-h-[60px]'}
               />
             </div>
 
@@ -495,27 +495,30 @@ export default function TaskDetailPanel() {
                           <span className="text-xs font-medium text-foreground truncate">{author?.name || 'Inconnu'}</span>
                           <span className="text-[10px] text-muted-foreground shrink-0">{new Date(c.createdAt).toLocaleDateString('fr-FR')}</span>
                         </div>
-                        <p className="text-sm text-foreground mt-0.5 break-words">{c.content}</p>
+                        <RichTextDisplay content={c.content} className="text-sm mt-0.5 break-words" />
                       </div>
                     </div>
                   );
                 })}
               </div>
-              <div className="flex gap-2">
-                <input
-                  value={newComment}
-                  onChange={e => setNewComment(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter') handleAddComment(); }}
+              <div className="space-y-2">
+                <RichTextEditor
+                  content={newComment}
+                  onChange={setNewComment}
                   placeholder="Écrire un commentaire..."
-                  className="flex-1 text-sm bg-muted/50 border border-border rounded-md px-2.5 py-1.5 outline-none min-w-0"
+                  minimal
+                  className="text-sm"
+                  editorClassName="min-h-[38px]"
                 />
-                <button
-                  onClick={handleAddComment}
-                  disabled={!newComment.trim()}
-                  className="px-3 py-1.5 bg-primary text-primary-foreground text-xs font-medium rounded-md hover:opacity-90 disabled:opacity-50 shrink-0"
-                >
-                  Envoyer
-                </button>
+                <div className="flex justify-end">
+                  <button
+                    onClick={handleAddComment}
+                    disabled={!newComment.trim() || newComment === '<p></p>'}
+                    className="px-3 py-1.5 bg-primary text-primary-foreground text-xs font-medium rounded-md hover:opacity-90 disabled:opacity-50 shrink-0"
+                  >
+                    Envoyer
+                  </button>
+                </div>
               </div>
             </div>
           </div>

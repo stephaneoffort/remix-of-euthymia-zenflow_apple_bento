@@ -11,6 +11,7 @@ import MobileBottomNav from '@/components/MobileBottomNav';
 import { usePresence } from '@/hooks/usePresence';
 import AudioWaveformPlayer from '@/components/AudioWaveformPlayer';
 import LiveWaveform from '@/components/LiveWaveform';
+import RichTextEditor, { RichTextDisplay } from '@/components/RichTextEditor';
 
 interface ChatCategory {
   id: string;
@@ -406,8 +407,9 @@ export default function Chat() {
   };
 
   const handleSend = () => {
-    if (!messageText.trim()) return;
-    sendMutation.mutate({ content: messageText.trim() });
+    const stripped = messageText.replace(/<[^>]*>/g, '').trim();
+    if (!stripped) return;
+    sendMutation.mutate({ content: messageText });
     setMessageText('');
   };
 
@@ -771,10 +773,13 @@ export default function Chat() {
                     </div>
                   )}
                   <div className={`${showAuthor ? 'ml-10' : 'ml-10'} relative`}>
-                    <div
-                      className="text-sm text-foreground leading-relaxed"
-                      dangerouslySetInnerHTML={{ __html: formatContent(msg.content) }}
+                    <RichTextDisplay
+                      content={formatContent(msg.content)}
+                      className="text-sm leading-relaxed"
                     />
+                    {(!msg.content || msg.content === '<p></p>') && !msg.attachment_url && (
+                      <span className="text-sm text-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: formatContent(msg.content) }} />
+                    )}
                     {msg.attachment_url && (
                       isAudioAttachment(msg.attachment_name) ? (
                         <AudioWaveformPlayer url={msg.attachment_url} />
@@ -925,14 +930,13 @@ export default function Chat() {
                 ) : (
                   <>
                     <div className="flex-1 relative">
-                      <textarea
-                        ref={inputRef}
-                        value={messageText}
-                        onChange={handleInputChange}
-                        onKeyDown={handleKeyDown}
+                      <RichTextEditor
+                        content={messageText}
+                        onChange={setMessageText}
                         placeholder={chatMode === 'channel' ? `Message dans #${currentCategory?.name || ''}...` : `Message à ${headerTitle}...`}
-                        className="w-full resize-none rounded-lg border border-input bg-background px-4 py-2.5 pr-10 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring min-h-[42px] max-h-32"
-                        rows={1}
+                        minimal
+                        onSubmit={handleSend}
+                        editorClassName="min-h-[38px] max-h-32"
                       />
                     </div>
                     <button
@@ -958,7 +962,7 @@ export default function Chat() {
                     </label>
                     <button
                       onClick={handleSend}
-                      disabled={!messageText.trim() || sendMutation.isPending}
+                      disabled={(!messageText.trim() && messageText !== '<p></p>') || !messageText || messageText === '<p></p>' || sendMutation.isPending}
                       className="p-2.5 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50"
                     >
                       <Send className="w-4 h-4" />

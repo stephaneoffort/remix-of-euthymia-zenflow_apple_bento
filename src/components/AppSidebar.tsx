@@ -46,7 +46,7 @@ const PROJECT_COLORS = ['#4f46e5', '#0891b2', '#059669', '#d97706', '#dc2626', '
 
 export default function AppSidebar() {
   const {
-    spaces, selectedProjectId, setSelectedProjectId,
+    spaces, selectedProjectId, setSelectedProjectId, selectedSpaceId, setSelectedSpaceId,
     selectedView, setSelectedView, quickFilter, setQuickFilter,
     getProjectsForSpace, getTasksForProject, teamMembers, sidebarCollapsed, setSidebarCollapsed,
     tasks, addSpace, addProject, renameSpace, renameProject, deleteSpace, deleteProject,
@@ -346,8 +346,17 @@ export default function AppSidebar() {
                     />
                   ) : (
                     <span
-                      className="flex-1 font-medium text-sm text-sidebar-fg cursor-pointer truncate flex items-center gap-1"
-                      onDoubleClick={() => {
+                      className={`flex-1 font-medium text-sm cursor-pointer truncate flex items-center gap-1 ${
+                        selectedSpaceId === space.id ? 'text-sidebar-fg-bright' : 'text-sidebar-fg'
+                      }`}
+                      onClick={() => {
+                        setSelectedSpaceId(space.id);
+                        setQuickFilter('all');
+                        handleNavClick();
+                        if (!expandedSpaces.has(space.id)) toggleSpace(space.id);
+                      }}
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
                         setEditingSpaceId(space.id);
                         setEditingSpaceName(space.name);
                       }}

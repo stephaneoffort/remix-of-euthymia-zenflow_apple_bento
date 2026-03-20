@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useApp } from '@/context/AppContext';
 import { Status, Priority, PRIORITY_LABELS } from '@/types';
 import { PriorityBadge, StatusBadge, AvatarGroup } from '@/components/TaskBadges';
@@ -29,12 +29,24 @@ export default function TaskDetailPanel() {
   const [newLinkName, setNewLinkName] = useState('');
   const [uploading, setUploading] = useState(false);
   const [descriptionDraft, setDescriptionDraft] = useState('');
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const task = selectedTaskId ? getTaskById(selectedTaskId) : null;
 
   useEffect(() => {
     setDescriptionDraft(task?.description ?? '');
   }, [task?.id, task?.description]);
+
+  useEffect(() => {
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, []);
+
+  const debouncedSaveDescription = useCallback((html: string, taskId: string) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      updateTask(taskId, { description: html });
+    }, 1500);
+  }, [updateTask]);
 
   if (!selectedTaskId) return null;
   if (!task) return null;
@@ -235,8 +247,12 @@ export default function TaskDetailPanel() {
               <RichTextEditor
                 key={task.id}
                 content={descriptionDraft}
-                onChange={setDescriptionDraft}
+                onChange={(html) => {
+                  setDescriptionDraft(html);
+                  debouncedSaveDescription(html, task.id);
+                }}
                 onBlur={(html) => {
+                  if (debounceRef.current) clearTimeout(debounceRef.current);
                   if (html !== task.description) {
                     updateTask(task.id, { description: html });
                   }

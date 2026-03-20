@@ -103,6 +103,15 @@ export default function ListView() {
                 </button>
               )}
               <div className="flex-1 min-w-0">
+                {!selectedProjectId && (() => {
+                  const proj = getProjectForTask(task.listId);
+                  return proj ? (
+                    <span className="text-[10px] text-muted-foreground flex items-center gap-1 mb-0.5">
+                      <span className="w-1.5 h-1.5 rounded-sm shrink-0" style={{ backgroundColor: proj.color }} />
+                      {proj.name}
+                    </span>
+                  ) : null;
+                })()}
                 <p className={`text-sm font-medium ${isOverdue ? 'text-priority-urgent' : 'text-foreground'}`}>{task.title}</p>
                 <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                   <StatusBadge status={task.status} />

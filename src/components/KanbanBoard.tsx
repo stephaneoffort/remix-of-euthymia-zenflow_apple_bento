@@ -14,7 +14,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function KanbanBoard() {
-  const { getFilteredTasks, moveTask, setSelectedTaskId, getMemberById, addTask, selectedProjectId, getListsForProject, tasks, allStatuses, getStatusLabel } = useApp();
+  const { getFilteredTasks, moveTask, setSelectedTaskId, getMemberById, addTask, selectedProjectId, getListsForProject, tasks, allStatuses, getStatusLabel, getTasksForProject, projects } = useApp();
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
   const [draggedColumn, setDraggedColumn] = useState<string | null>(null);
   const [columnOrder, setColumnOrder] = useState<string[]>(allStatuses);
@@ -297,6 +297,31 @@ export default function KanbanBoard() {
 
   return (
     <div className="flex flex-col h-full">
+      {/* Project progress bar */}
+      {selectedProjectId && (() => {
+        const project = projects.find(p => p.id === selectedProjectId);
+        const projectTasks = getTasksForProject(selectedProjectId);
+        if (!project || projectTasks.length === 0) return null;
+        const doneTasks = projectTasks.filter(t => t.status === 'done').length;
+        const pct = Math.round((doneTasks / projectTasks.length) * 100);
+        return (
+          <div className="px-3 sm:px-6 pt-3 sm:pt-4 pb-1">
+            <div className="flex items-center gap-2.5">
+              <div className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: project.color }} />
+              <span className="text-xs font-medium text-muted-foreground">{project.name}</span>
+              <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{ width: `${pct}%`, backgroundColor: project.color }}
+                />
+              </div>
+              <span className="text-xs font-semibold tabular-nums text-foreground">{pct}%</span>
+              <span className="text-[10px] text-muted-foreground">{doneTasks}/{projectTasks.length}</span>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Toggle all button */}
       <div className="flex justify-end px-3 sm:px-6 pt-2 sm:pt-4">
         <button

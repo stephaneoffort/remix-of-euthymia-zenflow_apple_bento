@@ -165,6 +165,7 @@ export default function Index() {
       {/* AI components */}
       <TaskSuggestions open={suggestionsOpen} onClose={() => setSuggestionsOpen(false)} />
       <AIChatPanel />
+      <CommandPalette />
 
       {/* Mobile bottom navigation */}
       {isMobile && !selectedTaskId && <MobileBottomNav />}

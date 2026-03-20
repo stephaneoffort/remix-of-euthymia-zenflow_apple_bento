@@ -59,6 +59,14 @@ export default function AppSidebar() {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const { isOnline } = usePresence();
+  const { user } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!user) { setIsAdmin(false); return; }
+    supabase.from('user_roles').select('role').eq('user_id', user.id).eq('role', 'admin')
+      .then(({ data }) => setIsAdmin(!!data && data.length > 0));
+  }, [user]);
 
   const [expandedSpaces, setExpandedSpaces] = useState<Set<string>>(new Set(spaces.map(s => s.id)));
   const [addingSpace, setAddingSpace] = useState(false);

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Hash, Send, Paperclip, Smile, X, Plus, Trash2, Settings, ArrowLeft, ChevronDown, MessageCircle, Users, Mic, Square } from 'lucide-react';
+import { Hash, Send, Paperclip, Smile, X, Plus, Trash2, Settings, ArrowLeft, ChevronDown, MessageCircle, Users, Mic, Square, Play, Pause } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useChatNotifications } from '@/hooks/useChatNotifications';
@@ -90,6 +90,9 @@ export default function Chat() {
   const audioChunksRef = useRef<Blob[]>([]);
   const recordingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [recordingStream, setRecordingStream] = useState<MediaStream | null>(null);
+  const [audioPreview, setAudioPreview] = useState<{ blob: Blob; url: string; mimeType: string } | null>(null);
+  const [previewPlaying, setPreviewPlaying] = useState(false);
+  const previewAudioRef = useRef<HTMLAudioElement>(null);
 
   // Check admin
   useEffect(() => {
@@ -393,12 +396,8 @@ export default function Chat() {
         stream.getTracks().forEach(t => t.stop());
         const ext = mediaRecorder.mimeType.includes('webm') ? 'webm' : 'm4a';
         const blob = new Blob(audioChunksRef.current, { type: mediaRecorder.mimeType });
-        const fileName = `audio_${Date.now()}.${ext}`;
-        const path = `${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
-        const { error } = await supabase.storage.from('chat-attachments').upload(path, blob);
-        if (error) { toast.error('Erreur envoi audio'); return; }
-        const { data: urlData } = supabase.storage.from('chat-attachments').getPublicUrl(path);
-        sendMutation.mutate({ content: '🎙️ Message vocal', attachmentUrl: urlData.publicUrl, attachmentName: fileName });
+        const previewUrl = URL.createObjectURL(blob);
+        setAudioPreview({ blob, url: previewUrl, mimeType: mediaRecorder.mimeType });
       };
 
       mediaRecorder.start();
@@ -416,6 +415,31 @@ export default function Chat() {
     setIsRecording(false);
     setRecordingStream(null);
     if (recordingTimerRef.current) { clearInterval(recordingTimerRef.current); recordingTimerRef.current = null; }
+  };
+
+  const sendAudioPreview = async () => {
+    if (!audioPreview) return;
+    const ext = audioPreview.mimeType.includes('webm') ? 'webm' : 'm4a';
+    const fileName = `audio_${Date.now()}.${ext}`;
+    const path = `${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+    const { error } = await supabase.storage.from('chat-attachments').upload(path, audioPreview.blob);
+    if (error) { toast.error('Erreur envoi audio'); return; }
+    const { data: urlData } = supabase.storage.from('chat-attachments').getPublicUrl(path);
+    sendMutation.mutate({ content: '🎙️ Message vocal', attachmentUrl: urlData.publicUrl, attachmentName: fileName });
+    discardAudioPreview();
+  };
+
+  const discardAudioPreview = () => {
+    if (audioPreview) URL.revokeObjectURL(audioPreview.url);
+    setAudioPreview(null);
+    setPreviewPlaying(false);
+  };
+
+  const togglePreviewPlay = () => {
+    const audio = previewAudioRef.current;
+    if (!audio) return;
+    if (previewPlaying) { audio.pause(); setPreviewPlaying(false); }
+    else { audio.play(); setPreviewPlaying(true); }
   };
 
   const cancelRecording = () => {
@@ -808,7 +832,44 @@ export default function Chat() {
               )}
 
               <div className="flex items-end gap-2">
-                {isRecording ? (
+                {audioPreview ? (
+                  <>
+                    <audio
+                      ref={previewAudioRef}
+                      src={audioPreview.url}
+                      onEnded={() => setPreviewPlaying(false)}
+                    />
+                    <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-lg border border-primary/30 bg-primary/5">
+                      <button
+                        onClick={togglePreviewPlay}
+                        className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center shrink-0 hover:opacity-90 active:scale-95 transition-all"
+                      >
+                        {previewPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 ml-0.5" />}
+                      </button>
+                      <div className="flex-1 flex items-center gap-2 min-w-0">
+                        <div className="flex-1 h-1 rounded-full bg-muted overflow-hidden">
+                          <div className="h-full bg-primary rounded-full animate-pulse" style={{ width: '100%' }} />
+                        </div>
+                        <span className="text-xs text-muted-foreground shrink-0">Pré-écoute</span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={discardAudioPreview}
+                      className="p-2.5 rounded-lg border border-input hover:bg-muted text-muted-foreground hover:text-destructive transition-colors"
+                      title="Supprimer"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={sendAudioPreview}
+                      disabled={sendMutation.isPending}
+                      className="p-2.5 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50"
+                      title="Envoyer"
+                    >
+                      <Send className="w-4 h-4" />
+                    </button>
+                  </>
+                ) : isRecording ? (
                   <>
                     <div className="flex-1 flex items-center gap-3 px-4 py-2.5 rounded-lg border border-destructive/50 bg-destructive/5">
                       <span className="w-2.5 h-2.5 rounded-full bg-destructive animate-pulse shrink-0" />

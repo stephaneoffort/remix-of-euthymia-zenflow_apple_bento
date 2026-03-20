@@ -11,11 +11,12 @@ import TaskFilterBar from '@/components/TaskFilterBar';
 import MobileBottomNav from '@/components/MobileBottomNav';
 import TaskSuggestions from '@/components/TaskSuggestions';
 import AIChatPanel from '@/components/AIChatPanel';
+import CommandPalette from '@/components/CommandPalette';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ViewType } from '@/types';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
-import { Sparkles, PanelLeft, Filter, ChevronDown, ChevronUp, LayoutGrid, List, Calendar, BarChart3, GitFork } from 'lucide-react';
+import { Sparkles, PanelLeft, Filter, ChevronDown, ChevronUp, LayoutGrid, List, Calendar, BarChart3, GitFork, Search } from 'lucide-react';
 
 const VIEW_OPTIONS: { key: ViewType; label: string; icon: React.ReactNode }[] = [
   { key: 'kanban', label: 'Kanban', icon: <LayoutGrid className="w-4 h-4" /> },

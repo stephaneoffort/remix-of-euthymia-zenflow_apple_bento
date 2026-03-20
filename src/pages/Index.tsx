@@ -12,8 +12,18 @@ import MobileBottomNav from '@/components/MobileBottomNav';
 import TaskSuggestions from '@/components/TaskSuggestions';
 import AIChatPanel from '@/components/AIChatPanel';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { ViewType } from '@/types';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
-import { Sparkles, PanelLeft, Filter, ChevronDown, ChevronUp } from 'lucide-react';
+import { Sparkles, PanelLeft, Filter, ChevronDown, ChevronUp, LayoutGrid, List, Calendar, BarChart3, GitFork } from 'lucide-react';
+
+const VIEW_OPTIONS: { key: ViewType; label: string; icon: React.ReactNode }[] = [
+  { key: 'kanban', label: 'Kanban', icon: <LayoutGrid className="w-4 h-4" /> },
+  { key: 'list', label: 'Liste', icon: <List className="w-4 h-4" /> },
+  { key: 'calendar', label: 'Calendrier', icon: <Calendar className="w-4 h-4" /> },
+  { key: 'workload', label: 'Charge', icon: <BarChart3 className="w-4 h-4" /> },
+  { key: 'mindmap', label: 'Carte', icon: <GitFork className="w-4 h-4" /> },
+];
 
 const QUICK_FILTER_TITLES: Record<string, string> = {
   all: '',
@@ -24,7 +34,7 @@ const QUICK_FILTER_TITLES: Record<string, string> = {
 };
 
 export default function Index() {
-  const { selectedProjectId, selectedSpaceId, selectedView, quickFilter, selectedTaskId, projects, spaces, sidebarCollapsed, setSidebarCollapsed, advancedFilters } = useApp();
+  const { selectedProjectId, selectedSpaceId, selectedView, setSelectedView, quickFilter, selectedTaskId, projects, spaces, sidebarCollapsed, setSidebarCollapsed, advancedFilters } = useApp();
   const isMobile = useIsMobile();
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
@@ -58,6 +68,29 @@ export default function Index() {
                 <div className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: project.color }} />
               )}
               <h2 className="font-bold text-foreground text-sm sm:text-lg truncate">{title}</h2>
+              {/* View selector */}
+              <div className="hidden sm:flex items-center gap-0.5 ml-2 bg-muted/50 rounded-lg p-0.5">
+                {VIEW_OPTIONS.map(v => (
+                  <Tooltip key={v.key}>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => setSelectedView(v.key)}
+                        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                          selectedView === v.key
+                            ? 'bg-background text-foreground shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                      >
+                        {v.icon}
+                        <span className="hidden lg:inline">{v.label}</span>
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="lg:hidden">
+                      {v.label}
+                    </TooltipContent>
+                  </Tooltip>
+                ))}
+              </div>
             </div>
             <div className="flex items-center gap-1.5">
               {/* Mobile filter toggle */}

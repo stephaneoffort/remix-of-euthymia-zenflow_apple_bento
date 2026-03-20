@@ -43,6 +43,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <ThemeProvider>
     <TooltipProvider>
       <AuthProvider>
         <Toaster />

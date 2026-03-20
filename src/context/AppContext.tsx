@@ -667,7 +667,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
 
     return filtered;
-  }, [tasks, selectedProjectId, quickFilter, lists, teamMemberId, advancedFilters]);
+  }, [tasks, selectedProjectId, selectedSpaceId, quickFilter, lists, projects, teamMemberId, advancedFilters]);
 
   const canAccessSpace = useCallback((spaceId: string) => {
     const space = spaces.find(s => s.id === spaceId);

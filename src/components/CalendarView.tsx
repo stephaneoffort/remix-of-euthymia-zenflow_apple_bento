@@ -7,6 +7,39 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/h
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { PRIORITY_LABELS, type Task } from '@/types';
+
+function MonthYearPicker({ year, month, onSelect }: { year: number; month: number; onSelect: (year: number, month: number) => void }) {
+  const [pickerYear, setPickerYear] = useState(year);
+
+  return (
+    <div className="p-3 w-64">
+      <div className="flex items-center justify-between mb-3">
+        <button onClick={() => setPickerYear(y => y - 1)} className="p-1 hover:bg-muted rounded transition-colors">
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+        <span className="text-sm font-bold text-foreground">{pickerYear}</span>
+        <button onClick={() => setPickerYear(y => y + 1)} className="p-1 hover:bg-muted rounded transition-colors">
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+      <div className="grid grid-cols-3 gap-1.5">
+        {MONTHS_FR_SHORT.map((m, i) => (
+          <button
+            key={i}
+            onClick={() => onSelect(pickerYear, i)}
+            className={`px-2 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              i === month && pickerYear === year
+                ? 'bg-primary text-primary-foreground'
+                : 'hover:bg-muted text-foreground'
+            }`}
+          >
+            {m}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 import {
   DndContext,
   DragOverlay,

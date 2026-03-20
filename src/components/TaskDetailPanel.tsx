@@ -506,7 +506,6 @@ export default function TaskDetailPanel() {
                   content={newComment}
                   onChange={setNewComment}
                   placeholder="Écrire un commentaire..."
-                  minimal
                   className="text-sm"
                   editorClassName="min-h-[38px]"
                 />

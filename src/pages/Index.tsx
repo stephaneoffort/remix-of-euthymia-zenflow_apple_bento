@@ -9,6 +9,8 @@ import MindMapView from '@/components/MindMapView';
 import TaskDetailPanel from '@/components/TaskDetailPanel';
 import TaskFilterBar from '@/components/TaskFilterBar';
 import MobileBottomNav from '@/components/MobileBottomNav';
+import TaskSuggestions from '@/components/TaskSuggestions';
+import AIChatPanel from '@/components/AIChatPanel';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 import { Sparkles, PanelLeft, Filter, ChevronDown, ChevronUp } from 'lucide-react';

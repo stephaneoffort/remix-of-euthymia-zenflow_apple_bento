@@ -372,14 +372,23 @@ export default function Chat() {
   const toggleReaction = useCallback(async (messageId: string, emoji: string) => {
     if (!teamMemberId) return;
     const existing = reactions.find(r => r.message_id === messageId && r.member_id === teamMemberId && r.emoji === emoji);
-    if (existing) {
-      await supabase.from('chat_reactions').delete().eq('id', existing.id);
+    if (chatMode === 'channel') {
+      if (existing) {
+        await supabase.from('chat_reactions').delete().eq('id', existing.id);
+      } else {
+        await supabase.from('chat_reactions').insert({ message_id: messageId, member_id: teamMemberId, emoji });
+      }
+      queryClient.invalidateQueries({ queryKey: ['chat_reactions', selectedCategory] });
     } else {
-      await supabase.from('chat_reactions').insert({ message_id: messageId, member_id: teamMemberId, emoji });
+      if (existing) {
+        await (supabase.from('dm_reactions' as any) as any).delete().eq('id', existing.id);
+      } else {
+        await (supabase.from('dm_reactions' as any) as any).insert({ message_id: messageId, member_id: teamMemberId, emoji });
+      }
+      queryClient.invalidateQueries({ queryKey: ['dm_reactions', selectedConversation] });
     }
-    queryClient.invalidateQueries({ queryKey: ['chat_reactions', selectedCategory] });
     setShowEmojiFor(null);
-  }, [teamMemberId, reactions, selectedCategory, queryClient]);
+  }, [teamMemberId, reactions, chatMode, selectedCategory, selectedConversation, queryClient]);
 
   // File upload
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {

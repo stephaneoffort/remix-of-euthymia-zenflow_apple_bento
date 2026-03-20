@@ -39,6 +39,7 @@ export default function Index() {
   const isMobile = useIsMobile();
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const project = projects.find(p => p.id === selectedProjectId);
   const space = spaces.find(s => s.id === selectedSpaceId);

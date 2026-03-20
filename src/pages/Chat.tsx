@@ -11,6 +11,7 @@ import MobileBottomNav from '@/components/MobileBottomNav';
 import { usePresence } from '@/hooks/usePresence';
 import AudioWaveformPlayer from '@/components/AudioWaveformPlayer';
 import LiveWaveform from '@/components/LiveWaveform';
+import RichTextEditor, { RichTextDisplay } from '@/components/RichTextEditor';
 
 interface ChatCategory {
   id: string;

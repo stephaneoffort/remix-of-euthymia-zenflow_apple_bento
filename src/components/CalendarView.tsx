@@ -344,9 +344,25 @@ export default function CalendarView() {
       <div className="flex flex-col h-full">
         {/* Header */}
         <div className="flex items-center justify-between px-3 py-2">
-          <h2 className="text-sm font-bold text-foreground">
-            {MONTHS_FR_SHORT[selectedDay.getMonth()]} {selectedDay.getFullYear()}
-          </h2>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="text-sm font-bold text-foreground hover:text-primary transition-colors">
+                {MONTHS_FR_SHORT[selectedDay.getMonth()]} {selectedDay.getFullYear()}
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <MonthYearPicker
+                year={selectedDay.getFullYear()}
+                month={selectedDay.getMonth()}
+                onSelect={(y, m) => {
+                  const d = new Date(selectedDay);
+                  d.setFullYear(y);
+                  d.setMonth(m);
+                  setSelectedDay(d);
+                }}
+              />
+            </PopoverContent>
+          </Popover>
           <div className="flex items-center gap-1">
             <button onClick={exportToICS} className="p-1.5 hover:bg-muted rounded-md transition-colors">
               <Download className="w-4 h-4 text-muted-foreground" />

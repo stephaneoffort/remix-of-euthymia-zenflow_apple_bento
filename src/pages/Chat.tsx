@@ -9,6 +9,7 @@ import { useChatNotifications } from '@/hooks/useChatNotifications';
 import { useIsMobile } from '@/hooks/use-mobile';
 import MobileBottomNav from '@/components/MobileBottomNav';
 import { usePresence } from '@/hooks/usePresence';
+import AudioWaveformPlayer from '@/components/AudioWaveformPlayer';
 
 interface ChatCategory {
   id: string;
@@ -436,33 +437,7 @@ export default function Chat() {
     return `${m}:${s.toString().padStart(2, '0')}`;
   };
 
-  // Audio message component with duration
-  const AudioMessage = ({ url }: { url: string }) => {
-    const audioRef = useRef<HTMLAudioElement>(null);
-    const [duration, setDuration] = useState<number | null>(null);
-
-    return (
-      <div className="mt-1.5 flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/70 max-w-[300px]">
-        <Mic className="w-4 h-4 text-primary shrink-0" />
-        <audio
-          ref={audioRef}
-          controls
-          preload="metadata"
-          className="h-8 w-full min-w-0"
-          style={{ maxWidth: '220px' }}
-          onLoadedMetadata={() => {
-            const d = audioRef.current?.duration;
-            if (d && isFinite(d)) setDuration(Math.round(d));
-          }}
-        >
-          <source src={url} />
-        </audio>
-        {duration !== null && (
-          <span className="text-[10px] text-muted-foreground shrink-0 tabular-nums">{formatDuration(duration)}</span>
-        )}
-      </div>
-    );
-  };
+  // Audio message uses AudioWaveformPlayer component
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -742,7 +717,7 @@ export default function Chat() {
                     />
                     {msg.attachment_url && (
                       isAudioAttachment(msg.attachment_name) ? (
-                        <AudioMessage url={msg.attachment_url} />
+                        <AudioWaveformPlayer url={msg.attachment_url} />
                       ) : (
                         <a
                           href={msg.attachment_url}

@@ -369,6 +369,45 @@ export type Database = {
           },
         ]
       }
+      dm_reactions: {
+        Row: {
+          created_at: string
+          emoji: string
+          id: string
+          member_id: string
+          message_id: string
+        }
+        Insert: {
+          created_at?: string
+          emoji: string
+          id?: string
+          member_id: string
+          message_id: string
+        }
+        Update: {
+          created_at?: string
+          emoji?: string
+          id?: string
+          member_id?: string
+          message_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dm_reactions_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dm_reactions_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "direct_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dm_read_status: {
         Row: {
           conversation_id: string

@@ -142,8 +142,8 @@ export default function Chat() {
     enabled: !!selectedCategory && chatMode === 'channel',
   });
 
-  // Fetch reactions
-  const { data: reactions = [] } = useQuery({
+  // Fetch reactions (channel)
+  const { data: channelReactions = [] } = useQuery({
     queryKey: ['chat_reactions', selectedCategory],
     queryFn: async () => {
       if (!selectedCategory || messages.length === 0) return [];
@@ -157,6 +157,7 @@ export default function Chat() {
     },
     enabled: !!selectedCategory && messages.length > 0 && chatMode === 'channel',
   });
+
 
   // Fetch team members
   const { data: members = [] } = useQuery({
@@ -228,7 +229,25 @@ export default function Chat() {
     enabled: !!selectedConversation && chatMode === 'dm',
   });
 
-  // Get other members in a conversation
+  // Fetch reactions (DM)
+  const { data: dmReactions = [] } = useQuery({
+    queryKey: ['dm_reactions', selectedConversation],
+    queryFn: async () => {
+      if (!selectedConversation || dmMessages.length === 0) return [];
+      const msgIds = dmMessages.map(m => m.id);
+      const { data, error } = await supabase
+        .from('dm_reactions' as any)
+        .select('*')
+        .in('message_id', msgIds);
+      if (error) throw error;
+      return data as unknown as ChatReaction[];
+    },
+    enabled: !!selectedConversation && dmMessages.length > 0 && chatMode === 'dm',
+  });
+
+  const reactions = chatMode === 'channel' ? channelReactions : dmReactions;
+
+
   const getConvoOtherMembers = (convoId: string) => {
     return allConvoMembers
       .filter(cm => cm.conversation_id === convoId && cm.member_id !== teamMemberId)
@@ -299,6 +318,9 @@ export default function Chat() {
         .on('postgres_changes', { event: '*', schema: 'public', table: 'direct_messages', filter: `conversation_id=eq.${selectedConversation}` }, () => {
           queryClient.invalidateQueries({ queryKey: ['direct_messages', selectedConversation] });
         })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'dm_reactions' }, () => {
+          queryClient.invalidateQueries({ queryKey: ['dm_reactions', selectedConversation] });
+        })
         .subscribe();
       return () => { supabase.removeChannel(channel); };
     }
@@ -351,14 +373,23 @@ export default function Chat() {
   const toggleReaction = useCallback(async (messageId: string, emoji: string) => {
     if (!teamMemberId) return;
     const existing = reactions.find(r => r.message_id === messageId && r.member_id === teamMemberId && r.emoji === emoji);
-    if (existing) {
-      await supabase.from('chat_reactions').delete().eq('id', existing.id);
+    if (chatMode === 'channel') {
+      if (existing) {
+        await supabase.from('chat_reactions').delete().eq('id', existing.id);
+      } else {
+        await supabase.from('chat_reactions').insert({ message_id: messageId, member_id: teamMemberId, emoji });
+      }
+      queryClient.invalidateQueries({ queryKey: ['chat_reactions', selectedCategory] });
     } else {
-      await supabase.from('chat_reactions').insert({ message_id: messageId, member_id: teamMemberId, emoji });
+      if (existing) {
+        await (supabase.from('dm_reactions' as any) as any).delete().eq('id', existing.id);
+      } else {
+        await (supabase.from('dm_reactions' as any) as any).insert({ message_id: messageId, member_id: teamMemberId, emoji });
+      }
+      queryClient.invalidateQueries({ queryKey: ['dm_reactions', selectedConversation] });
     }
-    queryClient.invalidateQueries({ queryKey: ['chat_reactions', selectedCategory] });
     setShowEmojiFor(null);
-  }, [teamMemberId, reactions, selectedCategory, queryClient]);
+  }, [teamMemberId, reactions, chatMode, selectedCategory, selectedConversation, queryClient]);
 
   // File upload
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -726,7 +757,7 @@ export default function Chat() {
               const prevMsg = displayMessages[i - 1];
               const showAuthor = !prevMsg || prevMsg.author_id !== msg.author_id ||
                 new Date(msg.created_at).getTime() - new Date(prevMsg.created_at).getTime() > 300000;
-              const rGroups = chatMode === 'channel' ? groupedReactions(msg.id) : {};
+              const rGroups = groupedReactions(msg.id);
 
               return (
                 <div key={msg.id} className={`group ${showAuthor ? 'mt-4' : 'mt-0.5'}`}>
@@ -760,8 +791,8 @@ export default function Chat() {
                       )
                     )}
 
-                    {/* Reactions display (channel only) */}
-                    {chatMode === 'channel' && Object.keys(rGroups).length > 0 && (
+                    {/* Reactions display */}
+                    {Object.keys(rGroups).length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-1">
                         {Object.entries(rGroups).map(([emoji, data]) => (
                           <button
@@ -779,8 +810,8 @@ export default function Chat() {
                       </div>
                     )}
 
-                    {/* Hover actions (channel only) */}
-                    {chatMode === 'channel' && (
+                    {/* Hover actions */}
+                    {(
                       <div className="absolute -top-3 right-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5 bg-card border border-border rounded-md shadow-sm px-1 py-0.5">
                         <button
                           onClick={() => setShowEmojiFor(showEmojiFor === msg.id ? null : msg.id)}

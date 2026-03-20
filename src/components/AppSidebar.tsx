@@ -611,10 +611,11 @@ function AdminSettingsLink() {
   return (
     <button
       onClick={() => navigate('/settings')}
-      className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors mb-0.5"
+      className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors md:w-full"
+      title="Administration"
     >
       <Settings className="w-4 h-4" />
-      <span>Administration</span>
+      <span className="hidden md:inline">Administration</span>
     </button>
   );
 }

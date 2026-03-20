@@ -64,7 +64,7 @@ export default function Chat() {
   const { teamMemberId, user } = useAuth();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const { unreadCounts, markCategoryRead } = useChatNotifications();
+  const { unreadCounts, dmUnreadCounts, markCategoryRead, markConversationRead } = useChatNotifications();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [chatMode, setChatMode] = useState<ChatMode>('channel');

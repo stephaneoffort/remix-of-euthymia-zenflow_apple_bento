@@ -551,7 +551,7 @@ export default function Chat() {
                       }`}
                     >
                       {others.length === 1 ? (
-                        <MemberAvatar member={others[0]} size="sm" />
+                        <MemberAvatar member={others[0]} size="sm" showPresence />
                       ) : (
                         <Users className="w-4 h-4 shrink-0" />
                       )}

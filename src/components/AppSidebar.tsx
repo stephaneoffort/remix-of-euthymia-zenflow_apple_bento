@@ -648,11 +648,43 @@ export default function AppSidebar() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
-            <AlertDialogDescription>
-              {deleteConfirm?.type === 'space'
-                ? `Supprimer l'espace "${deleteConfirm?.name}" et tous ses projets ?`
-                : `Supprimer le projet "${deleteConfirm?.name}" et toutes ses tâches ?`}
-              {' '}Cette action est irréversible.
+            <AlertDialogDescription asChild>
+              <div className="space-y-2">
+                {deleteConfirm?.type === 'space' ? (() => {
+                  const spaceProjects = getProjectsForSpace(deleteConfirm.id);
+                  const spaceTasks = tasks.filter(t => {
+                    const list = lists.find(l => l.id === t.listId);
+                    return list && spaceProjects.some(p => p.id === list.projectId);
+                  });
+                  return (
+                    <>
+                      <p>Supprimer l'espace <strong>« {deleteConfirm.name} »</strong> ?</p>
+                      <div className="rounded-md bg-destructive/10 border border-destructive/20 p-3 text-sm space-y-1">
+                        <p className="font-medium text-destructive">Éléments qui seront supprimés :</p>
+                        <ul className="list-disc list-inside text-muted-foreground">
+                          <li>{spaceProjects.length} projet{spaceProjects.length > 1 ? 's' : ''}</li>
+                          <li>{spaceTasks.length} tâche{spaceTasks.length > 1 ? 's' : ''}</li>
+                        </ul>
+                      </div>
+                      <p className="text-sm text-muted-foreground">Cette action est <strong>irréversible</strong>.</p>
+                    </>
+                  );
+                })() : (() => {
+                  const projectTasks = deleteConfirm ? getTasksForProject(deleteConfirm.id) : [];
+                  return (
+                    <>
+                      <p>Supprimer le projet <strong>« {deleteConfirm?.name} »</strong> ?</p>
+                      <div className="rounded-md bg-destructive/10 border border-destructive/20 p-3 text-sm space-y-1">
+                        <p className="font-medium text-destructive">Éléments qui seront supprimés :</p>
+                        <ul className="list-disc list-inside text-muted-foreground">
+                          <li>{projectTasks.length} tâche{projectTasks.length > 1 ? 's' : ''}</li>
+                        </ul>
+                      </div>
+                      <p className="text-sm text-muted-foreground">Cette action est <strong>irréversible</strong>.</p>
+                    </>
+                  );
+                })()}
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -670,7 +702,7 @@ export default function AppSidebar() {
                 setDeleteConfirm(null);
               }}
             >
-              Supprimer
+              Supprimer définitivement
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

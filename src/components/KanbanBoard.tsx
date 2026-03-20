@@ -22,6 +22,7 @@ export default function KanbanBoard() {
   const [newTaskStatus, setNewTaskStatus] = useState<string | null>(null);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [collapsedColumns, setCollapsedColumns] = useState<Set<string>>(new Set());
+  const isMobile = useIsMobile();
 
   const toggleColumnCollapse = (status: string) => {
     setCollapsedColumns(prev => {

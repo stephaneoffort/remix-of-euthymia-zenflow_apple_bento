@@ -65,6 +65,7 @@ export default function AppSidebar() {
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
   const [editingProjectName, setEditingProjectName] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState<{ type: 'space' | 'project'; id: string; name: string } | null>(null);
+  const [filtersExpanded, setFiltersExpanded] = useState(!isMobile);
 
   useEffect(() => {
     if (isMobile) setSidebarCollapsed(true);

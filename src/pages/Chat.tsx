@@ -407,8 +407,9 @@ export default function Chat() {
   };
 
   const handleSend = () => {
-    if (!messageText.trim()) return;
-    sendMutation.mutate({ content: messageText.trim() });
+    const stripped = messageText.replace(/<[^>]*>/g, '').trim();
+    if (!stripped) return;
+    sendMutation.mutate({ content: messageText });
     setMessageText('');
   };
 

@@ -296,8 +296,8 @@ export default function AppSidebar() {
           collisionDetection={closestCenter}
           onDragEnd={handleSpaceDragEnd}
         >
-          <SortableContext items={spaces.map(s => s.id)} strategy={verticalListSortingStrategy}>
-            {spaces.map(space => (
+          <SortableContext items={visibleSpaces.map(s => s.id)} strategy={verticalListSortingStrategy}>
+            {visibleSpaces.map(space => (
               <SortableSpace key={space.id} space={space}>
                 <div className="flex items-center group">
                   <button

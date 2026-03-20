@@ -501,21 +501,24 @@ export default function TaskDetailPanel() {
                   );
                 })}
               </div>
-              <div className="flex gap-2">
-                <input
-                  value={newComment}
-                  onChange={e => setNewComment(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter') handleAddComment(); }}
+              <div className="space-y-2">
+                <RichTextEditor
+                  content={newComment}
+                  onChange={setNewComment}
                   placeholder="Écrire un commentaire..."
-                  className="flex-1 text-sm bg-muted/50 border border-border rounded-md px-2.5 py-1.5 outline-none min-w-0"
+                  minimal
+                  className="text-sm"
+                  editorClassName="min-h-[38px]"
                 />
-                <button
-                  onClick={handleAddComment}
-                  disabled={!newComment.trim()}
-                  className="px-3 py-1.5 bg-primary text-primary-foreground text-xs font-medium rounded-md hover:opacity-90 disabled:opacity-50 shrink-0"
-                >
-                  Envoyer
-                </button>
+                <div className="flex justify-end">
+                  <button
+                    onClick={handleAddComment}
+                    disabled={!newComment.trim() || newComment === '<p></p>'}
+                    className="px-3 py-1.5 bg-primary text-primary-foreground text-xs font-medium rounded-md hover:opacity-90 disabled:opacity-50 shrink-0"
+                  >
+                    Envoyer
+                  </button>
+                </div>
               </div>
             </div>
           </div>

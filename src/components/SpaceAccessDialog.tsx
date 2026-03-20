@@ -131,7 +131,7 @@ export default function SpaceAccessDialog({
                 Seuls les membres sélectionnés y auront accès
               </p>
             </div>
-            <Switch checked={priv} onCheckedChange={setPriv} />
+            <Switch checked={priv} onCheckedChange={handlePrivToggle} />
           </div>
 
           {priv && (

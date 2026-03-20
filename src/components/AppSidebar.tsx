@@ -624,6 +624,35 @@ function ChatLink({ handleNavClick }: { handleNavClick: () => void }) {
     </button>
   );
 }
+function ThemeSwitcher() {
+  const { theme, setTheme } = require('@/context/ThemeContext').useThemeMode();
+  const options: { key: 'light' | 'dark' | 'mixed'; label: string; icon: React.ReactNode }[] = [
+    { key: 'light', label: 'Clair', icon: <Sun className="w-3.5 h-3.5" /> },
+    { key: 'dark', label: 'Sombre', icon: <Moon className="w-3.5 h-3.5" /> },
+    { key: 'mixed', label: 'Mixte', icon: <SunMoon className="w-3.5 h-3.5" /> },
+  ];
+
+  return (
+    <div className="flex items-center gap-0.5 px-1 py-1 rounded-md bg-sidebar-hover/50 mb-1">
+      {options.map(opt => (
+        <button
+          key={opt.key}
+          onClick={() => setTheme(opt.key)}
+          className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors flex-1 justify-center ${
+            theme === opt.key
+              ? 'bg-sidebar-active text-white'
+              : 'text-sidebar-fg hover:text-sidebar-fg-bright'
+          }`}
+          title={opt.label}
+        >
+          {opt.icon}
+          <span className="hidden md:inline">{opt.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function CurrentUserBadge() {
   const { teamMemberId } = useAuth();
   const { teamMembers } = useApp();

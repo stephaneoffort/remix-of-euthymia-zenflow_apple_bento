@@ -471,7 +471,20 @@ export default function CalendarView() {
   return (
     <div className="p-6 h-full flex flex-col">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold text-foreground">{monthLabel} {year}</h2>
+        <Popover>
+          <PopoverTrigger asChild>
+            <button className="text-lg font-bold text-foreground hover:text-primary transition-colors">
+              {monthLabel} {year}
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <MonthYearPicker
+              year={year}
+              month={month}
+              onSelect={(y, m) => setCurrentDate(new Date(y, m, 1))}
+            />
+          </PopoverContent>
+        </Popover>
         <div className="flex items-center gap-2">
           <Tooltip>
             <TooltipTrigger asChild>

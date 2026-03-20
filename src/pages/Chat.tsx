@@ -772,10 +772,13 @@ export default function Chat() {
                     </div>
                   )}
                   <div className={`${showAuthor ? 'ml-10' : 'ml-10'} relative`}>
-                    <div
-                      className="text-sm text-foreground leading-relaxed"
-                      dangerouslySetInnerHTML={{ __html: formatContent(msg.content) }}
+                    <RichTextDisplay
+                      content={formatContent(msg.content)}
+                      className="text-sm leading-relaxed"
                     />
+                    {(!msg.content || msg.content === '<p></p>') && !msg.attachment_url && (
+                      <span className="text-sm text-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: formatContent(msg.content) }} />
+                    )}
                     {msg.attachment_url && (
                       isAudioAttachment(msg.attachment_name) ? (
                         <AudioWaveformPlayer url={msg.attachment_url} />

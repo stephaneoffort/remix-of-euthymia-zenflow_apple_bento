@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
@@ -25,8 +25,8 @@ interface RichTextEditorProps {
   placeholder?: string;
   className?: string;
   editorClassName?: string;
-  minimal?: boolean; // minimal toolbar for chat
-  onSubmit?: () => void; // Enter to submit (chat mode)
+  minimal?: boolean;
+  onSubmit?: () => void;
   autofocus?: boolean;
 }
 
@@ -35,13 +35,18 @@ const COLORS = [
 ];
 
 function ToolbarButton({
-  active, onClick, title, children, disabled
+  active, onClick, title, children, disabled,
 }: {
-  active?: boolean; onClick: () => void; title: string; children: React.ReactNode; disabled?: boolean;
+  active?: boolean;
+  onClick: () => void;
+  title: string;
+  children: React.ReactNode;
+  disabled?: boolean;
 }) {
   return (
     <button
       type="button"
+      onMouseDown={(event) => event.preventDefault()}
       onClick={onClick}
       disabled={disabled}
       title={title}
@@ -66,6 +71,8 @@ export default function RichTextEditor({
   onSubmit,
   autofocus = false,
 }: RichTextEditorProps) {
+  const lastSyncedContentRef = useRef(content);
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -91,12 +98,11 @@ export default function RichTextEditor({
     content,
     editorProps: {
       attributes: {
-        class: `prose prose-sm dark:prose-invert max-w-none focus:outline-none ${editorClassName}`,
+        class: `tiptap prose prose-sm dark:prose-invert max-w-none focus:outline-none ${editorClassName}`,
       },
       handleKeyDown: (_view, event) => {
         if (onSubmit && event.key === 'Enter' && !event.shiftKey && !event.ctrlKey && !event.metaKey) {
-          // Only submit if no composition active (e.g. IME)
-          if (!(event as any).isComposing) {
+          if (!(event as KeyboardEvent & { isComposing?: boolean }).isComposing) {
             event.preventDefault();
             onSubmit();
             return true;
@@ -105,32 +111,56 @@ export default function RichTextEditor({
         return false;
       },
     },
+    onCreate: ({ editor }) => {
+      lastSyncedContentRef.current = editor.getHTML();
+    },
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+      const html = editor.getHTML();
+      lastSyncedContentRef.current = html;
+      onChange(html);
     },
     autofocus,
+    immediatelyRender: false,
   });
 
-  // Sync external content changes
   useEffect(() => {
-    if (editor && content !== editor.getHTML()) {
-      editor.commands.setContent(content);
+    if (!editor) return;
+
+    const currentHtml = editor.getHTML();
+    if (content === currentHtml || content === lastSyncedContentRef.current) return;
+
+    const { from, to } = editor.state.selection;
+    editor.commands.setContent(content || '<p></p>', { emitUpdate: false });
+    lastSyncedContentRef.current = editor.getHTML();
+
+    if (editor.isFocused) {
+      const maxPosition = Math.max(1, editor.state.doc.content.size);
+      editor.commands.setTextSelection({
+        from: Math.min(from, maxPosition),
+        to: Math.min(to, maxPosition),
+      });
     }
-  }, [content]);
+  }, [content, editor]);
 
   const addLink = useCallback(() => {
     if (!editor) return;
-    const url = window.prompt('URL du lien :');
-    if (url) {
-      editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+    const previousUrl = editor.getAttributes('link').href;
+    const url = window.prompt('URL du lien :', previousUrl || '');
+
+    if (url === null) return;
+    if (url.trim() === '') {
+      editor.chain().focus().extendMarkRange('link').unsetLink().run();
+      return;
     }
+
+    editor.chain().focus().extendMarkRange('link').setLink({ href: url.trim() }).run();
   }, [editor]);
 
   const addImage = useCallback(() => {
     if (!editor) return;
     const url = window.prompt("URL de l'image :");
-    if (url) {
-      editor.chain().focus().setImage({ src: url }).run();
+    if (url?.trim()) {
+      editor.chain().focus().setImage({ src: url.trim() }).run();
     }
   }, [editor]);
 
@@ -145,7 +175,6 @@ export default function RichTextEditor({
 
   return (
     <div className={`border border-border rounded-lg overflow-hidden bg-background ${className}`}>
-      {/* Toolbar */}
       <div className="flex items-center gap-0.5 flex-wrap px-2 py-1.5 border-b border-border bg-muted/30">
         <ToolbarButton active={editor.isActive('bold')} onClick={() => editor.chain().focus().toggleBold().run()} title="Gras">
           <Bold className={iconSize} />
@@ -209,22 +238,25 @@ export default function RichTextEditor({
 
         <div className="w-px h-4 bg-border mx-1" />
 
-        {/* Color picker */}
         <div className="relative group">
-          <ToolbarButton onClick={() => {}} title="Couleur du texte">
+          <ToolbarButton onClick={() => editor.chain().focus().run()} title="Couleur du texte">
             <Palette className={iconSize} />
           </ToolbarButton>
           <div className="absolute top-full left-0 mt-1 hidden group-hover:flex gap-1 p-1.5 bg-card border border-border rounded-lg shadow-lg z-30">
-            {COLORS.map(c => (
+            {COLORS.map((color) => (
               <button
-                key={c}
-                onClick={() => editor.chain().focus().setColor(c).run()}
+                key={color}
+                type="button"
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={() => editor.chain().focus().setColor(color).run()}
                 className="w-5 h-5 rounded-full border border-border hover:scale-110 transition-transform"
-                style={{ backgroundColor: c }}
-                title={c}
+                style={{ backgroundColor: color }}
+                title={color}
               />
             ))}
             <button
+              type="button"
+              onMouseDown={(event) => event.preventDefault()}
               onClick={() => editor.chain().focus().unsetColor().run()}
               className="w-5 h-5 rounded-full border border-border bg-background text-[8px] flex items-center justify-center hover:scale-110 transition-transform"
               title="Par défaut"
@@ -234,7 +266,6 @@ export default function RichTextEditor({
           </div>
         </div>
 
-        {/* Highlight */}
         <ToolbarButton
           active={editor.isActive('highlight')}
           onClick={() => editor.chain().focus().toggleHighlight({ color: '#fef08a' }).run()}
@@ -256,15 +287,14 @@ export default function RichTextEditor({
         )}
       </div>
 
-      {/* Editor content */}
       <EditorContent editor={editor} className="px-3 py-2 min-h-[60px] max-h-64 overflow-y-auto scrollbar-thin" />
     </div>
   );
 }
 
-// Display-only component for rendering stored HTML content
 export function RichTextDisplay({ content, className = '' }: { content: string; className?: string }) {
   if (!content || content === '<p></p>') return null;
+
   return (
     <div
       className={`prose prose-sm dark:prose-invert max-w-none [&>p]:my-1 [&>ul]:my-1 [&>ol]:my-1 [&_a]:text-primary [&_a]:underline ${className}`}

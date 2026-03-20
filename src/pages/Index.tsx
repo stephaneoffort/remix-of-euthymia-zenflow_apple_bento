@@ -34,7 +34,7 @@ const QUICK_FILTER_TITLES: Record<string, string> = {
 };
 
 export default function Index() {
-  const { selectedProjectId, selectedSpaceId, selectedView, quickFilter, selectedTaskId, projects, spaces, sidebarCollapsed, setSidebarCollapsed, advancedFilters } = useApp();
+  const { selectedProjectId, selectedSpaceId, selectedView, setSelectedView, quickFilter, selectedTaskId, projects, spaces, sidebarCollapsed, setSidebarCollapsed, advancedFilters } = useApp();
   const isMobile = useIsMobile();
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);

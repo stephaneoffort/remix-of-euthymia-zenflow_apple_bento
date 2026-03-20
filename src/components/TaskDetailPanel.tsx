@@ -16,6 +16,14 @@ function toDatetimeLocal(isoStr: string): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
+// Parse datetime-local value, defaulting time to midnight if only date part changes
+function parseDateInput(value: string): string | null {
+  if (!value) return null;
+  // If the value has no time part (e.g. from date-only input), append midnight
+  const normalized = value.includes('T') ? value : `${value}T00:00`;
+  return new Date(normalized).toISOString();
+}
+
 
 export default function TaskDetailPanel() {
   const { selectedTaskId, setSelectedTaskId, getTaskById, updateTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks, teamMembers, allStatuses, getStatusLabel, addAttachment, deleteAttachment } = useApp();

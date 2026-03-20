@@ -340,13 +340,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   // Add space mutation
   const addSpaceMutation = useMutation({
-    mutationFn: async ({ name, icon }: { name: string; icon: string }) => {
+    mutationFn: async ({ name, icon, isPrivate }: { name: string; icon: string; isPrivate: boolean }) => {
       const id = `s_${Date.now()}`;
       const { error } = await supabase.from('spaces').insert({
         id,
         name,
         icon,
         sort_order: spaces.length,
+        is_private: isPrivate,
+        owner_member_id: isPrivate ? teamMemberId : null,
       });
       if (error) throw error;
       return id;

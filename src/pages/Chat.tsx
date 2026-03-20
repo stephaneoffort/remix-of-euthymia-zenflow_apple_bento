@@ -810,8 +810,8 @@ export default function Chat() {
                       </div>
                     )}
 
-                    {/* Hover actions (channel only) */}
-                    {chatMode === 'channel' && (
+                    {/* Hover actions */}
+                    {(
                       <div className="absolute -top-3 right-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5 bg-card border border-border rounded-md shadow-sm px-1 py-0.5">
                         <button
                           onClick={() => setShowEmojiFor(showEmojiFor === msg.id ? null : msg.id)}

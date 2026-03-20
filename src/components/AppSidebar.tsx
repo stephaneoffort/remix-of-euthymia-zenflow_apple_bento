@@ -554,6 +554,18 @@ export default function AppSidebar() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Space access dialog */}
+      {accessDialogSpace && (
+        <SpaceAccessDialog
+          open={!!accessDialogSpace}
+          onOpenChange={(open) => { if (!open) setAccessDialogSpace(null); }}
+          spaceId={accessDialogSpace.id}
+          spaceName={accessDialogSpace.name}
+          isPrivate={accessDialogSpace.isPrivate}
+          onUpdate={refreshSpaceAccess}
+        />
+      )}
     </div>
     </>
   );

@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, Plus, Download, Calendar as CalendarIcon } f
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { PRIORITY_LABELS, type Task } from '@/types';
 import {

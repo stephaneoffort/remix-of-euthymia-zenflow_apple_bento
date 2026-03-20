@@ -27,6 +27,7 @@ export default function Index() {
   const { selectedProjectId, selectedView, quickFilter, selectedTaskId, projects, sidebarCollapsed, setSidebarCollapsed, advancedFilters } = useApp();
   const isMobile = useIsMobile();
   const [filtersVisible, setFiltersVisible] = useState(false);
+  const [suggestionsOpen, setSuggestionsOpen] = useState(false);
 
   const project = projects.find(p => p.id === selectedProjectId);
   const title = quickFilter !== 'all'

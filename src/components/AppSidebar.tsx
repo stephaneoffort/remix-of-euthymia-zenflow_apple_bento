@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
-import { ChevronRight, ChevronDown, LayoutGrid, List, Calendar, BarChart3, GitFork, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle } from 'lucide-react';
+import { ChevronRight, ChevronDown, LayoutGrid, List, Calendar, BarChart3, GitFork, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle, Shield, Crown, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { QuickFilter, ViewType } from '@/types';
 import { useChatNotifications } from '@/hooks/useChatNotifications';
 import { usePresence } from '@/hooks/usePresence';
+import SpaceAccessDialog from '@/components/SpaceAccessDialog';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,

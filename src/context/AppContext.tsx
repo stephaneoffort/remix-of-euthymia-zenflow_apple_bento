@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
-import { Task, Space, Project, TaskList, TeamMember, ViewType, QuickFilter, Status, Priority, Comment, Attachment, CustomStatus, DEFAULT_STATUSES, STATUS_LABELS, SpaceMember, SpaceManager } from '@/types';
+import { Task, Space, Project, TaskList, TeamMember, ViewType, QuickFilter, Status, Priority, Comment, Attachment, CustomStatus, DEFAULT_STATUSES, STATUS_LABELS, SpaceMember, SpaceManager, Recurrence } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -92,6 +92,7 @@ function dbToTask(row: any, assigneeIds: string[], comments: Comment[], attachme
     timeEstimate: row.time_estimate,
     timeLogged: row.time_logged,
     aiSummary: row.ai_summary,
+    recurrence: (row.recurrence as Recurrence) || null,
     createdAt: row.created_at,
     order: row.sort_order,
   };
@@ -258,6 +259,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         time_estimate: task.timeEstimate,
         time_logged: task.timeLogged,
         ai_summary: task.aiSummary,
+        recurrence: task.recurrence || null,
         sort_order: tasks.length,
       }).select().single();
       if (error) throw error;
@@ -288,6 +290,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (updates.timeEstimate !== undefined) dbUpdates.time_estimate = updates.timeEstimate;
       if (updates.timeLogged !== undefined) dbUpdates.time_logged = updates.timeLogged;
       if (updates.aiSummary !== undefined) dbUpdates.ai_summary = updates.aiSummary;
+      if (updates.recurrence !== undefined) dbUpdates.recurrence = updates.recurrence;
 
       if (Object.keys(dbUpdates).length > 0) {
         const { error } = await supabase.from('tasks').update(dbUpdates).eq('id', id);

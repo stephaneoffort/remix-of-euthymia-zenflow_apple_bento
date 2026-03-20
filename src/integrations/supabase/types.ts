@@ -655,6 +655,7 @@ export type Database = {
           list_id: string
           parent_task_id: string | null
           priority: string
+          recurrence: string | null
           sort_order: number
           start_date: string | null
           status: string
@@ -673,6 +674,7 @@ export type Database = {
           list_id: string
           parent_task_id?: string | null
           priority?: string
+          recurrence?: string | null
           sort_order?: number
           start_date?: string | null
           status?: string
@@ -691,6 +693,7 @@ export type Database = {
           list_id?: string
           parent_task_id?: string | null
           priority?: string
+          recurrence?: string | null
           sort_order?: number
           start_date?: string | null
           status?: string

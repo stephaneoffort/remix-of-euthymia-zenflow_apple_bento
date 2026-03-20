@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useApp } from '@/context/AppContext';
-import { Status, Priority, PRIORITY_LABELS } from '@/types';
+import { Status, Priority, PRIORITY_LABELS, RECURRENCE_LABELS, Recurrence } from '@/types';
 import { PriorityBadge, StatusBadge, AvatarGroup, SubtaskProgress, StatusCircle } from '@/components/TaskBadges';
-import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Clock, Paperclip, ChevronDown, Maximize2, Minimize2, CalendarPlus, Link, Upload, Trash2, ExternalLink, FileText, Send, CalendarIcon } from 'lucide-react';
+import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Clock, Paperclip, ChevronDown, Maximize2, Minimize2, CalendarPlus, Link, Upload, Trash2, ExternalLink, FileText, Send, CalendarIcon, Repeat } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { generateGoogleCalendarUrl, generateOutlookCalendarUrl, generateYahooCalendarUrl } from '@/lib/calendarLinks';
 import { supabase } from '@/integrations/supabase/client';
@@ -325,6 +325,26 @@ export default function TaskDetailPanel() {
                   value={task.dueDate}
                   onChange={(val) => updateTask(task.id, { dueDate: val })}
                 />
+              </div>
+              <div className="col-span-2">
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1 block">
+                  <Repeat className="w-3 h-3" /> Récurrence
+                </label>
+                <select
+                  value={task.recurrence || ''}
+                  onChange={e => updateTask(task.id, { recurrence: (e.target.value || null) as Recurrence })}
+                  className="w-full text-sm bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
+                >
+                  <option value="">Aucune</option>
+                  {Object.entries(RECURRENCE_LABELS).map(([k, v]) => (
+                    <option key={k} value={k}>{v}</option>
+                  ))}
+                </select>
+                {task.recurrence && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Une nouvelle tâche sera créée automatiquement à chaque complétion.
+                  </p>
+                )}
               </div>
             </div>
 

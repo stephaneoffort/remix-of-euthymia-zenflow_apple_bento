@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
 import { PRIORITY_LABELS, Status, Priority } from '@/types';
 import { PriorityBadge, StatusBadge, AvatarGroup, SubtaskProgress } from '@/components/TaskBadges';
-import { ChevronRight, ChevronDown, ArrowUpDown, Plus } from 'lucide-react';
+import { ChevronRight, ChevronDown, ArrowUpDown, Plus, Repeat } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 type SortKey = 'title' | 'priority' | 'dueDate' | 'status';

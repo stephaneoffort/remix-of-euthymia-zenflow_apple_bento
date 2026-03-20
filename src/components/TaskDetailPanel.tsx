@@ -341,9 +341,18 @@ export default function TaskDetailPanel() {
                   ))}
                 </select>
                 {task.recurrence && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Une nouvelle tâche sera créée automatiquement à chaque complétion.
-                  </p>
+                  <div className="mt-2 space-y-1.5">
+                    <label className="text-xs text-muted-foreground">Fin de récurrence (optionnel)</label>
+                    <DateTimeField
+                      value={task.recurrenceEndDate}
+                      onChange={(val) => updateTask(task.id, { recurrenceEndDate: val })}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      {task.recurrenceEndDate
+                        ? `La récurrence s'arrêtera après le ${format(new Date(task.recurrenceEndDate), 'dd MMM yyyy', { locale: fr })}.`
+                        : 'Une nouvelle tâche sera créée automatiquement à chaque complétion, sans limite.'}
+                    </p>
+                  </div>
                 )}
               </div>
             </div>

@@ -93,6 +93,7 @@ function dbToTask(row: any, assigneeIds: string[], comments: Comment[], attachme
     timeLogged: row.time_logged,
     aiSummary: row.ai_summary,
     recurrence: (row.recurrence as Recurrence) || null,
+    recurrenceEndDate: row.recurrence_end_date || null,
     createdAt: row.created_at,
     order: row.sort_order,
   };
@@ -260,6 +261,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         time_logged: task.timeLogged,
         ai_summary: task.aiSummary,
         recurrence: task.recurrence || null,
+        recurrence_end_date: task.recurrenceEndDate || null,
         sort_order: tasks.length,
       }).select().single();
       if (error) throw error;
@@ -291,6 +293,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (updates.timeLogged !== undefined) dbUpdates.time_logged = updates.timeLogged;
       if (updates.aiSummary !== undefined) dbUpdates.ai_summary = updates.aiSummary;
       if (updates.recurrence !== undefined) dbUpdates.recurrence = updates.recurrence;
+      if (updates.recurrenceEndDate !== undefined) dbUpdates.recurrence_end_date = updates.recurrenceEndDate;
 
       if (Object.keys(dbUpdates).length > 0) {
         const { error } = await supabase.from('tasks').update(dbUpdates).eq('id', id);

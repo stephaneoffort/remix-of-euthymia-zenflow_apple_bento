@@ -296,7 +296,7 @@ export default function AppSidebar() {
                 Créer
               </button>
               <button
-                onClick={() => { setAddingSpace(false); setNewSpaceName(''); }}
+                onClick={() => { setAddingSpace(false); setNewSpaceName(''); setNewSpacePrivate(false); }}
                 className="flex-1 text-xs text-sidebar-fg rounded-md py-1 hover:bg-sidebar-bg"
               >
                 Annuler

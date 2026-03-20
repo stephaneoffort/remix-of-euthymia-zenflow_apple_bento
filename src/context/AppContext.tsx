@@ -386,8 +386,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     },
   });
 
-  const addSpace = useCallback((name: string, icon: string) => {
-    addSpaceMutation.mutate({ name, icon });
+  const addSpace = useCallback((name: string, icon: string, isPrivate: boolean = false) => {
+    addSpaceMutation.mutate({ name, icon, isPrivate });
   }, [addSpaceMutation]);
 
   const addProject = useCallback((name: string, spaceId: string, color: string) => {

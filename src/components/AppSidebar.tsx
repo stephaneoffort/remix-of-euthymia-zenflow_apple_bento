@@ -68,6 +68,10 @@ export default function AppSidebar() {
   const [editingProjectName, setEditingProjectName] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState<{ type: 'space' | 'project'; id: string; name: string } | null>(null);
   const [filtersExpanded, setFiltersExpanded] = useState(!isMobile);
+  const [accessDialogSpace, setAccessDialogSpace] = useState<{ id: string; name: string; isPrivate: boolean } | null>(null);
+
+  // Filter spaces based on access
+  const visibleSpaces = spaces.filter(s => canAccessSpace(s.id));
 
   useEffect(() => {
     if (isMobile) setSidebarCollapsed(true);

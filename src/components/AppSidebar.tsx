@@ -10,6 +10,7 @@ import { QuickFilter, ViewType } from '@/types';
 import { useChatNotifications } from '@/hooks/useChatNotifications';
 import { usePresence } from '@/hooks/usePresence';
 import SpaceAccessDialog from '@/components/SpaceAccessDialog';
+import { useThemeMode } from '@/context/ThemeContext';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,

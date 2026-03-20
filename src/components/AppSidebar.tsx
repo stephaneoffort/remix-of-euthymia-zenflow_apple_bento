@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import logoEuthymia from '@/assets/logo_euthymia.jpg';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
-import { ChevronRight, ChevronDown, LayoutGrid, List, Calendar, BarChart3, Network, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle, Shield, Crown, Lock, Sun, Moon, SunMoon, MoreHorizontal } from 'lucide-react';
+import { ChevronRight, ChevronDown, LayoutGrid, List, Calendar, BarChart3, Network, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle, Shield, Crown, Lock, Sun, Moon, SunMoon, MoreHorizontal, Pencil } from 'lucide-react';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
@@ -443,7 +443,7 @@ export default function AppSidebar() {
                         setEditingSpaceId(space.id);
                         setEditingSpaceName(space.name);
                       }}>
-                        <Settings className="w-4 h-4 mr-2" />
+                        <Pencil className="w-4 h-4 mr-2" />
                         Renommer
                       </DropdownMenuItem>
                       {isAdmin && (
@@ -531,7 +531,7 @@ export default function AppSidebar() {
                                     setEditingProjectId(project.id);
                                     setEditingProjectName(project.name);
                                   }}>
-                                    <Settings className="w-4 h-4 mr-2" />
+                                    <Pencil className="w-4 h-4 mr-2" />
                                     Renommer
                                   </DropdownMenuItem>
                                   {isAdmin && (

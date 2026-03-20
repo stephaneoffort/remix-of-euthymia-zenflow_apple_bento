@@ -531,7 +531,7 @@ export default function AppSidebar() {
                                     setEditingProjectId(project.id);
                                     setEditingProjectName(project.name);
                                   }}>
-                                    <Settings className="w-4 h-4 mr-2" />
+                                    <Pencil className="w-4 h-4 mr-2" />
                                     Renommer
                                   </DropdownMenuItem>
                                   {isAdmin && (

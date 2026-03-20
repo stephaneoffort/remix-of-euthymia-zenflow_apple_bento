@@ -7,6 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Shield, Users, Crown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useApp } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 
 interface SpaceAccessDialogProps {

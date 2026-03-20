@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useRef } from 'react';
+import React, { useEffect, useCallback, useRef, forwardRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
@@ -22,6 +22,7 @@ import {
 interface RichTextEditorProps {
   content: string;
   onChange: (html: string) => void;
+  onBlur?: (html: string) => void;
   placeholder?: string;
   className?: string;
   editorClassName?: string;
@@ -34,20 +35,23 @@ const COLORS = [
   '#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899', '#6b7280',
 ];
 
-function ToolbarButton({
+const ToolbarButton = forwardRef<HTMLButtonElement, {
   active, onClick, title, children, disabled,
-}: {
+}>(({
   active?: boolean;
   onClick: () => void;
   title: string;
   children: React.ReactNode;
   disabled?: boolean;
-}) {
+}, ref) => {
   return (
     <button
+      ref={ref}
       type="button"
-      onMouseDown={(event) => event.preventDefault()}
-      onClick={onClick}
+      onMouseDown={(event) => {
+        event.preventDefault();
+        if (!disabled) onClick();
+      }}
       disabled={disabled}
       title={title}
       className={`p-1.5 rounded transition-colors shrink-0 ${
@@ -59,11 +63,14 @@ function ToolbarButton({
       {children}
     </button>
   );
-}
+});
+
+ToolbarButton.displayName = 'ToolbarButton';
 
 export default function RichTextEditor({
   content,
   onChange,
+  onBlur,
   placeholder = 'Commencez à écrire...',
   className = '',
   editorClassName = '',
@@ -119,8 +126,12 @@ export default function RichTextEditor({
       lastSyncedContentRef.current = html;
       onChange(html);
     },
+    onBlur: ({ editor }) => {
+      onBlur?.(editor.getHTML());
+    },
     autofocus,
     immediatelyRender: false,
+    shouldRerenderOnTransaction: false,
   });
 
   useEffect(() => {
@@ -129,17 +140,10 @@ export default function RichTextEditor({
     const currentHtml = editor.getHTML();
     if (content === currentHtml || content === lastSyncedContentRef.current) return;
 
-    const { from, to } = editor.state.selection;
+    if (editor.isFocused) return;
+
     editor.commands.setContent(content || '<p></p>', { emitUpdate: false });
     lastSyncedContentRef.current = editor.getHTML();
-
-    if (editor.isFocused) {
-      const maxPosition = Math.max(1, editor.state.doc.content.size);
-      editor.commands.setTextSelection({
-        from: Math.min(from, maxPosition),
-        to: Math.min(to, maxPosition),
-      });
-    }
   }, [content, editor]);
 
   const addLink = useCallback(() => {

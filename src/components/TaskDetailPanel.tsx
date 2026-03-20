@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
 import { Status, Priority, PRIORITY_LABELS } from '@/types';
 import { PriorityBadge, StatusBadge, AvatarGroup } from '@/components/TaskBadges';
@@ -38,6 +38,11 @@ export default function TaskDetailPanel() {
   const subtasks = getSubtasks(task.id);
   const doneSubtasks = subtasks.filter(t => t.status === 'done');
   const allSubtasksDone = subtasks.length > 0 && doneSubtasks.length === subtasks.length;
+  const [descriptionDraft, setDescriptionDraft] = useState(task.description);
+
+  useEffect(() => {
+    setDescriptionDraft(task.description);
+  }, [task.id, task.description]);
 
   const handleAddSubtask = (parentId: string) => {
     if (!newSubtaskTitle.trim()) return;
@@ -228,8 +233,14 @@ export default function TaskDetailPanel() {
             <div>
               <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">Description</label>
               <RichTextEditor
+                key={task.id}
                 content={task.description}
-                onChange={(html) => updateTask(task.id, { description: html })}
+                onChange={setDescriptionDraft}
+                onBlur={(html) => {
+                  if (html !== task.description) {
+                    updateTask(task.id, { description: html });
+                  }
+                }}
                 placeholder="Ajouter une description..."
                 editorClassName={expanded ? 'min-h-[120px]' : 'min-h-[60px]'}
               />

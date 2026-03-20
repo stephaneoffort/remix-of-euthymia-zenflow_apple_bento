@@ -10,27 +10,6 @@ import {
 
 type FilterType = 'status' | 'priority' | 'assignee' | 'tag';
 
-interface FilterChipProps {
-  label: string;
-  values: string[];
-  displayValues: string[];
-  onRemove: (value: string) => void;
-  onClear: () => void;
-}
-
-function FilterChip({ label, values, displayValues, onRemove, onClear }: FilterChipProps) {
-  if (values.length === 0) return null;
-  return (
-    <div className="flex items-center gap-1 bg-primary/10 text-primary rounded-full px-2.5 py-1 text-xs font-medium">
-      <span>{label}:</span>
-      <span className="max-w-[150px] truncate">{displayValues.join(', ')}</span>
-      <button onClick={onClear} className="ml-0.5 hover:text-primary/70 transition-colors">
-        <X className="w-3 h-3" />
-      </button>
-    </div>
-  );
-}
-
 export default function TaskFilterBar() {
   const { advancedFilters, setAdvancedFilters, teamMembers, tasks, allStatuses, getStatusLabel } = useApp();
   const [openFilter, setOpenFilter] = useState<FilterType | null>(null);
@@ -64,7 +43,9 @@ export default function TaskFilterBar() {
         onOpenChange={(o) => setOpenFilter(o ? 'status' : null)}
         options={allStatuses.map(s => ({ value: s, label: getStatusLabel(s) }))}
         selected={advancedFilters.statuses}
+        selectedLabels={advancedFilters.statuses.map(s => getStatusLabel(s))}
         onToggle={(v) => toggleValue('statuses', v)}
+        onClear={() => setAdvancedFilters({ ...advancedFilters, statuses: [] })}
       />
 
       <FilterDropdown
@@ -73,7 +54,9 @@ export default function TaskFilterBar() {
         onOpenChange={(o) => setOpenFilter(o ? 'priority' : null)}
         options={allPriorities.map(p => ({ value: p, label: PRIORITY_LABELS[p] }))}
         selected={advancedFilters.priorities}
+        selectedLabels={advancedFilters.priorities.map(p => PRIORITY_LABELS[p as Priority])}
         onToggle={(v) => toggleValue('priorities', v)}
+        onClear={() => setAdvancedFilters({ ...advancedFilters, priorities: [] })}
       />
 
       <FilterDropdown
@@ -82,7 +65,9 @@ export default function TaskFilterBar() {
         onOpenChange={(o) => setOpenFilter(o ? 'assignee' : null)}
         options={teamMembers.map(m => ({ value: m.id, label: m.name }))}
         selected={advancedFilters.assigneeIds}
+        selectedLabels={advancedFilters.assigneeIds.map(id => teamMembers.find(m => m.id === id)?.name || id)}
         onToggle={(v) => toggleValue('assigneeIds', v)}
+        onClear={() => setAdvancedFilters({ ...advancedFilters, assigneeIds: [] })}
       />
 
       {allTags.length > 0 && (
@@ -92,43 +77,8 @@ export default function TaskFilterBar() {
           onOpenChange={(o) => setOpenFilter(o ? 'tag' : null)}
           options={allTags.map(t => ({ value: t, label: t }))}
           selected={advancedFilters.tags}
+          selectedLabels={advancedFilters.tags}
           onToggle={(v) => toggleValue('tags', v)}
-        />
-      )}
-
-      {advancedFilters.statuses.length > 0 && (
-        <FilterChip
-          label="Avancement"
-          values={advancedFilters.statuses}
-          displayValues={advancedFilters.statuses.map(s => getStatusLabel(s))}
-          onRemove={(v) => toggleValue('statuses', v)}
-          onClear={() => setAdvancedFilters({ ...advancedFilters, statuses: [] })}
-        />
-      )}
-      {advancedFilters.priorities.length > 0 && (
-        <FilterChip
-          label="Priorité"
-          values={advancedFilters.priorities}
-          displayValues={advancedFilters.priorities.map(p => PRIORITY_LABELS[p as Priority])}
-          onRemove={(v) => toggleValue('priorities', v)}
-          onClear={() => setAdvancedFilters({ ...advancedFilters, priorities: [] })}
-        />
-      )}
-      {advancedFilters.assigneeIds.length > 0 && (
-        <FilterChip
-          label="Responsable"
-          values={advancedFilters.assigneeIds}
-          displayValues={advancedFilters.assigneeIds.map(id => teamMembers.find(m => m.id === id)?.name || id)}
-          onRemove={(v) => toggleValue('assigneeIds', v)}
-          onClear={() => setAdvancedFilters({ ...advancedFilters, assigneeIds: [] })}
-        />
-      )}
-      {advancedFilters.tags.length > 0 && (
-        <FilterChip
-          label="Tags"
-          values={advancedFilters.tags}
-          displayValues={advancedFilters.tags}
-          onRemove={(v) => toggleValue('tags', v)}
           onClear={() => setAdvancedFilters({ ...advancedFilters, tags: [] })}
         />
       )}
@@ -152,29 +102,45 @@ interface FilterDropdownProps {
   onOpenChange: (open: boolean) => void;
   options: { value: string; label: string }[];
   selected: string[];
+  selectedLabels: string[];
   onToggle: (value: string) => void;
+  onClear: () => void;
 }
 
-function FilterDropdown({ label, open, onOpenChange, options, selected, onToggle }: FilterDropdownProps) {
+function FilterDropdown({ label, open, onOpenChange, options, selected, selectedLabels, onToggle, onClear }: FilterDropdownProps) {
   const count = selected.length;
+  const hasSelection = count > 0;
+
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
       <PopoverTrigger asChild>
         <button
-          className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium border transition-colors ${
-            count > 0
+          className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium border transition-colors max-w-[280px] ${
+            hasSelection
               ? 'border-primary/30 bg-primary/5 text-primary'
               : 'border-border bg-card text-muted-foreground hover:text-foreground hover:border-foreground/20'
           }`}
         >
-          <Filter className="w-3 h-3" />
-          {label}
-          {count > 0 && (
-            <span className="bg-primary text-primary-foreground rounded-full w-4 h-4 flex items-center justify-center text-[10px]">
-              {count}
-            </span>
+          <Filter className="w-3 h-3 shrink-0" />
+          {hasSelection ? (
+            <>
+              <span className="shrink-0">{label} ·</span>
+              <span className="truncate">{selectedLabels.join(', ')}</span>
+            </>
+          ) : (
+            <span>{label}</span>
           )}
-          <ChevronDown className="w-3 h-3" />
+          {hasSelection ? (
+            <span
+              role="button"
+              className="shrink-0 ml-0.5 hover:bg-primary/20 rounded-full p-0.5 transition-colors"
+              onClick={(e) => { e.stopPropagation(); onClear(); }}
+            >
+              <X className="w-3 h-3" />
+            </span>
+          ) : (
+            <ChevronDown className="w-3 h-3 shrink-0" />
+          )}
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-48 p-1" align="start">

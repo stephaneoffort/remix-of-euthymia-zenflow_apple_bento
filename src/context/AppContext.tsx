@@ -36,6 +36,7 @@ interface AppState {
 
 interface AppContextType extends AppState {
   setSelectedProjectId: (id: string | null) => void;
+  setSelectedSpaceId: (id: string | null) => void;
   setSelectedView: (view: ViewType) => void;
   setQuickFilter: (filter: QuickFilter) => void;
   setSelectedTaskId: (id: string | null) => void;

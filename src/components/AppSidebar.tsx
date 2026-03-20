@@ -346,8 +346,17 @@ export default function AppSidebar() {
                     />
                   ) : (
                     <span
-                      className="flex-1 font-medium text-sm text-sidebar-fg cursor-pointer truncate flex items-center gap-1"
-                      onDoubleClick={() => {
+                      className={`flex-1 font-medium text-sm cursor-pointer truncate flex items-center gap-1 ${
+                        selectedSpaceId === space.id ? 'text-sidebar-fg-bright' : 'text-sidebar-fg'
+                      }`}
+                      onClick={() => {
+                        setSelectedSpaceId(space.id);
+                        setQuickFilter('all');
+                        handleNavClick();
+                        if (!expandedSpaces.has(space.id)) toggleSpace(space.id);
+                      }}
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
                         setEditingSpaceId(space.id);
                         setEditingSpaceName(space.name);
                       }}

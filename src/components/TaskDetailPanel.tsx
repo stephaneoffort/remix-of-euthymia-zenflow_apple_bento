@@ -6,6 +6,7 @@ import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Cl
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { generateGoogleCalendarUrl, generateOutlookCalendarUrl, generateYahooCalendarUrl } from '@/lib/calendarLinks';
 import { supabase } from '@/integrations/supabase/client';
+import TaskChecklist from '@/components/TaskChecklist';
 // Convert ISO/timestamp string to datetime-local input value (YYYY-MM-DDTHH:mm)
 function toDatetimeLocal(isoStr: string): string {
   const d = new Date(isoStr);

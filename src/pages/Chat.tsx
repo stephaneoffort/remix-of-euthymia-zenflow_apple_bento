@@ -934,7 +934,6 @@ export default function Chat() {
                         content={messageText}
                         onChange={setMessageText}
                         placeholder={chatMode === 'channel' ? `Message dans #${currentCategory?.name || ''}...` : `Message à ${headerTitle}...`}
-                        minimal
                         onSubmit={handleSend}
                         editorClassName="min-h-[38px] max-h-32"
                       />

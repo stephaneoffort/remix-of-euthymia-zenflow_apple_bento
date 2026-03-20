@@ -434,26 +434,7 @@ export default function AppSidebar() {
                                 }`}
                               >
                                 <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: project.color }} />
-                                <div className="flex-1 min-w-0">
-                                  <span className="truncate block">{project.name}</span>
-                                  {(() => {
-                                    const projectTasks = getTasksForProject(project.id);
-                                    if (projectTasks.length === 0) return null;
-                                    const doneTasks = projectTasks.filter(t => t.status === 'done').length;
-                                    const pct = Math.round((doneTasks / projectTasks.length) * 100);
-                                    return (
-                                      <div className="flex items-center gap-1.5 mt-0.5">
-                                        <div className="flex-1 h-1 rounded-full bg-muted overflow-hidden">
-                                          <div
-                                            className="h-full rounded-full transition-all duration-300"
-                                            style={{ width: `${pct}%`, backgroundColor: project.color }}
-                                          />
-                                        </div>
-                                        <span className="text-[9px] text-muted-foreground tabular-nums">{pct}%</span>
-                                      </div>
-                                    );
-                                  })()}
-                                </div>
+                                <span className="flex-1 min-w-0 truncate">{project.name}</span>
                               </button>
                               <button
                                 onClick={() => setDeleteConfirm({ type: 'project', id: project.id, name: project.name })}

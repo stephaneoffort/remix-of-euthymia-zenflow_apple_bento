@@ -64,8 +64,18 @@ export function AvatarGroup({ memberIds, getMemberById }: { memberIds: string[];
 
 export function SubtaskProgress({ total, done }: { total: number; done: number }) {
   if (total === 0) return null;
+  const pct = Math.round((done / total) * 100);
   return (
-    <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+    <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+      <span className="inline-flex w-16 h-1.5 rounded-full bg-muted overflow-hidden">
+        <span
+          className="h-full rounded-full transition-all duration-300"
+          style={{
+            width: `${pct}%`,
+            backgroundColor: pct === 100 ? 'hsl(var(--success, 142 71% 45%))' : 'hsl(var(--primary))',
+          }}
+        />
+      </span>
       <CheckCircle className="w-3 h-3" />
       {done}/{total}
     </span>

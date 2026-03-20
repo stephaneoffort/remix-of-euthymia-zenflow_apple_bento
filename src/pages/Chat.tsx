@@ -66,6 +66,7 @@ export default function Chat() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { unreadCounts, dmUnreadCounts, markCategoryRead, markConversationRead } = useChatNotifications();
+  const { isOnline } = usePresence();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [chatMode, setChatMode] = useState<ChatMode>('channel');

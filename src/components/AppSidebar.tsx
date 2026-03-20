@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import logoEuthymia from '@/assets/logo_euthymia.jpg';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
-import { ChevronRight, ChevronDown, LayoutGrid, List, Calendar, BarChart3, GitFork, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle, Shield, Crown, Lock, Sun, Moon, SunMoon } from 'lucide-react';
+import { ChevronRight, ChevronDown, LayoutGrid, List, Calendar, BarChart3, Network, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle, Shield, Crown, Lock, Sun, Moon, SunMoon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
@@ -39,7 +39,7 @@ const VIEW_OPTIONS: { key: ViewType; label: string; icon: React.ReactNode }[] = 
   { key: 'list', label: 'Liste', icon: <List className="w-4 h-4" /> },
   { key: 'calendar', label: 'Calendrier', icon: <Calendar className="w-4 h-4" /> },
   { key: 'workload', label: 'Charge', icon: <BarChart3 className="w-4 h-4" /> },
-  { key: 'mindmap', label: 'Carte', icon: <GitFork className="w-4 h-4" /> },
+  { key: 'mindmap', label: 'Mind Map', icon: <Network className="w-4 h-4" /> },
 ];
 
 const SPACE_ICONS = ['📁', '🚀', '💡', '🎯', '📊', '🛠️', '📚', '🌟', '🧘', '🎨'];

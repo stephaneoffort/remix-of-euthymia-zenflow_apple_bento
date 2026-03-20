@@ -109,6 +109,10 @@ export default function Index() {
       {/* Task detail panel */}
       {selectedTaskId && <TaskDetailPanel />}
 
+      {/* AI components */}
+      <TaskSuggestions open={suggestionsOpen} onClose={() => setSuggestionsOpen(false)} />
+      <AIChatPanel />
+
       {/* Mobile bottom navigation */}
       {isMobile && !selectedTaskId && <MobileBottomNav />}
     </div>

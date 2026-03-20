@@ -2,26 +2,135 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useApp } from '@/context/AppContext';
 import { Status, Priority, PRIORITY_LABELS } from '@/types';
 import { PriorityBadge, StatusBadge, AvatarGroup, SubtaskProgress, StatusCircle } from '@/components/TaskBadges';
-import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Clock, Paperclip, ChevronDown, Maximize2, Minimize2, CalendarPlus, Link, Upload, Trash2, ExternalLink, FileText, Send } from 'lucide-react';
+import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Clock, Paperclip, ChevronDown, Maximize2, Minimize2, CalendarPlus, Link, Upload, Trash2, ExternalLink, FileText, Send, CalendarIcon } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { generateGoogleCalendarUrl, generateOutlookCalendarUrl, generateYahooCalendarUrl } from '@/lib/calendarLinks';
 import { supabase } from '@/integrations/supabase/client';
 import TaskChecklist from '@/components/TaskChecklist';
 import RichTextEditor, { RichTextDisplay } from '@/components/RichTextEditor';
-// Convert ISO/timestamp string to datetime-local input value (YYYY-MM-DDTHH:mm)
-function toDatetimeLocal(isoStr: string): string {
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
+import { Switch } from '@/components/ui/switch';
+// Format date for display
+function formatDateDisplay(isoStr: string): string {
   const d = new Date(isoStr);
-  if (isNaN(d.getTime())) return isoStr.slice(0, 16); // fallback for YYYY-MM-DD
+  if (isNaN(d.getTime())) return isoStr;
   const pad = (n: number) => n.toString().padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
 }
 
-// Parse datetime-local value, defaulting time to midnight if only date part changes
-function parseDateInput(value: string): string | null {
-  if (!value) return null;
-  // If the value has no time part (e.g. from date-only input), append midnight
-  const normalized = value.includes('T') ? value : `${value}T00:00`;
-  return new Date(normalized).toISOString();
+// Format time for input (HH:mm)
+function formatTimeValue(isoStr: string): string {
+  const d = new Date(isoStr);
+  if (isNaN(d.getTime())) return '00:00';
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+// Check if a date has a non-midnight time
+function hasTime(isoStr: string | null | undefined): boolean {
+  if (!isoStr) return false;
+  const d = new Date(isoStr);
+  return d.getHours() !== 0 || d.getMinutes() !== 0;
+}
+
+// Build ISO from date + optional time
+function buildISO(date: Date, time?: string): string {
+  const d = new Date(date);
+  if (time) {
+    const [h, m] = time.split(':').map(Number);
+    d.setHours(h, m, 0, 0);
+  } else {
+    d.setHours(0, 0, 0, 0);
+  }
+  return d.toISOString();
+}
+function DateTimeField({ value, onChange }: { value: string | null | undefined; onChange: (val: string | null) => void }) {
+  const [showTime, setShowTime] = useState(() => hasTime(value));
+  const dateObj = value ? new Date(value) : undefined;
+  const isValid = dateObj && !isNaN(dateObj.getTime());
+
+  const handleDateSelect = (day: Date | undefined) => {
+    if (!day) { onChange(null); return; }
+    if (showTime && isValid) {
+      onChange(buildISO(day, formatTimeValue(value!)));
+    } else {
+      onChange(buildISO(day));
+    }
+  };
+
+  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isValid || !dateObj) return;
+    onChange(buildISO(dateObj, e.target.value));
+  };
+
+  const handleToggleTime = (checked: boolean) => {
+    setShowTime(checked);
+    if (!checked && isValid && dateObj) {
+      // Remove time → set to midnight
+      onChange(buildISO(dateObj));
+    }
+  };
+
+  const handleClear = () => {
+    onChange(null);
+    setShowTime(false);
+  };
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center gap-2">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "flex-1 justify-start text-left font-normal text-sm h-9",
+                !isValid && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {isValid ? format(dateObj!, 'dd MMM yyyy', { locale: fr }) : 'Choisir une date'}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={isValid ? dateObj : undefined}
+              onSelect={handleDateSelect}
+              initialFocus
+              className="p-3 pointer-events-auto"
+            />
+          </PopoverContent>
+        </Popover>
+        {isValid && (
+          <button onClick={handleClear} className="text-muted-foreground hover:text-foreground p-1">
+            <X className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+      {isValid && (
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
+            <Switch checked={showTime} onCheckedChange={handleToggleTime} className="scale-75" />
+            <span className="text-xs text-muted-foreground">Heure</span>
+          </div>
+          {showTime && (
+            <input
+              type="time"
+              value={formatTimeValue(value!)}
+              onChange={handleTimeChange}
+              className="text-sm bg-muted/50 border border-border rounded-md px-2 py-1 outline-none focus:ring-1 focus:ring-ring"
+            />
+          )}
+        </div>
+      )}
+    </div>
+  );
 }
 
 
@@ -205,20 +314,16 @@ export default function TaskDetailPanel() {
               </div>
               <div>
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">Date de début</label>
-                <input
-                  type="datetime-local"
-                  value={task.startDate ? toDatetimeLocal(task.startDate) : ''}
-                  onChange={e => updateTask(task.id, { startDate: parseDateInput(e.target.value) })}
-                  className="w-full text-sm bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
+                <DateTimeField
+                  value={task.startDate}
+                  onChange={(val) => updateTask(task.id, { startDate: val })}
                 />
               </div>
               <div>
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">Échéance</label>
-                <input
-                  type="datetime-local"
-                  value={task.dueDate ? toDatetimeLocal(task.dueDate) : ''}
-                  onChange={e => updateTask(task.id, { dueDate: parseDateInput(e.target.value) })}
-                  className="w-full text-sm bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
+                <DateTimeField
+                  value={task.dueDate}
+                  onChange={(val) => updateTask(task.id, { dueDate: val })}
                 />
               </div>
             </div>

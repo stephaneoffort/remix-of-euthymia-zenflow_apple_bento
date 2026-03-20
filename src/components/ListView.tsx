@@ -18,6 +18,12 @@ export default function ListView() {
   const [isAdding, setIsAdding] = useState(false);
   const isMobile = useIsMobile();
 
+  const getProjectForTask = (listId: string) => {
+    const list = lists.find(l => l.id === listId);
+    if (!list) return null;
+    return projects.find(p => p.id === list.projectId) || null;
+  };
+
   const filteredTasks = getFilteredTasks();
 
   const sorted = [...filteredTasks].sort((a, b) => {

@@ -46,7 +46,7 @@ const PROJECT_COLORS = ['#4f46e5', '#0891b2', '#059669', '#d97706', '#dc2626', '
 
 export default function AppSidebar() {
   const {
-    spaces, selectedProjectId, setSelectedProjectId,
+    spaces, selectedProjectId, setSelectedProjectId, selectedSpaceId, setSelectedSpaceId,
     selectedView, setSelectedView, quickFilter, setQuickFilter,
     getProjectsForSpace, getTasksForProject, teamMembers, sidebarCollapsed, setSidebarCollapsed,
     tasks, addSpace, addProject, renameSpace, renameProject, deleteSpace, deleteProject,

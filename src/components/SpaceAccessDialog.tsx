@@ -7,6 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Shield, Users, Crown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useApp } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 
 interface SpaceAccessDialogProps {
@@ -22,6 +23,7 @@ export default function SpaceAccessDialog({
   open, onOpenChange, spaceId, spaceName, isPrivate, onUpdate,
 }: SpaceAccessDialogProps) {
   const { teamMembers } = useApp();
+  const { teamMemberId } = useAuth();
   const [priv, setPriv] = useState(isPrivate);
   const [memberIds, setMemberIds] = useState<Set<string>>(new Set());
   const [managerIds, setManagerIds] = useState<Set<string>>(new Set());
@@ -40,12 +42,22 @@ export default function SpaceAccessDialog({
     });
   }, [open, spaceId, isPrivate]);
 
+  // When switching to private, ensure current user is included
+  const handlePrivToggle = (checked: boolean) => {
+    setPriv(checked);
+    if (checked && teamMemberId) {
+      setMemberIds(prev => new Set(prev).add(teamMemberId));
+      setManagerIds(prev => new Set(prev).add(teamMemberId));
+    }
+  };
+
   const toggleMember = (id: string) => {
     setMemberIds(prev => {
       const next = new Set(prev);
       if (next.has(id)) {
+        // Prevent removing yourself
+        if (id === teamMemberId && priv) return next;
         next.delete(id);
-        // Also remove from managers if removed from members
         setManagerIds(p => { const n = new Set(p); n.delete(id); return n; });
       } else {
         next.add(id);
@@ -119,7 +131,7 @@ export default function SpaceAccessDialog({
                 Seuls les membres sélectionnés y auront accès
               </p>
             </div>
-            <Switch checked={priv} onCheckedChange={setPriv} />
+            <Switch checked={priv} onCheckedChange={handlePrivToggle} />
           </div>
 
           {priv && (

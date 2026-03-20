@@ -448,6 +448,13 @@ export default function TaskDetailPanel() {
                     placeholder="Titre de la sous-tâche..."
                     className="flex-1 text-sm bg-muted/50 border border-border rounded-md px-2.5 py-1.5 outline-none"
                   />
+                  <button
+                    onClick={() => handleAddSubtask(task.id)}
+                    disabled={!newSubtaskTitle.trim()}
+                    className="p-1.5 rounded-md bg-primary text-primary-foreground disabled:opacity-50"
+                  >
+                    <Send className="w-4 h-4" />
+                  </button>
                 </div>
               ) : (
                 <button

@@ -25,6 +25,7 @@ interface AppState {
   spaceMembers: SpaceMember[];
   spaceManagers: SpaceManager[];
   selectedProjectId: string | null;
+  selectedSpaceId: string | null;
   selectedView: ViewType;
   quickFilter: QuickFilter;
   selectedTaskId: string | null;

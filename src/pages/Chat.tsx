@@ -738,7 +738,7 @@ export default function Chat() {
                     rows={1}
                   />
                 </div>
-                <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileUpload} />
+                <input ref={fileInputRef} type="file" accept="*/*" className="hidden" onChange={handleFileUpload} />
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   className="p-2.5 rounded-lg border border-input hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"

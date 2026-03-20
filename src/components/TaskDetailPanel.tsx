@@ -331,7 +331,7 @@ export default function TaskDetailPanel() {
 
               {/* Action buttons */}
               <div className="flex gap-2">
-                <input ref={fileInputRef} type="file" multiple onChange={handleFileUpload} className="hidden" />
+                <input ref={fileInputRef} type="file" accept="*/*" multiple onChange={handleFileUpload} className="hidden" />
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}

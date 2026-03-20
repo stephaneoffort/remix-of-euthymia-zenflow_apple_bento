@@ -16,6 +16,14 @@ function toDatetimeLocal(isoStr: string): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
+// Parse datetime-local value, defaulting time to midnight if only date part changes
+function parseDateInput(value: string): string | null {
+  if (!value) return null;
+  // If the value has no time part (e.g. from date-only input), append midnight
+  const normalized = value.includes('T') ? value : `${value}T00:00`;
+  return new Date(normalized).toISOString();
+}
+
 
 export default function TaskDetailPanel() {
   const { selectedTaskId, setSelectedTaskId, getTaskById, updateTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks, teamMembers, allStatuses, getStatusLabel, addAttachment, deleteAttachment } = useApp();
@@ -200,7 +208,7 @@ export default function TaskDetailPanel() {
                 <input
                   type="datetime-local"
                   value={task.startDate ? toDatetimeLocal(task.startDate) : ''}
-                  onChange={e => updateTask(task.id, { startDate: e.target.value ? new Date(e.target.value).toISOString() : null })}
+                  onChange={e => updateTask(task.id, { startDate: parseDateInput(e.target.value) })}
                   className="w-full text-sm bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
                 />
               </div>
@@ -209,7 +217,7 @@ export default function TaskDetailPanel() {
                 <input
                   type="datetime-local"
                   value={task.dueDate ? toDatetimeLocal(task.dueDate) : ''}
-                  onChange={e => updateTask(task.id, { dueDate: e.target.value ? new Date(e.target.value).toISOString() : null })}
+                  onChange={e => updateTask(task.id, { dueDate: parseDateInput(e.target.value) })}
                   className="w-full text-sm bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
                 />
               </div>

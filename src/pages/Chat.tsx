@@ -524,6 +524,7 @@ export default function Chat() {
               <div className="space-y-0.5">
                 {conversations.map(convo => {
                   const others = getConvoOtherMembers(convo.id);
+                  const dmUnread = dmUnreadCounts[convo.id] || 0;
                   return (
                     <button
                       key={convo.id}
@@ -531,7 +532,9 @@ export default function Chat() {
                       className={`w-full flex items-center gap-2 px-3 py-2.5 sm:py-2 rounded-md text-sm transition-colors ${
                         chatMode === 'dm' && selectedConversation === convo.id
                           ? 'bg-primary/10 text-primary font-medium'
-                          : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                          : dmUnread > 0
+                            ? 'text-foreground font-medium hover:bg-muted'
+                            : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                       }`}
                     >
                       {others.length === 1 ? (
@@ -540,6 +543,11 @@ export default function Chat() {
                         <Users className="w-4 h-4 shrink-0" />
                       )}
                       <span className="flex-1 text-left truncate">{getConvoName(convo.id)}</span>
+                      {dmUnread > 0 && (
+                        <span className="text-[10px] bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 min-w-[18px] text-center font-medium">
+                          {dmUnread > 99 ? '99+' : dmUnread}
+                        </span>
+                      )}
                     </button>
                   );
                 })}

@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { useChatNotifications } from '@/hooks/useChatNotifications';
 import { useIsMobile } from '@/hooks/use-mobile';
 import MobileBottomNav from '@/components/MobileBottomNav';
+import { usePresence } from '@/hooks/usePresence';
 
 interface ChatCategory {
   id: string;

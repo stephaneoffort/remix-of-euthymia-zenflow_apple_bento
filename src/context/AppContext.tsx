@@ -111,7 +111,27 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     queryFn: async () => {
       const { data, error } = await supabase.from('spaces').select('*').order('sort_order');
       if (error) throw error;
-      return data.map(s => ({ id: s.id, name: s.name, icon: s.icon, order: s.sort_order })) as Space[];
+      return data.map(s => ({ id: s.id, name: s.name, icon: s.icon, order: s.sort_order, isPrivate: (s as any).is_private ?? false })) as Space[];
+    },
+  });
+
+  // Fetch space members
+  const { data: spaceMembers = [], refetch: refetchSpaceMembers } = useQuery({
+    queryKey: ['space_members'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('space_members').select('*');
+      if (error) throw error;
+      return data.map(r => ({ spaceId: r.space_id, memberId: r.member_id })) as SpaceMember[];
+    },
+  });
+
+  // Fetch space managers
+  const { data: spaceManagers = [], refetch: refetchSpaceManagers } = useQuery({
+    queryKey: ['space_managers'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('space_managers').select('*');
+      if (error) throw error;
+      return data.map(r => ({ spaceId: r.space_id, memberId: r.member_id })) as SpaceManager[];
     },
   });
 

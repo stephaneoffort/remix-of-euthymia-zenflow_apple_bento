@@ -275,6 +275,18 @@ export default function AppSidebar() {
               placeholder="Nom de l'espace..."
               className="w-full text-sm bg-sidebar-bg border border-sidebar-border-color rounded-md px-2 py-1 outline-none text-sidebar-fg-bright placeholder:text-sidebar-fg"
             />
+            <div className="flex items-center justify-between">
+              <label className="text-xs text-sidebar-fg flex items-center gap-1.5 cursor-pointer">
+                <Lock className="w-3 h-3" />
+                Espace privé
+              </label>
+              <button
+                onClick={() => setNewSpacePrivate(!newSpacePrivate)}
+                className={`w-8 h-4 rounded-full transition-colors relative ${newSpacePrivate ? 'bg-primary' : 'bg-sidebar-border-color'}`}
+              >
+                <span className={`block w-3 h-3 rounded-full bg-background shadow absolute top-0.5 transition-transform ${newSpacePrivate ? 'translate-x-4' : 'translate-x-0.5'}`} />
+              </button>
+            </div>
             <div className="flex gap-1">
               <button
                 onClick={handleAddSpace}

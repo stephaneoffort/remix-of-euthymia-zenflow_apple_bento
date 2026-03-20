@@ -111,7 +111,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     queryFn: async () => {
       const { data, error } = await supabase.from('spaces').select('*').order('sort_order');
       if (error) throw error;
-      return data.map(s => ({ id: s.id, name: s.name, icon: s.icon, order: s.sort_order, isPrivate: (s as any).is_private ?? false })) as Space[];
+      return data.map(s => ({ id: s.id, name: s.name, icon: s.icon, order: s.sort_order, isPrivate: (s as any).is_private ?? false, ownerMemberId: (s as any).owner_member_id ?? null })) as Space[];
     },
   });
 

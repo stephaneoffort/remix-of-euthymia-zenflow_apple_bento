@@ -290,6 +290,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (updates.timeEstimate !== undefined) dbUpdates.time_estimate = updates.timeEstimate;
       if (updates.timeLogged !== undefined) dbUpdates.time_logged = updates.timeLogged;
       if (updates.aiSummary !== undefined) dbUpdates.ai_summary = updates.aiSummary;
+      if (updates.recurrence !== undefined) dbUpdates.recurrence = updates.recurrence;
 
       if (Object.keys(dbUpdates).length > 0) {
         const { error } = await supabase.from('tasks').update(dbUpdates).eq('id', id);

@@ -46,6 +46,14 @@ export interface Attachment {
   url: string;
 }
 
+export type Recurrence = 'daily' | 'weekly' | 'monthly' | null;
+
+export const RECURRENCE_LABELS: Record<string, string> = {
+  daily: 'Quotidien',
+  weekly: 'Hebdomadaire',
+  monthly: 'Mensuel',
+};
+
 export interface Task {
   id: string;
   title: string;
@@ -63,6 +71,7 @@ export interface Task {
   timeEstimate: number | null; // minutes
   timeLogged: number | null;
   aiSummary: string | null;
+  recurrence: Recurrence;
   createdAt: string;
   order: number;
 }

@@ -35,15 +35,18 @@ const QUICK_FILTER_TITLES: Record<string, string> = {
 };
 
 export default function Index() {
-  const { selectedProjectId, selectedSpaceId, selectedView, setSelectedView, quickFilter, selectedTaskId, projects, spaces, sidebarCollapsed, setSidebarCollapsed, advancedFilters } = useApp();
+  const { selectedProjectId, selectedSpaceId, selectedView, setSelectedView, quickFilter, selectedTaskId, projects, spaces, sidebarCollapsed, setSidebarCollapsed, advancedFilters, setSelectedProjectId, setSelectedSpaceId, setQuickFilter } = useApp();
   const isMobile = useIsMobile();
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
   const project = projects.find(p => p.id === selectedProjectId);
+  const parentSpace = project ? spaces.find(s => s.id === project.spaceId) : null;
   const space = spaces.find(s => s.id === selectedSpaceId);
-  const title = quickFilter !== 'all'
+
+  const isQuickFilter = quickFilter !== 'all';
+  const title = isQuickFilter
     ? QUICK_FILTER_TITLES[quickFilter]
     : project?.name || space?.name || 'Toutes les tâches';
 
@@ -52,6 +55,32 @@ export default function Index() {
     advancedFilters.priorities.length > 0 ||
     advancedFilters.assigneeIds.length > 0 ||
     advancedFilters.tags.length > 0;
+
+  const navigateToAll = () => {
+    setSelectedProjectId(null);
+    setSelectedSpaceId(null);
+    setQuickFilter('all');
+  };
+
+  const navigateToSpace = (spaceId: string) => {
+    setSelectedProjectId(null);
+    setSelectedSpaceId(spaceId);
+    setQuickFilter('all');
+  };
+
+  // Build breadcrumb segments
+  const breadcrumbs: { label: string; icon?: string; color?: string; onClick?: () => void }[] = [];
+
+  if (!isQuickFilter) {
+    if (project && parentSpace) {
+      // Space > Project
+      breadcrumbs.push({ label: parentSpace.name, icon: parentSpace.icon, onClick: () => navigateToSpace(parentSpace.id) });
+      breadcrumbs.push({ label: project.name, color: project.color });
+    } else if (space) {
+      // Space only
+      breadcrumbs.push({ label: space.name, icon: space.icon });
+    }
+  }
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
@@ -66,10 +95,33 @@ export default function Index() {
                   <PanelLeft className="w-5 h-5" />
                 </button>
               )}
-              {project && (
-                <div className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: project.color }} />
+              {/* Breadcrumb navigation */}
+              {breadcrumbs.length > 0 ? (
+                <nav className="flex items-center gap-1 min-w-0 text-sm sm:text-lg">
+                  {breadcrumbs.map((crumb, i) => (
+                    <React.Fragment key={i}>
+                      {i > 0 && <span className="text-muted-foreground mx-0.5 shrink-0">›</span>}
+                      {crumb.onClick ? (
+                        <button
+                          onClick={crumb.onClick}
+                          className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors truncate shrink min-w-0"
+                        >
+                          {crumb.icon && <span className="shrink-0">{crumb.icon}</span>}
+                          <span className="truncate">{crumb.label}</span>
+                        </button>
+                      ) : (
+                        <h2 className="flex items-center gap-1.5 font-bold text-foreground truncate min-w-0">
+                          {crumb.color && <div className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: crumb.color }} />}
+                          {crumb.icon && <span className="shrink-0">{crumb.icon}</span>}
+                          <span className="truncate">{crumb.label}</span>
+                        </h2>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </nav>
+              ) : (
+                <h2 className="font-bold text-foreground text-sm sm:text-lg truncate">{title}</h2>
               )}
-              <h2 className="font-bold text-foreground text-sm sm:text-lg truncate">{title}</h2>
               {/* View selector */}
               <div className="hidden sm:flex items-center gap-0.5 ml-2 bg-muted/50 rounded-lg p-0.5">
                 {VIEW_OPTIONS.map(v => (

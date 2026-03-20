@@ -791,8 +791,8 @@ export default function Chat() {
                       )
                     )}
 
-                    {/* Reactions display (channel only) */}
-                    {chatMode === 'channel' && Object.keys(rGroups).length > 0 && (
+                    {/* Reactions display */}
+                    {Object.keys(rGroups).length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-1">
                         {Object.entries(rGroups).map(([emoji, data]) => (
                           <button

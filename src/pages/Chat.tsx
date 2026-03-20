@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Hash, Send, Paperclip, Smile, X, Plus, Trash2, Settings, ArrowLeft, ChevronDown, MessageCircle, Users } from 'lucide-react';
+import { Hash, Send, Paperclip, Smile, X, Plus, Trash2, Settings, ArrowLeft, ChevronDown, MessageCircle, Users, Mic, Square } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useChatNotifications } from '@/hooks/useChatNotifications';
@@ -80,6 +80,13 @@ export default function Chat() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [showCategories, setShowCategories] = useState(true);
   const isMobile = useIsMobile();
+
+  // Audio recording state
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingDuration, setRecordingDuration] = useState(0);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const recordingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Check admin
   useEffect(() => {
@@ -367,6 +374,68 @@ export default function Chat() {
     setMessageText('');
   };
 
+  // Audio recording
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream, { mimeType: MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4' });
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data);
+      };
+
+      mediaRecorder.onstop = async () => {
+        stream.getTracks().forEach(t => t.stop());
+        const ext = mediaRecorder.mimeType.includes('webm') ? 'webm' : 'm4a';
+        const blob = new Blob(audioChunksRef.current, { type: mediaRecorder.mimeType });
+        const fileName = `audio_${Date.now()}.${ext}`;
+        const path = `${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+        const { error } = await supabase.storage.from('chat-attachments').upload(path, blob);
+        if (error) { toast.error('Erreur envoi audio'); return; }
+        const { data: urlData } = supabase.storage.from('chat-attachments').getPublicUrl(path);
+        sendMutation.mutate({ content: '🎙️ Message vocal', attachmentUrl: urlData.publicUrl, attachmentName: fileName });
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+      setRecordingDuration(0);
+      recordingTimerRef.current = setInterval(() => setRecordingDuration(d => d + 1), 1000);
+    } catch {
+      toast.error('Impossible d\'accéder au microphone');
+    }
+  };
+
+  const stopRecording = () => {
+    mediaRecorderRef.current?.stop();
+    setIsRecording(false);
+    if (recordingTimerRef.current) { clearInterval(recordingTimerRef.current); recordingTimerRef.current = null; }
+  };
+
+  const cancelRecording = () => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.ondataavailable = null;
+      mediaRecorderRef.current.onstop = null;
+      mediaRecorderRef.current.stream.getTracks().forEach(t => t.stop());
+      mediaRecorderRef.current.stop();
+    }
+    setIsRecording(false);
+    if (recordingTimerRef.current) { clearInterval(recordingTimerRef.current); recordingTimerRef.current = null; }
+    audioChunksRef.current = [];
+  };
+
+  const isAudioAttachment = (name: string | null) => {
+    if (!name) return false;
+    return /\.(webm|m4a|mp3|ogg|wav)$/i.test(name);
+  };
+
+  const formatDuration = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -644,15 +713,24 @@ export default function Chat() {
                       dangerouslySetInnerHTML={{ __html: formatContent(msg.content) }}
                     />
                     {msg.attachment_url && (
-                      <a
-                        href={msg.attachment_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-1 inline-flex items-center gap-1.5 px-2 py-1 rounded bg-muted text-xs text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        <Paperclip className="w-3 h-3" />
-                        {msg.attachment_name || 'Fichier'}
-                      </a>
+                      isAudioAttachment(msg.attachment_name) ? (
+                        <div className="mt-1.5 flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/70 max-w-[280px]">
+                          <Mic className="w-4 h-4 text-primary shrink-0" />
+                          <audio controls preload="metadata" className="h-8 w-full min-w-0" style={{ maxWidth: '220px' }}>
+                            <source src={msg.attachment_url} />
+                          </audio>
+                        </div>
+                      ) : (
+                        <a
+                          href={msg.attachment_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-1 inline-flex items-center gap-1.5 px-2 py-1 rounded bg-muted text-xs text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          <Paperclip className="w-3 h-3" />
+                          {msg.attachment_name || 'Fichier'}
+                        </a>
+                      )
                     )}
 
                     {/* Reactions display (channel only) */}
@@ -727,38 +805,71 @@ export default function Chat() {
               )}
 
               <div className="flex items-end gap-2">
-                <div className="flex-1 relative">
-                  <textarea
-                    ref={inputRef}
-                    value={messageText}
-                    onChange={handleInputChange}
-                    onKeyDown={handleKeyDown}
-                    placeholder={chatMode === 'channel' ? `Message dans #${currentCategory?.name || ''}...` : `Message à ${headerTitle}...`}
-                    className="w-full resize-none rounded-lg border border-input bg-background px-4 py-2.5 pr-10 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring min-h-[42px] max-h-32"
-                    rows={1}
-                  />
-                </div>
-                <input
-                  ref={fileInputRef}
-                  id="chat-file-upload"
-                  type="file"
-                  onChange={handleFileUpload}
-                  className="sr-only"
-                />
-                <label
-                  htmlFor="chat-file-upload"
-                  className="p-2.5 rounded-lg border border-input hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                  title="Joindre un fichier"
-                >
-                  <Paperclip className="w-4 h-4" />
-                </label>
-                <button
-                  onClick={handleSend}
-                  disabled={!messageText.trim() || sendMutation.isPending}
-                  className="p-2.5 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50"
-                >
-                  <Send className="w-4 h-4" />
-                </button>
+                {isRecording ? (
+                  <>
+                    <div className="flex-1 flex items-center gap-3 px-4 py-2.5 rounded-lg border border-destructive/50 bg-destructive/5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-destructive animate-pulse shrink-0" />
+                      <span className="text-sm font-medium text-destructive">{formatDuration(recordingDuration)}</span>
+                      <span className="text-xs text-muted-foreground">Enregistrement...</span>
+                    </div>
+                    <button
+                      onClick={cancelRecording}
+                      className="p-2.5 rounded-lg border border-input hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                      title="Annuler"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={stopRecording}
+                      className="p-2.5 rounded-lg bg-destructive text-destructive-foreground hover:opacity-90 transition-opacity"
+                      title="Arrêter et envoyer"
+                    >
+                      <Square className="w-4 h-4" />
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex-1 relative">
+                      <textarea
+                        ref={inputRef}
+                        value={messageText}
+                        onChange={handleInputChange}
+                        onKeyDown={handleKeyDown}
+                        placeholder={chatMode === 'channel' ? `Message dans #${currentCategory?.name || ''}...` : `Message à ${headerTitle}...`}
+                        className="w-full resize-none rounded-lg border border-input bg-background px-4 py-2.5 pr-10 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring min-h-[42px] max-h-32"
+                        rows={1}
+                      />
+                    </div>
+                    <button
+                      onClick={startRecording}
+                      className="p-2.5 rounded-lg border border-input hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                      title="Message vocal"
+                    >
+                      <Mic className="w-4 h-4" />
+                    </button>
+                    <input
+                      ref={fileInputRef}
+                      id="chat-file-upload"
+                      type="file"
+                      onChange={handleFileUpload}
+                      className="sr-only"
+                    />
+                    <label
+                      htmlFor="chat-file-upload"
+                      className="p-2.5 rounded-lg border border-input hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                      title="Joindre un fichier"
+                    >
+                      <Paperclip className="w-4 h-4" />
+                    </label>
+                    <button
+                      onClick={handleSend}
+                      disabled={!messageText.trim() || sendMutation.isPending}
+                      className="p-2.5 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50"
+                    >
+                      <Send className="w-4 h-4" />
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>

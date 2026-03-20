@@ -208,7 +208,7 @@ export default function TaskDetailPanel() {
                 <input
                   type="datetime-local"
                   value={task.startDate ? toDatetimeLocal(task.startDate) : ''}
-                  onChange={e => updateTask(task.id, { startDate: e.target.value ? new Date(e.target.value).toISOString() : null })}
+                  onChange={e => updateTask(task.id, { startDate: parseDateInput(e.target.value) })}
                   className="w-full text-sm bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
                 />
               </div>

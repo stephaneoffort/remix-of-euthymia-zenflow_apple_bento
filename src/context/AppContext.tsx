@@ -92,6 +92,7 @@ function dbToTask(row: any, assigneeIds: string[], comments: Comment[], attachme
     timeEstimate: row.time_estimate,
     timeLogged: row.time_logged,
     aiSummary: row.ai_summary,
+    recurrence: (row.recurrence as Recurrence) || null,
     createdAt: row.created_at,
     order: row.sort_order,
   };

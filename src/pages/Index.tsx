@@ -68,6 +68,29 @@ export default function Index() {
                 <div className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: project.color }} />
               )}
               <h2 className="font-bold text-foreground text-sm sm:text-lg truncate">{title}</h2>
+              {/* View selector */}
+              <div className="hidden sm:flex items-center gap-0.5 ml-2 bg-muted/50 rounded-lg p-0.5">
+                {VIEW_OPTIONS.map(v => (
+                  <Tooltip key={v.key}>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => setSelectedView(v.key)}
+                        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                          selectedView === v.key
+                            ? 'bg-background text-foreground shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                      >
+                        {v.icon}
+                        <span className="hidden lg:inline">{v.label}</span>
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="lg:hidden">
+                      {v.label}
+                    </TooltipContent>
+                  </Tooltip>
+                ))}
+              </div>
             </div>
             <div className="flex items-center gap-1.5">
               {/* Mobile filter toggle */}

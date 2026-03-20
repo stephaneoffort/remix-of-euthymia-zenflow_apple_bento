@@ -11,11 +11,12 @@ import TaskFilterBar from '@/components/TaskFilterBar';
 import MobileBottomNav from '@/components/MobileBottomNav';
 import TaskSuggestions from '@/components/TaskSuggestions';
 import AIChatPanel from '@/components/AIChatPanel';
+import CommandPalette from '@/components/CommandPalette';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ViewType } from '@/types';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
-import { Sparkles, PanelLeft, Filter, ChevronDown, ChevronUp, LayoutGrid, List, Calendar, BarChart3, GitFork } from 'lucide-react';
+import { Sparkles, PanelLeft, Filter, ChevronDown, ChevronUp, LayoutGrid, List, Calendar, BarChart3, GitFork, Search } from 'lucide-react';
 
 const VIEW_OPTIONS: { key: ViewType; label: string; icon: React.ReactNode }[] = [
   { key: 'kanban', label: 'Kanban', icon: <LayoutGrid className="w-4 h-4" /> },
@@ -38,6 +39,7 @@ export default function Index() {
   const isMobile = useIsMobile();
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const project = projects.find(p => p.id === selectedProjectId);
   const space = spaces.find(s => s.id === selectedSpaceId);
@@ -93,6 +95,23 @@ export default function Index() {
               </div>
             </div>
             <div className="flex items-center gap-1.5">
+              {/* Search button */}
+              <button
+                onClick={() => setSearchOpen(true)}
+                className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-border bg-muted/30 text-muted-foreground text-xs hover:bg-muted hover:text-foreground transition-colors"
+              >
+                <Search className="w-3.5 h-3.5" />
+                <span>Rechercher…</span>
+                <kbd className="ml-2 px-1.5 py-0.5 text-[10px] font-medium bg-background rounded border border-border">⌘K</kbd>
+              </button>
+              {isMobile && (
+                <button
+                  onClick={() => setSearchOpen(true)}
+                  className="p-1.5 rounded-md hover:bg-muted text-muted-foreground transition-colors"
+                >
+                  <Search className="w-4 h-4" />
+                </button>
+              )}
               {/* Mobile filter toggle */}
               {isMobile && (
                 <button
@@ -146,6 +165,7 @@ export default function Index() {
       {/* AI components */}
       <TaskSuggestions open={suggestionsOpen} onClose={() => setSuggestionsOpen(false)} />
       <AIChatPanel />
+      <CommandPalette />
 
       {/* Mobile bottom navigation */}
       {isMobile && !selectedTaskId && <MobileBottomNav />}

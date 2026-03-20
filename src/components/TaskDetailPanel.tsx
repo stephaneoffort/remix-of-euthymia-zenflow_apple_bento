@@ -247,8 +247,12 @@ export default function TaskDetailPanel() {
               <RichTextEditor
                 key={task.id}
                 content={descriptionDraft}
-                onChange={setDescriptionDraft}
+                onChange={(html) => {
+                  setDescriptionDraft(html);
+                  debouncedSaveDescription(html, task.id);
+                }}
                 onBlur={(html) => {
+                  if (debounceRef.current) clearTimeout(debounceRef.current);
                   if (html !== task.description) {
                     updateTask(task.id, { description: html });
                   }

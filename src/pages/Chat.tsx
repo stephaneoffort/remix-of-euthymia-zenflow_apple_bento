@@ -229,7 +229,25 @@ export default function Chat() {
     enabled: !!selectedConversation && chatMode === 'dm',
   });
 
-  // Get other members in a conversation
+  // Fetch reactions (DM)
+  const { data: dmReactions = [] } = useQuery({
+    queryKey: ['dm_reactions', selectedConversation],
+    queryFn: async () => {
+      if (!selectedConversation || dmMessages.length === 0) return [];
+      const msgIds = dmMessages.map(m => m.id);
+      const { data, error } = await supabase
+        .from('dm_reactions' as any)
+        .select('*')
+        .in('message_id', msgIds);
+      if (error) throw error;
+      return data as unknown as ChatReaction[];
+    },
+    enabled: !!selectedConversation && dmMessages.length > 0 && chatMode === 'dm',
+  });
+
+  const reactions = chatMode === 'channel' ? channelReactions : dmReactions;
+
+
   const getConvoOtherMembers = (convoId: string) => {
     return allConvoMembers
       .filter(cm => cm.conversation_id === convoId && cm.member_id !== teamMemberId)

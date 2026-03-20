@@ -491,6 +491,7 @@ export type Database = {
           id: string
           is_private: boolean
           name: string
+          owner_member_id: string | null
           sort_order: number
         }
         Insert: {
@@ -498,6 +499,7 @@ export type Database = {
           id: string
           is_private?: boolean
           name: string
+          owner_member_id?: string | null
           sort_order?: number
         }
         Update: {
@@ -505,6 +507,7 @@ export type Database = {
           id?: string
           is_private?: boolean
           name?: string
+          owner_member_id?: string | null
           sort_order?: number
         }
         Relationships: []

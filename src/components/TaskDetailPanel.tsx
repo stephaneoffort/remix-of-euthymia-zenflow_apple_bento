@@ -410,6 +410,9 @@ export default function TaskDetailPanel() {
 
           {/* === Column 2 (or continues below in non-expanded): Subtasks + Comments === */}
           <div className="space-y-4 sm:space-y-6">
+            {/* Checklist */}
+            <TaskChecklist taskId={task.id} />
+
             {/* Subtasks */}
             <div>
               <div className="flex items-center justify-between mb-2">

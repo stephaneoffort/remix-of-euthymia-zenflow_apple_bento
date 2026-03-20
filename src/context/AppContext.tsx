@@ -703,6 +703,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     spaceMembers,
     spaceManagers,
     selectedProjectId,
+    selectedSpaceId,
     selectedView,
     quickFilter,
     selectedTaskId,

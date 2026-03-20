@@ -14,7 +14,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function KanbanBoard() {
-  const { getFilteredTasks, moveTask, setSelectedTaskId, getMemberById, addTask, selectedProjectId, getListsForProject, tasks, allStatuses, getStatusLabel } = useApp();
+  const { getFilteredTasks, moveTask, setSelectedTaskId, getMemberById, addTask, selectedProjectId, getListsForProject, tasks, allStatuses, getStatusLabel, getTasksForProject, projects } = useApp();
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
   const [draggedColumn, setDraggedColumn] = useState<string | null>(null);
   const [columnOrder, setColumnOrder] = useState<string[]>(allStatuses);

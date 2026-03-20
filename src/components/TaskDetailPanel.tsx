@@ -7,6 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { generateGoogleCalendarUrl, generateOutlookCalendarUrl, generateYahooCalendarUrl } from '@/lib/calendarLinks';
 import { supabase } from '@/integrations/supabase/client';
 import TaskChecklist from '@/components/TaskChecklist';
+import RichTextEditor, { RichTextDisplay } from '@/components/RichTextEditor';
 // Convert ISO/timestamp string to datetime-local input value (YYYY-MM-DDTHH:mm)
 function toDatetimeLocal(isoStr: string): string {
   const d = new Date(isoStr);

@@ -645,9 +645,7 @@ function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {
                   </span>
                 )}
                 {hasChildren && (
-                  <span className="text-muted-foreground">
-                    {doneChildren.length}/{children.length} sous-tâches
-                  </span>
+                  <SubtaskProgress total={children.length} done={doneChildren.length} />
                 )}
                 <div className="ml-auto">
                   <AvatarGroup memberIds={st.assigneeIds} getMemberById={getMemberById} />

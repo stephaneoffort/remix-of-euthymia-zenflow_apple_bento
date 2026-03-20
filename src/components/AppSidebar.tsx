@@ -59,6 +59,7 @@ export default function AppSidebar() {
   const [addingSpace, setAddingSpace] = useState(false);
   const [newSpaceName, setNewSpaceName] = useState('');
   const [newSpaceIcon, setNewSpaceIcon] = useState('📁');
+  const [newSpacePrivate, setNewSpacePrivate] = useState(false);
   const [addingProjectForSpace, setAddingProjectForSpace] = useState<string | null>(null);
   const [newProjectName, setNewProjectName] = useState('');
   const [newProjectColor, setNewProjectColor] = useState(PROJECT_COLORS[0]);

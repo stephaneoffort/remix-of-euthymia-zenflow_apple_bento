@@ -346,7 +346,7 @@ function MobileTreeNode({ node, depth, expandedIds, toggleExpand, onSelectTask, 
         {!hasChildren && <div className="w-6" />}
 
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-foreground leading-tight truncate">{task.title}</p>
+          <p className="text-sm font-medium text-foreground leading-tight truncate flex items-center gap-1">{task.title}{task.recurrence && <Repeat className="w-3 h-3 text-primary shrink-0" />}</p>
           <div className="flex items-center gap-1.5 mt-1">
             <StatusBadge status={task.status} />
             <PriorityBadge priority={task.priority} />

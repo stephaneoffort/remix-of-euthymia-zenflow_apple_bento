@@ -59,6 +59,14 @@ export default function AppSidebar() {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const { isOnline } = usePresence();
+  const { user } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!user) { setIsAdmin(false); return; }
+    supabase.from('user_roles').select('role').eq('user_id', user.id).eq('role', 'admin')
+      .then(({ data }) => setIsAdmin(!!data && data.length > 0));
+  }, [user]);
 
   const [expandedSpaces, setExpandedSpaces] = useState<Set<string>>(new Set(spaces.map(s => s.id)));
   const [addingSpace, setAddingSpace] = useState(false);
@@ -438,14 +446,18 @@ export default function AppSidebar() {
                         <Settings className="w-4 h-4 mr-2" />
                         Renommer
                       </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        onClick={() => setDeleteConfirm({ type: 'space', id: space.id, name: space.name })}
-                        className="text-destructive focus:text-destructive"
-                      >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Supprimer
-                      </DropdownMenuItem>
+                      {isAdmin && (
+                        <>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={() => setDeleteConfirm({ type: 'space', id: space.id, name: space.name })}
+                            className="text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Supprimer
+                          </DropdownMenuItem>
+                        </>
+                      )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
@@ -522,14 +534,18 @@ export default function AppSidebar() {
                                     <Settings className="w-4 h-4 mr-2" />
                                     Renommer
                                   </DropdownMenuItem>
-                                  <DropdownMenuSeparator />
-                                  <DropdownMenuItem
-                                    onClick={() => setDeleteConfirm({ type: 'project', id: project.id, name: project.name })}
-                                    className="text-destructive focus:text-destructive"
-                                  >
-                                    <Trash2 className="w-4 h-4 mr-2" />
-                                    Supprimer
-                                  </DropdownMenuItem>
+                                  {isAdmin && (
+                                    <>
+                                      <DropdownMenuSeparator />
+                                      <DropdownMenuItem
+                                        onClick={() => setDeleteConfirm({ type: 'project', id: project.id, name: project.name })}
+                                        className="text-destructive focus:text-destructive"
+                                      >
+                                        <Trash2 className="w-4 h-4 mr-2" />
+                                        Supprimer
+                                      </DropdownMenuItem>
+                                    </>
+                                  )}
                                 </DropdownMenuContent>
                               </DropdownMenu>
                             </SortableProject>

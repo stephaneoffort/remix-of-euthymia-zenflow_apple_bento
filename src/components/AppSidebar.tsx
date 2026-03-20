@@ -51,6 +51,7 @@ export default function AppSidebar() {
   } = useApp();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+  const { isOnline } = usePresence();
 
   const [expandedSpaces, setExpandedSpaces] = useState<Set<string>>(new Set(spaces.map(s => s.id)));
   const [addingSpace, setAddingSpace] = useState(false);

@@ -452,13 +452,14 @@ export default function Chat() {
   // Messages to render
   const displayMessages = chatMode === 'channel' ? messages : dmMessages;
 
-  // Avatar component
-  const MemberAvatar = ({ member, size = 'md' }: { member: TeamMember | undefined; size?: 'sm' | 'md' }) => {
+  // Avatar component with presence indicator
+  const MemberAvatar = ({ member, size = 'md', showPresence = false }: { member: TeamMember | undefined; size?: 'sm' | 'md'; showPresence?: boolean }) => {
     const s = size === 'sm' ? 'w-6 h-6 text-[10px]' : 'w-8 h-8 text-xs';
-    if (member?.avatar_url) {
-      return <img src={member.avatar_url} alt={member.name} className={`${s} rounded-full object-cover shrink-0`} />;
-    }
-    return (
+    const dotSize = size === 'sm' ? 'w-2 h-2 border' : 'w-2.5 h-2.5 border-2';
+    const online = member ? isOnline(member.id) : false;
+    const avatar = member?.avatar_url ? (
+      <img src={member.avatar_url} alt={member.name} className={`${s} rounded-full object-cover shrink-0`} />
+    ) : (
       <div
         className={`${s} rounded-full flex items-center justify-center font-bold text-primary-foreground shrink-0`}
         style={{ backgroundColor: member?.avatar_color || 'hsl(var(--muted))' }}
@@ -466,6 +467,16 @@ export default function Chat() {
         {member?.name?.charAt(0).toUpperCase() || '?'}
       </div>
     );
+
+    if (showPresence && online) {
+      return (
+        <div className="relative shrink-0">
+          {avatar}
+          <span className={`absolute bottom-0 right-0 ${dotSize} bg-green-500 border-card rounded-full`} />
+        </div>
+      );
+    }
+    return avatar;
   };
 
   return (

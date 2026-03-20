@@ -45,7 +45,7 @@ interface AppContextType extends AppState {
   addAttachment: (taskId: string, name: string, url: string) => void;
   deleteAttachment: (attachmentId: string) => void;
   moveTask: (taskId: string, newStatus: string) => void;
-  addSpace: (name: string, icon: string) => void;
+  addSpace: (name: string, icon: string, isPrivate?: boolean) => void;
   addProject: (name: string, spaceId: string, color: string) => void;
   renameSpace: (id: string, name: string) => void;
   renameProject: (id: string, name: string) => void;
@@ -340,13 +340,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   // Add space mutation
   const addSpaceMutation = useMutation({
-    mutationFn: async ({ name, icon }: { name: string; icon: string }) => {
+    mutationFn: async ({ name, icon, isPrivate }: { name: string; icon: string; isPrivate: boolean }) => {
       const id = `s_${Date.now()}`;
       const { error } = await supabase.from('spaces').insert({
         id,
         name,
         icon,
         sort_order: spaces.length,
+        is_private: isPrivate,
+        owner_member_id: isPrivate ? teamMemberId : null,
       });
       if (error) throw error;
       return id;
@@ -384,8 +386,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     },
   });
 
-  const addSpace = useCallback((name: string, icon: string) => {
-    addSpaceMutation.mutate({ name, icon });
+  const addSpace = useCallback((name: string, icon: string, isPrivate: boolean = false) => {
+    addSpaceMutation.mutate({ name, icon, isPrivate });
   }, [addSpaceMutation]);
 
   const addProject = useCallback((name: string, spaceId: string, color: string) => {

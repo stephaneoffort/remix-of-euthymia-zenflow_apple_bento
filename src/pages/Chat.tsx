@@ -435,6 +435,7 @@ export default function Chat() {
     setChatMode('dm');
     setSelectedConversation(id);
     setSelectedCategory(null);
+    markConversationRead(id);
     if (isMobile) setShowCategories(false);
   };
 

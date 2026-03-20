@@ -961,7 +961,7 @@ export default function Chat() {
                     </label>
                     <button
                       onClick={handleSend}
-                      disabled={!messageText.trim() || sendMutation.isPending}
+                      disabled={(!messageText.trim() && messageText !== '<p></p>') || !messageText || messageText === '<p></p>' || sendMutation.isPending}
                       className="p-2.5 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50"
                     >
                       <Send className="w-4 h-4" />

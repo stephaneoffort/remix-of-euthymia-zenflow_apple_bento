@@ -168,9 +168,12 @@ export default function AppSidebar() {
       <div className={`${isMobile ? 'fixed inset-y-0 left-0 z-50' : ''} w-64 bg-sidebar-bg flex flex-col border-r border-sidebar-border-color shrink-0 h-screen`}>
       {/* Header */}
       <div className="px-4 py-4 flex items-center justify-between border-b border-sidebar-border-color">
-        <div>
-          <h1 className="text-sidebar-fg-bright font-bold text-lg leading-tight">🧘 Euthymia</h1>
-          <p className="text-sidebar-fg text-xs">Gestion de projets</p>
+        <div className="flex items-center gap-2.5">
+          <img src={logoEuthymia} alt="Euthymia" className="w-8 h-8 rounded-full object-cover" />
+          <div>
+            <h1 className="text-sidebar-fg-bright font-bold text-lg leading-tight">Euthymia</h1>
+            <p className="text-sidebar-fg text-xs">Gestion de projets</p>
+          </div>
         </div>
         <button onClick={() => setSidebarCollapsed(true)} className="p-1.5 rounded-md hover:bg-sidebar-hover text-sidebar-fg transition-colors">
           <PanelLeftClose className="w-4 h-4" />

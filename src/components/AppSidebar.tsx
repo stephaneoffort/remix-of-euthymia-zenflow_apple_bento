@@ -502,8 +502,10 @@ export default function AppSidebar() {
       {/* Current user + Settings + Logout */}
       <div className="px-4 py-3 border-t border-sidebar-border-color mt-auto">
         <CurrentUserBadge />
-        <AdminSettingsLink />
-        <LogoutButton />
+        <div className="flex items-center gap-1 mt-1">
+          <AdminSettingsLink />
+          <LogoutButton />
+        </div>
       </div>
 
       {/* Delete confirmation dialog */}

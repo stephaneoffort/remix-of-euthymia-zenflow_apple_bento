@@ -929,14 +929,13 @@ export default function Chat() {
                 ) : (
                   <>
                     <div className="flex-1 relative">
-                      <textarea
-                        ref={inputRef}
-                        value={messageText}
-                        onChange={handleInputChange}
-                        onKeyDown={handleKeyDown}
+                      <RichTextEditor
+                        content={messageText}
+                        onChange={setMessageText}
                         placeholder={chatMode === 'channel' ? `Message dans #${currentCategory?.name || ''}...` : `Message à ${headerTitle}...`}
-                        className="w-full resize-none rounded-lg border border-input bg-background px-4 py-2.5 pr-10 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring min-h-[42px] max-h-32"
-                        rows={1}
+                        minimal
+                        onSubmit={handleSend}
+                        editorClassName="min-h-[38px] max-h-32"
                       />
                     </div>
                     <button

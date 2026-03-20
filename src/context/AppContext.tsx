@@ -629,6 +629,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (selectedProjectId && quickFilter === 'all') {
       const listIds = new Set(lists.filter(l => l.projectId === selectedProjectId).map(l => l.id));
       filtered = filtered.filter(t => listIds.has(t.listId));
+    } else if (selectedSpaceId && quickFilter === 'all') {
+      const spaceProjectIds = new Set(projects.filter(p => p.spaceId === selectedSpaceId).map(p => p.id));
+      const listIds = new Set(lists.filter(l => spaceProjectIds.has(l.projectId)).map(l => l.id));
+      filtered = filtered.filter(t => listIds.has(t.listId));
     }
 
     switch (quickFilter) {

@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { useChatNotifications } from '@/hooks/useChatNotifications';
 import { useIsMobile } from '@/hooks/use-mobile';
 import MobileBottomNav from '@/components/MobileBottomNav';
+import { usePresence } from '@/hooks/usePresence';
 
 interface ChatCategory {
   id: string;
@@ -65,6 +66,7 @@ export default function Chat() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { unreadCounts, dmUnreadCounts, markCategoryRead, markConversationRead } = useChatNotifications();
+  const { isOnline } = usePresence();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [chatMode, setChatMode] = useState<ChatMode>('channel');
@@ -450,13 +452,14 @@ export default function Chat() {
   // Messages to render
   const displayMessages = chatMode === 'channel' ? messages : dmMessages;
 
-  // Avatar component
-  const MemberAvatar = ({ member, size = 'md' }: { member: TeamMember | undefined; size?: 'sm' | 'md' }) => {
+  // Avatar component with presence indicator
+  const MemberAvatar = ({ member, size = 'md', showPresence = false }: { member: TeamMember | undefined; size?: 'sm' | 'md'; showPresence?: boolean }) => {
     const s = size === 'sm' ? 'w-6 h-6 text-[10px]' : 'w-8 h-8 text-xs';
-    if (member?.avatar_url) {
-      return <img src={member.avatar_url} alt={member.name} className={`${s} rounded-full object-cover shrink-0`} />;
-    }
-    return (
+    const dotSize = size === 'sm' ? 'w-2 h-2 border' : 'w-2.5 h-2.5 border-2';
+    const online = member ? isOnline(member.id) : false;
+    const avatar = member?.avatar_url ? (
+      <img src={member.avatar_url} alt={member.name} className={`${s} rounded-full object-cover shrink-0`} />
+    ) : (
       <div
         className={`${s} rounded-full flex items-center justify-center font-bold text-primary-foreground shrink-0`}
         style={{ backgroundColor: member?.avatar_color || 'hsl(var(--muted))' }}
@@ -464,6 +467,16 @@ export default function Chat() {
         {member?.name?.charAt(0).toUpperCase() || '?'}
       </div>
     );
+
+    if (showPresence && online) {
+      return (
+        <div className="relative shrink-0">
+          {avatar}
+          <span className={`absolute bottom-0 right-0 ${dotSize} bg-green-500 border-card rounded-full`} />
+        </div>
+      );
+    }
+    return avatar;
   };
 
   return (
@@ -538,7 +551,7 @@ export default function Chat() {
                       }`}
                     >
                       {others.length === 1 ? (
-                        <MemberAvatar member={others[0]} size="sm" />
+                        <MemberAvatar member={others[0]} size="sm" showPresence />
                       ) : (
                         <Users className="w-4 h-4 shrink-0" />
                       )}
@@ -563,7 +576,7 @@ export default function Chat() {
                       onClick={() => startDM(m.id)}
                       className="w-full flex items-center gap-2 px-3 py-2 sm:py-1.5 rounded-md text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                     >
-                      <MemberAvatar member={m} size="sm" />
+                      <MemberAvatar member={m} size="sm" showPresence />
                       <span className="flex-1 text-left truncate">{m.name}</span>
                     </button>
                   ))}

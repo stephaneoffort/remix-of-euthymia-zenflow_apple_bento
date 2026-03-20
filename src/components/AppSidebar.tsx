@@ -626,7 +626,7 @@ function ChatLink({ handleNavClick }: { handleNavClick: () => void }) {
   );
 }
 function ThemeSwitcher() {
-  const { theme, setTheme } = require('@/context/ThemeContext').useThemeMode();
+  const { theme, setTheme } = useThemeMode();
   const options: { key: 'light' | 'dark' | 'mixed'; label: string; icon: React.ReactNode }[] = [
     { key: 'light', label: 'Clair', icon: <Sun className="w-3.5 h-3.5" /> },
     { key: 'dark', label: 'Sombre', icon: <Moon className="w-3.5 h-3.5" /> },

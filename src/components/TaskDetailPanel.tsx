@@ -451,9 +451,9 @@ export default function TaskDetailPanel() {
                   <button
                     onClick={() => handleAddSubtask(task.id)}
                     disabled={!newSubtaskTitle.trim()}
-                    className="p-1.5 rounded-md bg-primary text-primary-foreground disabled:opacity-50"
+                    className="px-3 py-1.5 text-xs rounded-md bg-primary text-primary-foreground disabled:opacity-50"
                   >
-                    <Send className="w-4 h-4" />
+                    Ajouter
                   </button>
                 </div>
               ) : (

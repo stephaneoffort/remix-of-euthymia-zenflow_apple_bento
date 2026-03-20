@@ -65,6 +65,7 @@ export default function AppSidebar() {
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
   const [editingProjectName, setEditingProjectName] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState<{ type: 'space' | 'project'; id: string; name: string } | null>(null);
+  const [filtersExpanded, setFiltersExpanded] = useState(!isMobile);
 
   useEffect(() => {
     if (isMobile) setSidebarCollapsed(true);
@@ -187,31 +188,43 @@ export default function AppSidebar() {
         </div>
       </div>
 
-      {/* Quick Filters */}
+      {/* Quick Filters - collapsible on mobile */}
       <div className="px-3 py-3 border-b border-sidebar-border-color">
-        <p className="text-xs font-semibold text-sidebar-fg uppercase tracking-wider px-2 mb-2">Filtres</p>
-        {QUICK_FILTERS.map(f => (
-          <button
-            key={f.key}
-            onClick={() => {
-              setQuickFilter(f.key);
-              if (f.key !== 'all') setSelectedProjectId(null);
-              handleNavClick();
-            }}
-            className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors ${
-              quickFilter === f.key && !selectedProjectId
-                ? 'bg-sidebar-active text-sidebar-fg-bright'
-                : 'text-sidebar-fg hover:bg-sidebar-hover'
-            }`}
-          >
-            {f.icon}
-            {f.label}
-            {f.key === 'overdue' && overdueCount > 0 && (
-              <span className="ml-auto text-xs bg-priority-urgent text-sidebar-fg-bright rounded-full px-1.5 py-0.5">{overdueCount}</span>
-            )}
-          </button>
-        ))}
-        <ChatLink handleNavClick={handleNavClick} />
+        <button
+          onClick={() => setFiltersExpanded(prev => !prev)}
+          className="w-full flex items-center justify-between px-2 mb-2"
+        >
+          <p className="text-xs font-semibold text-sidebar-fg uppercase tracking-wider">Filtres</p>
+          {isMobile && (
+            <ChevronRight className={`w-3.5 h-3.5 text-sidebar-fg transition-transform ${filtersExpanded ? 'rotate-90' : ''}`} />
+          )}
+        </button>
+        {filtersExpanded && (
+          <>
+            {QUICK_FILTERS.map(f => (
+              <button
+                key={f.key}
+                onClick={() => {
+                  setQuickFilter(f.key);
+                  if (f.key !== 'all') setSelectedProjectId(null);
+                  handleNavClick();
+                }}
+                className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors ${
+                  quickFilter === f.key && !selectedProjectId
+                    ? 'bg-sidebar-active text-sidebar-fg-bright'
+                    : 'text-sidebar-fg hover:bg-sidebar-hover'
+                }`}
+              >
+                {f.icon}
+                {f.label}
+                {f.key === 'overdue' && overdueCount > 0 && (
+                  <span className="ml-auto text-xs bg-priority-urgent text-sidebar-fg-bright rounded-full px-1.5 py-0.5">{overdueCount}</span>
+                )}
+              </button>
+            ))}
+            <ChatLink handleNavClick={handleNavClick} />
+          </>
+        )}
       </div>
 
       {/* Spaces & Projects */}

@@ -334,6 +334,39 @@ export type Database = {
           },
         ]
       }
+      dm_read_status: {
+        Row: {
+          conversation_id: string
+          last_read_at: string
+          member_id: string
+        }
+        Insert: {
+          conversation_id: string
+          last_read_at?: string
+          member_id: string
+        }
+        Update: {
+          conversation_id?: string
+          last_read_at?: string
+          member_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dm_read_status_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "direct_conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dm_read_status_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string

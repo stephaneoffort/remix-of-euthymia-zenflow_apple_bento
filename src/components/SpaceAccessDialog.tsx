@@ -23,6 +23,7 @@ export default function SpaceAccessDialog({
   open, onOpenChange, spaceId, spaceName, isPrivate, onUpdate,
 }: SpaceAccessDialogProps) {
   const { teamMembers } = useApp();
+  const { teamMemberId } = useAuth();
   const [priv, setPriv] = useState(isPrivate);
   const [memberIds, setMemberIds] = useState<Set<string>>(new Set());
   const [managerIds, setManagerIds] = useState<Set<string>>(new Set());

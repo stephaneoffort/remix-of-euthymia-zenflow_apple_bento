@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
 import { Status, Priority, PRIORITY_LABELS } from '@/types';
 import { PriorityBadge, StatusBadge, AvatarGroup } from '@/components/TaskBadges';
@@ -28,10 +28,15 @@ export default function TaskDetailPanel() {
   const [newLinkUrl, setNewLinkUrl] = useState('');
   const [newLinkName, setNewLinkName] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [descriptionDraft, setDescriptionDraft] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const task = selectedTaskId ? getTaskById(selectedTaskId) : null;
+
+  useEffect(() => {
+    setDescriptionDraft(task?.description ?? '');
+  }, [task?.id, task?.description]);
 
   if (!selectedTaskId) return null;
-  const task = getTaskById(selectedTaskId);
   if (!task) return null;
 
   const breadcrumb = getTaskBreadcrumb(task.id);
@@ -228,8 +233,14 @@ export default function TaskDetailPanel() {
             <div>
               <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">Description</label>
               <RichTextEditor
-                content={task.description}
-                onChange={(html) => updateTask(task.id, { description: html })}
+                key={task.id}
+                content={descriptionDraft}
+                onChange={setDescriptionDraft}
+                onBlur={(html) => {
+                  if (html !== task.description) {
+                    updateTask(task.id, { description: html });
+                  }
+                }}
                 placeholder="Ajouter une description..."
                 editorClassName={expanded ? 'min-h-[120px]' : 'min-h-[60px]'}
               />

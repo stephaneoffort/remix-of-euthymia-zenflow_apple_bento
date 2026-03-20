@@ -711,6 +711,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     isLoading,
     advancedFilters,
     setSelectedProjectId,
+    setSelectedSpaceId,
     setSelectedView,
     setQuickFilter,
     setSelectedTaskId,

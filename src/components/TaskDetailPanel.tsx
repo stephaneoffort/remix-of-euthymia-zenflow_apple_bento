@@ -49,6 +49,89 @@ function buildISO(date: Date, time?: string): string {
   }
   return d.toISOString();
 }
+function DateTimeField({ value, onChange }: { value: string | null | undefined; onChange: (val: string | null) => void }) {
+  const [showTime, setShowTime] = useState(() => hasTime(value));
+  const dateObj = value ? new Date(value) : undefined;
+  const isValid = dateObj && !isNaN(dateObj.getTime());
+
+  const handleDateSelect = (day: Date | undefined) => {
+    if (!day) { onChange(null); return; }
+    if (showTime && isValid) {
+      onChange(buildISO(day, formatTimeValue(value!)));
+    } else {
+      onChange(buildISO(day));
+    }
+  };
+
+  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isValid || !dateObj) return;
+    onChange(buildISO(dateObj, e.target.value));
+  };
+
+  const handleToggleTime = (checked: boolean) => {
+    setShowTime(checked);
+    if (!checked && isValid && dateObj) {
+      // Remove time → set to midnight
+      onChange(buildISO(dateObj));
+    }
+  };
+
+  const handleClear = () => {
+    onChange(null);
+    setShowTime(false);
+  };
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center gap-2">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "flex-1 justify-start text-left font-normal text-sm h-9",
+                !isValid && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {isValid ? format(dateObj!, 'dd MMM yyyy', { locale: fr }) : 'Choisir une date'}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={isValid ? dateObj : undefined}
+              onSelect={handleDateSelect}
+              initialFocus
+              className="p-3 pointer-events-auto"
+            />
+          </PopoverContent>
+        </Popover>
+        {isValid && (
+          <button onClick={handleClear} className="text-muted-foreground hover:text-foreground p-1">
+            <X className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+      {isValid && (
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
+            <Switch checked={showTime} onCheckedChange={handleToggleTime} className="scale-75" />
+            <span className="text-xs text-muted-foreground">Heure</span>
+          </div>
+          {showTime && (
+            <input
+              type="time"
+              value={formatTimeValue(value!)}
+              onChange={handleTimeChange}
+              className="text-sm bg-muted/50 border border-border rounded-md px-2 py-1 outline-none focus:ring-1 focus:ring-ring"
+            />
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 
 export default function TaskDetailPanel() {

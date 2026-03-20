@@ -502,8 +502,10 @@ export default function AppSidebar() {
       {/* Current user + Settings + Logout */}
       <div className="px-4 py-3 border-t border-sidebar-border-color mt-auto">
         <CurrentUserBadge />
-        <AdminSettingsLink />
-        <LogoutButton />
+        <div className="flex items-center gap-1 mt-1">
+          <AdminSettingsLink />
+          <LogoutButton />
+        </div>
       </div>
 
       {/* Delete confirmation dialog */}
@@ -609,10 +611,11 @@ function AdminSettingsLink() {
   return (
     <button
       onClick={() => navigate('/settings')}
-      className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors mb-0.5"
+      className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors md:w-full"
+      title="Administration"
     >
       <Settings className="w-4 h-4" />
-      <span>Administration</span>
+      <span className="hidden md:inline">Administration</span>
     </button>
   );
 }
@@ -622,10 +625,11 @@ function LogoutButton() {
   return (
     <button
       onClick={signOut}
-      className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors"
+      className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors md:w-full"
+      title="Déconnexion"
     >
       <LogOut className="w-4 h-4" />
-      <span>Déconnexion</span>
+      <span className="hidden md:inline">Déconnexion</span>
     </button>
   );
 }

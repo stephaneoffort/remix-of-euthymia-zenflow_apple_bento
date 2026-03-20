@@ -88,6 +88,7 @@ export interface Space {
   icon: string;
   order: number;
   isPrivate: boolean;
+  ownerMemberId?: string | null;
 }
 
 export interface SpaceMember {

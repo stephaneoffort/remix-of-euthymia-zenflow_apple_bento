@@ -654,9 +654,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const space = spaces.find(s => s.id === spaceId);
     if (!space || !space.isPrivate) return true;
     if (!teamMemberId) return false;
-    return spaceMembers.some(sm => sm.spaceId === spaceId && sm.memberId === teamMemberId)
-      || spaceManagers.some(sm => sm.spaceId === spaceId && sm.memberId === teamMemberId);
-  }, [spaces, spaceMembers, spaceManagers, teamMemberId]);
+    // Private spaces: only the owner can see them
+    return space.ownerMemberId === teamMemberId;
+  }, [spaces, teamMemberId]);
 
   const isSpaceManagerFn = useCallback((spaceId: string) => {
     if (!teamMemberId) return false;

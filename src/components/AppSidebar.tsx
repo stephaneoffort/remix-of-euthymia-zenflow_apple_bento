@@ -148,12 +148,72 @@ export default function AppSidebar() {
   };
 
   if (sidebarCollapsed) {
+    const activeFilter = QUICK_FILTERS.find(f => f.key === quickFilter);
     return (
-      <div className="w-12 bg-sidebar-bg flex flex-col items-center py-3 border-r border-sidebar-border-color shrink-0">
-        <button onClick={() => setSidebarCollapsed(false)} className="p-1.5 rounded-md hover:bg-sidebar-hover text-sidebar-fg transition-colors">
-          <PanelLeft className="w-5 h-5" />
-        </button>
-      </div>
+      <TooltipProvider delayDuration={200}>
+        <div className="w-12 bg-sidebar-bg flex flex-col items-center py-3 border-r border-sidebar-border-color shrink-0 gap-1">
+          {/* Expand */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button onClick={() => setSidebarCollapsed(false)} className="p-2 rounded-md hover:bg-sidebar-hover text-sidebar-fg transition-colors">
+                <PanelLeft className="w-5 h-5" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Ouvrir la sidebar</TooltipContent>
+          </Tooltip>
+
+          <div className="w-6 border-t border-sidebar-border-color my-1" />
+
+          {/* Quick Filters */}
+          {QUICK_FILTERS.map(f => (
+            <Tooltip key={f.key}>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => {
+                    setQuickFilter(f.key);
+                    if (f.key === 'all') { setSelectedProjectId(null); setSelectedSpaceId(null); }
+                    else { setSelectedProjectId(null); }
+                  }}
+                  className={`relative p-2 rounded-md transition-colors ${
+                    quickFilter === f.key && !selectedProjectId
+                      ? 'bg-sidebar-active text-sidebar-fg-bright'
+                      : 'text-sidebar-fg hover:bg-sidebar-hover'
+                  }`}
+                >
+                  {f.icon}
+                  {f.key === 'overdue' && overdueCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-priority-urgent text-sidebar-fg-bright rounded-full text-[9px] flex items-center justify-center font-bold">
+                      {overdueCount > 9 ? '9+' : overdueCount}
+                    </span>
+                  )}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="right">{f.label}</TooltipContent>
+            </Tooltip>
+          ))}
+
+          <div className="w-6 border-t border-sidebar-border-color my-1" />
+
+          {/* Chat */}
+          <CollapsedChatIcon />
+
+          {/* Spacer */}
+          <div className="flex-1" />
+
+          {/* Settings */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => navigate('/settings')}
+                className="p-2 rounded-md hover:bg-sidebar-hover text-sidebar-fg transition-colors"
+              >
+                <Settings className="w-4.5 h-4.5" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Paramètres</TooltipContent>
+          </Tooltip>
+        </div>
+      </TooltipProvider>
     );
   }
 

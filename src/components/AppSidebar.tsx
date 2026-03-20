@@ -461,24 +461,27 @@ export default function AppSidebar() {
         <p className="text-xs font-semibold text-sidebar-fg uppercase tracking-wider mb-2">Équipe</p>
         <div className="flex gap-1 flex-wrap">
           {teamMembers.map(m => (
-            m.avatarUrl ? (
-              <img
-                key={m.id}
-                src={m.avatarUrl}
-                alt={m.name}
-                title={`${m.name} — ${m.role}`}
-                className="w-8 h-8 rounded-full object-cover cursor-default"
-              />
-            ) : (
-              <div
-                key={m.id}
-                title={`${m.name} — ${m.role}`}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold cursor-default"
-                style={{ backgroundColor: m.avatarColor, color: 'white' }}
-              >
-                {m.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-              </div>
-            )
+            <div key={m.id} className="relative">
+              {m.avatarUrl ? (
+                <img
+                  src={m.avatarUrl}
+                  alt={m.name}
+                  title={`${m.name} — ${m.role}`}
+                  className="w-8 h-8 rounded-full object-cover cursor-default"
+                />
+              ) : (
+                <div
+                  title={`${m.name} — ${m.role}`}
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold cursor-default"
+                  style={{ backgroundColor: m.avatarColor, color: 'white' }}
+                >
+                  {m.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                </div>
+              )}
+              {isOnline(m.id) && (
+                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-card rounded-full" />
+              )}
+            </div>
           ))}
         </div>
       </div>

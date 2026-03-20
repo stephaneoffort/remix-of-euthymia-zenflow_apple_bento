@@ -63,6 +63,10 @@ interface AppContextType extends AppState {
   getTaskBreadcrumb: (taskId: string) => Task[];
   setAdvancedFilters: (filters: AdvancedFilters) => void;
   getStatusLabel: (status: string) => string;
+  canAccessSpace: (spaceId: string) => boolean;
+  isSpaceManager: (spaceId: string) => boolean;
+  getSpaceManagers: (spaceId: string) => string[];
+  refreshSpaceAccess: () => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);

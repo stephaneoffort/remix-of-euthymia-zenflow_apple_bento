@@ -635,9 +635,7 @@ function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {
                   onClick={e => { e.stopPropagation(); updateTask(st.id, { status: st.status === 'done' ? 'todo' : 'done' }); }}
                   className="shrink-0"
                 >
-                  {st.status === 'done'
-                    ? <CheckCircle className="w-4 h-4 text-status-done" />
-                    : <Circle className="w-4 h-4 text-muted-foreground hover:text-primary" />}
+                  <StatusCircle status={st.status} />
                 </button>
                 <span
                   className={`flex-1 text-left text-sm truncate ${st.status === 'done' ? 'line-through text-muted-foreground' : 'text-foreground'} hover:text-primary transition-colors min-w-0`}

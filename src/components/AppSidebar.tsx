@@ -47,7 +47,7 @@ export default function AppSidebar() {
   const {
     spaces, selectedProjectId, setSelectedProjectId,
     selectedView, setSelectedView, quickFilter, setQuickFilter,
-    getProjectsForSpace, teamMembers, sidebarCollapsed, setSidebarCollapsed,
+    getProjectsForSpace, getTasksForProject, teamMembers, sidebarCollapsed, setSidebarCollapsed,
     tasks, addSpace, addProject, renameSpace, renameProject, deleteSpace, deleteProject,
     reorderSpaces, reorderProjects, canAccessSpace, isSpaceManager, getSpaceManagers, refreshSpaceAccess,
   } = useApp();

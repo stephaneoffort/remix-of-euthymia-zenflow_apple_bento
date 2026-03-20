@@ -24,15 +24,16 @@ const QUICK_FILTER_TITLES: Record<string, string> = {
 };
 
 export default function Index() {
-  const { selectedProjectId, selectedView, quickFilter, selectedTaskId, projects, sidebarCollapsed, setSidebarCollapsed, advancedFilters } = useApp();
+  const { selectedProjectId, selectedSpaceId, selectedView, quickFilter, selectedTaskId, projects, spaces, sidebarCollapsed, setSidebarCollapsed, advancedFilters } = useApp();
   const isMobile = useIsMobile();
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
 
   const project = projects.find(p => p.id === selectedProjectId);
+  const space = spaces.find(s => s.id === selectedSpaceId);
   const title = quickFilter !== 'all'
     ? QUICK_FILTER_TITLES[quickFilter]
-    : project?.name || 'Toutes les tâches';
+    : project?.name || space?.name || 'Toutes les tâches';
 
   const hasActiveFilters =
     advancedFilters.statuses.length > 0 ||

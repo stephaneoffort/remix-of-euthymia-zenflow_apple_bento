@@ -641,6 +641,30 @@ export default function AppSidebar() {
   );
 }
 
+function CollapsedChatIcon() {
+  const navigate = useNavigate();
+  const { totalUnread } = useChatNotifications();
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          onClick={() => navigate('/chat')}
+          className="relative p-2 rounded-md hover:bg-sidebar-hover text-sidebar-fg transition-colors"
+        >
+          <MessageCircle className="w-4.5 h-4.5" />
+          {totalUnread > 0 && (
+            <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-primary text-primary-foreground rounded-full text-[9px] flex items-center justify-center font-bold">
+              {totalUnread > 9 ? '9+' : totalUnread}
+            </span>
+          )}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="right">Chat d'équipe{totalUnread > 0 ? ` (${totalUnread})` : ''}</TooltipContent>
+    </Tooltip>
+  );
+}
+
 function ChatLink({ handleNavClick }: { handleNavClick: () => void }) {
   const navigate = useNavigate();
   const { totalUnread } = useChatNotifications();

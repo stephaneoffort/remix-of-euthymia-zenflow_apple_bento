@@ -3,6 +3,7 @@ import { useApp } from '@/context/AppContext';
 import { Task } from '@/types';
 import { PriorityBadge, AvatarGroup, SubtaskProgress } from '@/components/TaskBadges';
 import { Plus, GripVertical, GripHorizontal, ChevronRight } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const STATUS_COLORS: Record<string, string> = {
   todo: 'bg-status-todo',

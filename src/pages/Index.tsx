@@ -131,14 +131,21 @@ export default function Index() {
                   {filtersVisible ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                 </button>
               )}
-              <button
-                onClick={() => setSuggestionsOpen(true)}
-                className="inline-flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-md bg-primary/10 text-primary text-xs sm:text-sm font-medium hover:bg-primary/20 transition-colors shrink-0 active:scale-[0.97]"
-              >
-                <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                <span className="hidden sm:inline">Suggestions IA</span>
-                <span className="sm:hidden">IA</span>
-              </button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => setSuggestionsOpen(true)}
+                    className="inline-flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-md bg-primary/10 text-primary text-xs sm:text-sm font-medium hover:bg-primary/20 transition-colors shrink-0 active:scale-[0.97]"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Proposer des tâches</span>
+                    <span className="sm:hidden">IA</span>
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  Générer des suggestions de tâches basées sur votre projet
+                </TooltipContent>
+              </Tooltip>
             </div>
           </div>
           {/* Filters - always visible on desktop, collapsible on mobile */}

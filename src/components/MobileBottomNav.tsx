@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutGrid, List, Calendar, BarChart3, MessageCircle, Menu, Plus, Filter, Home, GitFork } from 'lucide-react';
+import { LayoutGrid, List, Calendar, BarChart3, MessageCircle, Menu, Plus, Filter, Home, Network } from 'lucide-react';
 import { ViewType } from '@/types';
 import { useChatNotifications } from '@/hooks/useChatNotifications';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -11,7 +11,7 @@ const VIEW_ICONS: Record<ViewType, React.ReactNode> = {
   list: <List className="w-5 h-5" />,
   calendar: <Calendar className="w-5 h-5" />,
   workload: <BarChart3 className="w-5 h-5" />,
-  mindmap: <GitFork className="w-5 h-5" />,
+  mindmap: <Network className="w-5 h-5" />,
 };
 
 const VIEW_LABELS: Record<ViewType, string> = {
@@ -19,7 +19,7 @@ const VIEW_LABELS: Record<ViewType, string> = {
   list: 'Liste',
   calendar: 'Agenda',
   workload: 'Charge',
-  mindmap: 'Carte',
+  mindmap: 'Mind Map',
 };
 
 export default function MobileBottomNav() {

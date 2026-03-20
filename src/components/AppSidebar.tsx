@@ -49,7 +49,7 @@ export default function AppSidebar() {
     selectedView, setSelectedView, quickFilter, setQuickFilter,
     getProjectsForSpace, teamMembers, sidebarCollapsed, setSidebarCollapsed,
     tasks, addSpace, addProject, renameSpace, renameProject, deleteSpace, deleteProject,
-    reorderSpaces, reorderProjects,
+    reorderSpaces, reorderProjects, canAccessSpace, isSpaceManager, getSpaceManagers, refreshSpaceAccess,
   } = useApp();
   const isMobile = useIsMobile();
   const navigate = useNavigate();

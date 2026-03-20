@@ -8,20 +8,39 @@ import { generateGoogleCalendarUrl, generateOutlookCalendarUrl, generateYahooCal
 import { supabase } from '@/integrations/supabase/client';
 import TaskChecklist from '@/components/TaskChecklist';
 import RichTextEditor, { RichTextDisplay } from '@/components/RichTextEditor';
-// Convert ISO/timestamp string to datetime-local input value (YYYY-MM-DDTHH:mm)
-function toDatetimeLocal(isoStr: string): string {
+// Format date for display
+function formatDateDisplay(isoStr: string): string {
   const d = new Date(isoStr);
-  if (isNaN(d.getTime())) return isoStr.slice(0, 16); // fallback for YYYY-MM-DD
+  if (isNaN(d.getTime())) return isoStr;
   const pad = (n: number) => n.toString().padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
 }
 
-// Parse datetime-local value, defaulting time to midnight if only date part changes
-function parseDateInput(value: string): string | null {
-  if (!value) return null;
-  // If the value has no time part (e.g. from date-only input), append midnight
-  const normalized = value.includes('T') ? value : `${value}T00:00`;
-  return new Date(normalized).toISOString();
+// Format time for input (HH:mm)
+function formatTimeValue(isoStr: string): string {
+  const d = new Date(isoStr);
+  if (isNaN(d.getTime())) return '00:00';
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+// Check if a date has a non-midnight time
+function hasTime(isoStr: string | null | undefined): boolean {
+  if (!isoStr) return false;
+  const d = new Date(isoStr);
+  return d.getHours() !== 0 || d.getMinutes() !== 0;
+}
+
+// Build ISO from date + optional time
+function buildISO(date: Date, time?: string): string {
+  const d = new Date(date);
+  if (time) {
+    const [h, m] = time.split(':').map(Number);
+    d.setHours(h, m, 0, 0);
+  } else {
+    d.setHours(0, 0, 0, 0);
+  }
+  return d.toISOString();
 }
 
 

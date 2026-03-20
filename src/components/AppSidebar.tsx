@@ -331,16 +331,24 @@ export default function AppSidebar() {
                     />
                   ) : (
                     <span
-                      className="flex-1 font-medium text-sm text-sidebar-fg cursor-pointer truncate"
+                      className="flex-1 font-medium text-sm text-sidebar-fg cursor-pointer truncate flex items-center gap-1"
                       onDoubleClick={() => {
                         setEditingSpaceId(space.id);
                         setEditingSpaceName(space.name);
                       }}
                     >
                       {space.name}
+                      {space.isPrivate && <Lock className="w-3 h-3 text-sidebar-fg shrink-0" />}
                     </span>
                   )}
                   <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-all mr-1">
+                    <button
+                      onClick={() => setAccessDialogSpace({ id: space.id, name: space.name, isPrivate: space.isPrivate })}
+                      className="p-1 rounded hover:bg-sidebar-hover text-sidebar-fg"
+                      title="Gérer les accès"
+                    >
+                      <Shield className="w-3.5 h-3.5" />
+                    </button>
                     <button
                       onClick={() => setAddingProjectForSpace(space.id)}
                       className="p-1 rounded hover:bg-sidebar-hover text-sidebar-fg"

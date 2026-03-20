@@ -629,6 +629,13 @@ function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {
                   placeholder="Sous-tâche..."
                   className="flex-1 text-sm bg-muted/50 border border-border rounded-md px-2.5 py-1 outline-none min-w-0"
                 />
+                <button
+                  onClick={() => handleAdd(st.id)}
+                  disabled={!newTitle.trim()}
+                  className="p-1.5 rounded-md bg-primary text-primary-foreground disabled:opacity-50"
+                >
+                  <Send className="w-4 h-4" />
+                </button>
               </div>
             )}
 

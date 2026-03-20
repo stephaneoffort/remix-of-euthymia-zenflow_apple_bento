@@ -425,22 +425,85 @@ export type Database = {
           },
         ]
       }
+      space_managers: {
+        Row: {
+          member_id: string
+          space_id: string
+        }
+        Insert: {
+          member_id: string
+          space_id: string
+        }
+        Update: {
+          member_id?: string
+          space_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "space_managers_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "space_managers_space_id_fkey"
+            columns: ["space_id"]
+            isOneToOne: false
+            referencedRelation: "spaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      space_members: {
+        Row: {
+          member_id: string
+          space_id: string
+        }
+        Insert: {
+          member_id: string
+          space_id: string
+        }
+        Update: {
+          member_id?: string
+          space_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "space_members_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "space_members_space_id_fkey"
+            columns: ["space_id"]
+            isOneToOne: false
+            referencedRelation: "spaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       spaces: {
         Row: {
           icon: string
           id: string
+          is_private: boolean
           name: string
           sort_order: number
         }
         Insert: {
           icon: string
           id: string
+          is_private?: boolean
           name: string
           sort_order?: number
         }
         Update: {
           icon?: string
           id?: string
+          is_private?: boolean
           name?: string
           sort_order?: number
         }
@@ -627,11 +690,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_access_space: {
+        Args: { _member_id: string; _space_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_space_manager: {
+        Args: { _member_id: string; _space_id: string }
         Returns: boolean
       }
     }

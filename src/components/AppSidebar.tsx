@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
-import { ChevronRight, ChevronDown, LayoutGrid, List, Calendar, BarChart3, GitFork, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle } from 'lucide-react';
+import { ChevronRight, ChevronDown, LayoutGrid, List, Calendar, BarChart3, GitFork, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle, Shield, Crown, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { QuickFilter, ViewType } from '@/types';
 import { useChatNotifications } from '@/hooks/useChatNotifications';
 import { usePresence } from '@/hooks/usePresence';
+import SpaceAccessDialog from '@/components/SpaceAccessDialog';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -48,7 +49,7 @@ export default function AppSidebar() {
     selectedView, setSelectedView, quickFilter, setQuickFilter,
     getProjectsForSpace, teamMembers, sidebarCollapsed, setSidebarCollapsed,
     tasks, addSpace, addProject, renameSpace, renameProject, deleteSpace, deleteProject,
-    reorderSpaces, reorderProjects,
+    reorderSpaces, reorderProjects, canAccessSpace, isSpaceManager, getSpaceManagers, refreshSpaceAccess,
   } = useApp();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
@@ -67,6 +68,10 @@ export default function AppSidebar() {
   const [editingProjectName, setEditingProjectName] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState<{ type: 'space' | 'project'; id: string; name: string } | null>(null);
   const [filtersExpanded, setFiltersExpanded] = useState(!isMobile);
+  const [accessDialogSpace, setAccessDialogSpace] = useState<{ id: string; name: string; isPrivate: boolean } | null>(null);
+
+  // Filter spaces based on access
+  const visibleSpaces = spaces.filter(s => canAccessSpace(s.id));
 
   useEffect(() => {
     if (isMobile) setSidebarCollapsed(true);
@@ -291,8 +296,8 @@ export default function AppSidebar() {
           collisionDetection={closestCenter}
           onDragEnd={handleSpaceDragEnd}
         >
-          <SortableContext items={spaces.map(s => s.id)} strategy={verticalListSortingStrategy}>
-            {spaces.map(space => (
+          <SortableContext items={visibleSpaces.map(s => s.id)} strategy={verticalListSortingStrategy}>
+            {visibleSpaces.map(space => (
               <SortableSpace key={space.id} space={space}>
                 <div className="flex items-center group">
                   <button
@@ -326,16 +331,24 @@ export default function AppSidebar() {
                     />
                   ) : (
                     <span
-                      className="flex-1 font-medium text-sm text-sidebar-fg cursor-pointer truncate"
+                      className="flex-1 font-medium text-sm text-sidebar-fg cursor-pointer truncate flex items-center gap-1"
                       onDoubleClick={() => {
                         setEditingSpaceId(space.id);
                         setEditingSpaceName(space.name);
                       }}
                     >
                       {space.name}
+                      {space.isPrivate && <Lock className="w-3 h-3 text-sidebar-fg shrink-0" />}
                     </span>
                   )}
                   <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-all mr-1">
+                    <button
+                      onClick={() => setAccessDialogSpace({ id: space.id, name: space.name, isPrivate: space.isPrivate })}
+                      className="p-1 rounded hover:bg-sidebar-hover text-sidebar-fg"
+                      title="Gérer les accès"
+                    >
+                      <Shield className="w-3.5 h-3.5" />
+                    </button>
                     <button
                       onClick={() => setAddingProjectForSpace(space.id)}
                       className="p-1 rounded hover:bg-sidebar-hover text-sidebar-fg"
@@ -541,6 +554,18 @@ export default function AppSidebar() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Space access dialog */}
+      {accessDialogSpace && (
+        <SpaceAccessDialog
+          open={!!accessDialogSpace}
+          onOpenChange={(open) => { if (!open) setAccessDialogSpace(null); }}
+          spaceId={accessDialogSpace.id}
+          spaceName={accessDialogSpace.name}
+          isPrivate={accessDialogSpace.isPrivate}
+          onUpdate={refreshSpaceAccess}
+        />
+      )}
     </div>
     </>
   );

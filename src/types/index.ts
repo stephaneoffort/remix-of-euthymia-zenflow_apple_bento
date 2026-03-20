@@ -87,6 +87,17 @@ export interface Space {
   name: string;
   icon: string;
   order: number;
+  isPrivate: boolean;
+}
+
+export interface SpaceMember {
+  spaceId: string;
+  memberId: string;
+}
+
+export interface SpaceManager {
+  spaceId: string;
+  memberId: string;
 }
 
 export type ViewType = 'kanban' | 'list' | 'calendar' | 'workload' | 'mindmap';

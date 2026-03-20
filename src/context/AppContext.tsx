@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
-import { Task, Space, Project, TaskList, TeamMember, ViewType, QuickFilter, Status, Priority, Comment, Attachment, CustomStatus, DEFAULT_STATUSES, STATUS_LABELS } from '@/types';
+import { Task, Space, Project, TaskList, TeamMember, ViewType, QuickFilter, Status, Priority, Comment, Attachment, CustomStatus, DEFAULT_STATUSES, STATUS_LABELS, SpaceMember, SpaceManager } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -22,6 +22,8 @@ interface AppState {
   teamMembers: TeamMember[];
   customStatuses: CustomStatus[];
   allStatuses: string[];
+  spaceMembers: SpaceMember[];
+  spaceManagers: SpaceManager[];
   selectedProjectId: string | null;
   selectedView: ViewType;
   quickFilter: QuickFilter;
@@ -61,6 +63,10 @@ interface AppContextType extends AppState {
   getTaskBreadcrumb: (taskId: string) => Task[];
   setAdvancedFilters: (filters: AdvancedFilters) => void;
   getStatusLabel: (status: string) => string;
+  canAccessSpace: (spaceId: string) => boolean;
+  isSpaceManager: (spaceId: string) => boolean;
+  getSpaceManagers: (spaceId: string) => string[];
+  refreshSpaceAccess: () => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -105,7 +111,27 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     queryFn: async () => {
       const { data, error } = await supabase.from('spaces').select('*').order('sort_order');
       if (error) throw error;
-      return data.map(s => ({ id: s.id, name: s.name, icon: s.icon, order: s.sort_order })) as Space[];
+      return data.map(s => ({ id: s.id, name: s.name, icon: s.icon, order: s.sort_order, isPrivate: (s as any).is_private ?? false })) as Space[];
+    },
+  });
+
+  // Fetch space members
+  const { data: spaceMembers = [], refetch: refetchSpaceMembers } = useQuery({
+    queryKey: ['space_members'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('space_members').select('*');
+      if (error) throw error;
+      return data.map(r => ({ spaceId: r.space_id, memberId: r.member_id })) as SpaceMember[];
+    },
+  });
+
+  // Fetch space managers
+  const { data: spaceManagers = [], refetch: refetchSpaceManagers } = useQuery({
+    queryKey: ['space_managers'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('space_managers').select('*');
+      if (error) throw error;
+      return data.map(r => ({ spaceId: r.space_id, memberId: r.member_id })) as SpaceManager[];
     },
   });
 
@@ -624,6 +650,29 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     return filtered;
   }, [tasks, selectedProjectId, quickFilter, lists, teamMemberId, advancedFilters]);
 
+  const canAccessSpace = useCallback((spaceId: string) => {
+    const space = spaces.find(s => s.id === spaceId);
+    if (!space || !space.isPrivate) return true;
+    if (!teamMemberId) return false;
+    return spaceMembers.some(sm => sm.spaceId === spaceId && sm.memberId === teamMemberId)
+      || spaceManagers.some(sm => sm.spaceId === spaceId && sm.memberId === teamMemberId);
+  }, [spaces, spaceMembers, spaceManagers, teamMemberId]);
+
+  const isSpaceManagerFn = useCallback((spaceId: string) => {
+    if (!teamMemberId) return false;
+    return spaceManagers.some(sm => sm.spaceId === spaceId && sm.memberId === teamMemberId);
+  }, [spaceManagers, teamMemberId]);
+
+  const getSpaceManagersFn = useCallback((spaceId: string) => {
+    return spaceManagers.filter(sm => sm.spaceId === spaceId).map(sm => sm.memberId);
+  }, [spaceManagers]);
+
+  const refreshSpaceAccess = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['spaces'] });
+    queryClient.invalidateQueries({ queryKey: ['space_members'] });
+    queryClient.invalidateQueries({ queryKey: ['space_managers'] });
+  }, [queryClient]);
+
   const value = useMemo(() => ({
     spaces,
     projects,
@@ -632,6 +681,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     teamMembers,
     customStatuses,
     allStatuses,
+    spaceMembers,
+    spaceManagers,
     selectedProjectId,
     selectedView,
     quickFilter,
@@ -668,7 +719,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     getMemberById,
     getTaskBreadcrumb,
     getStatusLabel,
-  }), [spaces, projects, lists, tasks, teamMembers, customStatuses, allStatuses, selectedProjectId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, addTask, updateTask, deleteTask, addAttachment, deleteAttachment, moveTask, addSpace, addProject, renameSpace, renameProject, deleteSpace, deleteProject, reorderSpaces, reorderProjects, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb, getStatusLabel]);
+    canAccessSpace,
+    isSpaceManager: isSpaceManagerFn,
+    getSpaceManagers: getSpaceManagersFn,
+    refreshSpaceAccess,
+  }), [spaces, projects, lists, tasks, teamMembers, customStatuses, allStatuses, spaceMembers, spaceManagers, selectedProjectId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, addTask, updateTask, deleteTask, addAttachment, deleteAttachment, moveTask, addSpace, addProject, renameSpace, renameProject, deleteSpace, deleteProject, reorderSpaces, reorderProjects, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb, getStatusLabel, canAccessSpace, isSpaceManagerFn, getSpaceManagersFn, refreshSpaceAccess]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

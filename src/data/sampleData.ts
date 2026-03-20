@@ -9,10 +9,10 @@ export const TEAM_MEMBERS: TeamMember[] = [
 ];
 
 export const SPACES: Space[] = [
-  { id: 'sp1', name: 'Euthymia', icon: '🧘', order: 0 },
-  { id: 'sp2', name: 'Formations', icon: '📚', order: 1 },
-  { id: 'sp3', name: 'Communication', icon: '📢', order: 2 },
-  { id: 'sp4', name: 'Admin', icon: '⚙️', order: 3 },
+  { id: 'sp1', name: 'Euthymia', icon: '🧘', order: 0, isPrivate: false },
+  { id: 'sp2', name: 'Formations', icon: '📚', order: 1, isPrivate: false },
+  { id: 'sp3', name: 'Communication', icon: '📢', order: 2, isPrivate: false },
+  { id: 'sp4', name: 'Admin', icon: '⚙️', order: 3, isPrivate: false },
 ];
 
 export const PROJECTS: Project[] = [

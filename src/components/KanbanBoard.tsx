@@ -133,6 +133,16 @@ export default function KanbanBoard() {
 
   const collapsedStatuses = columnOrder.filter(s => collapsedColumns.has(s));
   const expandedStatuses = columnOrder.filter(s => !collapsedColumns.has(s));
+  const allCollapsed = collapsedStatuses.length === columnOrder.length;
+  const allExpanded = collapsedStatuses.length === 0;
+
+  const toggleAll = () => {
+    if (allExpanded) {
+      setCollapsedColumns(new Set(columnOrder));
+    } else {
+      setCollapsedColumns(new Set());
+    }
+  };
 
   const renderCollapsedColumn = (status: string) => {
     const count = tasksByStatus[status]?.length || 0;

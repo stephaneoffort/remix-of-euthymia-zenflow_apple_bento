@@ -130,7 +130,7 @@ export default function RichTextEditor({
     if (content === currentHtml || content === lastSyncedContentRef.current) return;
 
     const { from, to } = editor.state.selection;
-    editor.commands.setContent(content || '<p></p>', false);
+    editor.commands.setContent(content || '<p></p>', { emitUpdate: false });
     lastSyncedContentRef.current = editor.getHTML();
 
     if (editor.isFocused) {

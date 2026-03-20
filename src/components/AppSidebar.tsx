@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { ChevronRight, ChevronDown, LayoutGrid, List, Calendar, BarChart3, GitFork, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/context/AppContext';
@@ -609,28 +610,46 @@ function AdminSettingsLink() {
   if (!isAdmin) return null;
 
   return (
-    <button
-      onClick={() => navigate('/settings')}
-      className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors md:w-full"
-      title="Administration"
-    >
-      <Settings className="w-4 h-4" />
-      <span className="hidden md:inline">Administration</span>
-    </button>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            onClick={() => navigate('/settings')}
+            className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors md:w-full"
+            title="Administration"
+          >
+            <Settings className="w-4 h-4" />
+            <span className="hidden md:inline">Administration</span>
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="md:hidden">
+          Administration
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
 
 function LogoutButton() {
   const { signOut } = useAuth();
   return (
-    <button
-      onClick={signOut}
-      className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors md:w-full"
-      title="Déconnexion"
-    >
-      <LogOut className="w-4 h-4" />
-      <span className="hidden md:inline">Déconnexion</span>
-    </button>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            onClick={signOut}
+            className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors md:w-full"
+            title="Déconnexion"
+          >
+            <LogOut className="w-4 h-4" />
+            <span className="hidden md:inline">Déconnexion</span>
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="md:hidden">
+          Déconnexion
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
 

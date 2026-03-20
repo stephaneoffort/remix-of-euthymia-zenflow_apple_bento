@@ -22,6 +22,8 @@ interface AppState {
   teamMembers: TeamMember[];
   customStatuses: CustomStatus[];
   allStatuses: string[];
+  spaceMembers: SpaceMember[];
+  spaceManagers: SpaceManager[];
   selectedProjectId: string | null;
   selectedView: ViewType;
   quickFilter: QuickFilter;

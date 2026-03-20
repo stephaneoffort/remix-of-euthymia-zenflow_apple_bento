@@ -78,6 +78,10 @@ export default function TaskSuggestions({ open, onClose }: TaskSuggestionsProps)
       parentTaskId: null,
       timeEstimate: null,
       timeLogged: null,
+      assigneeIds: [],
+      comments: [],
+      attachments: [],
+      aiSummary: null,
     });
     setAdded(prev => new Set(prev).add(idx));
     toast.success(`Tâche "${suggestion.title}" ajoutée !`);

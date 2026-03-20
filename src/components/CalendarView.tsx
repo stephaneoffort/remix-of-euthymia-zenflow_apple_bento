@@ -4,8 +4,42 @@ import { ChevronLeft, ChevronRight, Plus, Download, Calendar as CalendarIcon } f
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { PRIORITY_LABELS, type Task } from '@/types';
+
+function MonthYearPicker({ year, month, onSelect }: { year: number; month: number; onSelect: (year: number, month: number) => void }) {
+  const [pickerYear, setPickerYear] = useState(year);
+
+  return (
+    <div className="p-3 w-64">
+      <div className="flex items-center justify-between mb-3">
+        <button onClick={() => setPickerYear(y => y - 1)} className="p-1 hover:bg-muted rounded transition-colors">
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+        <span className="text-sm font-bold text-foreground">{pickerYear}</span>
+        <button onClick={() => setPickerYear(y => y + 1)} className="p-1 hover:bg-muted rounded transition-colors">
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+      <div className="grid grid-cols-3 gap-1.5">
+        {MONTHS_FR_SHORT.map((m, i) => (
+          <button
+            key={i}
+            onClick={() => onSelect(pickerYear, i)}
+            className={`px-2 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              i === month && pickerYear === year
+                ? 'bg-primary text-primary-foreground'
+                : 'hover:bg-muted text-foreground'
+            }`}
+          >
+            {m}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 import {
   DndContext,
   DragOverlay,
@@ -310,9 +344,25 @@ export default function CalendarView() {
       <div className="flex flex-col h-full">
         {/* Header */}
         <div className="flex items-center justify-between px-3 py-2">
-          <h2 className="text-sm font-bold text-foreground">
-            {MONTHS_FR_SHORT[selectedDay.getMonth()]} {selectedDay.getFullYear()}
-          </h2>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="text-sm font-bold text-foreground hover:text-primary transition-colors">
+                {MONTHS_FR_SHORT[selectedDay.getMonth()]} {selectedDay.getFullYear()}
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <MonthYearPicker
+                year={selectedDay.getFullYear()}
+                month={selectedDay.getMonth()}
+                onSelect={(y, m) => {
+                  const d = new Date(selectedDay);
+                  d.setFullYear(y);
+                  d.setMonth(m);
+                  setSelectedDay(d);
+                }}
+              />
+            </PopoverContent>
+          </Popover>
           <div className="flex items-center gap-1">
             <button onClick={exportToICS} className="p-1.5 hover:bg-muted rounded-md transition-colors">
               <Download className="w-4 h-4 text-muted-foreground" />
@@ -421,7 +471,20 @@ export default function CalendarView() {
   return (
     <div className="p-6 h-full flex flex-col">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold text-foreground">{monthLabel} {year}</h2>
+        <Popover>
+          <PopoverTrigger asChild>
+            <button className="text-lg font-bold text-foreground hover:text-primary transition-colors">
+              {monthLabel} {year}
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <MonthYearPicker
+              year={year}
+              month={month}
+              onSelect={(y, m) => setCurrentDate(new Date(y, m, 1))}
+            />
+          </PopoverContent>
+        </Popover>
         <div className="flex items-center gap-2">
           <Tooltip>
             <TooltipTrigger asChild>

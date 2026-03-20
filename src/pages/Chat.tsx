@@ -720,6 +720,8 @@ export default function Chat() {
                             <source src={msg.attachment_url} />
                           </audio>
                         </div>
+                      isAudioAttachment(msg.attachment_name) ? (
+                        <AudioMessage url={msg.attachment_url!} />
                       ) : (
                         <a
                           href={msg.attachment_url}

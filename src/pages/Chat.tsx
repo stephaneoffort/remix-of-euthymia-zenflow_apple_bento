@@ -317,6 +317,9 @@ export default function Chat() {
         .on('postgres_changes', { event: '*', schema: 'public', table: 'direct_messages', filter: `conversation_id=eq.${selectedConversation}` }, () => {
           queryClient.invalidateQueries({ queryKey: ['direct_messages', selectedConversation] });
         })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'dm_reactions' }, () => {
+          queryClient.invalidateQueries({ queryKey: ['dm_reactions', selectedConversation] });
+        })
         .subscribe();
       return () => { supabase.removeChannel(channel); };
     }

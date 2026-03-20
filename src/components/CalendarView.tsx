@@ -86,9 +86,10 @@ function DraggableTask({ task, onClick, members }: { task: Task; onClick: () => 
           {...listeners}
           {...attributes}
           onClick={(e) => { e.stopPropagation(); onClick(); }}
-          className={`text-[11px] px-1.5 py-0.5 rounded bg-primary/10 text-primary truncate cursor-grab hover:bg-primary/20 transition-colors ${isDragging ? 'opacity-30' : ''}`}
+          className={`text-[11px] px-1.5 py-0.5 rounded bg-primary/10 text-primary truncate cursor-grab hover:bg-primary/20 transition-colors flex items-center gap-1 ${isDragging ? 'opacity-30' : ''}`}
         >
-          {task.title}
+          {task.recurrence && <Repeat className="w-3 h-3 shrink-0" />}
+          <span className="truncate">{task.title}</span>
         </div>
       </HoverCardTrigger>
       <HoverCardContent side="right" align="start" className="w-64 p-3 space-y-2 text-xs z-50">

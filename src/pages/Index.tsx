@@ -95,6 +95,23 @@ export default function Index() {
               </div>
             </div>
             <div className="flex items-center gap-1.5">
+              {/* Search button */}
+              <button
+                onClick={() => setSearchOpen(true)}
+                className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-border bg-muted/30 text-muted-foreground text-xs hover:bg-muted hover:text-foreground transition-colors"
+              >
+                <Search className="w-3.5 h-3.5" />
+                <span>Rechercher…</span>
+                <kbd className="ml-2 px-1.5 py-0.5 text-[10px] font-medium bg-background rounded border border-border">⌘K</kbd>
+              </button>
+              {isMobile && (
+                <button
+                  onClick={() => setSearchOpen(true)}
+                  className="p-1.5 rounded-md hover:bg-muted text-muted-foreground transition-colors"
+                >
+                  <Search className="w-4 h-4" />
+                </button>
+              )}
               {/* Mobile filter toggle */}
               {isMobile && (
                 <button

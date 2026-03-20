@@ -297,9 +297,21 @@ export default function KanbanBoard() {
 
   return (
     <div className="flex flex-col h-full">
+      {/* Toggle all button */}
+      <div className="flex justify-end px-3 sm:px-6 pt-2 sm:pt-4">
+        <button
+          onClick={toggleAll}
+          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
+          title={allExpanded ? 'Tout réduire' : 'Tout déplier'}
+        >
+          {allExpanded ? <ChevronsRightLeft className="w-3.5 h-3.5" /> : <ChevronsLeftRight className="w-3.5 h-3.5" />}
+          {allExpanded ? 'Tout réduire' : 'Tout déplier'}
+        </button>
+      </div>
+
       {/* Mobile: collapsed columns stacked vertically */}
       {isMobile && collapsedStatuses.length > 0 && (
-        <div className="flex flex-col gap-1.5 px-3 pt-3">
+        <div className="flex flex-col gap-1.5 px-3 pt-2">
           {collapsedStatuses.map(renderCollapsedColumn)}
         </div>
       )}

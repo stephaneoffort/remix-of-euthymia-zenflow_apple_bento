@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
-import { Filter, X, ChevronDown } from 'lucide-react';
-import { useApp } from '@/context/AppContext';
+import { Filter, X, ChevronDown, Bookmark, Save, Trash2, Check } from 'lucide-react';
+import { useApp, AdvancedFilters } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { Priority, PRIORITY_LABELS } from '@/types';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import {
   Popover,
   PopoverContent,
@@ -10,9 +14,22 @@ import {
 
 type FilterType = 'status' | 'priority' | 'assignee' | 'tag';
 
+interface FilterPreset {
+  id: string;
+  name: string;
+  filters: AdvancedFilters;
+  member_id: string;
+  created_at: string;
+}
+
 export default function TaskFilterBar() {
   const { advancedFilters, setAdvancedFilters, teamMembers, tasks, allStatuses, getStatusLabel } = useApp();
+  const { teamMemberId } = useAuth();
+  const queryClient = useQueryClient();
   const [openFilter, setOpenFilter] = useState<FilterType | null>(null);
+  const [presetsOpen, setPresetsOpen] = useState(false);
+  const [savingName, setSavingName] = useState('');
+  const [showSaveInput, setShowSaveInput] = useState(false);
 
   const allPriorities: Priority[] = ['urgent', 'high', 'normal', 'low'];
   const allTags = Array.from(new Set(tasks.flatMap(t => t.tags))).sort();
@@ -22,6 +39,53 @@ export default function TaskFilterBar() {
     advancedFilters.priorities.length > 0 ||
     advancedFilters.assigneeIds.length > 0 ||
     advancedFilters.tags.length > 0;
+
+  // Fetch presets
+  const { data: presets = [] } = useQuery<FilterPreset[]>({
+    queryKey: ['filter-presets'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('filter_presets')
+        .select('*')
+        .order('created_at', { ascending: true });
+      if (error) throw error;
+      return (data || []).map((p: any) => ({
+        ...p,
+        filters: p.filters as AdvancedFilters,
+      }));
+    },
+  });
+
+  // Save preset
+  const savePresetMutation = useMutation({
+    mutationFn: async (name: string) => {
+      const { error } = await supabase.from('filter_presets').insert({
+        name,
+        filters: advancedFilters as any,
+        member_id: teamMemberId || 'unknown',
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['filter-presets'] });
+      toast.success('Préset sauvegardé');
+      setSavingName('');
+      setShowSaveInput(false);
+    },
+    onError: () => toast.error('Erreur lors de la sauvegarde'),
+  });
+
+  // Delete preset
+  const deletePresetMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('filter_presets').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['filter-presets'] });
+      toast.success('Préset supprimé');
+    },
+  });
 
   const toggleValue = (key: keyof typeof advancedFilters, value: string) => {
     const current = advancedFilters[key] as string[];
@@ -35,8 +99,105 @@ export default function TaskFilterBar() {
     setAdvancedFilters({ statuses: [], priorities: [], assigneeIds: [], tags: [] });
   };
 
+  const applyPreset = (preset: FilterPreset) => {
+    setAdvancedFilters(preset.filters);
+    setPresetsOpen(false);
+  };
+
+  const handleSavePreset = () => {
+    const name = savingName.trim();
+    if (!name) return;
+    savePresetMutation.mutate(name);
+  };
+
+  const isPresetActive = (preset: FilterPreset) => {
+    const f = preset.filters;
+    return (
+      JSON.stringify(f.statuses?.sort()) === JSON.stringify([...advancedFilters.statuses].sort()) &&
+      JSON.stringify(f.priorities?.sort()) === JSON.stringify([...advancedFilters.priorities].sort()) &&
+      JSON.stringify(f.assigneeIds?.sort()) === JSON.stringify([...advancedFilters.assigneeIds].sort()) &&
+      JSON.stringify(f.tags?.sort()) === JSON.stringify([...advancedFilters.tags].sort())
+    );
+  };
+
   return (
     <div className="flex items-center gap-2 flex-wrap">
+      {/* Presets button */}
+      <Popover open={presetsOpen} onOpenChange={(o) => { setPresetsOpen(o); if (!o) setShowSaveInput(false); }}>
+        <PopoverTrigger asChild>
+          <button
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium border transition-colors ${
+              presets.some(p => isPresetActive(p))
+                ? 'border-accent bg-accent/10 text-accent-foreground'
+                : 'border-border bg-card text-muted-foreground hover:text-foreground hover:border-foreground/20'
+            }`}
+          >
+            <Bookmark className="w-3 h-3 shrink-0" />
+            <span>Présets</span>
+            <ChevronDown className="w-3 h-3 shrink-0" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-56 p-1" align="start">
+          <div className="max-h-64 overflow-y-auto">
+            {presets.length === 0 && !showSaveInput && (
+              <p className="text-xs text-muted-foreground px-2.5 py-2">Aucun préset sauvegardé</p>
+            )}
+            {presets.map(preset => (
+              <div
+                key={preset.id}
+                className={`flex items-center gap-1 group rounded-md transition-colors ${
+                  isPresetActive(preset) ? 'bg-primary/10' : 'hover:bg-muted'
+                }`}
+              >
+                <button
+                  onClick={() => applyPreset(preset)}
+                  className="flex-1 text-left flex items-center gap-2 px-2.5 py-1.5 text-sm min-w-0"
+                >
+                  {isPresetActive(preset) && <Check className="w-3.5 h-3.5 text-primary shrink-0" />}
+                  <span className="truncate">{preset.name}</span>
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); deletePresetMutation.mutate(preset.id); }}
+                  className="p-1 mr-1 rounded text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-destructive hover:bg-destructive/10 transition-all shrink-0"
+                >
+                  <Trash2 className="w-3 h-3" />
+                </button>
+              </div>
+            ))}
+
+            {/* Save new preset */}
+            {showSaveInput ? (
+              <div className="flex items-center gap-1 px-2 py-1.5 border-t border-border mt-1 pt-1">
+                <input
+                  autoFocus
+                  value={savingName}
+                  onChange={(e) => setSavingName(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') handleSavePreset(); if (e.key === 'Escape') setShowSaveInput(false); }}
+                  placeholder="Nom du préset…"
+                  className="flex-1 text-xs bg-transparent border border-border rounded px-2 py-1 outline-none focus:border-primary min-w-0"
+                />
+                <button
+                  onClick={handleSavePreset}
+                  disabled={!savingName.trim() || savePresetMutation.isPending}
+                  className="p-1 rounded text-primary hover:bg-primary/10 disabled:opacity-40 transition-colors"
+                >
+                  <Check className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowSaveInput(true)}
+                disabled={!hasFilters}
+                className="w-full text-left flex items-center gap-2 px-2.5 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed border-t border-border mt-1 pt-1"
+              >
+                <Save className="w-3.5 h-3.5" />
+                <span>Sauvegarder les filtres actifs</span>
+              </button>
+            )}
+          </div>
+        </PopoverContent>
+      </Popover>
+
       <FilterDropdown
         label="Avancement"
         open={openFilter === 'status'}

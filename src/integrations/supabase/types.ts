@@ -441,6 +441,30 @@ export type Database = {
           },
         ]
       }
+      filter_presets: {
+        Row: {
+          created_at: string
+          filters: Json
+          id: string
+          member_id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          filters?: Json
+          id?: string
+          member_id: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          filters?: Json
+          id?: string
+          member_id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

@@ -2,7 +2,7 @@ import React, { useMemo, useState, useRef, useCallback, useEffect } from 'react'
 import { useApp } from '@/context/AppContext';
 import { Task } from '@/types';
 import { PriorityBadge, StatusBadge } from '@/components/TaskBadges';
-import { ChevronDown, ChevronRight, ZoomIn, ZoomOut, Maximize2, Plus, X, Check, Layers } from 'lucide-react';
+import { ChevronDown, ChevronRight, ZoomIn, ZoomOut, Maximize2, Plus, X, Check, Layers, Repeat } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const STATUS_PROGRESS_COLORS: Record<string, string> = {

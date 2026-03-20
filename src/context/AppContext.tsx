@@ -100,7 +100,18 @@ function dbToTask(row: any, assigneeIds: string[], comments: Comment[], attachme
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
   const { teamMemberId } = useAuth();
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>('p1');
+  const [selectedProjectId, _setSelectedProjectId] = useState<string | null>('p1');
+  const [selectedSpaceId, _setSelectedSpaceId] = useState<string | null>(null);
+
+  const setSelectedProjectId = useCallback((id: string | null) => {
+    _setSelectedProjectId(id);
+    if (id) _setSelectedSpaceId(null);
+  }, []);
+
+  const setSelectedSpaceId = useCallback((id: string | null) => {
+    _setSelectedSpaceId(id);
+    if (id) _setSelectedProjectId(null);
+  }, []);
   const [selectedView, setSelectedView] = useState<ViewType>('kanban');
   const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);

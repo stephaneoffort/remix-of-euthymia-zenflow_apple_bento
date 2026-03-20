@@ -270,7 +270,7 @@ export default function AppSidebar() {
               onChange={e => setNewSpaceName(e.target.value)}
               onKeyDown={e => {
                 if (e.key === 'Enter') handleAddSpace();
-                if (e.key === 'Escape') { setAddingSpace(false); setNewSpaceName(''); }
+                if (e.key === 'Escape') { setAddingSpace(false); setNewSpaceName(''); setNewSpacePrivate(false); }
               }}
               placeholder="Nom de l'espace..."
               className="w-full text-sm bg-sidebar-bg border border-sidebar-border-color rounded-md px-2 py-1 outline-none text-sidebar-fg-bright placeholder:text-sidebar-fg"

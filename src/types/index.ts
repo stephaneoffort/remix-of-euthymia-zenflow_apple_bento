@@ -72,6 +72,7 @@ export interface Task {
   timeLogged: number | null;
   aiSummary: string | null;
   recurrence?: Recurrence;
+  recurrenceEndDate?: string | null;
   createdAt: string;
   order: number;
 }

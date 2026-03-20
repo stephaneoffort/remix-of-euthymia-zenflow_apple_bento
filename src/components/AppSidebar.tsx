@@ -130,9 +130,10 @@ export default function AppSidebar() {
 
   const handleAddSpace = () => {
     if (!newSpaceName.trim()) return;
-    addSpace(newSpaceName.trim(), newSpaceIcon);
+    addSpace(newSpaceName.trim(), newSpaceIcon, newSpacePrivate);
     setNewSpaceName('');
     setNewSpaceIcon('📁');
+    setNewSpacePrivate(false);
     setAddingSpace(false);
   };
 

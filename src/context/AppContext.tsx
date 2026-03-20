@@ -45,7 +45,7 @@ interface AppContextType extends AppState {
   addAttachment: (taskId: string, name: string, url: string) => void;
   deleteAttachment: (attachmentId: string) => void;
   moveTask: (taskId: string, newStatus: string) => void;
-  addSpace: (name: string, icon: string) => void;
+  addSpace: (name: string, icon: string, isPrivate?: boolean) => void;
   addProject: (name: string, spaceId: string, color: string) => void;
   renameSpace: (id: string, name: string) => void;
   renameProject: (id: string, name: string) => void;

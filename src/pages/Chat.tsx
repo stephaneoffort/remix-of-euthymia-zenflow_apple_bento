@@ -576,7 +576,7 @@ export default function Chat() {
                       onClick={() => startDM(m.id)}
                       className="w-full flex items-center gap-2 px-3 py-2 sm:py-1.5 rounded-md text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                     >
-                      <MemberAvatar member={m} size="sm" />
+                      <MemberAvatar member={m} size="sm" showPresence />
                       <span className="flex-1 text-left truncate">{m.name}</span>
                     </button>
                   ))}

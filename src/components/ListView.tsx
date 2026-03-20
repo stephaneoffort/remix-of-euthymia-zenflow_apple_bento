@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
 import { PRIORITY_LABELS, Status, Priority } from '@/types';
 import { PriorityBadge, StatusBadge, AvatarGroup, SubtaskProgress } from '@/components/TaskBadges';
-import { ChevronRight, ChevronDown, ArrowUpDown, Plus } from 'lucide-react';
+import { ChevronRight, ChevronDown, ArrowUpDown, Plus, Repeat } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 type SortKey = 'title' | 'priority' | 'dueDate' | 'status';
@@ -112,7 +112,10 @@ export default function ListView() {
                     </span>
                   ) : null;
                 })()}
-                <p className={`text-sm font-medium ${isOverdue ? 'text-priority-urgent' : 'text-foreground'}`}>{task.title}</p>
+                <div className="flex items-center gap-1.5">
+                  <p className={`text-sm font-medium ${isOverdue ? 'text-priority-urgent' : 'text-foreground'}`}>{task.title}</p>
+                  {task.recurrence && <Repeat className="w-3 h-3 text-primary shrink-0" />}
+                </div>
                 <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                   <StatusBadge status={task.status} />
                   <PriorityBadge priority={task.priority} />
@@ -205,6 +208,7 @@ export default function ListView() {
                 })()}
                 <div className="flex items-center gap-2">
                   <span className={`text-sm font-medium ${isOverdue ? 'text-priority-urgent' : 'text-foreground'}`}>{task.title}</span>
+                  {task.recurrence && <Repeat className="w-3 h-3 text-primary shrink-0" />}
                   <SubtaskProgress total={subtasks.length} done={doneSubtasks.length} />
                 </div>
               </div>

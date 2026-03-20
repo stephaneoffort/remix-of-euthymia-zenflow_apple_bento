@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useApp } from '@/context/AppContext';
 import { Task } from '@/types';
 import { PriorityBadge, AvatarGroup, SubtaskProgress } from '@/components/TaskBadges';
-import { Plus, GripVertical, GripHorizontal, ChevronRight, ChevronsLeftRight, ChevronsRightLeft } from 'lucide-react';
+import { Plus, GripVertical, GripHorizontal, ChevronRight, ChevronsLeftRight, ChevronsRightLeft, Repeat } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const STATUS_COLORS: Record<string, string> = {
@@ -276,7 +276,12 @@ export default function KanbanBoard() {
                       <SubtaskProgress total={subtasks.length} done={doneSubtasks.length} />
                     </div>
                     <div className="flex items-center justify-between mt-1.5 sm:mt-2">
-                      <div className="flex gap-1 flex-wrap">
+                      <div className="flex gap-1 flex-wrap items-center">
+                        {task.recurrence && (
+                          <span className="text-primary" title={`Récurrence : ${task.recurrence === 'daily' ? 'quotidien' : task.recurrence === 'weekly' ? 'hebdomadaire' : 'mensuel'}`}>
+                            <Repeat className="w-3 h-3" />
+                          </span>
+                        )}
                         {task.tags.slice(0, 2).map(tag => (
                           <span key={tag} className="text-[10px] bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full">{tag}</span>
                         ))}

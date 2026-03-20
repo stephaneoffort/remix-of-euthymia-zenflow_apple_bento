@@ -495,7 +495,7 @@ export default function TaskDetailPanel() {
                           <span className="text-xs font-medium text-foreground truncate">{author?.name || 'Inconnu'}</span>
                           <span className="text-[10px] text-muted-foreground shrink-0">{new Date(c.createdAt).toLocaleDateString('fr-FR')}</span>
                         </div>
-                        <p className="text-sm text-foreground mt-0.5 break-words">{c.content}</p>
+                        <RichTextDisplay content={c.content} className="text-sm mt-0.5 break-words" />
                       </div>
                     </div>
                   );

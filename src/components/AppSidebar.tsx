@@ -74,7 +74,7 @@ export default function AppSidebar() {
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
   const [editingProjectName, setEditingProjectName] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState<{ type: 'space' | 'project'; id: string; name: string } | null>(null);
-  const [filtersExpanded, setFiltersExpanded] = useState(!isMobile);
+  const [filtersExpanded, setFiltersExpanded] = useState(() => !window.matchMedia('(max-width: 767px)').matches);
   const [accessDialogSpace, setAccessDialogSpace] = useState<{ id: string; name: string; isPrivate: boolean } | null>(null);
 
   // Filter spaces based on access

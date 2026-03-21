@@ -238,17 +238,6 @@ export default function AppSidebar() {
     );
   }
 
-  // Swipe-to-close for mobile sidebar
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const handleTouchStart = (e: React.TouchEvent) => setTouchStart(e.touches[0].clientX);
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStart !== null && isMobile) {
-      const delta = e.changedTouches[0].clientX - touchStart;
-      if (delta < -60) setSidebarCollapsed(true);
-    }
-    setTouchStart(null);
-  };
-
   return (
     <>
       {isMobile && (

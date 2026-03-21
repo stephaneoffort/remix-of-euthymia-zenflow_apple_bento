@@ -54,6 +54,7 @@ const App = () => (
             <Routes>
               <Route path="/auth" element={<Auth />} />
               <Route path="/select-member" element={<SelectTeamMember />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route
                 path="/chat"
                 element={

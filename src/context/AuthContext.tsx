@@ -22,59 +22,56 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const autoLinkByEmail = async (userId: string, email: string | undefined) => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('team_member_id')
+        .eq('id', userId)
+        .single();
+
+      if (data?.team_member_id) {
+        setTeamMemberId(data.team_member_id);
+        return;
+      }
+
+      // Try to auto-link by matching email to an existing team_member
+      const userEmail = email?.toLowerCase();
+      if (userEmail) {
+        const { data: matchedMember } = await supabase
+          .from('team_members')
+          .select('id')
+          .eq('email', userEmail)
+          .maybeSingle();
+
+        if (matchedMember) {
+          await supabase.from('profiles').update({ team_member_id: matchedMember.id }).eq('id', userId);
+          setTeamMemberId(matchedMember.id);
+          return;
+        }
+      }
+      setTeamMemberId(null);
+    };
+
     // Set up auth listener BEFORE getting session
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         if (session?.user) {
-          setTimeout(async () => {
-            // Check if profile already has a team_member_id
-            const { data } = await supabase
-              .from('profiles')
-              .select('team_member_id')
-              .eq('id', session.user.id)
-              .single();
-
-            if (data?.team_member_id) {
-              setTeamMemberId(data.team_member_id);
-            } else {
-              // Try to auto-link by matching email to an existing team_member
-              const userEmail = session.user.email?.toLowerCase();
-              if (userEmail) {
-                const { data: matchedMember } = await supabase
-                  .from('team_members')
-                  .select('id')
-                  .eq('email', userEmail)
-                  .maybeSingle();
-
-                if (matchedMember) {
-                  // Auto-link the user to the matched team member
-                  await supabase.from('profiles').update({ team_member_id: matchedMember.id }).eq('id', session.user.id);
-                  setTeamMemberId(matchedMember.id);
-                } else {
-                  setTeamMemberId(null);
-                }
-              } else {
-                setTeamMemberId(null);
-              }
-            }
-          }, 0);
+          setTimeout(() => autoLinkByEmail(session.user.id, session.user.email), 0);
+        } else {
+          setTeamMemberId(null);
+        }
+        setLoading(false);
+      }
+    );
 
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        supabase
-          .from('profiles')
-          .select('team_member_id')
-          .eq('id', session.user.id)
-          .single()
-          .then(({ data }) => {
-            setTeamMemberId(data?.team_member_id ?? null);
-            setLoading(false);
-          });
+        autoLinkByEmail(session.user.id, session.user.email).then(() => setLoading(false));
       } else {
         setLoading(false);
       }

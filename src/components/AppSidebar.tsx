@@ -312,7 +312,7 @@ export default function AppSidebar() {
           <p className="text-xs font-semibold text-sidebar-fg uppercase tracking-wider">Espaces</p>
           <button
             onClick={() => setAddingSpace(true)}
-            className="p-0.5 rounded hover:bg-sidebar-hover text-sidebar-fg transition-colors"
+            className="p-2 -m-1.5 rounded-md hover:bg-sidebar-hover text-sidebar-fg transition-colors"
             title="Ajouter un espace"
           >
             <Plus className="w-3.5 h-3.5" />

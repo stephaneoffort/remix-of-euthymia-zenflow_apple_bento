@@ -131,7 +131,7 @@ export default function Index() {
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
         <header className="border-b border-border bg-card shrink-0">
-          <div className="h-12 sm:h-14 flex items-center justify-between px-3 sm:px-6 gap-2">
+          <div className="h-12 sm:h-14 flex items-center px-3 sm:px-6 gap-2">
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               {sidebarCollapsed && !isMobile && (
                 <button onClick={() => setSidebarCollapsed(false)} className="p-1.5 rounded-md hover:bg-muted transition-colors shrink-0">

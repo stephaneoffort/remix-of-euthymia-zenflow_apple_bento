@@ -327,7 +327,7 @@ export default function AppSidebar() {
                 <button
                   key={icon}
                   onClick={() => setNewSpaceIcon(icon)}
-                  className={`w-7 h-7 rounded text-sm flex items-center justify-center transition-colors ${
+                  className={`w-9 h-9 rounded text-sm flex items-center justify-center transition-colors ${
                     newSpaceIcon === icon ? 'bg-sidebar-active ring-1 ring-primary' : 'hover:bg-sidebar-bg'
                   }`}
                 >

@@ -538,7 +538,7 @@ function ChatCategoriesPanel() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-7 w-7 p-0"
+                  className="h-7 w-7 p-0 btn-icon-touch"
                   onClick={() => startEdit(cat)}
                   title="Renommer"
                 >

@@ -800,7 +800,7 @@ function ThemeSwitcher() {
               ? 'bg-sidebar-active text-white'
               : 'text-sidebar-fg hover:text-sidebar-fg-bright'
           }`}
-          title={opt.label}
+          title={opt.title}
         >
           {opt.icon}
           <span className="hidden md:inline">{opt.label}</span>

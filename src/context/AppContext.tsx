@@ -114,9 +114,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     _setSelectedSpaceId(id);
     if (id) _setSelectedProjectId(null);
   }, []);
-  const [selectedView, setSelectedView] = useState<ViewType>(() => 
-    window.matchMedia('(max-width: 768px)').matches ? 'list' : 'kanban'
-  );
+  const [selectedView, _setSelectedView] = useState<ViewType>(() => {
+    const saved = localStorage.getItem('euthymia:view') as ViewType | null;
+    if (saved && ['kanban', 'list', 'calendar', 'workload', 'mindmap'].includes(saved)) return saved;
+    return window.matchMedia('(max-width: 768px)').matches ? 'list' : 'kanban';
+  });
+  const setSelectedView = useCallback((view: ViewType) => {
+    _setSelectedView(view);
+    localStorage.setItem('euthymia:view', view);
+  }, []);
   const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);

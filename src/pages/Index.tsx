@@ -295,7 +295,43 @@ export default function Index() {
       {/* AI components */}
       <TaskSuggestions open={suggestionsOpen} onClose={() => setSuggestionsOpen(false)} />
       <AIChatPanel />
-      <CommandPalette />
+      <CommandPalette externalOpen={searchOpen} onExternalOpenChange={setSearchOpen} />
+
+      {/* Keyboard shortcuts help */}
+      <KeyboardShortcutsDialog open={shortcutsOpen} onOpenChange={setShortcutsOpen} />
+
+      {/* Quick add task dialog */}
+      {quickAddOpen && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-[20vh] bg-black/40" onClick={() => setQuickAddOpen(false)}>
+          <div className="w-full max-w-md bg-card rounded-lg border shadow-lg p-4" onClick={e => e.stopPropagation()}>
+            <input
+              autoFocus
+              value={quickAddTitle}
+              onChange={e => setQuickAddTitle(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter') handleQuickAdd();
+                if (e.key === 'Escape') { setQuickAddOpen(false); setQuickAddTitle(''); }
+              }}
+              placeholder="Titre de la nouvelle tâche…"
+              className="w-full text-sm bg-transparent outline-none placeholder:text-muted-foreground"
+            />
+            <div className="flex items-center justify-between mt-3">
+              <span className="text-xs text-muted-foreground">Entrée pour créer · Échap pour annuler</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Shortcuts hint button — desktop only */}
+      {!isMobile && (
+        <button
+          onClick={() => setShortcutsOpen(true)}
+          className="fixed bottom-4 right-4 z-40 p-2 rounded-lg bg-card border border-border shadow-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          title="Raccourcis clavier (?)"
+        >
+          <Keyboard className="w-4 h-4" />
+        </button>
+      )}
 
       {/* Mobile bottom navigation */}
       {isMobile && !selectedTaskId && <MobileBottomNav />}

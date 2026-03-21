@@ -15,6 +15,7 @@ const Settings = lazy(() => import("./pages/Settings.tsx"));
 const Chat = lazy(() => import("./pages/Chat.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 const Install = lazy(() => import("./pages/Install.tsx"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword.tsx"));
 
 const PageLoader = () => (
   <div className="flex items-center justify-center h-screen bg-background">

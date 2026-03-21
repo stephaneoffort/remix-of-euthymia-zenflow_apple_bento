@@ -390,7 +390,7 @@ function StatusesPanel() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-destructive hover:text-destructive hover:bg-destructive/10 h-7 w-7 p-0"
+                   className="text-destructive hover:text-destructive hover:bg-destructive/10 h-7 w-7 p-0 btn-icon-touch"
                   onClick={() => handleDelete(s.id)}
                 >
                   <Trash2 className="w-3.5 h-3.5" />

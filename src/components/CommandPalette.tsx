@@ -101,7 +101,7 @@ export default function CommandPalette({ externalOpen, onExternalOpenChange }: C
     }
 
     return items;
-  }, [query, tasks, projects, spaces, lists]);
+  }, [query, tasks, projects, spaces, lists, teamMembers]);
 
   // Reset index when results change
   useEffect(() => {

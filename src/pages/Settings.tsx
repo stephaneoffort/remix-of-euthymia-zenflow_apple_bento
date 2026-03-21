@@ -268,7 +268,7 @@ function MembersPanel() {
                     <Button
                       variant="default"
                       size="sm"
-                      className="h-8 w-8 p-0"
+                      className="h-8 w-8 p-0 btn-icon-touch"
                       onClick={() => handleSaveEdit(m.id)}
                     >
                       <Check className="w-4 h-4" />

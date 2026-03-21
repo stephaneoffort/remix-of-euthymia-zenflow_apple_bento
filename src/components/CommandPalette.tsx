@@ -5,8 +5,18 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Search, FileText, FolderOpen, Tag, Hash } from 'lucide-react';
 import { StatusCircle } from '@/components/TaskBadges';
 
-export default function CommandPalette() {
-  const [open, setOpen] = useState(false);
+interface CommandPaletteProps {
+  externalOpen?: boolean;
+  onExternalOpenChange?: (open: boolean) => void;
+}
+
+export default function CommandPalette({ externalOpen, onExternalOpenChange }: CommandPaletteProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = externalOpen !== undefined ? externalOpen : internalOpen;
+  const setOpen = (v: boolean) => {
+    if (onExternalOpenChange) onExternalOpenChange(v);
+    else setInternalOpen(v);
+  };
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const { tasks, projects, spaces, setSelectedTaskId, setSelectedProjectId, setSelectedSpaceId, setQuickFilter, lists } = useApp();
@@ -17,7 +27,7 @@ export default function CommandPalette() {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
-        setOpen(prev => !prev);
+        setOpen(!open);
       }
     };
     window.addEventListener('keydown', handler);

@@ -260,7 +260,7 @@ export default function ListView() {
           <tbody>
             {sorted.map(task => renderRow(task))}
             {sorted.length === 0 && !isAdding && (
-              <tr><td colSpan={5} className="text-center py-12 text-muted-foreground">Aucune tâche trouvée</td></tr>
+              <tr><td colSpan={5}><EmptyState variant="list" onAction={() => setIsAdding(true)} /></td></tr>
             )}
             {isAdding ? (
               <tr className="border-b border-border">

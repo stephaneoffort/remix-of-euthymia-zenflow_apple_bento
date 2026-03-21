@@ -153,7 +153,7 @@ export default function Auth() {
               <form onSubmit={handleSignup} className="space-y-4 mt-4">
                 <div className="space-y-2">
                   <Label htmlFor="signup-email">Email</Label>
-                  <Input id="signup-email" type="email" required value={signupEmail} onChange={e => setSignupEmail(e.target.value)} placeholder="email@exemple.com" />
+                  <Input id="signup-email" type="email" inputMode="email" autoComplete="email" enterKeyHint="next" required value={signupEmail} onChange={e => setSignupEmail(e.target.value)} placeholder="email@exemple.com" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-password">Mot de passe</Label>

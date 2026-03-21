@@ -834,7 +834,7 @@ export default function Chat() {
                           <button
                             key={emoji}
                             onClick={() => toggleReaction(msg.id, emoji)}
-                            className="w-7 h-7 flex items-center justify-center rounded hover:bg-muted transition-colors text-sm"
+                            className="w-9 h-9 flex items-center justify-center rounded hover:bg-muted transition-colors text-sm"
                           >
                             {emoji}
                           </button>
@@ -878,7 +878,7 @@ export default function Chat() {
                     <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-lg border border-primary/30 bg-primary/5">
                       <button
                         onClick={togglePreviewPlay}
-                        className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center shrink-0 hover:opacity-90 active:scale-95 transition-all"
+                        className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center shrink-0 hover:opacity-90 active:scale-95 transition-all"
                       >
                         {previewPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 ml-0.5" />}
                       </button>

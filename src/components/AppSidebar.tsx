@@ -312,7 +312,7 @@ export default function AppSidebar() {
           <p className="text-xs font-semibold text-sidebar-fg uppercase tracking-wider">Espaces</p>
           <button
             onClick={() => setAddingSpace(true)}
-            className="p-0.5 rounded hover:bg-sidebar-hover text-sidebar-fg transition-colors"
+            className="p-2 -m-1.5 rounded-md hover:bg-sidebar-hover text-sidebar-fg transition-colors"
             title="Ajouter un espace"
           >
             <Plus className="w-3.5 h-3.5" />
@@ -327,7 +327,7 @@ export default function AppSidebar() {
                 <button
                   key={icon}
                   onClick={() => setNewSpaceIcon(icon)}
-                  className={`w-7 h-7 rounded text-sm flex items-center justify-center transition-colors ${
+                  className={`w-9 h-9 rounded text-sm flex items-center justify-center transition-colors ${
                     newSpaceIcon === icon ? 'bg-sidebar-active ring-1 ring-primary' : 'hover:bg-sidebar-bg'
                   }`}
                 >
@@ -438,7 +438,7 @@ export default function AppSidebar() {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button
-                        className="p-1 rounded hover:bg-sidebar-hover text-sidebar-fg opacity-40 group-hover:opacity-100 transition-opacity mr-1"
+                        className="p-2 -m-1 rounded-md hover:bg-sidebar-hover text-sidebar-fg opacity-40 group-hover:opacity-100 transition-opacity mr-0.5"
                         onClick={e => e.stopPropagation()}
                       >
                         <MoreHorizontal className="w-4 h-4" />
@@ -534,7 +534,7 @@ export default function AppSidebar() {
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                   <button
-                                    className="p-1 rounded hover:bg-sidebar-hover text-sidebar-fg opacity-40 group-hover/project:opacity-100 transition-opacity mr-1"
+                                    className="p-2 -m-1 rounded-md hover:bg-sidebar-hover text-sidebar-fg opacity-40 group-hover/project:opacity-100 transition-opacity mr-0.5"
                                     onClick={e => e.stopPropagation()}
                                   >
                                     <MoreHorizontal className="w-3.5 h-3.5" />

@@ -509,7 +509,7 @@ function ChatCategoriesPanel() {
                     <button
                       key={icon}
                       onClick={() => setEditIcon(icon)}
-                      className={`w-7 h-7 rounded text-sm flex items-center justify-center transition-colors ${
+                      className={`w-9 h-9 rounded text-sm flex items-center justify-center transition-colors ${
                         editIcon === icon ? 'bg-primary/10 ring-1 ring-primary' : 'hover:bg-muted'
                       }`}
                     >
@@ -564,7 +564,7 @@ function ChatCategoriesPanel() {
               <button
                 key={icon}
                 onClick={() => setNewIcon(icon)}
-                className={`w-7 h-7 rounded text-sm flex items-center justify-center transition-colors ${
+                className={`w-9 h-9 rounded text-sm flex items-center justify-center transition-colors ${
                   newIcon === icon ? 'bg-primary/10 ring-1 ring-primary' : 'hover:bg-muted'
                 }`}
               >

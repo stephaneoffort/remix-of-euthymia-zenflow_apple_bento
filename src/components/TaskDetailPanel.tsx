@@ -803,6 +803,15 @@ function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {
                 >
                   <Plus className="w-3.5 h-3.5 text-muted-foreground" />
                 </button>
+                <button
+                  onClick={e => {
+                    e.stopPropagation();
+                    if (window.confirm('Supprimer cette sous-tâche ?')) deleteTask(st.id);
+                  }}
+                  className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-destructive/10 rounded shrink-0"
+                >
+                  <Trash2 className="w-3.5 h-3.5 text-muted-foreground hover:text-destructive" />
+                </button>
               </div>
               {/* Metadata row */}
               <div className="flex items-center gap-1.5 flex-wrap pl-[30px] sm:pl-[34px] pb-1.5 text-[10px]">

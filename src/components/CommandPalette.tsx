@@ -166,7 +166,7 @@ export default function CommandPalette({ externalOpen, onExternalOpenChange }: C
             value={query}
             onChange={e => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Rechercher des tâches, projets, espaces…"
+            placeholder="Rechercher des tâches, projets, espaces, membres…"
             className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
           />
           <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground bg-muted rounded border border-border">

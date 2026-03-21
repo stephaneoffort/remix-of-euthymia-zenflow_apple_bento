@@ -313,7 +313,7 @@ export default function AppSidebar() {
             <p className="text-sidebar-fg text-xs">Gestion de projets</p>
           </div>
         </div>
-        <button onClick={() => setSidebarCollapsed(true)} className="p-1.5 rounded-md hover:bg-sidebar-hover text-sidebar-fg transition-colors">
+        <button onClick={() => setSidebarCollapsed(true)} className="p-1.5 rounded-md hover:bg-sidebar-hover text-sidebar-fg transition-colors btn-icon-touch flex items-center justify-center">
           <PanelLeftClose className="w-4 h-4" />
         </button>
       </div>

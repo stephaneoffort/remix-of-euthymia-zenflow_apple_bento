@@ -249,3 +249,12 @@
   background: none;
   padding: 0;
 }
+
+/* Touch-friendly icon buttons: visual size stays compact, tap target meets 44px minimum on mobile */
+@media (pointer: coarse) {
+  .btn-icon-touch {
+    position: relative;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+  }
+}

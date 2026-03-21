@@ -268,7 +268,7 @@ function MembersPanel() {
                     <Button
                       variant="default"
                       size="sm"
-                      className="h-8 w-8 p-0"
+                      className="h-8 w-8 p-0 btn-icon-touch"
                       onClick={() => handleSaveEdit(m.id)}
                     >
                       <Check className="w-4 h-4" />
@@ -276,7 +276,7 @@ function MembersPanel() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="h-8 w-8 p-0"
+                      className="h-8 w-8 p-0 btn-icon-touch"
                       onClick={cancelEditing}
                     >
                       <X className="w-4 h-4" />
@@ -287,7 +287,7 @@ function MembersPanel() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="text-xs h-8 w-8 p-0"
+                      className="text-xs h-8 w-8 p-0 btn-icon-touch"
                       onClick={() => startEditing(m)}
                       title="Modifier"
                     >
@@ -307,7 +307,7 @@ function MembersPanel() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8 p-0"
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8 p-0 btn-icon-touch"
                       onClick={() => handleDeleteMember(m.id)}
                     >
                       <Trash2 className="w-4 h-4" />
@@ -390,7 +390,7 @@ function StatusesPanel() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-destructive hover:text-destructive hover:bg-destructive/10 h-7 w-7 p-0"
+                   className="text-destructive hover:text-destructive hover:bg-destructive/10 h-7 w-7 p-0 btn-icon-touch"
                   onClick={() => handleDelete(s.id)}
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -524,10 +524,10 @@ function ChatCategoriesPanel() {
                   className="flex-1 h-8 text-sm"
                   autoFocus
                 />
-                <Button variant="default" size="sm" className="h-8 w-8 p-0" onClick={handleSaveEdit}>
+                <Button variant="default" size="sm" className="h-8 w-8 p-0 btn-icon-touch" onClick={handleSaveEdit}>
                   <Check className="w-4 h-4" />
                 </Button>
-                <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={() => setEditingId(null)}>
+                <Button variant="outline" size="sm" className="h-8 w-8 p-0 btn-icon-touch" onClick={() => setEditingId(null)}>
                   <X className="w-4 h-4" />
                 </Button>
               </>
@@ -538,7 +538,7 @@ function ChatCategoriesPanel() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-7 w-7 p-0"
+                  className="h-7 w-7 p-0 btn-icon-touch"
                   onClick={() => startEdit(cat)}
                   title="Renommer"
                 >
@@ -547,7 +547,7 @@ function ChatCategoriesPanel() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-destructive hover:text-destructive hover:bg-destructive/10 h-7 w-7 p-0"
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10 h-7 w-7 p-0 btn-icon-touch"
                   onClick={() => handleDelete(cat.id)}
                 >
                   <Trash2 className="w-3.5 h-3.5" />

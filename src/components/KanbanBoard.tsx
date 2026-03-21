@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useApp } from '@/context/AppContext';
 import { Task } from '@/types';
 import { PriorityBadge, AvatarGroup, SubtaskProgress } from '@/components/TaskBadges';
@@ -248,85 +248,25 @@ export default function KanbanBoard() {
             const isOverdue = task.dueDate && task.dueDate < new Date().toISOString().split('T')[0] && task.status !== 'done';
 
             return (
-              <div
+              <KanbanCard
                 key={task.id}
-                draggable={!isMobile}
-                onDragStart={e => !isMobile && handleTaskDragStart(e, task.id)}
-                onDragEnd={() => setDraggedTaskId(null)}
-                onClick={() => setSelectedTaskId(task.id)}
-                className={`bg-card rounded-lg border p-2.5 sm:p-3 cursor-pointer hover:shadow-md transition-shadow group ${
-                  draggedTaskId === task.id ? 'opacity-50' : ''
-                } ${isOverdue ? 'border-l-2 border-l-priority-urgent' : ''}`}
-              >
-                <div className="flex items-start gap-1.5">
-                  <GripVertical className="w-4 h-4 text-muted-foreground/40 opacity-0 group-hover:opacity-100 mt-0.5 shrink-0 cursor-grab hidden sm:block" />
-                  <div className="flex-1 min-w-0">
-                    {!selectedProjectId && (() => {
-                      const proj = getProjectName(task.listId);
-                      return proj ? (
-                        <span className="text-[10px] text-muted-foreground flex items-center gap-1 mb-1">
-                          <span className="w-1.5 h-1.5 rounded-sm shrink-0" style={{ backgroundColor: proj.color }} />
-                          {proj.name}
-                        </span>
-                      ) : null;
-                    })()}
-                    <p className="text-xs sm:text-sm font-medium text-foreground leading-snug mb-1.5 sm:mb-2">{task.title}</p>
-                    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                      <PriorityBadge priority={task.priority} />
-                      {task.dueDate && (
-                        <span className={`text-[10px] sm:text-xs ${isOverdue ? 'text-priority-urgent font-medium' : 'text-muted-foreground'}`}>
-                          {new Date(task.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
-                        </span>
-                      )}
-                      <SubtaskProgress total={subtasks.length} done={doneSubtasks.length} />
-                    </div>
-                    <div className="flex items-center justify-between mt-1.5 sm:mt-2">
-                      <div className="flex gap-1 flex-wrap items-center">
-                        {task.recurrence && (
-                          <span className="text-primary" title={`Récurrence : ${task.recurrence === 'daily' ? 'quotidien' : task.recurrence === 'weekly' ? 'hebdomadaire' : 'mensuel'}`}>
-                            <Repeat className="w-3 h-3" />
-                          </span>
-                        )}
-                        {task.tags.slice(0, 2).map(tag => (
-                          <span key={tag} className="text-[10px] bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full">{tag}</span>
-                        ))}
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        {/* Mobile: Move to status popover */}
-                        {isMobile && (
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <button
-                                onClick={e => e.stopPropagation()}
-                                className="p-1.5 -m-0.5 rounded-md bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                              >
-                                <ArrowRightLeft className="w-3.5 h-3.5" />
-                              </button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-44 p-1" align="end" onClick={e => e.stopPropagation()}>
-                              <p className="text-xs font-semibold text-muted-foreground px-2.5 py-1.5">Déplacer vers…</p>
-                              {allStatuses.filter(s => s !== task.status).map(s => (
-                                <button
-                                  key={s}
-                                  onClick={e => {
-                                    e.stopPropagation();
-                                    moveTask(task.id, s);
-                                  }}
-                                  className="w-full text-left flex items-center gap-2 px-2.5 py-2 rounded-md text-sm hover:bg-muted transition-colors"
-                                >
-                                  <div className={`w-2.5 h-2.5 rounded-full ${getStatusColor(s)}`} />
-                                  {getStatusLabel(s)}
-                                </button>
-                              ))}
-                            </PopoverContent>
-                          </Popover>
-                        )}
-                        <AvatarGroup memberIds={task.assigneeIds} getMemberById={getMemberById} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                task={task}
+                isMobile={isMobile}
+                subtasks={subtasks}
+                doneSubtasks={doneSubtasks}
+                isOverdue={!!isOverdue}
+                draggedTaskId={draggedTaskId}
+                selectedProjectId={selectedProjectId}
+                getProjectName={getProjectName}
+                getStatusColor={getStatusColor}
+                getStatusLabel={getStatusLabel}
+                allStatuses={allStatuses}
+                moveTask={moveTask}
+                setSelectedTaskId={setSelectedTaskId}
+                setDraggedTaskId={setDraggedTaskId}
+                handleTaskDragStart={handleTaskDragStart}
+                getMemberById={getMemberById}
+              />
             );
           })}
 
@@ -404,6 +344,151 @@ export default function KanbanBoard() {
         {!isMobile && collapsedStatuses.map(renderCollapsedColumn)}
         {/* Expanded columns */}
         {expandedStatuses.map(renderExpandedColumn)}
+      </div>
+    </div>
+  );
+}
+
+// Extracted card component with long-press support on mobile
+function KanbanCard({
+  task, isMobile, subtasks, doneSubtasks, isOverdue, draggedTaskId,
+  selectedProjectId, getProjectName, getStatusColor, getStatusLabel,
+  allStatuses, moveTask, setSelectedTaskId, setDraggedTaskId,
+  handleTaskDragStart, getMemberById,
+}: {
+  task: Task;
+  isMobile: boolean;
+  subtasks: Task[];
+  doneSubtasks: Task[];
+  isOverdue: boolean;
+  draggedTaskId: string | null;
+  selectedProjectId: string | null;
+  getProjectName: (listId: string) => { name: string; color: string } | null;
+  getStatusColor: (status: string) => string;
+  getStatusLabel: (status: string) => string;
+  allStatuses: string[];
+  moveTask: (taskId: string, status: string) => void;
+  setSelectedTaskId: (id: string) => void;
+  setDraggedTaskId: (id: string | null) => void;
+  handleTaskDragStart: (e: React.DragEvent, taskId: string) => void;
+  getMemberById: (id: string) => any;
+}) {
+  const [moveOpen, setMoveOpen] = useState(false);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const didLongPress = useRef(false);
+
+  const handleTouchStart = useCallback(() => {
+    didLongPress.current = false;
+    longPressTimer.current = setTimeout(() => {
+      didLongPress.current = true;
+      setMoveOpen(true);
+      // Haptic feedback if available
+      if (navigator.vibrate) navigator.vibrate(30);
+    }, 500);
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  }, []);
+
+  const handleTouchMove = useCallback(() => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  }, []);
+
+  const handleClick = useCallback(() => {
+    if (!didLongPress.current) {
+      setSelectedTaskId(task.id);
+    }
+    didLongPress.current = false;
+  }, [task.id, setSelectedTaskId]);
+
+  return (
+    <div
+      draggable={!isMobile}
+      onDragStart={e => !isMobile && handleTaskDragStart(e, task.id)}
+      onDragEnd={() => setDraggedTaskId(null)}
+      onClick={handleClick}
+      onTouchStart={isMobile ? handleTouchStart : undefined}
+      onTouchEnd={isMobile ? handleTouchEnd : undefined}
+      onTouchMove={isMobile ? handleTouchMove : undefined}
+      onContextMenu={isMobile ? e => e.preventDefault() : undefined}
+      className={`bg-card rounded-lg border p-2.5 sm:p-3 cursor-pointer hover:shadow-md transition-shadow group ${
+        draggedTaskId === task.id ? 'opacity-50' : ''
+      } ${isOverdue ? 'border-l-2 border-l-priority-urgent' : ''} ${moveOpen ? 'ring-2 ring-primary/40' : ''}`}
+    >
+      <div className="flex items-start gap-1.5">
+        <GripVertical className="w-4 h-4 text-muted-foreground/40 opacity-0 group-hover:opacity-100 mt-0.5 shrink-0 cursor-grab hidden sm:block" />
+        <div className="flex-1 min-w-0">
+          {!selectedProjectId && (() => {
+            const proj = getProjectName(task.listId);
+            return proj ? (
+              <span className="text-[10px] text-muted-foreground flex items-center gap-1 mb-1">
+                <span className="w-1.5 h-1.5 rounded-sm shrink-0" style={{ backgroundColor: proj.color }} />
+                {proj.name}
+              </span>
+            ) : null;
+          })()}
+          <p className="text-xs sm:text-sm font-medium text-foreground leading-snug mb-1.5 sm:mb-2">{task.title}</p>
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+            <PriorityBadge priority={task.priority} />
+            {task.dueDate && (
+              <span className={`text-[10px] sm:text-xs ${isOverdue ? 'text-priority-urgent font-medium' : 'text-muted-foreground'}`}>
+                {new Date(task.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+              </span>
+            )}
+            <SubtaskProgress total={subtasks.length} done={doneSubtasks.length} />
+          </div>
+          <div className="flex items-center justify-between mt-1.5 sm:mt-2">
+            <div className="flex gap-1 flex-wrap items-center">
+              {task.recurrence && (
+                <span className="text-primary" title={`Récurrence : ${task.recurrence === 'daily' ? 'quotidien' : task.recurrence === 'weekly' ? 'hebdomadaire' : 'mensuel'}`}>
+                  <Repeat className="w-3 h-3" />
+                </span>
+              )}
+              {task.tags.slice(0, 2).map(tag => (
+                <span key={tag} className="text-[10px] bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full">{tag}</span>
+              ))}
+            </div>
+            <div className="flex items-center gap-1.5">
+              {isMobile && (
+                <Popover open={moveOpen} onOpenChange={setMoveOpen}>
+                  <PopoverTrigger asChild>
+                    <button
+                      onClick={e => e.stopPropagation()}
+                      className="p-1.5 -m-0.5 rounded-md bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors btn-icon-touch"
+                    >
+                      <ArrowRightLeft className="w-3.5 h-3.5" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-44 p-1" align="end" onClick={e => e.stopPropagation()}>
+                    <p className="text-xs font-semibold text-muted-foreground px-2.5 py-1.5">Déplacer vers…</p>
+                    {allStatuses.filter(s => s !== task.status).map(s => (
+                      <button
+                        key={s}
+                        onClick={e => {
+                          e.stopPropagation();
+                          moveTask(task.id, s);
+                          setMoveOpen(false);
+                        }}
+                        className="w-full text-left flex items-center gap-2 px-2.5 py-2 rounded-md text-sm hover:bg-muted transition-colors"
+                      >
+                        <div className={`w-2.5 h-2.5 rounded-full ${getStatusColor(s)}`} />
+                        {getStatusLabel(s)}
+                      </button>
+                    ))}
+                  </PopoverContent>
+                </Popover>
+              )}
+              <AvatarGroup memberIds={task.assigneeIds} getMemberById={getMemberById} />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

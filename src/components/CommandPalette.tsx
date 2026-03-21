@@ -19,7 +19,7 @@ export default function CommandPalette({ externalOpen, onExternalOpenChange }: C
   };
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const { tasks, projects, spaces, setSelectedTaskId, setSelectedProjectId, setSelectedSpaceId, setQuickFilter, lists } = useApp();
+  const { tasks, projects, spaces, teamMembers, setSelectedTaskId, setSelectedProjectId, setSelectedSpaceId, setQuickFilter, lists, setAdvancedFilters } = useApp();
   const navigate = useNavigate();
 
   // Cmd+K / Ctrl+K listener

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { Navigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,28 +8,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
-import { Sparkles, Camera, X } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { lovable } from '@/integrations/lovable/index';
-
-const AVATAR_COLORS = ['#4f46e5', '#0891b2', '#059669', '#d97706', '#dc2626', '#7c3aed', '#db2777', '#0d9488', '#6366f1', '#f59e0b'];
 
 export default function Auth() {
   const { user, teamMemberId, loading } = useAuth();
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
-  // Signup fields
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
   const [signupConfirm, setSignupConfirm] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [role, setRole] = useState('');
-  const [username, setUsername] = useState('');
-  const [avatarColor] = useState(AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)]);
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const { signIn, signUp, linkTeamMember } = useAuth();
+  const { signIn, signUp } = useAuth();
 
   if (loading) {
     return (
@@ -51,17 +40,6 @@ export default function Auth() {
     if (error) toast.error(error.message);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('La photo ne doit pas dépasser 5 Mo');
-      return;
-    }
-    setAvatarFile(file);
-    setAvatarPreview(URL.createObjectURL(file));
-  };
-
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (signupPassword !== signupConfirm) {
@@ -72,39 +50,12 @@ export default function Auth() {
       toast.error('Le mot de passe doit contenir au moins 6 caractères');
       return;
     }
-    if (!firstName.trim() || !lastName.trim() || !role.trim() || !username.trim()) {
-      toast.error('Veuillez remplir tous les champs du profil');
-      return;
-    }
 
     setSubmitting(true);
     try {
-      // 1. Create the auth account
       const { error: signUpError } = await signUp(signupEmail, signupPassword);
       if (signUpError) throw signUpError;
-
-      // Store profile data in localStorage so it can be created after email confirmation
-      const profileData = {
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-        role: role.trim(),
-        username: username.trim(),
-        avatarColor,
-        email: signupEmail,
-      };
-      localStorage.setItem('pending_profile', JSON.stringify(profileData));
-
-      // Store avatar file as base64 if provided
-      if (avatarFile) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          localStorage.setItem('pending_avatar', reader.result as string);
-          localStorage.setItem('pending_avatar_name', avatarFile.name);
-        };
-        reader.readAsDataURL(avatarFile);
-      }
-
-      toast.success('Vérifiez votre email pour confirmer votre inscription. Votre profil sera créé automatiquement.');
+      toast.success('Vérifiez votre email pour confirmer votre inscription.');
     } catch (err: any) {
       toast.error(err.message || "Erreur lors de l'inscription");
     } finally {
@@ -112,11 +63,9 @@ export default function Auth() {
     }
   };
 
-  const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
-
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background">
-      <Card className="w-full max-w-md mx-4">
+    <div className="flex items-center justify-center min-h-screen bg-background p-4">
+      <Card className="w-full max-w-sm mx-auto">
         <CardHeader className="text-center">
           <div className="flex items-center justify-center gap-2 mb-2">
             <Sparkles className="w-6 h-6 text-primary" />
@@ -158,73 +107,26 @@ export default function Auth() {
 
             <TabsContent value="signup">
               <form onSubmit={handleSignup} className="space-y-4 mt-4">
-                {/* Avatar */}
-                <div className="flex justify-center">
-                  <div className="relative group">
-                    {avatarPreview ? (
-                      <div className="relative">
-                        <img src={avatarPreview} alt="Avatar" className="w-20 h-20 rounded-full object-cover border-2 border-border" />
-                        <button type="button" onClick={() => { setAvatarFile(null); setAvatarPreview(null); }} className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center text-xs">
-                          <X className="w-3 h-3" />
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="w-20 h-20 rounded-full flex items-center justify-center text-xl font-bold text-white border-2 border-border" style={{ backgroundColor: avatarColor }}>
-                        {initials || '?'}
-                      </div>
-                    )}
-                    <label className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
-                      <Camera className="w-5 h-5 text-white" />
-                      <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
-                    </label>
-                  </div>
-                </div>
-                <p className="text-xs text-muted-foreground text-center -mt-2">Cliquez pour ajouter une photo</p>
-
-                {/* Name */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="firstName">Prénom *</Label>
-                    <Input id="firstName" value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="Jean" required />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="lastName">Nom *</Label>
-                    <Input id="lastName" value={lastName} onChange={e => setLastName(e.target.value)} placeholder="Dupont" required />
-                  </div>
-                </div>
-
-                {/* Role */}
-                <div className="space-y-1.5">
-                  <Label htmlFor="role">Fonction *</Label>
-                  <Input id="role" value={role} onChange={e => setRole(e.target.value)} placeholder="Formateur, Manager..." required />
-                </div>
-
-                {/* Username */}
-                <div className="space-y-1.5">
-                  <Label htmlFor="username">Identifiant *</Label>
-                  <Input id="username" value={username} onChange={e => setUsername(e.target.value)} placeholder="jean.dupont" required />
-                  <p className="text-xs text-muted-foreground">Votre identifiant unique dans l'application</p>
-                </div>
-
-                <Separator />
-
-                {/* Email & Password */}
                 <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email *</Label>
+                  <Label htmlFor="signup-email">Email</Label>
                   <Input id="signup-email" type="email" required value={signupEmail} onChange={e => setSignupEmail(e.target.value)} placeholder="email@exemple.com" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-password">Mot de passe *</Label>
-                  <Input id="signup-password" type="password" required value={signupPassword} onChange={e => setSignupPassword(e.target.value)} placeholder="••••••" />
+                  <Label htmlFor="signup-password">Mot de passe</Label>
+                  <Input id="signup-password" type="password" required value={signupPassword} onChange={e => setSignupPassword(e.target.value)} placeholder="6 caractères minimum" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-confirm">Confirmer le mot de passe *</Label>
+                  <Label htmlFor="signup-confirm">Confirmer le mot de passe</Label>
                   <Input id="signup-confirm" type="password" required value={signupConfirm} onChange={e => setSignupConfirm(e.target.value)} placeholder="••••••" />
                 </div>
 
                 <Button type="submit" className="w-full" disabled={submitting}>
                   {submitting ? 'Inscription...' : "S'inscrire"}
                 </Button>
+
+                <p className="text-xs text-muted-foreground text-center">
+                  Après vérification de votre email, vous pourrez compléter votre profil.
+                </p>
 
                 <div className="relative my-2">
                   <Separator />

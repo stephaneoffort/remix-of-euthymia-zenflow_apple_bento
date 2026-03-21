@@ -307,7 +307,7 @@ function MembersPanel() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8 p-0"
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8 p-0 btn-icon-touch"
                       onClick={() => handleDeleteMember(m.id)}
                     >
                       <Trash2 className="w-4 h-4" />

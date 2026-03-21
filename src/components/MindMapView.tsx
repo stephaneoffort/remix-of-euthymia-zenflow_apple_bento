@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useRef, useCallback, useEffect } from 'react';
+import EmptyState from '@/components/EmptyState';
 import { useApp } from '@/context/AppContext';
 import { Task } from '@/types';
 import { PriorityBadge, StatusBadge } from '@/components/TaskBadges';
@@ -170,11 +171,7 @@ export default function MindMapView() {
   }, []);
 
   if (tasks.length === 0) {
-    return (
-      <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
-        Aucune tâche à afficher
-      </div>
-    );
+    return <EmptyState variant="generic" message="Aucune tâche à afficher" />;
   }
 
   return (

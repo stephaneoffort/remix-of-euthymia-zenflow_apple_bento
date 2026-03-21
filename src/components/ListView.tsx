@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import EmptyState from '@/components/EmptyState';
 import { useApp } from '@/context/AppContext';
 import { PRIORITY_LABELS, Status, Priority } from '@/types';
 import { PriorityBadge, StatusBadge, AvatarGroup, SubtaskProgress } from '@/components/TaskBadges';
@@ -141,7 +142,7 @@ export default function ListView() {
       <div className="p-3 overflow-auto h-full space-y-2">
         {sorted.map(task => renderCard(task))}
         {sorted.length === 0 && !isAdding && (
-          <p className="text-center py-12 text-muted-foreground">Aucune tâche trouvée</p>
+          <EmptyState variant="list" onAction={() => setIsAdding(true)} />
         )}
         {isAdding ? (
           <div className="flex items-center gap-2 p-2 bg-card rounded-lg border border-border">
@@ -260,7 +261,7 @@ export default function ListView() {
           <tbody>
             {sorted.map(task => renderRow(task))}
             {sorted.length === 0 && !isAdding && (
-              <tr><td colSpan={5} className="text-center py-12 text-muted-foreground">Aucune tâche trouvée</td></tr>
+              <tr><td colSpan={5}><EmptyState variant="list" onAction={() => setIsAdding(true)} /></td></tr>
             )}
             {isAdding ? (
               <tr className="border-b border-border">

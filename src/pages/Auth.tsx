@@ -157,7 +157,7 @@ export default function Auth() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-password">Mot de passe</Label>
-                  <Input id="signup-password" type="password" required value={signupPassword} onChange={e => setSignupPassword(e.target.value)} placeholder="6 caractères minimum" />
+                  <Input id="signup-password" type="password" autoComplete="new-password" enterKeyHint="next" required value={signupPassword} onChange={e => setSignupPassword(e.target.value)} placeholder="6 caractères minimum" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-confirm">Confirmer le mot de passe</Label>

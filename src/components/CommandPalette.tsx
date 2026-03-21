@@ -85,6 +85,21 @@ export default function CommandPalette({ externalOpen, onExternalOpenChange }: C
       }
     }
 
+    // Search team members
+    for (const member of teamMembers) {
+      if (items.length >= 32) break;
+      if (member.name.toLowerCase().includes(q) || member.email.toLowerCase().includes(q)) {
+        const assignedCount = tasks.filter(t => t.assigneeIds.includes(member.id)).length;
+        items.push({
+          type: 'member',
+          id: member.id,
+          title: member.name,
+          subtitle: `${member.role} · ${assignedCount} tâche${assignedCount !== 1 ? 's' : ''}`,
+          avatarColor: member.avatarColor,
+        });
+      }
+    }
+
     return items;
   }, [query, tasks, projects, spaces, lists]);
 

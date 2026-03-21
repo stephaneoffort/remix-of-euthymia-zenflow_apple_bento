@@ -150,6 +150,7 @@ export default function CommandPalette({ externalOpen, onExternalOpenChange }: C
       case 'task': return <FileText className="w-4 h-4 text-muted-foreground shrink-0" />;
       case 'project': return <FolderOpen className="w-4 h-4 text-muted-foreground shrink-0" />;
       case 'space': return <Hash className="w-4 h-4 text-muted-foreground shrink-0" />;
+      case 'member': return <User className="w-4 h-4 text-muted-foreground shrink-0" />;
       default: return null;
     }
   };

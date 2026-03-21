@@ -979,7 +979,7 @@ function SortableProject({ id, children }: { id: string; children: React.ReactNo
   };
   return (
     <div ref={setNodeRef} style={style} className="flex items-center group/project relative">
-      <div {...attributes} {...listeners} className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2.5 opacity-0 group-hover/project:opacity-60 cursor-grab active:cursor-grabbing z-10 p-0.5">
+      <div {...attributes} {...listeners} className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2.5 opacity-0 group-hover/project:opacity-60 cursor-grab active:cursor-grabbing z-10 p-0.5 hidden md:block">
         <GripVertical className="w-3 h-3 text-sidebar-fg" />
       </div>
       {children}

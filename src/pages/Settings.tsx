@@ -287,7 +287,7 @@ function MembersPanel() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="text-xs h-8 w-8 p-0"
+                      className="text-xs h-8 w-8 p-0 btn-icon-touch"
                       onClick={() => startEditing(m)}
                       title="Modifier"
                     >

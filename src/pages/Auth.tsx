@@ -112,7 +112,7 @@ export default function Auth() {
                   </p>
                   <div className="space-y-2">
                     <Label htmlFor="forgot-email">Email</Label>
-                    <Input id="forgot-email" type="email" required value={forgotEmail} onChange={e => setForgotEmail(e.target.value)} placeholder="email@exemple.com" />
+                    <Input id="forgot-email" type="email" inputMode="email" autoComplete="email" enterKeyHint="send" required value={forgotEmail} onChange={e => setForgotEmail(e.target.value)} placeholder="email@exemple.com" />
                   </div>
                   <Button type="submit" className="w-full" disabled={submitting}>
                     {submitting ? 'Envoi...' : 'Envoyer le lien'}

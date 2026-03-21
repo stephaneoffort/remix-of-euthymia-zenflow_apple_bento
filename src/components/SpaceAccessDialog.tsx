@@ -117,7 +117,7 @@ export default function SpaceAccessDialog({
                       <img src={m.avatarUrl} alt={m.name} className="w-7 h-7 rounded-full object-cover" />
                     ) : (
                       <div
-                        className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
+                        className="w-7 h-7 rounded-full flex items-center justify-center text-label font-bold text-white"
                         style={{ backgroundColor: m.avatarColor }}
                       >
                         {m.name.split(' ').map(n => n[0]).join('').slice(0, 2)}

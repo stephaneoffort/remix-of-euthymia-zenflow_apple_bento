@@ -169,7 +169,7 @@ export default function CommandPalette({ externalOpen, onExternalOpenChange }: C
             placeholder="Rechercher des tâches, projets, espaces, membres…"
             className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
           />
-          <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground bg-muted rounded border border-border">
+          <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-label font-medium text-muted-foreground bg-muted rounded border border-border">
             ESC
           </kbd>
         </div>
@@ -198,7 +198,7 @@ export default function CommandPalette({ externalOpen, onExternalOpenChange }: C
               {item.type === 'task' && item.status ? (
                 <StatusCircle status={item.status} className="w-4 h-4 shrink-0" />
               ) : item.type === 'member' && item.avatarColor ? (
-                <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-primary-foreground shrink-0" style={{ backgroundColor: item.avatarColor }}>
+                <div className="w-6 h-6 rounded-full flex items-center justify-center text-label font-bold text-primary-foreground shrink-0" style={{ backgroundColor: item.avatarColor }}>
                   {item.title.charAt(0).toUpperCase()}
                 </div>
               ) : (
@@ -210,7 +210,7 @@ export default function CommandPalette({ externalOpen, onExternalOpenChange }: C
                   <p className="text-xs text-muted-foreground truncate">{item.subtitle}</p>
                 )}
               </div>
-              <span className="text-[10px] uppercase tracking-wider text-muted-foreground shrink-0">
+              <span className="text-label uppercase tracking-wider text-muted-foreground shrink-0">
                 {item.type === 'task' ? 'Tâche' : item.type === 'project' ? 'Projet' : item.type === 'member' ? 'Membre' : 'Espace'}
               </span>
             </button>

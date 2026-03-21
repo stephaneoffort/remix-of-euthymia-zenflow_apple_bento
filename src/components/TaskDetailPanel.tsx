@@ -387,7 +387,7 @@ export default function TaskDetailPanel() {
                       }}
                       className="rounded border-border"
                     />
-                    <div className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold" style={{ backgroundColor: m.avatarColor, color: 'white' }}>
+                    <div className="w-5 h-5 rounded-full flex items-center justify-center text-label font-bold" style={{ backgroundColor: m.avatarColor, color: 'white' }}>
                       {m.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                     </div>
                     <span className="truncate">{m.name}</span>
@@ -684,13 +684,13 @@ export default function TaskDetailPanel() {
                   const author = getMemberById(c.authorId);
                   return (
                     <div key={c.id} className="flex gap-2">
-                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold shrink-0 mt-0.5" style={{ backgroundColor: author?.avatarColor || '#888', color: 'white' }}>
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-label font-bold shrink-0 mt-0.5" style={{ backgroundColor: author?.avatarColor || '#888', color: 'white' }}>
                         {author?.name.split(' ').map(n => n[0]).join('').slice(0, 2) || '?'}
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-medium text-foreground truncate">{author?.name || 'Inconnu'}</span>
-                          <span className="text-[10px] text-muted-foreground shrink-0">{new Date(c.createdAt).toLocaleDateString('fr-FR')}</span>
+                          <span className="text-label text-muted-foreground shrink-0">{new Date(c.createdAt).toLocaleDateString('fr-FR')}</span>
                         </div>
                         <RichTextDisplay content={c.content} className="text-sm mt-0.5 break-words" />
                       </div>
@@ -814,7 +814,7 @@ function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {
                 </button>
               </div>
               {/* Metadata row */}
-              <div className="flex items-center gap-1.5 flex-wrap pl-[30px] sm:pl-[34px] pb-1.5 text-[10px]">
+              <div className="flex items-center gap-1.5 flex-wrap pl-[30px] sm:pl-[34px] pb-1.5 text-label">
                 <PriorityBadge priority={st.priority} />
                 {st.dueDate && (
                   <span className={`${isOverdue ? 'text-priority-urgent font-medium' : 'text-muted-foreground'}`}>

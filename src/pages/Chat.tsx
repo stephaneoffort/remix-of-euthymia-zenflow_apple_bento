@@ -588,7 +588,7 @@ export default function Chat() {
 
   // Avatar component with presence indicator
   const MemberAvatar = ({ member, size = 'md', showPresence = false }: { member: TeamMember | undefined; size?: 'sm' | 'md'; showPresence?: boolean }) => {
-    const s = size === 'sm' ? 'w-6 h-6 text-[10px]' : 'w-8 h-8 text-xs';
+    const s = size === 'sm' ? 'w-6 h-6 text-label' : 'w-8 h-8 text-xs';
     const dotSize = size === 'sm' ? 'w-2 h-2 border' : 'w-2.5 h-2.5 border-2';
     const online = member ? isOnline(member.id) : false;
     const avatar = member?.avatar_url ? (
@@ -630,7 +630,7 @@ export default function Chat() {
           <div className="flex-1 overflow-y-auto">
             {/* Channels section */}
             <div className="p-2">
-              <p className="px-3 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+              <p className="px-3 py-1.5 text-label font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
                 <Hash className="w-3 h-3" />
                 Canaux
               </p>
@@ -650,7 +650,7 @@ export default function Chat() {
                       <span>{cat.icon}</span>
                       <span className="flex-1 text-left">{cat.name}</span>
                       {unread > 0 && (
-                        <span className="text-[10px] bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 min-w-[18px] text-center font-medium">
+                        <span className="text-label bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 min-w-[18px] text-center font-medium">
                           {unread > 99 ? '99+' : unread}
                         </span>
                       )}
@@ -662,7 +662,7 @@ export default function Chat() {
 
             {/* Direct Messages section */}
             <div className="p-2 border-t border-border">
-              <p className="px-3 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+              <p className="px-3 py-1.5 text-label font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
                 <MessageCircle className="w-3 h-3" />
                 Messages directs
               </p>
@@ -691,7 +691,7 @@ export default function Chat() {
                       )}
                       <span className="flex-1 text-left truncate">{getConvoName(convo.id)}</span>
                       {dmUnread > 0 && (
-                        <span className="text-[10px] bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 min-w-[18px] text-center font-medium">
+                        <span className="text-label bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 min-w-[18px] text-center font-medium">
                           {dmUnread > 99 ? '99+' : dmUnread}
                         </span>
                       )}
@@ -702,7 +702,7 @@ export default function Chat() {
 
               {/* Member list for new DM */}
               <div className="mt-2 pt-2 border-t border-border/50">
-                <p className="px-3 py-1 text-[10px] text-muted-foreground">Nouveau message</p>
+                <p className="px-3 py-1 text-label text-muted-foreground">Nouveau message</p>
                 <div className="space-y-0.5">
                   {otherMembers.map(m => (
                     <button

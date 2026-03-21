@@ -195,7 +195,7 @@ export default function AppSidebar() {
                 >
                   {f.icon}
                   {f.key === 'overdue' && overdueCount > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-priority-urgent text-sidebar-fg-bright rounded-full text-[9px] flex items-center justify-center font-bold">
+                    <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-priority-urgent text-sidebar-fg-bright rounded-full text-label flex items-center justify-center font-bold">
                       {overdueCount > 9 ? '9+' : overdueCount}
                     </span>
                   )}
@@ -804,7 +804,7 @@ function CollapsedChatIcon() {
         >
           <MessageCircle className="w-4.5 h-4.5" />
           {totalUnread > 0 && (
-            <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-primary text-primary-foreground rounded-full text-[9px] flex items-center justify-center font-bold">
+            <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-primary text-primary-foreground rounded-full text-label flex items-center justify-center font-bold">
               {totalUnread > 9 ? '9+' : totalUnread}
             </span>
           )}

@@ -68,7 +68,7 @@ export function AvatarGroup({ memberIds, getMemberById }: { memberIds: string[];
             <div
               key={id}
               title={m.name}
-              className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ring-2 ring-card"
+              className="w-6 h-6 rounded-full flex items-center justify-center text-label font-bold ring-2 ring-card"
               style={{ backgroundColor: m.avatarColor, color: 'white' }}
             >
               {m.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}

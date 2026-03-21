@@ -348,7 +348,7 @@ function MobileTreeNode({ node, depth, expandedIds, toggleExpand, onSelectTask, 
             <StatusBadge status={task.status} />
             <PriorityBadge priority={task.priority} />
             {hasChildren && (
-              <span className="text-[10px] text-muted-foreground ml-auto">
+              <span className="text-label text-muted-foreground ml-auto">
                 {node.doneDescendants}/{node.totalDescendants}
               </span>
             )}
@@ -361,7 +361,7 @@ function MobileTreeNode({ node, depth, expandedIds, toggleExpand, onSelectTask, 
                   style={{ width: `${progress}%`, backgroundColor: progressColor }}
                 />
               </div>
-              <span className="text-[10px] font-medium text-muted-foreground">{progress}%</span>
+              <span className="text-label font-medium text-muted-foreground">{progress}%</span>
             </div>
           )}
         </div>
@@ -493,11 +493,11 @@ function MindMapNode({ node, depth, expandedIds, toggleExpand, onSelectTask, onA
                 <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
                   <div className="h-full rounded-full transition-all" style={{ width: `${progress}%`, backgroundColor: progressColor }} />
                 </div>
-                <span className="text-[10px] font-medium text-muted-foreground whitespace-nowrap">{progress}%</span>
+                <span className="text-label font-medium text-muted-foreground whitespace-nowrap">{progress}%</span>
               </div>
             )}
             {hasChildren && (
-              <p className="text-[10px] text-muted-foreground mt-0.5">
+              <p className="text-label text-muted-foreground mt-0.5">
                 {node.doneDescendants}/{node.totalDescendants} sous-tâche{node.totalDescendants !== 1 ? 's' : ''}
               </p>
             )}

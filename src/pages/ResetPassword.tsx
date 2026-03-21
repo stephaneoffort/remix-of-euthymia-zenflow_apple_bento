@@ -91,6 +91,8 @@ export default function ResetPassword() {
               <Input
                 id="new-password"
                 type="password"
+                autoComplete="new-password"
+                enterKeyHint="next"
                 required
                 value={password}
                 onChange={e => setPassword(e.target.value)}
@@ -102,6 +104,8 @@ export default function ResetPassword() {
               <Input
                 id="confirm-password"
                 type="password"
+                autoComplete="new-password"
+                enterKeyHint="go"
                 required
                 value={confirm}
                 onChange={e => setConfirm(e.target.value)}

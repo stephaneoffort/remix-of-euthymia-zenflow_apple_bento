@@ -112,7 +112,7 @@ export default function Auth() {
                   </p>
                   <div className="space-y-2">
                     <Label htmlFor="forgot-email">Email</Label>
-                    <Input id="forgot-email" type="email" required value={forgotEmail} onChange={e => setForgotEmail(e.target.value)} placeholder="email@exemple.com" />
+                    <Input id="forgot-email" type="email" inputMode="email" autoComplete="email" enterKeyHint="send" required value={forgotEmail} onChange={e => setForgotEmail(e.target.value)} placeholder="email@exemple.com" />
                   </div>
                   <Button type="submit" className="w-full" disabled={submitting}>
                     {submitting ? 'Envoi...' : 'Envoyer le lien'}
@@ -125,7 +125,7 @@ export default function Auth() {
                 <form onSubmit={handleLogin} className="space-y-4 mt-4">
                   <div className="space-y-2">
                     <Label htmlFor="login-email">Email</Label>
-                    <Input id="login-email" type="email" required value={loginEmail} onChange={e => setLoginEmail(e.target.value)} placeholder="email@exemple.com" />
+                    <Input id="login-email" type="email" inputMode="email" autoComplete="email" enterKeyHint="next" required value={loginEmail} onChange={e => setLoginEmail(e.target.value)} placeholder="email@exemple.com" />
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
@@ -134,7 +134,7 @@ export default function Auth() {
                         Mot de passe oublié ?
                       </button>
                     </div>
-                    <Input id="login-password" type="password" required value={loginPassword} onChange={e => setLoginPassword(e.target.value)} placeholder="••••••" />
+                    <Input id="login-password" type="password" autoComplete="current-password" enterKeyHint="go" required value={loginPassword} onChange={e => setLoginPassword(e.target.value)} placeholder="••••••" />
                   </div>
                   <Button type="submit" className="w-full" disabled={submitting}>
                     {submitting ? 'Connexion...' : 'Se connecter'}
@@ -153,15 +153,15 @@ export default function Auth() {
               <form onSubmit={handleSignup} className="space-y-4 mt-4">
                 <div className="space-y-2">
                   <Label htmlFor="signup-email">Email</Label>
-                  <Input id="signup-email" type="email" required value={signupEmail} onChange={e => setSignupEmail(e.target.value)} placeholder="email@exemple.com" />
+                  <Input id="signup-email" type="email" inputMode="email" autoComplete="email" enterKeyHint="next" required value={signupEmail} onChange={e => setSignupEmail(e.target.value)} placeholder="email@exemple.com" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-password">Mot de passe</Label>
-                  <Input id="signup-password" type="password" required value={signupPassword} onChange={e => setSignupPassword(e.target.value)} placeholder="6 caractères minimum" />
+                  <Input id="signup-password" type="password" autoComplete="new-password" enterKeyHint="next" required value={signupPassword} onChange={e => setSignupPassword(e.target.value)} placeholder="6 caractères minimum" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-confirm">Confirmer le mot de passe</Label>
-                  <Input id="signup-confirm" type="password" required value={signupConfirm} onChange={e => setSignupConfirm(e.target.value)} placeholder="••••••" />
+                  <Input id="signup-confirm" type="password" autoComplete="new-password" enterKeyHint="go" required value={signupConfirm} onChange={e => setSignupConfirm(e.target.value)} placeholder="••••••" />
                 </div>
 
                 <Button type="submit" className="w-full" disabled={submitting}>

@@ -125,7 +125,7 @@ export default function Auth() {
                 <form onSubmit={handleLogin} className="space-y-4 mt-4">
                   <div className="space-y-2">
                     <Label htmlFor="login-email">Email</Label>
-                    <Input id="login-email" type="email" required value={loginEmail} onChange={e => setLoginEmail(e.target.value)} placeholder="email@exemple.com" />
+                    <Input id="login-email" type="email" inputMode="email" autoComplete="email" enterKeyHint="next" required value={loginEmail} onChange={e => setLoginEmail(e.target.value)} placeholder="email@exemple.com" />
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">

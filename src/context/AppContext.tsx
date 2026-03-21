@@ -114,7 +114,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     _setSelectedSpaceId(id);
     if (id) _setSelectedProjectId(null);
   }, []);
-  const [selectedView, setSelectedView] = useState<ViewType>('kanban');
+  const [selectedView, setSelectedView] = useState<ViewType>(() => 
+    window.matchMedia('(max-width: 768px)').matches ? 'list' : 'kanban'
+  );
   const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);

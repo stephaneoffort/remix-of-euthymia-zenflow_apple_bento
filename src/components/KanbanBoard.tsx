@@ -2,8 +2,13 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useApp } from '@/context/AppContext';
 import { Task } from '@/types';
 import { PriorityBadge, AvatarGroup, SubtaskProgress } from '@/components/TaskBadges';
-import { Plus, GripVertical, GripHorizontal, ChevronRight, ChevronsLeftRight, ChevronsRightLeft, Repeat } from 'lucide-react';
+import { Plus, GripVertical, GripHorizontal, ChevronRight, ChevronsLeftRight, ChevronsRightLeft, Repeat, ArrowRightLeft } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 
 const STATUS_COLORS: Record<string, string> = {
   todo: 'bg-status-todo',
@@ -245,8 +250,8 @@ export default function KanbanBoard() {
             return (
               <div
                 key={task.id}
-                draggable
-                onDragStart={e => handleTaskDragStart(e, task.id)}
+                draggable={!isMobile}
+                onDragStart={e => !isMobile && handleTaskDragStart(e, task.id)}
                 onDragEnd={() => setDraggedTaskId(null)}
                 onClick={() => setSelectedTaskId(task.id)}
                 className={`bg-card rounded-lg border p-2.5 sm:p-3 cursor-pointer hover:shadow-md transition-shadow group ${
@@ -286,7 +291,38 @@ export default function KanbanBoard() {
                           <span key={tag} className="text-[10px] bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full">{tag}</span>
                         ))}
                       </div>
-                      <AvatarGroup memberIds={task.assigneeIds} getMemberById={getMemberById} />
+                      <div className="flex items-center gap-1.5">
+                        {/* Mobile: Move to status popover */}
+                        {isMobile && (
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <button
+                                onClick={e => e.stopPropagation()}
+                                className="p-1.5 -m-0.5 rounded-md bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                              >
+                                <ArrowRightLeft className="w-3.5 h-3.5" />
+                              </button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-44 p-1" align="end" onClick={e => e.stopPropagation()}>
+                              <p className="text-xs font-semibold text-muted-foreground px-2.5 py-1.5">Déplacer vers…</p>
+                              {allStatuses.filter(s => s !== task.status).map(s => (
+                                <button
+                                  key={s}
+                                  onClick={e => {
+                                    e.stopPropagation();
+                                    moveTask(task.id, s);
+                                  }}
+                                  className="w-full text-left flex items-center gap-2 px-2.5 py-2 rounded-md text-sm hover:bg-muted transition-colors"
+                                >
+                                  <div className={`w-2.5 h-2.5 rounded-full ${getStatusColor(s)}`} />
+                                  {getStatusLabel(s)}
+                                </button>
+                              ))}
+                            </PopoverContent>
+                          </Popover>
+                        )}
+                        <AvatarGroup memberIds={task.assigneeIds} getMemberById={getMemberById} />
+                      </div>
                     </div>
                   </div>
                 </div>

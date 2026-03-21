@@ -27,7 +27,7 @@ export default function CommandPalette({ externalOpen, onExternalOpenChange }: C
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
-        setOpen(prev => !prev);
+        setOpen(!open);
       }
     };
     window.addEventListener('keydown', handler);

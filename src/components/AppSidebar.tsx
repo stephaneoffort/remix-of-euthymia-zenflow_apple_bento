@@ -37,13 +37,6 @@ const QUICK_FILTERS: { key: QuickFilter; label: string; icon: React.ReactNode }[
   { key: 'overdue', label: 'En retard', icon: <AlertCircle className="w-4 h-4" /> },
 ];
 
-const VIEW_OPTIONS: { key: ViewType; label: string; icon: React.ReactNode }[] = [
-  { key: 'kanban', label: 'Kanban', icon: <LayoutGrid className="w-4 h-4" /> },
-  { key: 'list', label: 'Liste', icon: <List className="w-4 h-4" /> },
-  { key: 'calendar', label: 'Calendrier', icon: <Calendar className="w-4 h-4" /> },
-  { key: 'workload', label: 'Charge', icon: <BarChart3 className="w-4 h-4" /> },
-  { key: 'mindmap', label: 'Mind Map', icon: <Network className="w-4 h-4" /> },
-];
 
 const SPACE_ICONS = ['📁', '🚀', '💡', '🎯', '📊', '🛠️', '📚', '🌟', '🧘', '🎨'];
 const PROJECT_COLORS = ['#4f46e5', '#0891b2', '#059669', '#d97706', '#dc2626', '#7c3aed', '#db2777', '#0d9488'];

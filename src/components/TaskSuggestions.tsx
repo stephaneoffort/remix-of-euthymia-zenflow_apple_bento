@@ -152,7 +152,7 @@ export default function TaskSuggestions({ open, onClose }: TaskSuggestionsProps)
                         {s.description && (
                           <p className="text-xs text-muted-foreground mt-1">{s.description}</p>
                         )}
-                        <span className={`inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-medium uppercase ${prioColors[s.priority] || prioColors.normal}`}>
+                        <span className={`inline-block mt-2 px-2 py-0.5 rounded text-label font-medium uppercase ${prioColors[s.priority] || prioColors.normal}`}>
                           {s.priority}
                         </span>
                       </div>

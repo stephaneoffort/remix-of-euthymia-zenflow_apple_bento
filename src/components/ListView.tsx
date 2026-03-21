@@ -107,7 +107,7 @@ export default function ListView() {
                 {!selectedProjectId && (() => {
                   const proj = getProjectForTask(task.listId);
                   return proj ? (
-                    <span className="text-[10px] text-muted-foreground flex items-center gap-1 mb-0.5">
+                    <span className="text-label text-muted-foreground flex items-center gap-1 mb-0.5">
                       <span className="w-1.5 h-1.5 rounded-sm shrink-0" style={{ backgroundColor: proj.color }} />
                       {proj.name}
                     </span>
@@ -201,7 +201,7 @@ export default function ListView() {
                 {!selectedProjectId && (() => {
                   const proj = getProjectForTask(task.listId);
                   return proj ? (
-                    <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                    <span className="text-label text-muted-foreground flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-sm shrink-0" style={{ backgroundColor: proj.color }} />
                       {proj.name}
                     </span>

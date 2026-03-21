@@ -199,7 +199,7 @@ export default function Index() {
               >
                 <Search className="w-3.5 h-3.5" />
                 <span>Rechercher…</span>
-                <kbd className="ml-2 px-1.5 py-0.5 text-[10px] font-medium bg-background rounded border border-border">⌘K</kbd>
+                <kbd className="ml-2 px-1.5 py-0.5 text-label font-medium bg-background rounded border border-border">⌘K</kbd>
               </button>
               {isMobile && (
                 <button
@@ -223,7 +223,7 @@ export default function Index() {
                       <Filter className="w-3.5 h-3.5" />
                       <span>Filtrer</span>
                       {filterCount > 0 && (
-                        <span className="bg-primary text-primary-foreground rounded-full w-4 h-4 flex items-center justify-center text-[10px]">
+                        <span className="bg-primary text-primary-foreground rounded-full w-4 h-4 flex items-center justify-center text-label">
                           {filterCount}
                         </span>
                       )}

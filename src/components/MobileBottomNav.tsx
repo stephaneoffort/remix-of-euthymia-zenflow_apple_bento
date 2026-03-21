@@ -71,7 +71,7 @@ export default function MobileBottomNav() {
           } active:text-foreground`}
         >
           <Home className="w-5 h-5" />
-          <span className="text-[10px] font-medium">Accueil</span>
+          <span className="text-label font-medium">Accueil</span>
         </button>
 
         {/* Quick Add - central prominent button */}
@@ -147,12 +147,12 @@ export default function MobileBottomNav() {
           <div className="relative">
             <MessageCircle className="w-5 h-5" />
             {totalUnread > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-[9px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
+              <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-label font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
                 {totalUnread > 99 ? '99+' : totalUnread}
               </span>
             )}
           </div>
-          <span className="text-[10px] font-medium">Chat</span>
+          <span className="text-label font-medium">Chat</span>
         </button>
 
         {/* Menu / Sidebar */}
@@ -161,7 +161,7 @@ export default function MobileBottomNav() {
           className="flex flex-col items-center justify-center gap-0.5 min-w-[56px] py-1 text-muted-foreground active:text-foreground transition-colors"
         >
           <Menu className="w-5 h-5" />
-          <span className="text-[10px] font-medium">Menu</span>
+          <span className="text-label font-medium">Menu</span>
         </button>
       </div>
     </div>

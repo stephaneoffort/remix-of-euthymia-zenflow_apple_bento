@@ -96,10 +96,10 @@ function DraggableTask({ task, onClick, members }: { task: Task; onClick: () => 
       <HoverCardContent side="right" align="start" className="w-64 p-3 space-y-2 text-xs z-50">
         <p className="font-semibold text-sm text-foreground leading-tight">{task.title}</p>
         <div className="flex items-center gap-2 flex-wrap">
-          <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.normal}`}>
+          <span className={`px-1.5 py-0.5 rounded text-label font-medium ${PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.normal}`}>
             {PRIORITY_LABELS[task.priority] || task.priority}
           </span>
-          <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-muted text-muted-foreground">
+          <span className="px-1.5 py-0.5 rounded text-label font-medium bg-muted text-muted-foreground">
             {STATUS_LABELS[task.status] || task.status}
           </span>
         </div>
@@ -121,7 +121,7 @@ function DraggableTask({ task, onClick, members }: { task: Task; onClick: () => 
         {task.tags.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {task.tags.map(tag => (
-              <Badge key={tag} variant="secondary" className="text-[9px] px-1.5 py-0">{tag}</Badge>
+              <Badge key={tag} variant="secondary" className="text-label px-1.5 py-0">{tag}</Badge>
             ))}
           </div>
         )}
@@ -178,18 +178,18 @@ function MobileTaskCard({ task, onClick, members }: { task: Task; onClick: () =>
     >
       <div className="flex items-start justify-between gap-2">
         <p className="text-sm font-medium text-foreground leading-tight flex-1">{task.title}</p>
-        <span className={`shrink-0 px-1.5 py-0.5 rounded text-[10px] font-medium ${PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.normal}`}>
+        <span className={`shrink-0 px-1.5 py-0.5 rounded text-label font-medium ${PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.normal}`}>
           {PRIORITY_LABELS[task.priority] || task.priority}
         </span>
       </div>
       <div className="flex items-center gap-2 mt-2">
-        <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-muted text-muted-foreground">
+        <span className="px-1.5 py-0.5 rounded text-label font-medium bg-muted text-muted-foreground">
           {STATUS_LABELS[task.status] || task.status}
         </span>
         {assignees.length > 0 && (
           <div className="flex -space-x-1">
             {assignees.slice(0, 3).map(a => (
-              <span key={a.id} className="w-5 h-5 rounded-full text-[9px] font-bold text-white flex items-center justify-center border-2 border-card" style={{ backgroundColor: a.avatarColor }}>
+              <span key={a.id} className="w-5 h-5 rounded-full text-label font-bold text-white flex items-center justify-center border-2 border-card" style={{ backgroundColor: a.avatarColor }}>
                 {a.name.charAt(0).toUpperCase()}
               </span>
             ))}
@@ -198,7 +198,7 @@ function MobileTaskCard({ task, onClick, members }: { task: Task; onClick: () =>
         {task.tags.length > 0 && (
           <div className="flex gap-1 overflow-hidden flex-1">
             {task.tags.slice(0, 2).map(tag => (
-              <Badge key={tag} variant="secondary" className="text-[9px] px-1 py-0 shrink-0">{tag}</Badge>
+              <Badge key={tag} variant="secondary" className="text-label px-1 py-0 shrink-0">{tag}</Badge>
             ))}
           </div>
         )}
@@ -401,7 +401,7 @@ export default function CalendarView() {
                     : 'hover:bg-muted'
                 }`}
               >
-                <span className={`text-[10px] font-medium ${isSelected ? 'text-primary-foreground' : 'text-muted-foreground'}`}>
+                <span className={`text-label font-medium ${isSelected ? 'text-primary-foreground' : 'text-muted-foreground'}`}>
                   {DAYS_FR_SHORT[i]}
                 </span>
                 <span className={`text-sm font-bold mt-0.5 ${isSelected ? 'text-primary-foreground' : 'text-foreground'}`}>
@@ -522,7 +522,7 @@ export default function CalendarView() {
                   <DraggableTask key={t.id} task={t} onClick={() => setSelectedTaskId(t.id)} members={teamMembers} />
                 ))}
                 {dayTasks.length > 3 && (
-                  <span className="text-[10px] text-muted-foreground px-1">+{dayTasks.length - 3}</span>
+                  <span className="text-label text-muted-foreground px-1">+{dayTasks.length - 3}</span>
                 )}
                 {addingForDate === dateStr && (
                   <input

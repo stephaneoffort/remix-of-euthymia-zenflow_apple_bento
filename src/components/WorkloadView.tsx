@@ -142,7 +142,7 @@ export default function WorkloadView() {
                 return (
                   <span
                     key={p}
-                    className="inline-flex items-center text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+                    className="inline-flex items-center text-label font-medium px-1.5 py-0.5 rounded-full"
                     style={{ backgroundColor: `${PRIORITY_COLORS[p]}20`, color: PRIORITY_COLORS[p] }}
                   >
                     {PRIORITY_LABELS[p]}: {count}
@@ -320,7 +320,7 @@ export default function WorkloadView() {
                   return (
                     <span
                       key={p}
-                      className="inline-flex items-center text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+                      className="inline-flex items-center text-label font-medium px-1.5 py-0.5 rounded-full"
                       style={{ backgroundColor: `${PRIORITY_COLORS[p]}20`, color: PRIORITY_COLORS[p] }}
                     >
                       {PRIORITY_LABELS[p]}: {count}

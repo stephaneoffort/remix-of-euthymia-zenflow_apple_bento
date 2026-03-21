@@ -183,7 +183,7 @@ export default function KanbanBoard() {
         <span className="text-xs font-semibold text-foreground select-none sm:[writing-mode:vertical-lr] sm:rotate-180">
           {getStatusLabel(status)}
         </span>
-        <span className="text-[10px] text-muted-foreground sm:mt-2 ml-auto sm:ml-0">{count}</span>
+        <span className="text-label text-muted-foreground sm:mt-2 ml-auto sm:ml-0">{count}</span>
         <ChevronRight className="w-3.5 h-3.5 text-muted-foreground sm:hidden shrink-0" />
       </div>
     );
@@ -313,7 +313,7 @@ export default function KanbanBoard() {
                 />
               </div>
               <span className="text-xs font-semibold tabular-nums text-foreground">{pct}%</span>
-              <span className="text-[10px] text-muted-foreground">{doneTasks}/{projectTasks.length}</span>
+              <span className="text-label text-muted-foreground">{doneTasks}/{projectTasks.length}</span>
             </div>
           </div>
         );
@@ -427,7 +427,7 @@ function KanbanCard({
           {!selectedProjectId && (() => {
             const proj = getProjectName(task.listId);
             return proj ? (
-              <span className="text-[10px] text-muted-foreground flex items-center gap-1 mb-1">
+              <span className="text-label text-muted-foreground flex items-center gap-1 mb-1">
                 <span className="w-1.5 h-1.5 rounded-sm shrink-0" style={{ backgroundColor: proj.color }} />
                 {proj.name}
               </span>
@@ -437,7 +437,7 @@ function KanbanCard({
           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
             <PriorityBadge priority={task.priority} />
             {task.dueDate && (
-              <span className={`text-[10px] sm:text-xs ${isOverdue ? 'text-priority-urgent font-medium' : 'text-muted-foreground'}`}>
+              <span className={`text-label sm:text-xs ${isOverdue ? 'text-priority-urgent font-medium' : 'text-muted-foreground'}`}>
                 {new Date(task.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
               </span>
             )}
@@ -451,7 +451,7 @@ function KanbanCard({
                 </span>
               )}
               {task.tags.slice(0, 2).map(tag => (
-                <span key={tag} className="text-[10px] bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full">{tag}</span>
+                <span key={tag} className="text-label bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full">{tag}</span>
               ))}
             </div>
             <div className="flex items-center gap-1.5">

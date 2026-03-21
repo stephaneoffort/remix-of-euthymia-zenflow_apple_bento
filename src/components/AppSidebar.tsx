@@ -438,7 +438,7 @@ export default function AppSidebar() {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button
-                        className="p-1 rounded hover:bg-sidebar-hover text-sidebar-fg opacity-40 group-hover:opacity-100 transition-opacity mr-1"
+                        className="p-2 -m-1 rounded-md hover:bg-sidebar-hover text-sidebar-fg opacity-40 group-hover:opacity-100 transition-opacity mr-0.5"
                         onClick={e => e.stopPropagation()}
                       >
                         <MoreHorizontal className="w-4 h-4" />

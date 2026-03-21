@@ -162,10 +162,9 @@ export default function AppSidebar() {
   };
 
   if (sidebarCollapsed) {
-    const activeFilter = QUICK_FILTERS.find(f => f.key === quickFilter);
     return (
       <TooltipProvider delayDuration={200}>
-        <div className="w-12 bg-sidebar-bg flex flex-col items-center py-3 border-r border-sidebar-border-color shrink-0 gap-1">
+        <div className="w-[52px] bg-sidebar-bg flex flex-col items-center py-3 border-r border-sidebar-border-color shrink-0 gap-0.5">
           {/* Expand */}
           <Tooltip>
             <TooltipTrigger asChild>
@@ -176,7 +175,7 @@ export default function AppSidebar() {
             <TooltipContent side="right">Ouvrir la sidebar</TooltipContent>
           </Tooltip>
 
-          <div className="w-6 border-t border-sidebar-border-color my-1" />
+          <div className="w-6 border-t border-sidebar-border-color my-1.5" />
 
           {/* Quick Filters */}
           {QUICK_FILTERS.map(f => (
@@ -206,13 +205,74 @@ export default function AppSidebar() {
             </Tooltip>
           ))}
 
-          <div className="w-6 border-t border-sidebar-border-color my-1" />
+          <div className="w-6 border-t border-sidebar-border-color my-1.5" />
+
+          {/* Spaces & Projects */}
+          <div className="flex flex-col items-center gap-0.5 overflow-y-auto scrollbar-none flex-1 w-full px-1">
+            {visibleSpaces.map(space => {
+              const spaceProjects = getProjectsForSpace(space.id);
+              const isSpaceSelected = selectedSpaceId === space.id && !selectedProjectId;
+              return (
+                <React.Fragment key={space.id}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => {
+                          setSelectedSpaceId(space.id);
+                          setSelectedProjectId(null);
+                          setQuickFilter('all');
+                        }}
+                        className={`w-9 h-9 rounded-md flex items-center justify-center text-sm transition-colors shrink-0 ${
+                          isSpaceSelected
+                            ? 'bg-sidebar-active text-sidebar-fg-bright'
+                            : 'text-sidebar-fg hover:bg-sidebar-hover'
+                        }`}
+                      >
+                        {space.icon}
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">{space.name}</TooltipContent>
+                  </Tooltip>
+                  {spaceProjects.map(proj => {
+                    const isActive = selectedProjectId === proj.id;
+                    return (
+                      <Tooltip key={proj.id}>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={() => {
+                              setSelectedProjectId(proj.id);
+                              setQuickFilter('all');
+                            }}
+                            className={`w-9 h-7 rounded-md flex items-center justify-center transition-colors shrink-0 ${
+                              isActive
+                                ? 'bg-sidebar-active'
+                                : 'hover:bg-sidebar-hover'
+                            }`}
+                          >
+                            <div
+                              className={`w-3 h-3 rounded-sm transition-transform ${isActive ? 'scale-125' : ''}`}
+                              style={{ backgroundColor: proj.color }}
+                            />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="right">
+                          <span className="flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-sm" style={{ backgroundColor: proj.color }} />
+                            {proj.name}
+                          </span>
+                        </TooltipContent>
+                      </Tooltip>
+                    );
+                  })}
+                </React.Fragment>
+              );
+            })}
+          </div>
+
+          <div className="w-6 border-t border-sidebar-border-color my-1.5" />
 
           {/* Chat */}
           <CollapsedChatIcon />
-
-          {/* Spacer */}
-          <div className="flex-1" />
 
           {/* Settings */}
           <Tooltip>

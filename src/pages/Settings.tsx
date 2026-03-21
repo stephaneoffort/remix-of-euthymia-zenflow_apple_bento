@@ -524,7 +524,7 @@ function ChatCategoriesPanel() {
                   className="flex-1 h-8 text-sm"
                   autoFocus
                 />
-                <Button variant="default" size="sm" className="h-8 w-8 p-0" onClick={handleSaveEdit}>
+                <Button variant="default" size="sm" className="h-8 w-8 p-0 btn-icon-touch" onClick={handleSaveEdit}>
                   <Check className="w-4 h-4" />
                 </Button>
                 <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={() => setEditingId(null)}>

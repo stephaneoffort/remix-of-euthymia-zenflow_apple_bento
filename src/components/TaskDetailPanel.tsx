@@ -135,7 +135,7 @@ function DateTimeField({ value, onChange }: { value: string | null | undefined; 
 
 
 export default function TaskDetailPanel() {
-  const { selectedTaskId, setSelectedTaskId, getTaskById, updateTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks, teamMembers, allStatuses, getStatusLabel, addAttachment, deleteAttachment } = useApp();
+  const { selectedTaskId, setSelectedTaskId, getTaskById, updateTask, deleteTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks, teamMembers, allStatuses, getStatusLabel, addAttachment, deleteAttachment } = useApp();
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [addingSubtaskFor, setAddingSubtaskFor] = useState<string | null>(null);
   const [newComment, setNewComment] = useState('');
@@ -268,6 +268,19 @@ export default function TaskDetailPanel() {
           ))}
         </div>
         <div className="flex items-center gap-1 shrink-0 ml-2">
+          <button
+            onClick={() => {
+              if (window.confirm('Supprimer cette tâche et ses sous-tâches ?')) {
+                const parentId = task.parentTaskId;
+                deleteTask(task.id);
+                setSelectedTaskId(parentId || null);
+              }
+            }}
+            className="p-1.5 hover:bg-destructive/10 text-muted-foreground hover:text-destructive rounded-md transition-colors"
+            title="Supprimer la tâche"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
           <button onClick={() => setExpanded(!expanded)} className="p-1.5 hover:bg-muted rounded-md transition-colors hidden sm:flex" title={expanded ? 'Réduire' : 'Agrandir'}>
             {expanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
           </button>
@@ -713,7 +726,7 @@ export default function TaskDetailPanel() {
 }
 
 function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {
-  const { getSubtasks, getTaskById, updateTask, setSelectedTaskId, addTask, getMemberById } = useApp();
+  const { getSubtasks, getTaskById, updateTask, deleteTask, setSelectedTaskId, addTask, getMemberById } = useApp();
   const subtasks = getSubtasks(taskId);
   const [addingFor, setAddingFor] = useState<string | null>(null);
   const [newTitle, setNewTitle] = useState('');
@@ -789,6 +802,15 @@ function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {
                   className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-muted rounded shrink-0"
                 >
                   <Plus className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+                <button
+                  onClick={e => {
+                    e.stopPropagation();
+                    if (window.confirm('Supprimer cette sous-tâche ?')) deleteTask(st.id);
+                  }}
+                  className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-destructive/10 rounded shrink-0"
+                >
+                  <Trash2 className="w-3.5 h-3.5 text-muted-foreground hover:text-destructive" />
                 </button>
               </div>
               {/* Metadata row */}

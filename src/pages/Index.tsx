@@ -15,8 +15,9 @@ import CommandPalette from '@/components/CommandPalette';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ViewType } from '@/types';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Drawer, DrawerContent, DrawerTrigger, DrawerTitle } from '@/components/ui/drawer';
 
-import { Sparkles, PanelLeft, Filter, ChevronDown, ChevronUp, LayoutGrid, List, Calendar, BarChart3, Network, Search } from 'lucide-react';
+import { Sparkles, PanelLeft, Filter, ChevronDown, ChevronUp, LayoutGrid, List, Calendar, BarChart3, Network, Search, X } from 'lucide-react';
 
 const VIEW_OPTIONS: { key: ViewType; label: string; icon: React.ReactNode }[] = [
   { key: 'kanban', label: 'Kanban', icon: <LayoutGrid className="w-4 h-4" /> },

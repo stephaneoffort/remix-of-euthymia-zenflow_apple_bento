@@ -105,24 +105,45 @@ export default function Auth() {
             </TabsList>
 
             <TabsContent value="login">
-              <form onSubmit={handleLogin} className="space-y-4 mt-4">
-                <div className="space-y-2">
-                  <Label htmlFor="login-email">Email</Label>
-                  <Input id="login-email" type="email" required value={loginEmail} onChange={e => setLoginEmail(e.target.value)} placeholder="email@exemple.com" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="login-password">Mot de passe</Label>
-                  <Input id="login-password" type="password" required value={loginPassword} onChange={e => setLoginPassword(e.target.value)} placeholder="••••••" />
-                </div>
-                <Button type="submit" className="w-full" disabled={submitting}>
-                  {submitting ? 'Connexion...' : 'Se connecter'}
-                </Button>
+              {forgotMode ? (
+                <form onSubmit={handleForgotPassword} className="space-y-4 mt-4">
+                  <p className="text-sm text-muted-foreground">
+                    Entrez votre email pour recevoir un lien de réinitialisation.
+                  </p>
+                  <div className="space-y-2">
+                    <Label htmlFor="forgot-email">Email</Label>
+                    <Input id="forgot-email" type="email" required value={forgotEmail} onChange={e => setForgotEmail(e.target.value)} placeholder="email@exemple.com" />
+                  </div>
+                  <Button type="submit" className="w-full" disabled={submitting}>
+                    {submitting ? 'Envoi...' : 'Envoyer le lien'}
+                  </Button>
+                  <Button type="button" variant="link" className="w-full text-sm" onClick={() => setForgotMode(false)}>
+                    Retour à la connexion
+                  </Button>
+                </form>
+              ) : (
+                <form onSubmit={handleLogin} className="space-y-4 mt-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="login-email">Email</Label>
+                    <Input id="login-email" type="email" required value={loginEmail} onChange={e => setLoginEmail(e.target.value)} placeholder="email@exemple.com" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="login-password">Mot de passe</Label>
+                      <button type="button" onClick={() => setForgotMode(true)} className="text-xs text-primary hover:underline">
+                        Mot de passe oublié ?
+                      </button>
+                    </div>
+                    <Input id="login-password" type="password" required value={loginPassword} onChange={e => setLoginPassword(e.target.value)} placeholder="••••••" />
+                  </div>
+                  <Button type="submit" className="w-full" disabled={submitting}>
+                    {submitting ? 'Connexion...' : 'Se connecter'}
+                  </Button>
 
-                <div className="relative my-2">
-                  <Separator />
-                  <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">ou</span>
-                </div>
-
+                  <div className="relative my-2">
+                    <Separator />
+                    <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">ou</span>
+                  </div>
                 <OAuthButtons />
               </form>
             </TabsContent>

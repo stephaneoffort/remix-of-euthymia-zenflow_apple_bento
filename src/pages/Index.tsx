@@ -38,9 +38,11 @@ const QUICK_FILTER_TITLES: Record<string, string> = {
 export default function Index() {
   const { selectedProjectId, selectedSpaceId, selectedView, setSelectedView, quickFilter, selectedTaskId, projects, spaces, sidebarCollapsed, setSidebarCollapsed, advancedFilters, setSelectedProjectId, setSelectedSpaceId, setQuickFilter } = useApp();
   const isMobile = useIsMobile();
-  const [filtersVisible, setFiltersVisible] = useState(false);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+
+  const filterCount = advancedFilters.statuses.length + advancedFilters.priorities.length + advancedFilters.assigneeIds.length + advancedFilters.tags.length;
 
   const project = projects.find(p => p.id === selectedProjectId);
   const parentSpace = project ? spaces.find(s => s.id === project.spaceId) : null;

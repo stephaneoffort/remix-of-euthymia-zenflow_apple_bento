@@ -123,13 +123,13 @@ export default function Index() {
                 <h2 className="font-bold text-foreground text-sm sm:text-lg truncate">{title}</h2>
               )}
               {/* View selector */}
-              <div className="hidden sm:flex items-center gap-0.5 ml-2 bg-muted/50 rounded-lg p-0.5">
+              <div className="flex items-center gap-0.5 ml-2 bg-muted/50 rounded-lg p-0.5">
                 {VIEW_OPTIONS.map(v => (
                   <Tooltip key={v.key}>
                     <TooltipTrigger asChild>
                       <button
                         onClick={() => setSelectedView(v.key)}
-                        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                        className={`flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors ${
                           selectedView === v.key
                             ? 'bg-background text-foreground shadow-sm'
                             : 'text-muted-foreground hover:text-foreground'

@@ -1,40 +1,21 @@
 import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutGrid, List, Calendar, BarChart3, MessageCircle, Menu, Plus, Home, Network, ChevronDown } from 'lucide-react';
-import { ViewType, Priority, PRIORITY_LABELS } from '@/types';
+import { MessageCircle, Menu, Plus, Home } from 'lucide-react';
+import { Priority, PRIORITY_LABELS } from '@/types';
 import { useChatNotifications } from '@/hooks/useChatNotifications';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Drawer, DrawerContent, DrawerTrigger, DrawerTitle } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-const VIEW_ICONS: Record<ViewType, React.ReactNode> = {
-  kanban: <LayoutGrid className="w-5 h-5" />,
-  list: <List className="w-5 h-5" />,
-  calendar: <Calendar className="w-5 h-5" />,
-  workload: <BarChart3 className="w-5 h-5" />,
-  mindmap: <Network className="w-5 h-5" />,
-};
-
-const VIEW_LABELS: Record<ViewType, string> = {
-  kanban: 'Kanban',
-  list: 'Liste',
-  calendar: 'Agenda',
-  workload: 'Charge',
-  mindmap: 'Mind Map',
-};
-
 export default function MobileBottomNav() {
-  const { selectedView, setSelectedView, setSidebarCollapsed, addTask, selectedProjectId, getListsForProject, projects, spaces } = useApp();
+  const { setSidebarCollapsed, addTask, selectedProjectId, getListsForProject, projects, spaces } = useApp();
   const navigate = useNavigate();
   const location = useLocation();
   const { totalUnread } = useChatNotifications();
-  const [viewSheetOpen, setViewSheetOpen] = useState(false);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
 
-  // Quick add form state
   const [newTitle, setNewTitle] = useState('');
   const [newPriority, setNewPriority] = useState<Priority>('normal');
   const [newProjectId, setNewProjectId] = useState<string>(selectedProjectId || '');
@@ -74,9 +55,6 @@ export default function MobileBottomNav() {
     if (!isHome) navigate('/');
   };
 
-  const views: ViewType[] = ['list', 'kanban', 'calendar', 'workload', 'mindmap'];
-
-  // Build project options with space names
   const projectOptions = projects.map(p => {
     const space = spaces.find(s => s.id === p.spaceId);
     return { id: p.id, label: space ? `${space.name} › ${p.name}` : p.name };
@@ -84,55 +62,17 @@ export default function MobileBottomNav() {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border safe-area-bottom">
-      <div className="flex items-center justify-around h-14 px-1">
-        {/* Menu / Sidebar */}
+      <div className="flex items-center justify-around h-14 px-2">
+        {/* Home */}
         <button
-          onClick={() => setSidebarCollapsed(false)}
-          className="flex flex-col items-center justify-center gap-0.5 min-w-[48px] py-1 text-muted-foreground active:text-foreground transition-colors"
+          onClick={() => { if (!isHome) navigate('/'); }}
+          className={`flex flex-col items-center justify-center gap-0.5 min-w-[56px] py-1 transition-colors ${
+            isHome && !isChat ? 'text-primary' : 'text-muted-foreground'
+          } active:text-foreground`}
         >
-          <Menu className="w-5 h-5" />
-          <span className="text-[10px] font-medium">Menu</span>
+          <Home className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Accueil</span>
         </button>
-
-        {/* View switcher */}
-        <Sheet open={viewSheetOpen} onOpenChange={setViewSheetOpen}>
-          <SheetTrigger asChild>
-            <button
-              className={`flex flex-col items-center justify-center gap-0.5 min-w-[48px] py-1 transition-colors ${
-                isHome && !isChat ? 'text-primary' : 'text-muted-foreground'
-              } active:text-foreground`}
-            >
-              {VIEW_ICONS[selectedView]}
-              <span className="text-[10px] font-medium">{VIEW_LABELS[selectedView]}</span>
-            </button>
-          </SheetTrigger>
-          <SheetContent side="bottom" className="rounded-t-2xl pb-safe">
-            <div className="pt-2 pb-4">
-              <div className="w-10 h-1 bg-muted rounded-full mx-auto mb-4" />
-              <p className="text-sm font-semibold text-foreground mb-3 px-1">Changer de vue</p>
-              <div className="grid grid-cols-2 gap-2">
-                {views.map(v => (
-                  <button
-                    key={v}
-                    onClick={() => {
-                      setSelectedView(v);
-                      setViewSheetOpen(false);
-                      if (!isHome) navigate('/');
-                    }}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
-                      selectedView === v
-                        ? 'bg-primary/10 text-primary border border-primary/20'
-                        : 'bg-muted/50 text-foreground hover:bg-muted'
-                    }`}
-                  >
-                    {VIEW_ICONS[v]}
-                    {VIEW_LABELS[v]}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </SheetContent>
-        </Sheet>
 
         {/* Quick Add - central prominent button */}
         <Drawer open={quickAddOpen} onOpenChange={(open) => {
@@ -197,21 +137,10 @@ export default function MobileBottomNav() {
           </DrawerContent>
         </Drawer>
 
-        {/* Home */}
-        <button
-          onClick={() => { if (!isHome) navigate('/'); }}
-          className={`flex flex-col items-center justify-center gap-0.5 min-w-[48px] py-1 transition-colors ${
-            isHome ? 'text-primary' : 'text-muted-foreground'
-          } active:text-foreground`}
-        >
-          <Home className="w-5 h-5" />
-          <span className="text-[10px] font-medium">Accueil</span>
-        </button>
-
         {/* Chat */}
         <button
           onClick={() => navigate('/chat')}
-          className={`flex flex-col items-center justify-center gap-0.5 min-w-[48px] py-1 relative transition-colors ${
+          className={`flex flex-col items-center justify-center gap-0.5 min-w-[56px] py-1 relative transition-colors ${
             isChat ? 'text-primary' : 'text-muted-foreground'
           } active:text-foreground`}
         >
@@ -224,6 +153,15 @@ export default function MobileBottomNav() {
             )}
           </div>
           <span className="text-[10px] font-medium">Chat</span>
+        </button>
+
+        {/* Menu / Sidebar */}
+        <button
+          onClick={() => setSidebarCollapsed(false)}
+          className="flex flex-col items-center justify-center gap-0.5 min-w-[56px] py-1 text-muted-foreground active:text-foreground transition-colors"
+        >
+          <Menu className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Menu</span>
         </button>
       </div>
     </div>

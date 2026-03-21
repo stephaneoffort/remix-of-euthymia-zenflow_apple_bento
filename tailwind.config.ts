@@ -11,6 +11,15 @@ export default {
       screens: { "2xl": "1400px" },
     },
     extend: {
+      fontSize: {
+        'label': ['0.6875rem', { lineHeight: '1rem' }],      // 11px — badges, counters
+        'caption': ['0.75rem', { lineHeight: '1rem' }],       // 12px — metadata, timestamps
+        'body-sm': ['0.8125rem', { lineHeight: '1.25rem' }],  // 13px — secondary text
+        'body': ['0.875rem', { lineHeight: '1.375rem' }],     // 14px — default body
+        'body-lg': ['0.9375rem', { lineHeight: '1.5rem' }],   // 15px — emphasized body
+        'heading-sm': ['1rem', { lineHeight: '1.5rem' }],     // 16px — section titles
+        'heading': ['1.125rem', { lineHeight: '1.75rem' }],   // 18px — page titles
+      },
       fontFamily: {
         sans: ['"Plus Jakarta Sans"', "system-ui", "ui-sans-serif", "sans-serif"],
       },

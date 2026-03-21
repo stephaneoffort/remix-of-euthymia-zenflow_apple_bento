@@ -15,8 +15,9 @@ import CommandPalette from '@/components/CommandPalette';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ViewType } from '@/types';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Drawer, DrawerContent, DrawerTrigger, DrawerTitle } from '@/components/ui/drawer';
 
-import { Sparkles, PanelLeft, Filter, ChevronDown, ChevronUp, LayoutGrid, List, Calendar, BarChart3, Network, Search } from 'lucide-react';
+import { Sparkles, PanelLeft, Filter, ChevronDown, ChevronUp, LayoutGrid, List, Calendar, BarChart3, Network, Search, X } from 'lucide-react';
 
 const VIEW_OPTIONS: { key: ViewType; label: string; icon: React.ReactNode }[] = [
   { key: 'kanban', label: 'Kanban', icon: <LayoutGrid className="w-4 h-4" /> },
@@ -35,11 +36,13 @@ const QUICK_FILTER_TITLES: Record<string, string> = {
 };
 
 export default function Index() {
-  const { selectedProjectId, selectedSpaceId, selectedView, setSelectedView, quickFilter, selectedTaskId, projects, spaces, sidebarCollapsed, setSidebarCollapsed, advancedFilters, setSelectedProjectId, setSelectedSpaceId, setQuickFilter } = useApp();
+  const { selectedProjectId, selectedSpaceId, selectedView, setSelectedView, quickFilter, selectedTaskId, projects, spaces, sidebarCollapsed, setSidebarCollapsed, advancedFilters, setAdvancedFilters, setSelectedProjectId, setSelectedSpaceId, setQuickFilter } = useApp();
   const isMobile = useIsMobile();
-  const [filtersVisible, setFiltersVisible] = useState(false);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+
+  const filterCount = advancedFilters.statuses.length + advancedFilters.priorities.length + advancedFilters.assigneeIds.length + advancedFilters.tags.length;
 
   const project = projects.find(p => p.id === selectedProjectId);
   const parentSpace = project ? spaces.find(s => s.id === project.spaceId) : null;
@@ -164,24 +167,44 @@ export default function Index() {
                   <Search className="w-4 h-4" />
                 </button>
               )}
-              {/* Mobile filter toggle */}
+              {/* Mobile filter button → opens bottom sheet */}
               {isMobile && (
-                <button
-                  onClick={() => setFiltersVisible(!filtersVisible)}
-                  className={`relative inline-flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-medium border transition-colors ${
-                    hasActiveFilters
-                      ? 'border-primary/30 bg-primary/5 text-primary'
-                      : 'border-border bg-card text-muted-foreground'
-                  }`}
-                >
-                  <Filter className="w-3.5 h-3.5" />
-                  {hasActiveFilters && (
-                    <span className="bg-primary text-primary-foreground rounded-full w-4 h-4 flex items-center justify-center text-[10px]">
-                      {advancedFilters.statuses.length + advancedFilters.priorities.length + advancedFilters.assigneeIds.length + advancedFilters.tags.length}
-                    </span>
-                  )}
-                  {filtersVisible ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                </button>
+                <Drawer open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
+                  <DrawerTrigger asChild>
+                    <button
+                      className={`relative inline-flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-medium border transition-colors ${
+                        hasActiveFilters
+                          ? 'border-primary/30 bg-primary/5 text-primary'
+                          : 'border-border bg-card text-muted-foreground'
+                      }`}
+                    >
+                      <Filter className="w-3.5 h-3.5" />
+                      <span>Filtrer</span>
+                      {filterCount > 0 && (
+                        <span className="bg-primary text-primary-foreground rounded-full w-4 h-4 flex items-center justify-center text-[10px]">
+                          {filterCount}
+                        </span>
+                      )}
+                    </button>
+                  </DrawerTrigger>
+                  <DrawerContent className="pb-safe max-h-[85vh]">
+                    <div className="px-4 pt-2 pb-6 overflow-y-auto">
+                      <div className="flex items-center justify-between mb-4">
+                        <DrawerTitle className="text-base font-semibold text-foreground">Filtres</DrawerTitle>
+                        {hasActiveFilters && (
+                          <button
+                            onClick={() => setAdvancedFilters({ statuses: [], priorities: [], assigneeIds: [], tags: [] })}
+                            className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+                          >
+                            <X className="w-3 h-3" />
+                            Tout effacer
+                          </button>
+                        )}
+                      </div>
+                      <TaskFilterBar />
+                    </div>
+                  </DrawerContent>
+                </Drawer>
               )}
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -200,8 +223,8 @@ export default function Index() {
               </Tooltip>
             </div>
           </div>
-          {/* Filters - always visible on desktop, collapsible on mobile */}
-          {(!isMobile || filtersVisible) && (
+          {/* Filters - desktop only inline */}
+          {!isMobile && (
             <div className="px-3 sm:px-6 pb-2">
               <TaskFilterBar />
             </div>

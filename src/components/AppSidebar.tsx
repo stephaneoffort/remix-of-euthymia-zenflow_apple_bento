@@ -228,6 +228,17 @@ export default function AppSidebar() {
     );
   }
 
+  // Swipe-to-close for mobile sidebar
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const handleTouchStart = (e: React.TouchEvent) => setTouchStart(e.touches[0].clientX);
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStart !== null && isMobile) {
+      const delta = e.changedTouches[0].clientX - touchStart;
+      if (delta < -60) setSidebarCollapsed(true);
+    }
+    setTouchStart(null);
+  };
+
   return (
     <>
       {isMobile && (
@@ -236,7 +247,11 @@ export default function AppSidebar() {
           onClick={() => setSidebarCollapsed(true)}
         />
       )}
-      <div className={`${isMobile ? 'fixed inset-y-0 left-0 z-50' : ''} w-64 bg-sidebar-bg flex flex-col border-r border-sidebar-border-color shrink-0 h-screen`}>
+      <div
+        className={`${isMobile ? 'fixed inset-y-0 left-0 z-50' : ''} w-64 bg-sidebar-bg flex flex-col border-r border-sidebar-border-color shrink-0 h-screen`}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
       {/* Header */}
       <div className="px-4 py-4 flex items-center justify-between border-b border-sidebar-border-color">
         <div className="flex items-center gap-2.5">

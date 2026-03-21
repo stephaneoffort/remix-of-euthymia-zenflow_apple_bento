@@ -157,6 +157,16 @@ export default function AppSidebar() {
     setNewProjectColor(PROJECT_COLORS[0]);
     setAddingProjectForSpace(null);
   };
+  // Swipe-to-close for mobile sidebar
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const handleTouchStart = (e: React.TouchEvent) => setTouchStart(e.touches[0].clientX);
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStart !== null && isMobile) {
+      const delta = e.changedTouches[0].clientX - touchStart;
+      if (delta < -60) setSidebarCollapsed(true);
+    }
+    setTouchStart(null);
+  };
 
   if (sidebarCollapsed) {
     const activeFilter = QUICK_FILTERS.find(f => f.key === quickFilter);

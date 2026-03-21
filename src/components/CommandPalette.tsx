@@ -197,6 +197,10 @@ export default function CommandPalette({ externalOpen, onExternalOpenChange }: C
             >
               {item.type === 'task' && item.status ? (
                 <StatusCircle status={item.status} className="w-4 h-4 shrink-0" />
+              ) : item.type === 'member' && item.avatarColor ? (
+                <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-primary-foreground shrink-0" style={{ backgroundColor: item.avatarColor }}>
+                  {item.title.charAt(0).toUpperCase()}
+                </div>
               ) : (
                 typeIcon(item.type)
               )}

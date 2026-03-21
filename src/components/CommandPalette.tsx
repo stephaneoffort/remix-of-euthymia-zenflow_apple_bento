@@ -37,7 +37,7 @@ export default function CommandPalette({ externalOpen, onExternalOpenChange }: C
   const results = useMemo(() => {
     if (!query.trim()) return [];
     const q = query.toLowerCase().trim();
-    const items: { type: 'task' | 'project' | 'space'; id: string; title: string; subtitle?: string; status?: string }[] = [];
+    const items: { type: 'task' | 'project' | 'space' | 'member'; id: string; title: string; subtitle?: string; status?: string; avatarColor?: string }[] = [];
 
     // Search tasks (title, description, tags)
     for (const task of tasks) {

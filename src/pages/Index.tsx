@@ -189,7 +189,7 @@ export default function Index() {
                 ))}
               </div>
             </div>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 ml-auto shrink-0">
               {/* Search button */}
               <button
                 onClick={() => setSearchOpen(true)}

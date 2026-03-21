@@ -122,6 +122,13 @@ export default function CommandPalette({ externalOpen, onExternalOpenChange }: C
       setSelectedProjectId(null);
       setQuickFilter('all');
       navigate('/');
+    } else if (item.type === 'member') {
+      // Filter tasks by this member
+      setAdvancedFilters({ statuses: [], priorities: [], assigneeIds: [item.id], tags: [] });
+      setSelectedProjectId(null);
+      setSelectedSpaceId(null);
+      setQuickFilter('all');
+      navigate('/');
     }
   };
 

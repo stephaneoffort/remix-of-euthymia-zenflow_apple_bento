@@ -783,10 +783,10 @@ function ChatLink({ handleNavClick }: { handleNavClick: () => void }) {
 }
 function ThemeSwitcher() {
   const { theme, setTheme } = useThemeMode();
-  const options: { key: 'light' | 'dark' | 'mixed'; label: string; icon: React.ReactNode }[] = [
-    { key: 'light', label: 'Clair', icon: <Sun className="w-3.5 h-3.5" /> },
-    { key: 'dark', label: 'Sombre', icon: <Moon className="w-3.5 h-3.5" /> },
-    { key: 'mixed', label: 'Mixte', icon: <SunMoon className="w-3.5 h-3.5" /> },
+  const options: { key: 'light' | 'dark' | 'mixed'; label: string; title: string; icon: React.ReactNode }[] = [
+    { key: 'light', label: 'Clair', title: 'Thème clair', icon: <Sun className="w-3.5 h-3.5" /> },
+    { key: 'dark', label: 'Sombre', title: 'Thème sombre', icon: <Moon className="w-3.5 h-3.5" /> },
+    { key: 'mixed', label: 'Mixte', title: 'Sidebar sombre, contenu clair', icon: <SunMoon className="w-3.5 h-3.5" /> },
   ];
 
   return (

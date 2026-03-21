@@ -834,7 +834,7 @@ export default function Chat() {
                           <button
                             key={emoji}
                             onClick={() => toggleReaction(msg.id, emoji)}
-                            className="w-7 h-7 flex items-center justify-center rounded hover:bg-muted transition-colors text-sm"
+                            className="w-9 h-9 flex items-center justify-center rounded hover:bg-muted transition-colors text-sm"
                           >
                             {emoji}
                           </button>

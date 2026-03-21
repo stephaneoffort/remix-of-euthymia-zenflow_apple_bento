@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useApp } from '@/context/AppContext';
 import AppSidebar from '@/components/AppSidebar';
 import KanbanBoard from '@/components/KanbanBoard';
@@ -12,12 +12,14 @@ import MobileBottomNav from '@/components/MobileBottomNav';
 import TaskSuggestions from '@/components/TaskSuggestions';
 import AIChatPanel from '@/components/AIChatPanel';
 import CommandPalette from '@/components/CommandPalette';
+import KeyboardShortcutsDialog from '@/components/KeyboardShortcutsDialog';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { ViewType } from '@/types';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Drawer, DrawerContent, DrawerTrigger, DrawerTitle } from '@/components/ui/drawer';
 
-import { Sparkles, PanelLeft, Filter, ChevronDown, ChevronUp, LayoutGrid, List, Calendar, BarChart3, Network, Search, X } from 'lucide-react';
+import { Sparkles, PanelLeft, Filter, ChevronDown, ChevronUp, LayoutGrid, List, Calendar, BarChart3, Network, Search, X, Keyboard } from 'lucide-react';
 
 const VIEW_OPTIONS: { key: ViewType; label: string; icon: React.ReactNode }[] = [
   { key: 'kanban', label: 'Kanban', icon: <LayoutGrid className="w-4 h-4" /> },
@@ -36,11 +38,49 @@ const QUICK_FILTER_TITLES: Record<string, string> = {
 };
 
 export default function Index() {
-  const { selectedProjectId, selectedSpaceId, selectedView, setSelectedView, quickFilter, selectedTaskId, projects, spaces, sidebarCollapsed, setSidebarCollapsed, advancedFilters, setAdvancedFilters, setSelectedProjectId, setSelectedSpaceId, setQuickFilter } = useApp();
+  const { selectedProjectId, selectedSpaceId, selectedView, setSelectedView, quickFilter, selectedTaskId, setSelectedTaskId, projects, spaces, sidebarCollapsed, setSidebarCollapsed, advancedFilters, setAdvancedFilters, setSelectedProjectId, setSelectedSpaceId, setQuickFilter, addTask, getListsForProject } = useApp();
   const isMobile = useIsMobile();
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const [quickAddOpen, setQuickAddOpen] = useState(false);
+  const [quickAddTitle, setQuickAddTitle] = useState('');
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    onNewTask: useCallback(() => setQuickAddOpen(true), []),
+    onClosePanel: useCallback(() => {
+      if (selectedTaskId) setSelectedTaskId(null);
+    }, [selectedTaskId, setSelectedTaskId]),
+    onOpenSearch: useCallback(() => setSearchOpen(true), []),
+    onToggleHelp: useCallback(() => setShortcutsOpen(prev => !prev), []),
+  });
+
+  const handleQuickAdd = () => {
+    if (!quickAddTitle.trim()) return;
+    const lists = selectedProjectId ? getListsForProject(selectedProjectId) : [];
+    const listId = lists[0]?.id || 'l1';
+    addTask({
+      title: quickAddTitle.trim(),
+      description: '',
+      status: 'todo',
+      priority: 'normal',
+      dueDate: null,
+      startDate: null,
+      assigneeIds: [],
+      tags: [],
+      parentTaskId: null,
+      listId,
+      comments: [],
+      attachments: [],
+      timeEstimate: null,
+      timeLogged: null,
+      aiSummary: null,
+    });
+    setQuickAddTitle('');
+    setQuickAddOpen(false);
+  };
 
   const filterCount = advancedFilters.statuses.length + advancedFilters.priorities.length + advancedFilters.assigneeIds.length + advancedFilters.tags.length;
 

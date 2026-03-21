@@ -374,32 +374,31 @@ function KanbanCard({
   getMemberById: (id: string) => any;
 }) {
   const [moveOpen, setMoveOpen] = useState(false);
+  const [pressing, setPressing] = useState(false);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scaleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const didLongPress = useRef(false);
+
+  const clearTimers = useCallback(() => {
+    if (longPressTimer.current) { clearTimeout(longPressTimer.current); longPressTimer.current = null; }
+    if (scaleTimer.current) { clearTimeout(scaleTimer.current); scaleTimer.current = null; }
+    setPressing(false);
+  }, []);
 
   const handleTouchStart = useCallback(() => {
     didLongPress.current = false;
+    // Start scale feedback after a short delay to avoid flicker on quick taps
+    scaleTimer.current = setTimeout(() => setPressing(true), 120);
     longPressTimer.current = setTimeout(() => {
       didLongPress.current = true;
+      setPressing(false);
       setMoveOpen(true);
-      // Haptic feedback if available
       if (navigator.vibrate) navigator.vibrate(30);
     }, 500);
   }, []);
 
-  const handleTouchEnd = useCallback(() => {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
-    }
-  }, []);
-
-  const handleTouchMove = useCallback(() => {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
-    }
-  }, []);
+  const handleTouchEnd = useCallback(() => { clearTimers(); }, [clearTimers]);
+  const handleTouchMove = useCallback(() => { clearTimers(); }, [clearTimers]);
 
   const handleClick = useCallback(() => {
     if (!didLongPress.current) {
@@ -418,9 +417,9 @@ function KanbanCard({
       onTouchEnd={isMobile ? handleTouchEnd : undefined}
       onTouchMove={isMobile ? handleTouchMove : undefined}
       onContextMenu={isMobile ? e => e.preventDefault() : undefined}
-      className={`bg-card rounded-lg border p-2.5 sm:p-3 cursor-pointer hover:shadow-md transition-shadow group ${
+      className={`bg-card rounded-lg border p-2.5 sm:p-3 cursor-pointer hover:shadow-md group transition-all duration-200 ${
         draggedTaskId === task.id ? 'opacity-50' : ''
-      } ${isOverdue ? 'border-l-2 border-l-priority-urgent' : ''} ${moveOpen ? 'ring-2 ring-primary/40' : ''}`}
+      } ${isOverdue ? 'border-l-2 border-l-priority-urgent' : ''} ${moveOpen ? 'ring-2 ring-primary/40' : ''} ${pressing ? 'scale-[0.97] shadow-lg ring-2 ring-primary/30' : ''}`}
     >
       <div className="flex items-start gap-1.5">
         <GripVertical className="w-4 h-4 text-muted-foreground/40 opacity-0 group-hover:opacity-100 mt-0.5 shrink-0 cursor-grab hidden sm:block" />

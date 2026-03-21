@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import logoEuthymia from '@/assets/logo_euthymia.jpg';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
-import { ChevronRight, ChevronDown, LayoutGrid, List, Calendar, BarChart3, Network, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle, Shield, Crown, Lock, Sun, Moon, SunMoon, MoreHorizontal, Pencil } from 'lucide-react';
+import { ChevronRight, ChevronDown, LayoutGrid, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle, Shield, Crown, Lock, Sun, Moon, SunMoon, MoreHorizontal, Pencil } from 'lucide-react';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
@@ -10,7 +10,7 @@ import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
-import { QuickFilter, ViewType } from '@/types';
+import { QuickFilter } from '@/types';
 import { useChatNotifications } from '@/hooks/useChatNotifications';
 import { usePresence } from '@/hooks/usePresence';
 import SpaceAccessDialog from '@/components/SpaceAccessDialog';
@@ -37,13 +37,6 @@ const QUICK_FILTERS: { key: QuickFilter; label: string; icon: React.ReactNode }[
   { key: 'overdue', label: 'En retard', icon: <AlertCircle className="w-4 h-4" /> },
 ];
 
-const VIEW_OPTIONS: { key: ViewType; label: string; icon: React.ReactNode }[] = [
-  { key: 'kanban', label: 'Kanban', icon: <LayoutGrid className="w-4 h-4" /> },
-  { key: 'list', label: 'Liste', icon: <List className="w-4 h-4" /> },
-  { key: 'calendar', label: 'Calendrier', icon: <Calendar className="w-4 h-4" /> },
-  { key: 'workload', label: 'Charge', icon: <BarChart3 className="w-4 h-4" /> },
-  { key: 'mindmap', label: 'Mind Map', icon: <Network className="w-4 h-4" /> },
-];
 
 const SPACE_ICONS = ['📁', '🚀', '💡', '🎯', '📊', '🛠️', '📚', '🌟', '🧘', '🎨'];
 const PROJECT_COLORS = ['#4f46e5', '#0891b2', '#059669', '#d97706', '#dc2626', '#7c3aed', '#db2777', '#0d9488'];
@@ -51,7 +44,7 @@ const PROJECT_COLORS = ['#4f46e5', '#0891b2', '#059669', '#d97706', '#dc2626', '
 export default function AppSidebar() {
   const {
     spaces, selectedProjectId, setSelectedProjectId, selectedSpaceId, setSelectedSpaceId,
-    selectedView, setSelectedView, quickFilter, setQuickFilter,
+    quickFilter, setQuickFilter,
     getProjectsForSpace, getTasksForProject, teamMembers, sidebarCollapsed, setSidebarCollapsed, lists,
     tasks, addSpace, addProject, renameSpace, renameProject, deleteSpace, deleteProject,
     reorderSpaces, reorderProjects, canAccessSpace, isSpaceManager, getSpaceManagers, refreshSpaceAccess,

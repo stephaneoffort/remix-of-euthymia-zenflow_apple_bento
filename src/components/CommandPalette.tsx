@@ -211,7 +211,7 @@ export default function CommandPalette({ externalOpen, onExternalOpenChange }: C
                 )}
               </div>
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground shrink-0">
-                {item.type === 'task' ? 'Tâche' : item.type === 'project' ? 'Projet' : 'Espace'}
+                {item.type === 'task' ? 'Tâche' : item.type === 'project' ? 'Projet' : item.type === 'member' ? 'Membre' : 'Espace'}
               </span>
             </button>
           ))}

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useApp } from '@/context/AppContext';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Search, FileText, FolderOpen, Tag, Hash } from 'lucide-react';
+import { Search, FileText, FolderOpen, Tag, Hash, User } from 'lucide-react';
 import { StatusCircle } from '@/components/TaskBadges';
 
 interface CommandPaletteProps {
@@ -19,7 +19,7 @@ export default function CommandPalette({ externalOpen, onExternalOpenChange }: C
   };
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const { tasks, projects, spaces, setSelectedTaskId, setSelectedProjectId, setSelectedSpaceId, setQuickFilter, lists } = useApp();
+  const { tasks, projects, spaces, teamMembers, setSelectedTaskId, setSelectedProjectId, setSelectedSpaceId, setQuickFilter, lists, setAdvancedFilters } = useApp();
   const navigate = useNavigate();
 
   // Cmd+K / Ctrl+K listener
@@ -37,7 +37,7 @@ export default function CommandPalette({ externalOpen, onExternalOpenChange }: C
   const results = useMemo(() => {
     if (!query.trim()) return [];
     const q = query.toLowerCase().trim();
-    const items: { type: 'task' | 'project' | 'space'; id: string; title: string; subtitle?: string; status?: string }[] = [];
+    const items: { type: 'task' | 'project' | 'space' | 'member'; id: string; title: string; subtitle?: string; status?: string; avatarColor?: string }[] = [];
 
     // Search tasks (title, description, tags)
     for (const task of tasks) {
@@ -85,8 +85,23 @@ export default function CommandPalette({ externalOpen, onExternalOpenChange }: C
       }
     }
 
+    // Search team members
+    for (const member of teamMembers) {
+      if (items.length >= 32) break;
+      if (member.name.toLowerCase().includes(q) || member.email.toLowerCase().includes(q)) {
+        const assignedCount = tasks.filter(t => t.assigneeIds.includes(member.id)).length;
+        items.push({
+          type: 'member',
+          id: member.id,
+          title: member.name,
+          subtitle: `${member.role} · ${assignedCount} tâche${assignedCount !== 1 ? 's' : ''}`,
+          avatarColor: member.avatarColor,
+        });
+      }
+    }
+
     return items;
-  }, [query, tasks, projects, spaces, lists]);
+  }, [query, tasks, projects, spaces, lists, teamMembers]);
 
   // Reset index when results change
   useEffect(() => {
@@ -105,6 +120,13 @@ export default function CommandPalette({ externalOpen, onExternalOpenChange }: C
     } else if (item.type === 'space') {
       setSelectedSpaceId(item.id);
       setSelectedProjectId(null);
+      setQuickFilter('all');
+      navigate('/');
+    } else if (item.type === 'member') {
+      // Filter tasks by this member
+      setAdvancedFilters({ statuses: [], priorities: [], assigneeIds: [item.id], tags: [] });
+      setSelectedProjectId(null);
+      setSelectedSpaceId(null);
       setQuickFilter('all');
       navigate('/');
     }
@@ -128,6 +150,7 @@ export default function CommandPalette({ externalOpen, onExternalOpenChange }: C
       case 'task': return <FileText className="w-4 h-4 text-muted-foreground shrink-0" />;
       case 'project': return <FolderOpen className="w-4 h-4 text-muted-foreground shrink-0" />;
       case 'space': return <Hash className="w-4 h-4 text-muted-foreground shrink-0" />;
+      case 'member': return <User className="w-4 h-4 text-muted-foreground shrink-0" />;
       default: return null;
     }
   };
@@ -143,7 +166,7 @@ export default function CommandPalette({ externalOpen, onExternalOpenChange }: C
             value={query}
             onChange={e => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Rechercher des tâches, projets, espaces…"
+            placeholder="Rechercher des tâches, projets, espaces, membres…"
             className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
           />
           <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground bg-muted rounded border border-border">
@@ -174,6 +197,10 @@ export default function CommandPalette({ externalOpen, onExternalOpenChange }: C
             >
               {item.type === 'task' && item.status ? (
                 <StatusCircle status={item.status} className="w-4 h-4 shrink-0" />
+              ) : item.type === 'member' && item.avatarColor ? (
+                <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-primary-foreground shrink-0" style={{ backgroundColor: item.avatarColor }}>
+                  {item.title.charAt(0).toUpperCase()}
+                </div>
               ) : (
                 typeIcon(item.type)
               )}
@@ -184,7 +211,7 @@ export default function CommandPalette({ externalOpen, onExternalOpenChange }: C
                 )}
               </div>
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground shrink-0">
-                {item.type === 'task' ? 'Tâche' : item.type === 'project' ? 'Projet' : 'Espace'}
+                {item.type === 'task' ? 'Tâche' : item.type === 'project' ? 'Projet' : item.type === 'member' ? 'Membre' : 'Espace'}
               </span>
             </button>
           ))}

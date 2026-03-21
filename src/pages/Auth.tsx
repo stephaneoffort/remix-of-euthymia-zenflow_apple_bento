@@ -134,7 +134,7 @@ export default function Auth() {
                         Mot de passe oublié ?
                       </button>
                     </div>
-                    <Input id="login-password" type="password" required value={loginPassword} onChange={e => setLoginPassword(e.target.value)} placeholder="••••••" />
+                    <Input id="login-password" type="password" autoComplete="current-password" enterKeyHint="go" required value={loginPassword} onChange={e => setLoginPassword(e.target.value)} placeholder="••••••" />
                   </div>
                   <Button type="submit" className="w-full" disabled={submitting}>
                     {submitting ? 'Connexion...' : 'Se connecter'}

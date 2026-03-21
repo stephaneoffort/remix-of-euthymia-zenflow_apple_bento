@@ -276,7 +276,7 @@ function MembersPanel() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="h-8 w-8 p-0"
+                      className="h-8 w-8 p-0 btn-icon-touch"
                       onClick={cancelEditing}
                     >
                       <X className="w-4 h-4" />

@@ -191,15 +191,23 @@ export default function Index() {
                     <div className="px-4 pt-2 pb-6 overflow-y-auto">
                       <div className="flex items-center justify-between mb-4">
                         <DrawerTitle className="text-base font-semibold text-foreground">Filtres</DrawerTitle>
-                        {hasActiveFilters && (
+                        <div className="flex items-center gap-3">
+                          {hasActiveFilters && (
+                            <button
+                              onClick={() => setAdvancedFilters({ statuses: [], priorities: [], assigneeIds: [], tags: [] })}
+                              className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+                            >
+                              <X className="w-3 h-3" />
+                              Tout effacer
+                            </button>
+                          )}
                           <button
-                            onClick={() => setAdvancedFilters({ statuses: [], priorities: [], assigneeIds: [], tags: [] })}
-                            className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+                            onClick={() => setMobileFiltersOpen(false)}
+                            className="p-1.5 -mr-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
                           >
-                            <X className="w-3 h-3" />
-                            Tout effacer
+                            <X className="w-4 h-4" />
                           </button>
-                        )}
+                        </div>
                       </div>
                       <TaskFilterBar />
                     </div>

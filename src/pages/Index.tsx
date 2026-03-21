@@ -116,11 +116,13 @@ export default function Index() {
 
   if (!isQuickFilter) {
     if (project && parentSpace) {
-      // Space > Project
+      // Euthymia > Space > Project
+      breadcrumbs.push({ label: 'Euthymia', onClick: navigateToAll });
       breadcrumbs.push({ label: parentSpace.name, icon: parentSpace.icon, onClick: () => navigateToSpace(parentSpace.id) });
       breadcrumbs.push({ label: project.name, color: project.color });
     } else if (space) {
-      // Space only
+      // Euthymia > Space
+      breadcrumbs.push({ label: 'Euthymia', onClick: navigateToAll });
       breadcrumbs.push({ label: space.name, icon: space.icon });
     }
   }

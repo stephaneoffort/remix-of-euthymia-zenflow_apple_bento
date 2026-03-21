@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useApp } from '@/context/AppContext';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Search, FileText, FolderOpen, Tag, Hash } from 'lucide-react';
+import { Search, FileText, FolderOpen, Tag, Hash, User } from 'lucide-react';
 import { StatusCircle } from '@/components/TaskBadges';
 
 interface CommandPaletteProps {

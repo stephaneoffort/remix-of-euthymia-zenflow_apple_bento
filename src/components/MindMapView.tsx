@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useRef, useCallback, useEffect } from 'react';
+import EmptyState from '@/components/EmptyState';
 import { useApp } from '@/context/AppContext';
 import { Task } from '@/types';
 import { PriorityBadge, StatusBadge } from '@/components/TaskBadges';

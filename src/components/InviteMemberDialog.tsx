@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Plus } from 'lucide-react';
+import { Plus, Mail, UserPlus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-
-const AVATAR_COLORS = ['#6366f1', '#f43f5e', '#10b981', '#f59e0b', '#3b82f6', '#8b5cf6', '#ec4899', '#14b8a6'];
 
 interface InviteMemberDialogProps {
   onMemberAdded: () => void;
@@ -34,26 +32,30 @@ export default function InviteMemberDialog({ onMemberAdded }: InviteMemberDialog
     }
 
     setSubmitting(true);
-    const avatarColor = AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)];
-    const memberId = `tm_${crypto.randomUUID()}`;
+    try {
+      const { data, error } = await supabase.functions.invoke('invite-member', {
+        body: {
+          email: email.trim(),
+          name: name.trim(),
+          role: role.trim(),
+          redirectTo: window.location.origin,
+        },
+      });
 
-    const { error } = await supabase.from('team_members').insert({
-      id: memberId,
-      name: name.trim(),
-      email: email.trim(),
-      role: role.trim(),
-      avatar_color: avatarColor,
-    });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
 
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success('Membre ajouté avec succès');
+      toast.success(`Invitation envoyée à ${email.trim()}`, {
+        description: 'Le membre recevra un email pour rejoindre Euthymia.',
+      });
       resetForm();
       setOpen(false);
       onMemberAdded();
+    } catch (err: any) {
+      toast.error(err.message || "Erreur lors de l'invitation");
+    } finally {
+      setSubmitting(false);
     }
-    setSubmitting(false);
   };
 
   return (
@@ -66,21 +68,17 @@ export default function InviteMemberDialog({ onMemberAdded }: InviteMemberDialog
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Inviter un nouveau membre</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <Mail className="w-5 h-5 text-primary" />
+            Inviter par email
+          </DialogTitle>
+          <DialogDescription>
+            Un email d'invitation sera envoyé au nouveau membre pour qu'il puisse se connecter.
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 pt-2">
           <div className="space-y-2">
-            <Label htmlFor="invite-name">Nom complet</Label>
-            <Input
-              id="invite-name"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              placeholder="Jean Dupont"
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="invite-email">Email</Label>
+            <Label htmlFor="invite-email">Email *</Label>
             <Input
               id="invite-email"
               type="email"
@@ -91,12 +89,22 @@ export default function InviteMemberDialog({ onMemberAdded }: InviteMemberDialog
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="invite-role">Fonction</Label>
+            <Label htmlFor="invite-name">Nom complet *</Label>
+            <Input
+              id="invite-name"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              placeholder="Jean Dupont"
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="invite-role">Fonction *</Label>
             <Input
               id="invite-role"
               value={role}
               onChange={e => setRole(e.target.value)}
-              placeholder="Développeur, Designer..."
+              placeholder="Formateur, Manager..."
               required
             />
           </div>
@@ -104,8 +112,15 @@ export default function InviteMemberDialog({ onMemberAdded }: InviteMemberDialog
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Annuler
             </Button>
-            <Button type="submit" disabled={submitting}>
-              {submitting ? 'Ajout...' : 'Ajouter'}
+            <Button type="submit" disabled={submitting} className="gap-1.5">
+              {submitting ? (
+                'Envoi...'
+              ) : (
+                <>
+                  <UserPlus className="w-4 h-4" />
+                  Envoyer l'invitation
+                </>
+              )}
             </Button>
           </div>
         </form>

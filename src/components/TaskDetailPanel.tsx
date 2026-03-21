@@ -726,7 +726,7 @@ export default function TaskDetailPanel() {
 }
 
 function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {
-  const { getSubtasks, getTaskById, updateTask, setSelectedTaskId, addTask, getMemberById } = useApp();
+  const { getSubtasks, getTaskById, updateTask, deleteTask, setSelectedTaskId, addTask, getMemberById } = useApp();
   const subtasks = getSubtasks(taskId);
   const [addingFor, setAddingFor] = useState<string | null>(null);
   const [newTitle, setNewTitle] = useState('');

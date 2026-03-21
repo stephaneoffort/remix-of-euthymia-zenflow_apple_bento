@@ -268,6 +268,19 @@ export default function TaskDetailPanel() {
           ))}
         </div>
         <div className="flex items-center gap-1 shrink-0 ml-2">
+          <button
+            onClick={() => {
+              if (window.confirm('Supprimer cette tâche et ses sous-tâches ?')) {
+                const parentId = task.parentTaskId;
+                deleteTask(task.id);
+                setSelectedTaskId(parentId || null);
+              }
+            }}
+            className="p-1.5 hover:bg-destructive/10 text-muted-foreground hover:text-destructive rounded-md transition-colors"
+            title="Supprimer la tâche"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
           <button onClick={() => setExpanded(!expanded)} className="p-1.5 hover:bg-muted rounded-md transition-colors hidden sm:flex" title={expanded ? 'Réduire' : 'Agrandir'}>
             {expanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
           </button>

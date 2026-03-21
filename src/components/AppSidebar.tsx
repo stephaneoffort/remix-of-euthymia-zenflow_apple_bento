@@ -491,7 +491,7 @@ export default function AppSidebar() {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button
-                        className="p-2 -m-1 rounded-md hover:bg-sidebar-hover text-sidebar-fg opacity-40 group-hover:opacity-100 transition-opacity mr-0.5"
+                        className={`p-2 -m-1 rounded-md hover:bg-sidebar-hover text-sidebar-fg transition-opacity mr-0.5 ${isMobile ? 'opacity-80' : 'opacity-40 group-hover:opacity-100'}`}
                         onClick={e => e.stopPropagation()}
                       >
                         <MoreHorizontal className="w-4 h-4" />
@@ -587,7 +587,7 @@ export default function AppSidebar() {
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                   <button
-                                    className="p-2 -m-1 rounded-md hover:bg-sidebar-hover text-sidebar-fg opacity-40 group-hover/project:opacity-100 transition-opacity mr-0.5"
+                                    className={`p-2 -m-1 rounded-md hover:bg-sidebar-hover text-sidebar-fg transition-opacity mr-0.5 ${isMobile ? 'opacity-80' : 'opacity-40 group-hover/project:opacity-100'}`}
                                     onClick={e => e.stopPropagation()}
                                   >
                                     <MoreHorizontal className="w-3.5 h-3.5" />
@@ -961,7 +961,7 @@ function SortableSpace({ space, children }: { space: { id: string }; children: R
   };
   return (
     <div ref={setNodeRef} style={style} className="mb-1 relative group/drag">
-      <div {...attributes} {...listeners} className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 opacity-0 group-hover/drag:opacity-60 cursor-grab active:cursor-grabbing z-10 p-0.5">
+      <div {...attributes} {...listeners} className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 opacity-0 group-hover/drag:opacity-60 cursor-grab active:cursor-grabbing z-10 p-0.5 hidden md:block">
         <GripVertical className="w-3 h-3 text-sidebar-fg" />
       </div>
       {children}
@@ -979,7 +979,7 @@ function SortableProject({ id, children }: { id: string; children: React.ReactNo
   };
   return (
     <div ref={setNodeRef} style={style} className="flex items-center group/project relative">
-      <div {...attributes} {...listeners} className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2.5 opacity-0 group-hover/project:opacity-60 cursor-grab active:cursor-grabbing z-10 p-0.5">
+      <div {...attributes} {...listeners} className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2.5 opacity-0 group-hover/project:opacity-60 cursor-grab active:cursor-grabbing z-10 p-0.5 hidden md:block">
         <GripVertical className="w-3 h-3 text-sidebar-fg" />
       </div>
       {children}

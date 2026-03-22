@@ -2,76 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── FOND GLOBAL ANIMÉ ─────────────────────────────── */
+/* ─────────────────────────────────────────────────────
+   FOND GLOBAL — Navy profond Apple-style
+───────────────────────────────────────────────────── */
 @layer base {
-  html {
-    background: #080c14;
-  }
-  html.light, html.mixed {
-    background: #f8fafb;
-  }
-
+  html,
   body {
-    background:
-      radial-gradient(ellipse 80% 60% at 20% 0%, rgba(13, 122, 95, 0.18) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 40% at 80% 100%, rgba(56, 189, 248, 0.1) 0%, transparent 55%),
-      radial-gradient(ellipse 50% 50% at 50% 50%, rgba(99, 102, 241, 0.06) 0%, transparent 70%),
-      linear-gradient(160deg, #080c14 0%, #0d1425 50%, #080c14 100%);
-    background-attachment: fixed;
+    background: #08090d;
     min-height: 100vh;
-  }
-  html.light body, html.mixed body {
-    background:
-      radial-gradient(ellipse 80% 60% at 20% 0%, rgba(13, 122, 95, 0.06) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 40% at 80% 100%, rgba(56, 189, 248, 0.04) 0%, transparent 55%),
-      linear-gradient(160deg, #f8fafb 0%, #f0f4f7 50%, #f8fafb 100%);
-    background-attachment: fixed;
   }
 }
 
-/* ─── VARIABLES CSS ─────────────────────────────────── */
+/* ─────────────────────────────────────────────────────
+   VARIABLES CSS
+───────────────────────────────────────────────────── */
 @layer base {
   :root {
-    /* Fond & surfaces */
-    --background: 220 30% 5%; /* #080c14 — fond global */
-    --foreground: 210 20% 92%; /* blanc cassé — texte principal */
-
-    --card: 220 25% 10%; /* base des panneaux glass */
+    --background: 222 30% 5%;
+    --foreground: 210 20% 92%;
+    --card: 220 25% 10%;
     --card-foreground: 210 20% 92%;
-
     --popover: 220 28% 8%;
     --popover-foreground: 210 20% 92%;
-
-    /* Accent principal : teal lumineux */
     --primary: 173 80% 42%;
     --primary-foreground: 0 0% 100%;
-
     --secondary: 220 20% 15%;
     --secondary-foreground: 210 15% 75%;
-
     --muted: 220 18% 14%;
     --muted-foreground: 215 12% 48%;
-
     --accent: 173 60% 18%;
     --accent-foreground: 173 80% 72%;
-
     --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
-
     --border: 220 20% 18%;
     --input: 220 20% 16%;
     --ring: 173 80% 42%;
-    --radius: 0.625rem;
+    --radius: 0.5rem;
 
-    /* Sidebar glass */
+    /* Sidebar */
     --sidebar-bg: 220 32% 6%;
     --sidebar-fg: 210 15% 62%;
     --sidebar-fg-bright: 0 0% 94%;
     --sidebar-hover: 220 25% 12%;
     --sidebar-active: 173 80% 42%;
     --sidebar-border: 220 22% 14%;
-
-    /* shadcn sidebar aliases */
     --sidebar-background: 220 32% 6%;
     --sidebar-foreground: 210 15% 62%;
     --sidebar-primary: 173 80% 42%;
@@ -80,7 +54,7 @@
     --sidebar-accent-foreground: 0 0% 94%;
     --sidebar-ring: 173 80% 42%;
 
-    /* Priorités — plus vives sur fond sombre */
+    /* Priorités */
     --priority-urgent: 0 80% 62%;
     --priority-high: 25 95% 58%;
     --priority-normal: 217 91% 65%;
@@ -93,279 +67,567 @@
     --status-done: 142 71% 48%;
     --status-blocked: 0 80% 62%;
 
-    /* Glass tokens (utilisés dans les utilitaires ci-dessous) */
-    --glass-bg: rgba(255, 255, 255, 0.035);
-    --glass-bg-md: rgba(255, 255, 255, 0.055);
-    --glass-bg-lg: rgba(255, 255, 255, 0.08);
-    --glass-border: rgba(255, 255, 255, 0.075);
-    --glass-border-bright: rgba(255, 255, 255, 0.14);
-    --glass-blur: blur(14px);
-    --glass-blur-lg: blur(24px);
-    --glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.45), 0 1px 0 rgba(255, 255, 255, 0.04) inset;
-    --glass-shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.06) inset;
-
-    /* Glow teal */
-    --glow-teal: 0 0 20px rgba(13, 205, 165, 0.15), 0 0 40px rgba(13, 205, 165, 0.08);
-    --glow-teal-sm: 0 0 10px rgba(13, 205, 165, 0.2);
-  }
-
-  /* ─── LIGHT MODE ─────────────────────────────────── */
-  .light {
-    --background: 210 20% 97%;
-    --foreground: 220 20% 14%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 220 20% 14%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 14%;
-
-    --primary: 173 80% 32%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 210 15% 93%;
-    --secondary-foreground: 220 15% 40%;
-
-    --muted: 210 15% 93%;
-    --muted-foreground: 215 12% 48%;
-
-    --accent: 173 40% 92%;
-    --accent-foreground: 173 80% 28%;
-
-    --destructive: 0 72% 50%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 210 15% 87%;
-    --input: 210 15% 90%;
-    --ring: 173 80% 32%;
-
-    /* Sidebar — stays dark in light mode for contrast */
-    --sidebar-bg: 220 32% 6%;
-    --sidebar-fg: 210 15% 62%;
-    --sidebar-fg-bright: 0 0% 94%;
-    --sidebar-hover: 220 25% 12%;
-    --sidebar-active: 173 80% 42%;
-    --sidebar-border: 220 22% 14%;
-
-    --sidebar-background: 220 32% 6%;
-    --sidebar-foreground: 210 15% 62%;
-    --sidebar-primary: 173 80% 42%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 25% 12%;
-    --sidebar-accent-foreground: 0 0% 94%;
-    --sidebar-ring: 173 80% 42%;
-
-    /* Priorities */
-    --priority-urgent: 0 80% 50%;
-    --priority-high: 25 95% 48%;
-    --priority-normal: 217 91% 55%;
-    --priority-low: 215 15% 52%;
-
-    /* Statuts */
-    --status-todo: 215 15% 52%;
-    --status-progress: 217 91% 55%;
-    --status-review: 45 95% 48%;
-    --status-done: 142 71% 40%;
-    --status-blocked: 0 80% 50%;
-
-    /* Glass tokens — light version */
-    --glass-bg: rgba(255, 255, 255, 0.7);
-    --glass-bg-md: rgba(255, 255, 255, 0.8);
-    --glass-bg-lg: rgba(255, 255, 255, 0.9);
-    --glass-border: rgba(0, 0, 0, 0.08);
-    --glass-border-bright: rgba(0, 0, 0, 0.12);
-    --glass-blur: blur(14px);
-    --glass-blur-lg: blur(24px);
-    --glass-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
-    --glass-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06);
-
-    --glow-teal: 0 0 20px rgba(13, 150, 120, 0.1), 0 0 40px rgba(13, 150, 120, 0.05);
-    --glow-teal-sm: 0 0 10px rgba(13, 150, 120, 0.12);
-  }
-
-  /* ─── MIXED MODE (sidebar dark, content light) ───── */
-  .mixed {
-    --background: 210 20% 97%;
-    --foreground: 220 20% 14%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 220 20% 14%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 14%;
-
-    --primary: 173 80% 32%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 210 15% 93%;
-    --secondary-foreground: 220 15% 40%;
-
-    --muted: 210 15% 93%;
-    --muted-foreground: 215 12% 48%;
-
-    --accent: 173 40% 92%;
-    --accent-foreground: 173 80% 28%;
-
-    --destructive: 0 72% 50%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 210 15% 87%;
-    --input: 210 15% 90%;
-    --ring: 173 80% 32%;
-
-    /* Sidebar stays dark */
-    --sidebar-bg: 220 32% 6%;
-    --sidebar-fg: 210 15% 62%;
-    --sidebar-fg-bright: 0 0% 94%;
-    --sidebar-hover: 220 25% 12%;
-    --sidebar-active: 173 80% 42%;
-    --sidebar-border: 220 22% 14%;
-    --sidebar-background: 220 32% 6%;
-    --sidebar-foreground: 210 15% 62%;
-    --sidebar-primary: 173 80% 42%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 25% 12%;
-    --sidebar-accent-foreground: 0 0% 94%;
-    --sidebar-ring: 173 80% 42%;
-
-    --priority-urgent: 0 80% 50%;
-    --priority-high: 25 95% 48%;
-    --priority-normal: 217 91% 55%;
-    --priority-low: 215 15% 52%;
-    --status-todo: 215 15% 52%;
-    --status-progress: 217 91% 55%;
-    --status-review: 45 95% 48%;
-    --status-done: 142 71% 40%;
-    --status-blocked: 0 80% 50%;
-
-    --glass-bg: rgba(255, 255, 255, 0.7);
-    --glass-bg-md: rgba(255, 255, 255, 0.8);
-    --glass-bg-lg: rgba(255, 255, 255, 0.9);
-    --glass-border: rgba(0, 0, 0, 0.08);
-    --glass-border-bright: rgba(0, 0, 0, 0.12);
-    --glass-blur: blur(14px);
-    --glass-blur-lg: blur(24px);
-    --glass-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
-    --glass-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06);
-    --glow-teal: 0 0 20px rgba(13, 150, 120, 0.1), 0 0 40px rgba(13, 150, 120, 0.05);
-    --glow-teal-sm: 0 0 10px rgba(13, 150, 120, 0.12);
+    /* Bento tokens */
+    --bento-gap: 13px;
+    --bento-radius: 20px;
+    --bento-bg: #111318;
+    --bento-bg-hover: #161920;
+    --bento-border: rgba(255, 255, 255, 0.07);
+    --bento-border-h: rgba(255, 255, 255, 0.12);
+    --bento-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 4px 20px rgba(0, 0, 0, 0.5);
   }
 }
 
-/* ─── UTILITAIRES GLASSMORPHISM ─────────────────────── */
-@layer utilities {
-  /* Panneau glass standard (cartes, modales, dropdowns) */
-  .glass {
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
+/* ─────────────────────────────────────────────────────
+   BENTO GRID LAYOUT
+───────────────────────────────────────────────────── */
+@layer components {
+  /* Conteneur principal */
+  .bento-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--bento-gap);
+    padding: 16px;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
   }
 
-  /* Panneau glass medium (sidebar, header) */
-  .glass-md {
-    background: var(--glass-bg-md);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
+  /* Tablet — 2 colonnes */
+  @media (min-width: 640px) {
+    .bento-container {
+      grid-template-columns: repeat(2, 1fr);
+      padding: 20px;
+    }
   }
 
-  /* Panneau glass fort (modales importantes, task detail) */
-  .glass-lg {
-    background: var(--glass-bg-lg);
-    backdrop-filter: var(--glass-blur-lg);
-    -webkit-backdrop-filter: var(--glass-blur-lg);
-    border: 1px solid var(--glass-border-bright);
-    box-shadow: var(--glass-shadow-lg);
+  /* Desktop — 3 colonnes */
+  @media (min-width: 1024px) {
+    .bento-container {
+      grid-template-columns: repeat(3, 1fr);
+      padding: 24px;
+    }
   }
 
-  /* Glow teal sur éléments actifs */
-  .glow-teal {
-    box-shadow: var(--glow-teal);
-  }
-  .glow-teal-sm {
-    box-shadow: var(--glow-teal-sm);
-  }
-
-  /* Bordure lumineuse subtile (haut des panneaux) */
-  .glass-top-line::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 10%;
-    right: 10%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
-    border-radius: 1px;
-  }
-
-  /* Fond de carte hover */
-  .glass-hover:hover {
-    background: var(--glass-bg-md);
-    border-color: var(--glass-border-bright);
+  /* ─── Cellule de base ─── */
+  .bento-cell {
+    background: var(--bento-bg);
+    border: 1px solid var(--bento-border);
+    border-radius: var(--bento-radius);
+    box-shadow: var(--bento-shadow);
+    position: relative;
+    overflow: hidden;
     transition:
-      background 0.15s,
-      border-color 0.15s;
+      border-color 0.2s,
+      transform 0.15s;
+    min-height: 160px;
+  }
+  .bento-cell:hover {
+    border-color: var(--bento-border-h);
+  }
+  .bento-cell-inner {
+    padding: 20px 22px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ─── Spans asymétriques ─── */
+
+  /* Hero — span 2 colonnes sur ≥ tablet */
+  @media (min-width: 640px) {
+    .bento-hero {
+      grid-column: span 2;
+    }
+  }
+
+  /* Urgent — span 2 rangées sur desktop */
+  @media (min-width: 1024px) {
+    .bento-hero {
+      grid-column: span 2;
+    }
+    .bento-urgent {
+      grid-row: span 2;
+    }
+    .bento-projects {
+      grid-column: span 3;
+    }
+    .bento-ai {
+      grid-column: span 2;
+    }
+  }
+  @media (min-width: 640px) and (max-width: 1023px) {
+    .bento-projects {
+      grid-column: span 2;
+    }
+  }
+
+  /* ─── Cellule HERO ─── */
+  .bento-hero {
+    background: linear-gradient(135deg, #0f1a14 0%, #111318 60%);
+  }
+  .bento-hero-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 80% at 0% 100%, rgba(13, 205, 165, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .bento-hero-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.35);
+  }
+  .bento-hero-title {
+    font-size: clamp(22px, 3vw, 30px);
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.92);
+    line-height: 1.15;
+    margin: 0;
+  }
+  .bento-hero-sub {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.45);
+    margin: 0;
+  }
+  .bento-stats-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .bento-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .bento-stat-n {
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.88);
+  }
+  .bento-stat-l {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  /* Barre de progression globale */
+  .bento-progress-bar {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .bento-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #0d9488);
+    border-radius: 99px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Boutons dans le hero */
+  .bento-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: auto;
+  }
+  .bento-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 10px;
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #34d399;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .bento-btn-primary:hover {
+    background: rgba(16, 185, 129, 0.22);
+  }
+  .bento-btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .bento-btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.07);
+  }
+
+  /* ─── En-têtes de cellule ─── */
+  .bento-cell-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .bento-cell-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.45);
+    flex: 1;
+  }
+  .bento-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 99px;
+  }
+  .bento-badge-urgent {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+  }
+  .bento-badge-blue {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+  }
+  .bento-badge-amber {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+  }
+  .bento-badge-teal {
+    background: rgba(13, 205, 165, 0.15);
+    color: #34d399;
+  }
+
+  /* Icônes colorées */
+  .bento-icon-urgent {
+    color: #f87171;
+  }
+  .bento-icon-blue {
+    color: #60a5fa;
+  }
+  .bento-icon-amber {
+    color: #fbbf24;
+  }
+  .bento-icon-teal {
+    color: #34d399;
+  }
+  .bento-icon-purple {
+    color: #a78bfa;
+  }
+
+  /* ─── Liste de tâches dans les cellules ─── */
+  .bento-task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+  }
+  .bento-task-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 9px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    transition: background 0.12s;
+  }
+  .bento-task-item:hover {
+    background: rgba(255, 255, 255, 0.055);
+  }
+  .bento-task-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
+  .bento-task-content {
+    flex: 1;
+    min-width: 0;
+  }
+  .bento-task-title {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+  }
+  .bento-task-meta {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.3);
+    margin: 2px 0 0;
+  }
+  .bento-more {
+    font-size: 11.5px;
+    color: rgba(255, 255, 255, 0.28);
+    text-align: center;
+    padding: 4px;
+    margin: 0;
+  }
+
+  /* Lien bas de cellule */
+  .bento-btn-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.3);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-top: auto;
+    transition: color 0.15s;
+  }
+  .bento-btn-link:hover {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  /* ─── Cellule URGENT (accent rouge subtil) ─── */
+  .bento-urgent {
+    background: linear-gradient(160deg, #140d0d 0%, #111318 50%);
+  }
+
+  /* ─── Cellule ÉQUIPE ─── */
+  .bento-team-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+  .bento-member {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .bento-member-avatar-wrap {
+    position: relative;
+    flex-shrink: 0;
+  }
+  .bento-member-avatar,
+  .bento-member-initials {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+  }
+  .bento-member-dot {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    border: 2px solid var(--bento-bg);
+  }
+  .bento-member-online {
+    background: #10b981;
+  }
+  .bento-member-offline {
+    background: #374151;
+  }
+  .bento-member-info {
+    min-width: 0;
+  }
+  .bento-member-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.82);
+    margin: 0;
+  }
+  .bento-member-role {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.3);
+    margin: 0;
+  }
+
+  /* ─── Cellule IA ─── */
+  .bento-ai {
+    background: linear-gradient(135deg, #120d1f 0%, #111318 60%);
+  }
+  .bento-ai-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 100% 0%, rgba(139, 92, 246, 0.12) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .bento-ai-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    flex: 1;
+  }
+  .bento-ai-icon {
+    color: rgba(167, 139, 250, 0.4);
+  }
+  .bento-ai-text {
+    font-size: 13px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.45);
+    margin: 0;
+  }
+  .bento-btn-ai {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 16px;
+    border-radius: 10px;
+    background: rgba(139, 92, 246, 0.15);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    color: #a78bfa;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-top: auto;
+  }
+  .bento-btn-ai:hover {
+    background: rgba(139, 92, 246, 0.22);
+  }
+
+  /* ─── Cellule PROJETS (full width) ─── */
+  .bento-projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+  }
+  .bento-project-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    cursor: pointer;
+    text-align: left;
+    transition:
+      background 0.12s,
+      border-color 0.12s;
+    width: 100%;
+  }
+  .bento-project-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+  .bento-project-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .bento-project-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .bento-project-name {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.75);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0 0 6px;
+  }
+  .bento-mini-bar {
+    height: 3px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .bento-mini-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .bento-project-pct {
+    font-size: 12px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.35);
+    flex-shrink: 0;
+  }
+
+  /* ─── Empty state ─── */
+  .bento-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.2);
+    font-size: 12.5px;
+  }
+  .bento-empty-icon {
+    opacity: 0.3;
+  }
+
+  /* ─── Scrollbar ─── */
+  .bento-container::-webkit-scrollbar {
+    width: 5px;
+  }
+  .bento-container::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .bento-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 99px;
   }
 }
 
-/* ─── SURCHARGES COMPOSANTS SHADCN/UI ───────────────── */
+/* ─── Surcharges globales composants ─── */
 @layer base {
-  /* Card → glass */
-  .card,
-  [class*="Card"] {
-    background: var(--glass-bg) !important;
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border) !important;
-    box-shadow: var(--glass-shadow);
-  }
-
-  /* Popover / DropdownMenu / Select */
   [data-radix-popper-content-wrapper] > *,
-  [role="dialog"],
-  [role="listbox"] {
-    background: hsl(var(--popover)) !important;
-    backdrop-filter: var(--glass-blur-lg);
-    -webkit-backdrop-filter: var(--glass-blur-lg);
-    border: 1px solid var(--glass-border-bright) !important;
-    box-shadow: var(--glass-shadow-lg) !important;
+  [role="dialog"] {
+    background: #13151c !important;
+    border: 1px solid rgba(255, 255, 255, 0.09) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6) !important;
   }
-
-  /* Input fields */
   input,
-  textarea,
-  select {
-    background: var(--glass-bg) !important;
-    border-color: var(--glass-border) !important;
-    color: hsl(var(--foreground));
+  textarea {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: rgba(255, 255, 255, 0.88) !important;
   }
   input:focus,
   textarea:focus {
-    background: var(--glass-bg-md) !important;
     border-color: hsl(var(--primary)) !important;
-    box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2) !important;
+    box-shadow: 0 0 0 3px rgba(13, 205, 165, 0.15) !important;
+    outline: none !important;
   }
-
-  /* Scrollbar fine */
   * {
     scrollbar-width: thin;
-    scrollbar-color: hsl(var(--muted-foreground) / 0.2) transparent;
-  }
-  *::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
-  }
-  *::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  *::-webkit-scrollbar-thumb {
-    background: hsl(var(--muted-foreground) / 0.2);
-    border-radius: 10px;
-  }
-  *::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--muted-foreground) / 0.35);
+    scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
   }
 }

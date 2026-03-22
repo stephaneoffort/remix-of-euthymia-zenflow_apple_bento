@@ -1,21 +1,21 @@
-export type Priority = 'urgent' | 'high' | 'normal' | 'low';
-export type Status = 'todo' | 'in_progress' | 'in_review' | 'done' | 'blocked' | (string & {});
+export type Priority = "urgent" | "high" | "normal" | "low";
+export type Status = "todo" | "in_progress" | "in_review" | "done" | "blocked" | (string & {});
 
-export const DEFAULT_STATUSES: Status[] = ['todo', 'in_progress', 'in_review', 'done', 'blocked'];
+export const DEFAULT_STATUSES: Status[] = ["todo", "in_progress", "in_review", "done", "blocked"];
 
 export const STATUS_LABELS: Record<string, string> = {
-  todo: 'À faire',
-  in_progress: 'En cours',
-  in_review: 'En revue',
-  done: 'Terminé',
-  blocked: 'Bloqué',
+  todo: "À faire",
+  in_progress: "En cours",
+  in_review: "En revue",
+  done: "Terminé",
+  blocked: "Bloqué",
 };
 
 export const PRIORITY_LABELS: Record<Priority, string> = {
-  urgent: 'Urgente',
-  high: 'Haute',
-  normal: 'Normale',
-  low: 'Basse',
+  urgent: "Urgente",
+  high: "Haute",
+  normal: "Normale",
+  low: "Basse",
 };
 
 export interface CustomStatus {
@@ -46,12 +46,12 @@ export interface Attachment {
   url: string;
 }
 
-export type Recurrence = 'daily' | 'weekly' | 'monthly' | null;
+export type Recurrence = "daily" | "weekly" | "monthly" | null;
 
 export const RECURRENCE_LABELS: Record<string, string> = {
-  daily: 'Quotidien',
-  weekly: 'Hebdomadaire',
-  monthly: 'Mensuel',
+  daily: "Quotidien",
+  weekly: "Hebdomadaire",
+  monthly: "Mensuel",
 };
 
 export interface Task {
@@ -111,6 +111,6 @@ export interface SpaceManager {
   memberId: string;
 }
 
-export type ViewType = 'kanban' | 'list' | 'calendar' | 'workload' | 'mindmap';
+export type ViewType = "dashboard" | "kanban" | "list" | "calendar" | "workload" | "mindmap";
 
-export type QuickFilter = 'all' | 'my_tasks' | 'urgent' | 'today' | 'overdue';
+export type QuickFilter = "all" | "my_tasks" | "urgent" | "today" | "overdue";

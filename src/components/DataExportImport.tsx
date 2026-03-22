@@ -271,9 +271,9 @@ export default function DataExportImport() {
                   ))}
                 </div>
               </div>
-              <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
-                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                <p className="text-xs text-amber-700 dark:text-amber-400">
+              <div className="flex items-start gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                <AlertTriangle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
+                <p className="text-xs text-destructive">
                   L'import mettra à jour les données existantes et ajoutera les nouvelles. Cette action est irréversible.
                 </p>
               </div>

@@ -24,9 +24,7 @@ export default function SelectTeamMember() {
       <Card className="w-full max-w-md text-center">
         <CardHeader>
           <div className="flex justify-center mb-3">
-            <div className="w-14 h-14 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-              <AlertCircle className="w-7 h-7 text-amber-600 dark:text-amber-400" />
-            </div>
+            <img src="/logo-euthymia.png" alt="Euthymia" className="w-14 h-14 rounded-full object-cover" />
           </div>
           <CardTitle className="text-xl font-bold text-foreground">
             Compte non lié

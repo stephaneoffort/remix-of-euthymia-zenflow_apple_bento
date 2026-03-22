@@ -72,6 +72,13 @@ body::after {
   animation-direction: reverse;
 }
 
+html.light body::before {
+  background: radial-gradient(circle, rgba(13, 122, 95, 0.05) 0%, transparent 70%);
+}
+html.light body::after {
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.04) 0%, transparent 70%);
+}
+
 @keyframes float {
   0% {
     transform: translate(0px, 0px) scale(1);

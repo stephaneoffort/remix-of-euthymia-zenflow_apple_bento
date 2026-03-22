@@ -12,7 +12,7 @@ const ThemeContext = createContext<ThemeContextType | null>(null);
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<ThemeMode>(() => {
     const saved = localStorage.getItem('euthymia-theme') as ThemeMode;
-    return saved || 'light';
+    return saved || 'dark';
   });
 
   const setTheme = (t: ThemeMode) => {
@@ -23,10 +23,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const root = document.documentElement;
     root.classList.remove('light', 'dark', 'mixed');
-    if (theme === 'dark') {
-      root.classList.add('dark');
+    if (theme === 'light') {
+      root.classList.add('light');
     } else if (theme === 'mixed') {
       root.classList.add('mixed');
+    } else {
+      root.classList.add('dark');
     }
   }, [theme]);
 

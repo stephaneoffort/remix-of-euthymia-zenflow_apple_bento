@@ -89,8 +89,8 @@ export default function Auth() {
     <div className="flex items-center justify-center min-h-screen bg-background p-4">
       <Card className="w-full max-w-sm mx-auto">
         <CardHeader className="text-center">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Sparkles className="w-6 h-6 text-primary" />
+          <div className="flex flex-col items-center gap-3 mb-2">
+            <img src="/logo-euthymia.png" alt="Euthymia" className="w-16 h-16 rounded-full object-cover" />
             <CardTitle className="text-2xl font-bold text-foreground">Euthymia</CardTitle>
           </div>
           <CardDescription className="text-muted-foreground">

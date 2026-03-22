@@ -96,6 +96,10 @@ export default function Settings() {
             <ChatCategoriesPanel />
           </TabsContent>
 
+          <TabsContent value="theme">
+            <ThemePalettePanel />
+          </TabsContent>
+
           <TabsContent value="data">
             <DataExportImport />
           </TabsContent>

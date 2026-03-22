@@ -120,16 +120,15 @@
     border-radius: var(--bento-radius);
     box-shadow: var(--bento-shadow);
     position: relative;
-    overflow: visible;
+    overflow: hidden;
     transition:
       border-color 0.2s,
       transform 0.15s;
-    min-height: 0;
+    min-height: auto;
   }
   @media (min-width: 640px) {
     .bento-cell {
       min-height: 160px;
-      overflow: hidden;
     }
   }
   .bento-cell:hover {

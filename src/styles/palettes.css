@@ -8,8 +8,8 @@
   --card-foreground: 40 20% 92%;
   --popover: 0 0% 7%;
   --popover-foreground: 40 20% 92%;
-  --primary: 40 60% 58%;
-  --primary-foreground: 0 0% 100%;
+  --primary: 40 60% 48%;
+  --primary-foreground: 0 0% 5%;
   --secondary: 0 0% 13%;
   --secondary-foreground: 40 15% 70%;
   --muted: 0 0% 12%;
@@ -20,21 +20,21 @@
   --destructive-foreground: 0 0% 100%;
   --border: 0 0% 16%;
   --input: 0 0% 14%;
-  --ring: 40 60% 58%;
+  --ring: 40 60% 48%;
 
   --sidebar-bg: 0 0% 5%;
   --sidebar-fg: 40 10% 55%;
   --sidebar-fg-bright: 40 15% 90%;
   --sidebar-hover: 0 0% 11%;
-  --sidebar-active: 40 60% 58%;
+  --sidebar-active: 40 60% 48%;
   --sidebar-border: 0 0% 13%;
   --sidebar-background: 0 0% 5%;
   --sidebar-foreground: 40 10% 55%;
-  --sidebar-primary: 40 60% 58%;
-  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-primary: 40 60% 48%;
+  --sidebar-primary-foreground: 0 0% 5%;
   --sidebar-accent: 0 0% 11%;
   --sidebar-accent-foreground: 40 15% 90%;
-  --sidebar-ring: 40 60% 58%;
+  --sidebar-ring: 40 60% 48%;
 
   --bento-bg: #1a1a1a;
   --bento-bg-hover: #222222;
@@ -49,7 +49,7 @@
   --card-foreground: 0 0% 12%;
   --popover: 40 20% 97%;
   --popover-foreground: 0 0% 12%;
-  --primary: 40 60% 45%;
+  --primary: 40 60% 36%;
   --primary-foreground: 0 0% 100%;
   --secondary: 40 15% 90%;
   --secondary-foreground: 0 0% 35%;
@@ -83,7 +83,7 @@
   --card-foreground: 0 0% 12%;
   --popover: 40 20% 97%;
   --popover-foreground: 0 0% 12%;
-  --primary: 40 60% 45%;
+  --primary: 40 60% 36%;
   --primary-foreground: 0 0% 100%;
   --secondary: 40 15% 90%;
   --secondary-foreground: 0 0% 35%;
@@ -232,7 +232,7 @@
   --card-foreground: 210 20% 92%;
   --popover: 220 28% 8%;
   --popover-foreground: 210 20% 92%;
-  --primary: 173 80% 42%;
+  --primary: 173 80% 29%;
   --primary-foreground: 0 0% 100%;
   --secondary: 220 20% 15%;
   --secondary-foreground: 210 15% 75%;
@@ -244,21 +244,21 @@
   --destructive-foreground: 0 0% 100%;
   --border: 220 20% 18%;
   --input: 220 20% 16%;
-  --ring: 173 80% 42%;
+  --ring: 173 80% 29%;
 
   --sidebar-bg: 220 32% 6%;
   --sidebar-fg: 210 15% 62%;
   --sidebar-fg-bright: 0 0% 94%;
   --sidebar-hover: 220 25% 12%;
-  --sidebar-active: 173 80% 42%;
+  --sidebar-active: 173 80% 29%;
   --sidebar-border: 220 22% 14%;
   --sidebar-background: 220 32% 6%;
   --sidebar-foreground: 210 15% 62%;
-  --sidebar-primary: 173 80% 42%;
+  --sidebar-primary: 173 80% 29%;
   --sidebar-primary-foreground: 0 0% 100%;
   --sidebar-accent: 220 25% 12%;
   --sidebar-accent-foreground: 0 0% 94%;
-  --sidebar-ring: 173 80% 42%;
+  --sidebar-ring: 173 80% 29%;
 
   --bento-bg: #111318;
   --bento-bg-hover: #161920;
@@ -388,7 +388,7 @@
   --card-foreground: 170 15% 90%;
   --popover: 185 32% 7%;
   --popover-foreground: 170 15% 90%;
-  --primary: 168 76% 50%;
+  --primary: 168 76% 29%;
   --primary-foreground: 0 0% 100%;
   --secondary: 185 22% 14%;
   --secondary-foreground: 170 12% 70%;
@@ -400,21 +400,21 @@
   --destructive-foreground: 0 0% 100%;
   --border: 185 20% 16%;
   --input: 185 20% 13%;
-  --ring: 168 76% 50%;
+  --ring: 168 76% 29%;
 
   --sidebar-bg: 185 38% 4%;
   --sidebar-fg: 180 10% 52%;
   --sidebar-fg-bright: 170 12% 90%;
   --sidebar-hover: 185 25% 10%;
-  --sidebar-active: 168 76% 50%;
+  --sidebar-active: 168 76% 29%;
   --sidebar-border: 185 20% 12%;
   --sidebar-background: 185 38% 4%;
   --sidebar-foreground: 180 10% 52%;
-  --sidebar-primary: 168 76% 50%;
+  --sidebar-primary: 168 76% 29%;
   --sidebar-primary-foreground: 0 0% 100%;
   --sidebar-accent: 185 25% 10%;
   --sidebar-accent-foreground: 170 12% 90%;
-  --sidebar-ring: 168 76% 50%;
+  --sidebar-ring: 168 76% 29%;
 
   --bento-bg: #0d1a1e;
   --bento-bg-hover: #122226;
@@ -429,7 +429,7 @@
   --card-foreground: 185 20% 12%;
   --popover: 170 25% 97%;
   --popover-foreground: 185 20% 12%;
-  --primary: 168 76% 38%;
+  --primary: 168 76% 29%;
   --primary-foreground: 0 0% 100%;
   --secondary: 170 18% 91%;
   --secondary-foreground: 185 12% 38%;
@@ -463,7 +463,7 @@
   --card-foreground: 185 20% 12%;
   --popover: 170 25% 97%;
   --popover-foreground: 185 20% 12%;
-  --primary: 168 76% 38%;
+  --primary: 168 76% 29%;
   --primary-foreground: 0 0% 100%;
   --secondary: 170 18% 91%;
   --secondary-foreground: 185 12% 38%;

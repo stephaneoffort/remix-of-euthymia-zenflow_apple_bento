@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup } from 'lucide-react';
+import DataExportImport from '@/components/DataExportImport';
 import InviteMemberDialog from '@/components/InviteMemberDialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -59,18 +60,22 @@ export default function Settings() {
 
       <div className="max-w-3xl mx-auto p-6">
         <Tabs defaultValue="members">
-          <TabsList className="grid w-full grid-cols-3 mb-6">
+          <TabsList className="grid w-full grid-cols-4 mb-6">
             <TabsTrigger value="members" className="gap-2">
               <Users className="w-4 h-4" />
-              Membres
+              <span className="hidden sm:inline">Membres</span>
             </TabsTrigger>
             <TabsTrigger value="statuses" className="gap-2">
               <ListChecks className="w-4 h-4" />
-              Avancements
+              <span className="hidden sm:inline">Avancements</span>
             </TabsTrigger>
             <TabsTrigger value="chat" className="gap-2">
               <MessageCircle className="w-4 h-4" />
-              Chat
+              <span className="hidden sm:inline">Chat</span>
+            </TabsTrigger>
+            <TabsTrigger value="data" className="gap-2">
+              <DatabaseBackup className="w-4 h-4" />
+              <span className="hidden sm:inline">Données</span>
             </TabsTrigger>
           </TabsList>
 
@@ -84,6 +89,10 @@ export default function Settings() {
 
           <TabsContent value="chat">
             <ChatCategoriesPanel />
+          </TabsContent>
+
+          <TabsContent value="data">
+            <DataExportImport />
           </TabsContent>
         </Tabs>
       </div>

@@ -108,6 +108,80 @@
     --glow-teal: 0 0 20px rgba(13, 205, 165, 0.15), 0 0 40px rgba(13, 205, 165, 0.08);
     --glow-teal-sm: 0 0 10px rgba(13, 205, 165, 0.2);
   }
+
+  /* ─── LIGHT MODE ─────────────────────────────────── */
+  .light {
+    --background: 210 20% 97%;
+    --foreground: 220 20% 14%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 14%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 14%;
+
+    --primary: 173 80% 32%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 15% 93%;
+    --secondary-foreground: 220 15% 40%;
+
+    --muted: 210 15% 93%;
+    --muted-foreground: 215 12% 48%;
+
+    --accent: 173 40% 92%;
+    --accent-foreground: 173 80% 28%;
+
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 15% 87%;
+    --input: 210 15% 90%;
+    --ring: 173 80% 32%;
+
+    /* Sidebar — stays dark in light mode for contrast */
+    --sidebar-bg: 220 32% 6%;
+    --sidebar-fg: 210 15% 62%;
+    --sidebar-fg-bright: 0 0% 94%;
+    --sidebar-hover: 220 25% 12%;
+    --sidebar-active: 173 80% 42%;
+    --sidebar-border: 220 22% 14%;
+
+    --sidebar-background: 220 32% 6%;
+    --sidebar-foreground: 210 15% 62%;
+    --sidebar-primary: 173 80% 42%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 25% 12%;
+    --sidebar-accent-foreground: 0 0% 94%;
+    --sidebar-ring: 173 80% 42%;
+
+    /* Priorities */
+    --priority-urgent: 0 80% 50%;
+    --priority-high: 25 95% 48%;
+    --priority-normal: 217 91% 55%;
+    --priority-low: 215 15% 52%;
+
+    /* Statuts */
+    --status-todo: 215 15% 52%;
+    --status-progress: 217 91% 55%;
+    --status-review: 45 95% 48%;
+    --status-done: 142 71% 40%;
+    --status-blocked: 0 80% 50%;
+
+    /* Glass tokens — light version */
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-bg-md: rgba(255, 255, 255, 0.8);
+    --glass-bg-lg: rgba(255, 255, 255, 0.9);
+    --glass-border: rgba(0, 0, 0, 0.08);
+    --glass-border-bright: rgba(0, 0, 0, 0.12);
+    --glass-blur: blur(14px);
+    --glass-blur-lg: blur(24px);
+    --glass-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+    --glass-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06);
+
+    --glow-teal: 0 0 20px rgba(13, 150, 120, 0.1), 0 0 40px rgba(13, 150, 120, 0.05);
+    --glow-teal-sm: 0 0 10px rgba(13, 150, 120, 0.12);
+  }
 }
 
 /* ─── UTILITAIRES GLASSMORPHISM ─────────────────────── */

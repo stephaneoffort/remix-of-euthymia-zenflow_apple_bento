@@ -74,6 +74,12 @@
   --sidebar-accent: 0 0% 11%;
   --sidebar-accent-foreground: 40 15% 90%;
   --sidebar-ring: 40 60% 50%;
+
+  --bento-bg: hsl(40, 20%, 98%);
+  --bento-bg-hover: hsl(40, 18%, 95%);
+  --bento-border: rgba(0, 0, 0, 0.08);
+  --bento-border-h: rgba(0, 0, 0, 0.14);
+  --bento-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.04);
 }
 
 [data-palette="clubroom"].mixed {

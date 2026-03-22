@@ -23,10 +23,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const root = document.documentElement;
     root.classList.remove('light', 'dark', 'mixed');
-    if (theme === 'dark') {
-      root.classList.add('dark');
+    if (theme === 'light') {
+      root.classList.add('light');
     } else if (theme === 'mixed') {
       root.classList.add('mixed');
+    } else {
+      root.classList.add('dark');
     }
   }, [theme]);
 

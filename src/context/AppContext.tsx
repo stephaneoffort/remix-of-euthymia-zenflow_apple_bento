@@ -301,12 +301,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (updates.recurrenceEndDate !== undefined) dbUpdates.recurrence_end_date = updates.recurrenceEndDate;
 
       if (Object.keys(dbUpdates).length > 0) {
+        if (!navigator.onLine) {
+          await enqueue({ table: 'tasks', operation: 'update', payload: dbUpdates, match: { id } });
+          return;
+        }
         const { error } = await supabase.from('tasks').update(dbUpdates).eq('id', id);
         if (error) throw error;
       }
 
       // Handle assignee changes
       if (updates.assigneeIds !== undefined) {
+        if (!navigator.onLine) {
+          await enqueue({ table: 'task_assignees', operation: 'delete', payload: null, match: { task_id: id } });
+          if (updates.assigneeIds.length > 0) {
+            await enqueue({ table: 'task_assignees', operation: 'insert', payload: updates.assigneeIds.map(mid => ({ task_id: id, member_id: mid })) });
+          }
+          return;
+        }
         await supabase.from('task_assignees').delete().eq('task_id', id);
         if (updates.assigneeIds.length > 0) {
           const { error } = await supabase.from('task_assignees').insert(
@@ -322,6 +333,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         const existingIds = new Set(existingTask?.comments.map(c => c.id) || []);
         const newComments = updates.comments.filter(c => !existingIds.has(c.id));
         for (const c of newComments) {
+          if (!navigator.onLine) {
+            await enqueue({ table: 'comments', operation: 'insert', payload: { id: c.id, task_id: id, author_id: c.authorId, content: c.content } });
+            continue;
+          }
           const { error } = await supabase.from('comments').insert({
             id: c.id,
             task_id: id,

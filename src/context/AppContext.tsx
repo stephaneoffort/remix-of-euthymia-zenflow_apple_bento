@@ -116,7 +116,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
   const [selectedView, _setSelectedView] = useState<ViewType>(() => {
     const saved = localStorage.getItem('euthymia:view') as ViewType | null;
-    if (saved && ['kanban', 'list', 'calendar', 'workload', 'mindmap'].includes(saved)) return saved;
+    if (saved && ['dashboard', 'kanban', 'list', 'calendar', 'workload', 'mindmap'].includes(saved)) return saved;
     return window.matchMedia('(max-width: 768px)').matches ? 'list' : 'kanban';
   });
   const setSelectedView = useCallback((view: ViewType) => {

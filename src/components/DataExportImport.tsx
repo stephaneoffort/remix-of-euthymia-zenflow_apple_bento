@@ -22,6 +22,11 @@ interface ExportData {
   custom_statuses: any[];
   chat_categories: any[];
   chat_messages: any[];
+  chat_reactions: any[];
+  direct_conversations: any[];
+  direct_conversation_members: any[];
+  direct_messages: any[];
+  dm_reactions: any[];
 }
 
 export default function DataExportImport() {

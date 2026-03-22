@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 export type ThemeMode = 'light' | 'dark' | 'mixed';
 export type ThemePalette = 'clubroom' | 'neutrals' | 'sapphire' | 'cinematic' | 'teal';
@@ -8,6 +9,7 @@ interface ThemeContextType {
   setTheme: (theme: ThemeMode) => void;
   palette: ThemePalette;
   setPalette: (palette: ThemePalette) => void;
+  savePaletteToDb: (palette: ThemePalette) => Promise<boolean>;
 }
 
 const ThemeContext = createContext<ThemeContextType | null>(null);
@@ -40,6 +42,8 @@ export const PALETTE_META: Record<ThemePalette, { label: string; description: st
   },
 };
 
+const VALID_PALETTES: ThemePalette[] = ['clubroom', 'neutrals', 'sapphire', 'cinematic', 'teal'];
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<ThemeMode>(() => {
     return (localStorage.getItem('euthymia-theme') as ThemeMode) || 'dark';
@@ -47,6 +51,22 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [palette, setPaletteState] = useState<ThemePalette>(() => {
     return (localStorage.getItem('euthymia-palette') as ThemePalette) || 'sapphire';
   });
+
+  // Load palette from DB on mount
+  useEffect(() => {
+    supabase
+      .from('app_settings')
+      .select('value')
+      .eq('key', 'theme_palette')
+      .single()
+      .then(({ data }) => {
+        if (data && VALID_PALETTES.includes(data.value as ThemePalette)) {
+          const p = data.value as ThemePalette;
+          setPaletteState(p);
+          localStorage.setItem('euthymia-palette', p);
+        }
+      });
+  }, []);
 
   const setTheme = (t: ThemeMode) => {
     setThemeState(t);
@@ -56,6 +76,18 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const setPalette = (p: ThemePalette) => {
     setPaletteState(p);
     localStorage.setItem('euthymia-palette', p);
+  };
+
+  const savePaletteToDb = async (p: ThemePalette): Promise<boolean> => {
+    const { error } = await supabase
+      .from('app_settings')
+      .update({ value: p, updated_at: new Date().toISOString() })
+      .eq('key', 'theme_palette');
+    if (!error) {
+      setPalette(p);
+      return true;
+    }
+    return false;
   };
 
   useEffect(() => {
@@ -70,7 +102,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [palette]);
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, palette, setPalette }}>
+    <ThemeContext.Provider value={{ theme, setTheme, palette, setPalette, savePaletteToDb }}>
       {children}
     </ThemeContext.Provider>
   );

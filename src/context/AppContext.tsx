@@ -360,6 +360,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // Delete task mutation
   const deleteTaskMutation = useMutation({
     mutationFn: async (id: string) => {
+      if (!navigator.onLine) {
+        await enqueue({ table: 'tasks', operation: 'delete', payload: null, match: { id } });
+        toast.info('Suppression enregistrée hors-ligne');
+        return;
+      }
       const { error } = await supabase.from('tasks').delete().eq('id', id);
       if (error) throw error;
     },

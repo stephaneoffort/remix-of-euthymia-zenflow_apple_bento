@@ -20,6 +20,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { Drawer, DrawerContent, DrawerTrigger, DrawerTitle } from '@/components/ui/drawer';
 
 import { Sparkles, PanelLeft, Filter, ChevronDown, ChevronUp, LayoutGrid, List, Calendar, BarChart3, Network, Search, X, Keyboard } from 'lucide-react';
+import NotificationsDropdown from '@/components/NotificationsDropdown';
 
 const VIEW_OPTIONS: { key: ViewType; label: string; icon: React.ReactNode }[] = [
   { key: 'kanban', label: 'Kanban', icon: <LayoutGrid className="w-4 h-4" /> },
@@ -192,6 +193,7 @@ export default function Index() {
               </div>
             </div>
             <div className="flex items-center gap-1.5 ml-auto shrink-0">
+              <NotificationsDropdown />
               {/* Search button */}
               <button
                 onClick={() => setSearchOpen(true)}

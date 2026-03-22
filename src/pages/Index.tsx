@@ -26,6 +26,7 @@ import {
   Filter,
   ChevronDown,
   ChevronUp,
+  LayoutDashboard,
   LayoutGrid,
   List,
   Calendar,

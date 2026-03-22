@@ -206,6 +206,27 @@ export default function DataExportImport() {
         const { error } = await supabase.from('chat_messages').upsert(d.chat_messages, { onConflict: 'id' });
         if (error) throw new Error(`chat_messages: ${error.message}`);
       }
+      if (d.chat_reactions?.length) {
+        const { error } = await supabase.from('chat_reactions').upsert(d.chat_reactions, { onConflict: 'id' });
+        if (error) throw new Error(`chat_reactions: ${error.message}`);
+      }
+      if (d.direct_conversations?.length) {
+        const { error } = await supabase.from('direct_conversations').upsert(d.direct_conversations, { onConflict: 'id' });
+        if (error) throw new Error(`direct_conversations: ${error.message}`);
+      }
+      if (d.direct_conversation_members?.length) {
+        await supabase.from('direct_conversation_members').delete().neq('conversation_id', '___none___');
+        const { error } = await supabase.from('direct_conversation_members').insert(d.direct_conversation_members);
+        if (error) throw new Error(`direct_conversation_members: ${error.message}`);
+      }
+      if (d.direct_messages?.length) {
+        const { error } = await supabase.from('direct_messages').upsert(d.direct_messages, { onConflict: 'id' });
+        if (error) throw new Error(`direct_messages: ${error.message}`);
+      }
+      if (d.dm_reactions?.length) {
+        const { error } = await supabase.from('dm_reactions').upsert(d.dm_reactions, { onConflict: 'id' });
+        if (error) throw new Error(`dm_reactions: ${error.message}`);
+      }
 
       toast.success('Import terminé — rechargez la page pour voir les changements');
       setImportPreview(null);
@@ -225,6 +246,9 @@ export default function DataExportImport() {
     checklists: importPreview.checklist_items.length,
     chatCategories: importPreview.chat_categories.length,
     chatMessages: importPreview.chat_messages.length,
+    chatReactions: (importPreview.chat_reactions || []).length,
+    directMessages: (importPreview.direct_messages || []).length,
+    dmReactions: (importPreview.dm_reactions || []).length,
     statuses: importPreview.custom_statuses.length,
   } : null;
 

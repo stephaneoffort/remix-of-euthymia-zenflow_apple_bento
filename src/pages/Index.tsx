@@ -176,8 +176,9 @@ export default function Index() {
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
         <header className="border-b border-border bg-card shrink-0">
+          {/* Row 1: Title + actions */}
           <div className="h-12 sm:h-14 flex items-center px-3 sm:px-6 gap-2">
-            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
               {sidebarCollapsed && !isMobile && (
                 <button
                   onClick={() => setSidebarCollapsed(false)}
@@ -215,31 +216,34 @@ export default function Index() {
               ) : (
                 <h2 className="font-bold text-foreground text-sm sm:text-lg truncate">{title}</h2>
               )}
-              {/* View selector */}
-              <div className="flex items-center gap-0.5 ml-2 bg-muted/50 rounded-lg p-0.5">
-                {VIEW_OPTIONS.map((v) => (
-                  <Tooltip key={v.key}>
-                    <TooltipTrigger asChild>
-                      <button
-                        onClick={() => setSelectedView(v.key)}
-                        className={`flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                          selectedView === v.key
-                            ? "bg-background text-foreground shadow-sm"
-                            : "text-muted-foreground hover:text-foreground"
-                        }`}
-                      >
-                        {v.icon}
-                        <span className="hidden lg:inline">{v.label}</span>
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" className="lg:hidden">
-                      {v.label}
-                    </TooltipContent>
-                  </Tooltip>
-                ))}
-              </div>
+
+              {/* View selector — desktop inline */}
+              {!isMobile && (
+                <div className="flex items-center gap-0.5 ml-2 bg-muted/50 rounded-lg p-0.5">
+                  {VIEW_OPTIONS.map((v) => (
+                    <Tooltip key={v.key}>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={() => setSelectedView(v.key)}
+                          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                            selectedView === v.key
+                              ? "bg-background text-foreground shadow-sm"
+                              : "text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          {v.icon}
+                          <span className="hidden lg:inline">{v.label}</span>
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="lg:hidden">
+                        {v.label}
+                      </TooltipContent>
+                    </Tooltip>
+                  ))}
+                </div>
+              )}
             </div>
-            <div className="flex items-center gap-1.5 ml-auto shrink-0">
+            <div className="flex items-center gap-1.5 shrink-0">
               <NotificationsDropdown />
               {/* Search button */}
               <button
@@ -272,7 +276,6 @@ export default function Index() {
                       }`}
                     >
                       <Filter className="w-3.5 h-3.5" />
-                      <span>Filtrer</span>
                       {filterCount > 0 && (
                         <span className="bg-primary text-primary-foreground rounded-full w-4 h-4 flex items-center justify-center text-label">
                           {filterCount}
@@ -313,9 +316,9 @@ export default function Index() {
                 <TooltipTrigger asChild>
                   <button
                     onClick={() => setSuggestionsOpen(true)}
-                    className="inline-flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-md bg-primary/10 text-primary text-xs sm:text-sm font-medium hover:bg-primary/20 transition-colors shrink-0 active:scale-[0.97]"
+                    className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded-md bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors shrink-0 active:scale-[0.97]"
                   >
-                    <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    <Sparkles className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">Proposer des tâches</span>
                     <span className="sm:hidden">IA</span>
                   </button>
@@ -324,6 +327,27 @@ export default function Index() {
               </Tooltip>
             </div>
           </div>
+
+          {/* Row 2: Mobile view selector — horizontally scrollable */}
+          {isMobile && (
+            <div className="flex items-center gap-1 px-3 pb-2 overflow-x-auto scrollbar-none -mt-1">
+              {VIEW_OPTIONS.map((v) => (
+                <button
+                  key={v.key}
+                  onClick={() => setSelectedView(v.key)}
+                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-colors shrink-0 ${
+                    selectedView === v.key
+                      ? "bg-primary/15 text-primary"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {v.icon}
+                  {v.label}
+                </button>
+              ))}
+            </div>
+          )}
+
           {/* Filters - desktop only inline */}
           {!isMobile && (
             <div className="px-3 sm:px-6 pb-2">
@@ -333,7 +357,7 @@ export default function Index() {
         </header>
 
         {/* Main content - add bottom padding on mobile for nav bar */}
-        <main className={`flex-1 overflow-hidden ${isMobile ? "pb-14" : ""}`}>
+        <main className={`flex-1 overflow-hidden ${isMobile ? "pb-16" : ""}`}>
           {selectedView === "dashboard" && <BentoDashboard />}
           {selectedView === "kanban" && <KanbanBoard />}
           {selectedView === "list" && <ListView />}

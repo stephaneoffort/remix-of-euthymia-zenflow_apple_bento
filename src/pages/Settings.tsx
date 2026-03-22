@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown } from 'lucide-react';
 import DataExportImport from '@/components/DataExportImport';
 import InviteMemberDialog from '@/components/InviteMemberDialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -164,6 +164,18 @@ function MembersPanel() {
     }
     const isCurrentlyAdmin = roles[userId]?.includes('admin');
     if (isCurrentlyAdmin) {
+      // Prevent removing own admin role
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (currentUser && currentUser.id === userId) {
+        toast.error('Vous ne pouvez pas retirer votre propre rôle administrateur');
+        return;
+      }
+      // Count remaining admins
+      const adminCount = Object.values(roles).filter(r => r.includes('admin')).length;
+      if (adminCount <= 1) {
+        toast.error('Impossible : il doit rester au moins un administrateur');
+        return;
+      }
       const member = members.find(m => m.id === memberId);
       const confirmed = confirm(`Retirer le rôle administrateur à ${member?.name ?? 'ce membre'} ? Il n'aura plus accès aux paramètres.`);
       if (!confirmed) return;
@@ -173,7 +185,7 @@ function MembersPanel() {
     } else {
       const { error } = await supabase.from('user_roles').insert({ user_id: userId, role: 'admin' });
       if (error) { toast.error(error.message); return; }
-      toast.success('Rôle admin attribué');
+      toast.success('Rôle administrateur attribué avec succès');
     }
     await refreshRoles();
   };
@@ -309,11 +321,12 @@ function MembersPanel() {
                       <Button
                         variant={memberIsAdmin ? 'default' : 'outline'}
                         size="sm"
-                        className="text-xs gap-1"
+                        className={`text-xs gap-1 ${memberIsAdmin ? 'bg-primary hover:bg-primary/90' : ''}`}
                         onClick={() => handleToggleAdmin(m.id)}
+                        title={memberIsAdmin ? 'Retirer les droits admin' : 'Promouvoir administrateur'}
                       >
-                        <Shield className="w-3 h-3" />
-                        Admin
+                        <Crown className="w-3 h-3" />
+                        {memberIsAdmin ? 'Admin ✓' : 'Promouvoir'}
                       </Button>
                     )}
                     <Button

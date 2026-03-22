@@ -1,52 +1,86 @@
-import React, { useState, useCallback } from 'react';
-import { useApp } from '@/context/AppContext';
-import AppSidebar from '@/components/AppSidebar';
-import KanbanBoard from '@/components/KanbanBoard';
-import ListView from '@/components/ListView';
-import CalendarView from '@/components/CalendarView';
-import WorkloadView from '@/components/WorkloadView';
-import MindMapView from '@/components/MindMapView';
-import TaskDetailPanel from '@/components/TaskDetailPanel';
-import TaskFilterBar from '@/components/TaskFilterBar';
-import MobileBottomNav from '@/components/MobileBottomNav';
-import TaskSuggestions from '@/components/TaskSuggestions';
-import AIChatPanel from '@/components/AIChatPanel';
-import CommandPalette from '@/components/CommandPalette';
-import KeyboardShortcutsDialog from '@/components/KeyboardShortcutsDialog';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
-import { ViewType } from '@/types';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Drawer, DrawerContent, DrawerTrigger, DrawerTitle } from '@/components/ui/drawer';
+import BentoDashboard from "@/components/BentoDashboard";
+import React, { useState, useCallback } from "react";
+import { useApp } from "@/context/AppContext";
+import AppSidebar from "@/components/AppSidebar";
+import KanbanBoard from "@/components/KanbanBoard";
+import ListView from "@/components/ListView";
+import CalendarView from "@/components/CalendarView";
+import WorkloadView from "@/components/WorkloadView";
+import MindMapView from "@/components/MindMapView";
+import TaskDetailPanel from "@/components/TaskDetailPanel";
+import TaskFilterBar from "@/components/TaskFilterBar";
+import MobileBottomNav from "@/components/MobileBottomNav";
+import TaskSuggestions from "@/components/TaskSuggestions";
+import AIChatPanel from "@/components/AIChatPanel";
+import CommandPalette from "@/components/CommandPalette";
+import KeyboardShortcutsDialog from "@/components/KeyboardShortcutsDialog";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { ViewType } from "@/types";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Drawer, DrawerContent, DrawerTrigger, DrawerTitle } from "@/components/ui/drawer";
 
-import { Sparkles, PanelLeft, Filter, ChevronDown, ChevronUp, LayoutGrid, List, Calendar, BarChart3, Network, Search, X, Keyboard } from 'lucide-react';
-import NotificationsDropdown from '@/components/NotificationsDropdown';
+import {
+  Sparkles,
+  PanelLeft,
+  Filter,
+  ChevronDown,
+  ChevronUp,
+  LayoutGrid,
+  List,
+  Calendar,
+  BarChart3,
+  Network,
+  Search,
+  X,
+  Keyboard,
+} from "lucide-react";
+import NotificationsDropdown from "@/components/NotificationsDropdown";
 
 const VIEW_OPTIONS: { key: ViewType; label: string; icon: React.ReactNode }[] = [
-  { key: 'kanban', label: 'Kanban', icon: <LayoutGrid className="w-4 h-4" /> },
-  { key: 'list', label: 'Liste', icon: <List className="w-4 h-4" /> },
-  { key: 'calendar', label: 'Calendrier', icon: <Calendar className="w-4 h-4" /> },
-  { key: 'workload', label: 'Charge', icon: <BarChart3 className="w-4 h-4" /> },
-  { key: 'mindmap', label: 'Carte mentale', icon: <Network className="w-4 h-4" /> },
+  { key: "kanban", label: "Kanban", icon: <LayoutGrid className="w-4 h-4" /> },
+  { key: "list", label: "Liste", icon: <List className="w-4 h-4" /> },
+  { key: "calendar", label: "Calendrier", icon: <Calendar className="w-4 h-4" /> },
+  { key: "workload", label: "Charge", icon: <BarChart3 className="w-4 h-4" /> },
+  { key: "mindmap", label: "Carte mentale", icon: <Network className="w-4 h-4" /> },
 ];
 
 const QUICK_FILTER_TITLES: Record<string, string> = {
-  all: '',
-  my_tasks: 'Mes tâches',
-  urgent: 'Tâches urgentes',
+  all: "",
+  my_tasks: "Mes tâches",
+  urgent: "Tâches urgentes",
   today: "Tâches d'aujourd'hui",
-  overdue: 'Tâches en retard',
+  overdue: "Tâches en retard",
 };
 
 export default function Index() {
-  const { selectedProjectId, selectedSpaceId, selectedView, setSelectedView, quickFilter, selectedTaskId, setSelectedTaskId, projects, spaces, sidebarCollapsed, setSidebarCollapsed, advancedFilters, setAdvancedFilters, setSelectedProjectId, setSelectedSpaceId, setQuickFilter, addTask, getListsForProject } = useApp();
+  const {
+    selectedProjectId,
+    selectedSpaceId,
+    selectedView,
+    setSelectedView,
+    quickFilter,
+    selectedTaskId,
+    setSelectedTaskId,
+    projects,
+    spaces,
+    sidebarCollapsed,
+    setSidebarCollapsed,
+    advancedFilters,
+    setAdvancedFilters,
+    setSelectedProjectId,
+    setSelectedSpaceId,
+    setQuickFilter,
+    addTask,
+    getListsForProject,
+  } = useApp();
   const isMobile = useIsMobile();
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
-  const [quickAddTitle, setQuickAddTitle] = useState('');
+  const [quickAddTitle, setQuickAddTitle] = useState("");
 
   // Keyboard shortcuts
   useKeyboardShortcuts({
@@ -55,18 +89,18 @@ export default function Index() {
       if (selectedTaskId) setSelectedTaskId(null);
     }, [selectedTaskId, setSelectedTaskId]),
     onOpenSearch: useCallback(() => setSearchOpen(true), []),
-    onToggleHelp: useCallback(() => setShortcutsOpen(prev => !prev), []),
+    onToggleHelp: useCallback(() => setShortcutsOpen((prev) => !prev), []),
   });
 
   const handleQuickAdd = () => {
     if (!quickAddTitle.trim()) return;
     const lists = selectedProjectId ? getListsForProject(selectedProjectId) : [];
-    const listId = lists[0]?.id || 'l1';
+    const listId = lists[0]?.id || "l1";
     addTask({
       title: quickAddTitle.trim(),
-      description: '',
-      status: 'todo',
-      priority: 'normal',
+      description: "",
+      status: "todo",
+      priority: "normal",
       dueDate: null,
       startDate: null,
       assigneeIds: [],
@@ -79,20 +113,22 @@ export default function Index() {
       timeLogged: null,
       aiSummary: null,
     });
-    setQuickAddTitle('');
+    setQuickAddTitle("");
     setQuickAddOpen(false);
   };
 
-  const filterCount = advancedFilters.statuses.length + advancedFilters.priorities.length + advancedFilters.assigneeIds.length + advancedFilters.tags.length;
+  const filterCount =
+    advancedFilters.statuses.length +
+    advancedFilters.priorities.length +
+    advancedFilters.assigneeIds.length +
+    advancedFilters.tags.length;
 
-  const project = projects.find(p => p.id === selectedProjectId);
-  const parentSpace = project ? spaces.find(s => s.id === project.spaceId) : null;
-  const space = spaces.find(s => s.id === selectedSpaceId);
+  const project = projects.find((p) => p.id === selectedProjectId);
+  const parentSpace = project ? spaces.find((s) => s.id === project.spaceId) : null;
+  const space = spaces.find((s) => s.id === selectedSpaceId);
 
-  const isQuickFilter = quickFilter !== 'all';
-  const title = isQuickFilter
-    ? QUICK_FILTER_TITLES[quickFilter]
-    : project?.name || space?.name || 'Toutes les tâches';
+  const isQuickFilter = quickFilter !== "all";
+  const title = isQuickFilter ? QUICK_FILTER_TITLES[quickFilter] : project?.name || space?.name || "Toutes les tâches";
 
   const hasActiveFilters =
     advancedFilters.statuses.length > 0 ||
@@ -103,13 +139,13 @@ export default function Index() {
   const navigateToAll = () => {
     setSelectedProjectId(null);
     setSelectedSpaceId(null);
-    setQuickFilter('all');
+    setQuickFilter("all");
   };
 
   const navigateToSpace = (spaceId: string) => {
     setSelectedProjectId(null);
     setSelectedSpaceId(spaceId);
-    setQuickFilter('all');
+    setQuickFilter("all");
   };
 
   // Build breadcrumb segments
@@ -118,12 +154,16 @@ export default function Index() {
   if (!isQuickFilter) {
     if (project && parentSpace) {
       // Euthymia > Space > Project
-      breadcrumbs.push({ label: 'Euthymia', onClick: navigateToAll });
-      breadcrumbs.push({ label: parentSpace.name, icon: parentSpace.icon, onClick: () => navigateToSpace(parentSpace.id) });
+      breadcrumbs.push({ label: "Euthymia", onClick: navigateToAll });
+      breadcrumbs.push({
+        label: parentSpace.name,
+        icon: parentSpace.icon,
+        onClick: () => navigateToSpace(parentSpace.id),
+      });
       breadcrumbs.push({ label: project.name, color: project.color });
     } else if (space) {
       // Euthymia > Space
-      breadcrumbs.push({ label: 'Euthymia', onClick: navigateToAll });
+      breadcrumbs.push({ label: "Euthymia", onClick: navigateToAll });
       breadcrumbs.push({ label: space.name, icon: space.icon });
     }
   }
@@ -137,7 +177,10 @@ export default function Index() {
           <div className="h-12 sm:h-14 flex items-center px-3 sm:px-6 gap-2">
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               {sidebarCollapsed && !isMobile && (
-                <button onClick={() => setSidebarCollapsed(false)} className="p-1.5 rounded-md hover:bg-muted transition-colors shrink-0">
+                <button
+                  onClick={() => setSidebarCollapsed(false)}
+                  className="p-1.5 rounded-md hover:bg-muted transition-colors shrink-0"
+                >
                   <PanelLeft className="w-5 h-5" />
                 </button>
               )}
@@ -157,7 +200,9 @@ export default function Index() {
                         </button>
                       ) : (
                         <h2 className="flex items-center gap-1.5 font-bold text-foreground truncate min-w-0">
-                          {crumb.color && <div className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: crumb.color }} />}
+                          {crumb.color && (
+                            <div className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: crumb.color }} />
+                          )}
                           {crumb.icon && <span className="shrink-0">{crumb.icon}</span>}
                           <span className="truncate">{crumb.label}</span>
                         </h2>
@@ -170,15 +215,15 @@ export default function Index() {
               )}
               {/* View selector */}
               <div className="flex items-center gap-0.5 ml-2 bg-muted/50 rounded-lg p-0.5">
-                {VIEW_OPTIONS.map(v => (
+                {VIEW_OPTIONS.map((v) => (
                   <Tooltip key={v.key}>
                     <TooltipTrigger asChild>
                       <button
                         onClick={() => setSelectedView(v.key)}
                         className={`flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors ${
                           selectedView === v.key
-                            ? 'bg-background text-foreground shadow-sm'
-                            : 'text-muted-foreground hover:text-foreground'
+                            ? "bg-background text-foreground shadow-sm"
+                            : "text-muted-foreground hover:text-foreground"
                         }`}
                       >
                         {v.icon}
@@ -201,7 +246,9 @@ export default function Index() {
               >
                 <Search className="w-3.5 h-3.5" />
                 <span>Rechercher…</span>
-                <kbd className="ml-2 px-1.5 py-0.5 text-label font-medium bg-background rounded border border-border">⌘K</kbd>
+                <kbd className="ml-2 px-1.5 py-0.5 text-label font-medium bg-background rounded border border-border">
+                  ⌘K
+                </kbd>
               </button>
               {isMobile && (
                 <button
@@ -218,8 +265,8 @@ export default function Index() {
                     <button
                       className={`relative inline-flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-medium border transition-colors ${
                         hasActiveFilters
-                          ? 'border-primary/30 bg-primary/5 text-primary'
-                          : 'border-border bg-card text-muted-foreground'
+                          ? "border-primary/30 bg-primary/5 text-primary"
+                          : "border-border bg-card text-muted-foreground"
                       }`}
                     >
                       <Filter className="w-3.5 h-3.5" />
@@ -238,7 +285,9 @@ export default function Index() {
                         <div className="flex items-center gap-3">
                           {hasActiveFilters && (
                             <button
-                              onClick={() => setAdvancedFilters({ statuses: [], priorities: [], assigneeIds: [], tags: [] })}
+                              onClick={() =>
+                                setAdvancedFilters({ statuses: [], priorities: [], assigneeIds: [], tags: [] })
+                              }
                               className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
                             >
                               <X className="w-3 h-3" />
@@ -269,9 +318,7 @@ export default function Index() {
                     <span className="sm:hidden">IA</span>
                   </button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  Générer des suggestions de tâches basées sur votre projet
-                </TooltipContent>
+                <TooltipContent side="bottom">Générer des suggestions de tâches basées sur votre projet</TooltipContent>
               </Tooltip>
             </div>
           </div>
@@ -284,12 +331,12 @@ export default function Index() {
         </header>
 
         {/* Main content - add bottom padding on mobile for nav bar */}
-        <main className={`flex-1 overflow-hidden ${isMobile ? 'pb-14' : ''}`}>
-          {selectedView === 'kanban' && <KanbanBoard />}
-          {selectedView === 'list' && <ListView />}
-          {selectedView === 'calendar' && <CalendarView />}
-          {selectedView === 'workload' && <WorkloadView />}
-          {selectedView === 'mindmap' && <MindMapView />}
+        <main className={`flex-1 overflow-hidden ${isMobile ? "pb-14" : ""}`}>
+          {selectedView === "kanban" && <KanbanBoard />}
+          {selectedView === "list" && <ListView />}
+          {selectedView === "calendar" && <CalendarView />}
+          {selectedView === "workload" && <WorkloadView />}
+          {selectedView === "mindmap" && <MindMapView />}
         </main>
       </div>
 
@@ -306,15 +353,21 @@ export default function Index() {
 
       {/* Quick add task dialog */}
       {quickAddOpen && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center pt-[20vh] bg-black/40" onClick={() => setQuickAddOpen(false)}>
-          <div className="w-full max-w-md bg-card rounded-lg border shadow-lg p-4" onClick={e => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 z-50 flex items-start justify-center pt-[20vh] bg-black/40"
+          onClick={() => setQuickAddOpen(false)}
+        >
+          <div className="w-full max-w-md bg-card rounded-lg border shadow-lg p-4" onClick={(e) => e.stopPropagation()}>
             <input
               autoFocus
               value={quickAddTitle}
-              onChange={e => setQuickAddTitle(e.target.value)}
-              onKeyDown={e => {
-                if (e.key === 'Enter') handleQuickAdd();
-                if (e.key === 'Escape') { setQuickAddOpen(false); setQuickAddTitle(''); }
+              onChange={(e) => setQuickAddTitle(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleQuickAdd();
+                if (e.key === "Escape") {
+                  setQuickAddOpen(false);
+                  setQuickAddTitle("");
+                }
               }}
               placeholder="Titre de la nouvelle tâche…"
               className="w-full text-sm bg-transparent outline-none placeholder:text-muted-foreground"

@@ -433,6 +433,15 @@
     flex-direction: column;
     gap: 10px;
     flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+  }
+  @media (min-width: 640px) {
+    .bento-team-list {
+      max-height: 240px;
+    }
   }
   .bento-member {
     display: flex;

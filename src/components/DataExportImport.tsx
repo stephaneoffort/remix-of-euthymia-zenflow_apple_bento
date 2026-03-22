@@ -259,7 +259,7 @@ export default function DataExportImport() {
         <CardHeader>
           <CardTitle className="text-base">Exporter les données</CardTitle>
           <p className="text-sm text-muted-foreground">
-            Téléchargez un fichier JSON contenant tous vos espaces, projets, tâches, sous-tâches, responsables, avancements, chat et catégories.
+            Téléchargez un fichier JSON contenant tous vos espaces, projets, tâches, sous-tâches, responsables, avancements, chat, messages privés, réactions et catégories.
           </p>
         </CardHeader>
         <CardContent>

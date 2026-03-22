@@ -334,6 +334,19 @@ export default function AppSidebar() {
       </div>
 
 
+      {/* Dashboard button */}
+      <div className="px-3 pt-3 pb-1">
+        <button
+          onClick={() => { setSelectedView('dashboard'); setSelectedProjectId(null); setSelectedSpaceId(null); setQuickFilter('all'); handleNavClick(); }}
+          className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm font-medium transition-colors ${
+            selectedView === 'dashboard' ? 'bg-sidebar-active text-sidebar-fg-bright' : 'text-sidebar-fg hover:bg-sidebar-hover'
+          }`}
+        >
+          <Home className="w-4 h-4" />
+          Dashboard
+        </button>
+      </div>
+
       {/* Quick Filters - collapsible on mobile */}
       <div className="px-3 py-3 border-b border-sidebar-border-color">
         <button

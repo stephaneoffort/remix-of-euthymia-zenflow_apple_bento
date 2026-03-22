@@ -114,11 +114,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     _setSelectedSpaceId(id);
     if (id) _setSelectedProjectId(null);
   }, []);
-  const [selectedView, _setSelectedView] = useState<ViewType>(() => {
-    const saved = localStorage.getItem('euthymia:view') as ViewType | null;
-    if (saved && ['dashboard', 'kanban', 'list', 'calendar', 'workload', 'mindmap'].includes(saved)) return saved;
-    return window.matchMedia('(max-width: 768px)').matches ? 'list' : 'kanban';
-  });
+  const [selectedView, _setSelectedView] = useState<ViewType>('dashboard');
   const setSelectedView = useCallback((view: ViewType) => {
     _setSelectedView(view);
     localStorage.setItem('euthymia:view', view);

@@ -80,6 +80,7 @@ const App = () => (
       <AuthProvider>
         <Toaster />
         <Sonner />
+        <OfflineBanner />
         <BrowserRouter>
           <Suspense fallback={<PageLoader />}>
             <Routes>

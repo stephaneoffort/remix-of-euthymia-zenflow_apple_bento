@@ -38,6 +38,7 @@ import {
 import NotificationsDropdown from "@/components/NotificationsDropdown";
 
 const VIEW_OPTIONS: { key: ViewType; label: string; icon: React.ReactNode }[] = [
+  { key: "dashboard", label: "Dashboard", icon: <Sparkles className="w-4 h-4" /> },
   { key: "kanban", label: "Kanban", icon: <LayoutGrid className="w-4 h-4" /> },
   { key: "list", label: "Liste", icon: <List className="w-4 h-4" /> },
   { key: "calendar", label: "Calendrier", icon: <Calendar className="w-4 h-4" /> },

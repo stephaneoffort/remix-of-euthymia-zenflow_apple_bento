@@ -22,6 +22,11 @@ interface ExportData {
   custom_statuses: any[];
   chat_categories: any[];
   chat_messages: any[];
+  chat_reactions: any[];
+  direct_conversations: any[];
+  direct_conversation_members: any[];
+  direct_messages: any[];
+  dm_reactions: any[];
 }
 
 export default function DataExportImport() {
@@ -48,6 +53,11 @@ export default function DataExportImport() {
         { data: custom_statuses },
         { data: chat_categories },
         { data: chat_messages },
+        { data: chat_reactions },
+        { data: direct_conversations },
+        { data: direct_conversation_members },
+        { data: direct_messages },
+        { data: dm_reactions },
       ] = await Promise.all([
         supabase.from('team_members').select('*'),
         supabase.from('spaces').select('*').order('sort_order'),
@@ -63,6 +73,11 @@ export default function DataExportImport() {
         supabase.from('custom_statuses').select('*').order('sort_order'),
         supabase.from('chat_categories').select('*').order('sort_order'),
         supabase.from('chat_messages').select('*').order('created_at'),
+        supabase.from('chat_reactions').select('*'),
+        supabase.from('direct_conversations').select('*'),
+        supabase.from('direct_conversation_members').select('*'),
+        supabase.from('direct_messages').select('*').order('created_at'),
+        supabase.from('dm_reactions').select('*'),
       ]);
 
       const exportData: ExportData = {
@@ -82,6 +97,11 @@ export default function DataExportImport() {
         custom_statuses: custom_statuses || [],
         chat_categories: chat_categories || [],
         chat_messages: chat_messages || [],
+        chat_reactions: chat_reactions || [],
+        direct_conversations: direct_conversations || [],
+        direct_conversation_members: direct_conversation_members || [],
+        direct_messages: direct_messages || [],
+        dm_reactions: dm_reactions || [],
       };
 
       const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
@@ -186,6 +206,27 @@ export default function DataExportImport() {
         const { error } = await supabase.from('chat_messages').upsert(d.chat_messages, { onConflict: 'id' });
         if (error) throw new Error(`chat_messages: ${error.message}`);
       }
+      if (d.chat_reactions?.length) {
+        const { error } = await supabase.from('chat_reactions').upsert(d.chat_reactions, { onConflict: 'id' });
+        if (error) throw new Error(`chat_reactions: ${error.message}`);
+      }
+      if (d.direct_conversations?.length) {
+        const { error } = await supabase.from('direct_conversations').upsert(d.direct_conversations, { onConflict: 'id' });
+        if (error) throw new Error(`direct_conversations: ${error.message}`);
+      }
+      if (d.direct_conversation_members?.length) {
+        await supabase.from('direct_conversation_members').delete().neq('conversation_id', '___none___');
+        const { error } = await supabase.from('direct_conversation_members').insert(d.direct_conversation_members);
+        if (error) throw new Error(`direct_conversation_members: ${error.message}`);
+      }
+      if (d.direct_messages?.length) {
+        const { error } = await supabase.from('direct_messages').upsert(d.direct_messages, { onConflict: 'id' });
+        if (error) throw new Error(`direct_messages: ${error.message}`);
+      }
+      if (d.dm_reactions?.length) {
+        const { error } = await supabase.from('dm_reactions').upsert(d.dm_reactions, { onConflict: 'id' });
+        if (error) throw new Error(`dm_reactions: ${error.message}`);
+      }
 
       toast.success('Import terminé — rechargez la page pour voir les changements');
       setImportPreview(null);
@@ -205,6 +246,9 @@ export default function DataExportImport() {
     checklists: importPreview.checklist_items.length,
     chatCategories: importPreview.chat_categories.length,
     chatMessages: importPreview.chat_messages.length,
+    chatReactions: (importPreview.chat_reactions || []).length,
+    directMessages: (importPreview.direct_messages || []).length,
+    dmReactions: (importPreview.dm_reactions || []).length,
     statuses: importPreview.custom_statuses.length,
   } : null;
 
@@ -215,7 +259,7 @@ export default function DataExportImport() {
         <CardHeader>
           <CardTitle className="text-base">Exporter les données</CardTitle>
           <p className="text-sm text-muted-foreground">
-            Téléchargez un fichier JSON contenant tous vos espaces, projets, tâches, sous-tâches, responsables, avancements, chat et catégories.
+            Téléchargez un fichier JSON contenant tous vos espaces, projets, tâches, sous-tâches, responsables, avancements, chat, messages privés, réactions et catégories.
           </p>
         </CardHeader>
         <CardContent>
@@ -262,6 +306,9 @@ export default function DataExportImport() {
                     ['Checklist', counts!.checklists],
                     ['Catégories chat', counts!.chatCategories],
                     ['Messages chat', counts!.chatMessages],
+                    ['Réactions chat', counts!.chatReactions],
+                    ['Messages privés', counts!.directMessages],
+                    ['Réactions DM', counts!.dmReactions],
                     ['Statuts perso.', counts!.statuses],
                   ].map(([label, count]) => (
                     <div key={label as string} className="text-xs">

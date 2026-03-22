@@ -164,6 +164,18 @@ function MembersPanel() {
     }
     const isCurrentlyAdmin = roles[userId]?.includes('admin');
     if (isCurrentlyAdmin) {
+      // Prevent removing own admin role
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (currentUser && currentUser.id === userId) {
+        toast.error('Vous ne pouvez pas retirer votre propre rôle administrateur');
+        return;
+      }
+      // Count remaining admins
+      const adminCount = Object.values(roles).filter(r => r.includes('admin')).length;
+      if (adminCount <= 1) {
+        toast.error('Impossible : il doit rester au moins un administrateur');
+        return;
+      }
       const member = members.find(m => m.id === memberId);
       const confirmed = confirm(`Retirer le rôle administrateur à ${member?.name ?? 'ce membre'} ? Il n'aura plus accès aux paramètres.`);
       if (!confirmed) return;
@@ -173,7 +185,7 @@ function MembersPanel() {
     } else {
       const { error } = await supabase.from('user_roles').insert({ user_id: userId, role: 'admin' });
       if (error) { toast.error(error.message); return; }
-      toast.success('Rôle admin attribué');
+      toast.success('Rôle administrateur attribué avec succès');
     }
     await refreshRoles();
   };

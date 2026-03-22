@@ -1,0 +1,267 @@
+/* ─────────────────────────────────────────────────────
+   PALETTE: Clubroom Contrast — Noir + Or
+───────────────────────────────────────────────────── */
+[data-palette="clubroom"] {
+  --background: 0 0% 6%;
+  --foreground: 40 20% 92%;
+  --card: 0 0% 9%;
+  --card-foreground: 40 20% 92%;
+  --popover: 0 0% 7%;
+  --popover-foreground: 40 20% 92%;
+  --primary: 40 60% 58%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 0 0% 13%;
+  --secondary-foreground: 40 15% 70%;
+  --muted: 0 0% 12%;
+  --muted-foreground: 40 8% 45%;
+  --accent: 40 40% 18%;
+  --accent-foreground: 40 60% 72%;
+  --destructive: 0 72% 55%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 0 0% 16%;
+  --input: 0 0% 14%;
+  --ring: 40 60% 58%;
+
+  --sidebar-bg: 0 0% 5%;
+  --sidebar-fg: 40 10% 55%;
+  --sidebar-fg-bright: 40 15% 90%;
+  --sidebar-hover: 0 0% 11%;
+  --sidebar-active: 40 60% 58%;
+  --sidebar-border: 0 0% 13%;
+  --sidebar-background: 0 0% 5%;
+  --sidebar-foreground: 40 10% 55%;
+  --sidebar-primary: 40 60% 58%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 0 0% 11%;
+  --sidebar-accent-foreground: 40 15% 90%;
+  --sidebar-ring: 40 60% 58%;
+
+  --bento-bg: #1a1a1a;
+  --bento-bg-hover: #222222;
+  --bento-border: rgba(212, 168, 83, 0.1);
+  --bento-border-h: rgba(212, 168, 83, 0.2);
+}
+
+[data-palette="clubroom"].light {
+  --background: 40 25% 96%;
+  --foreground: 0 0% 12%;
+  --card: 40 20% 98%;
+  --card-foreground: 0 0% 12%;
+  --popover: 40 20% 97%;
+  --popover-foreground: 0 0% 12%;
+  --primary: 40 60% 45%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 40 15% 90%;
+  --secondary-foreground: 0 0% 35%;
+  --muted: 40 12% 92%;
+  --muted-foreground: 0 0% 45%;
+  --accent: 40 30% 88%;
+  --accent-foreground: 40 60% 30%;
+  --border: 40 15% 85%;
+  --input: 40 15% 88%;
+  --ring: 40 60% 45%;
+
+  --sidebar-bg: 0 0% 5%;
+  --sidebar-fg: 40 10% 55%;
+  --sidebar-fg-bright: 40 15% 90%;
+  --sidebar-hover: 0 0% 11%;
+  --sidebar-active: 40 60% 50%;
+  --sidebar-border: 0 0% 13%;
+  --sidebar-background: 0 0% 5%;
+  --sidebar-foreground: 40 10% 55%;
+  --sidebar-primary: 40 60% 50%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 0 0% 11%;
+  --sidebar-accent-foreground: 40 15% 90%;
+  --sidebar-ring: 40 60% 50%;
+}
+
+[data-palette="clubroom"].mixed {
+  --background: 40 25% 96%;
+  --foreground: 0 0% 12%;
+  --card: 40 20% 98%;
+  --card-foreground: 0 0% 12%;
+  --popover: 40 20% 97%;
+  --popover-foreground: 0 0% 12%;
+  --primary: 40 60% 45%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 40 15% 90%;
+  --secondary-foreground: 0 0% 35%;
+  --muted: 40 12% 92%;
+  --muted-foreground: 0 0% 45%;
+  --accent: 40 30% 88%;
+  --accent-foreground: 40 60% 30%;
+  --border: 40 15% 85%;
+  --input: 40 15% 88%;
+  --ring: 40 60% 45%;
+
+  --sidebar-bg: 0 0% 5%;
+  --sidebar-fg: 40 10% 55%;
+  --sidebar-fg-bright: 40 15% 90%;
+  --sidebar-hover: 0 0% 11%;
+  --sidebar-active: 40 60% 50%;
+  --sidebar-border: 0 0% 13%;
+  --sidebar-background: 0 0% 5%;
+  --sidebar-foreground: 40 10% 55%;
+  --sidebar-primary: 40 60% 50%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 0 0% 11%;
+  --sidebar-accent-foreground: 40 15% 90%;
+  --sidebar-ring: 40 60% 50%;
+}
+
+/* ─────────────────────────────────────────────────────
+   PALETTE: Elevated Neutrals — Sable & Pierre
+───────────────────────────────────────────────────── */
+[data-palette="neutrals"] {
+  --background: 30 8% 7%;
+  --foreground: 30 15% 88%;
+  --card: 30 8% 11%;
+  --card-foreground: 30 15% 88%;
+  --popover: 30 8% 9%;
+  --popover-foreground: 30 15% 88%;
+  --primary: 30 25% 65%;
+  --primary-foreground: 30 8% 7%;
+  --secondary: 30 8% 16%;
+  --secondary-foreground: 30 12% 68%;
+  --muted: 30 6% 14%;
+  --muted-foreground: 30 8% 45%;
+  --accent: 30 15% 20%;
+  --accent-foreground: 30 20% 72%;
+  --destructive: 0 72% 55%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 30 8% 18%;
+  --input: 30 8% 15%;
+  --ring: 30 25% 65%;
+
+  --sidebar-bg: 30 10% 5%;
+  --sidebar-fg: 30 8% 52%;
+  --sidebar-fg-bright: 30 12% 88%;
+  --sidebar-hover: 30 8% 12%;
+  --sidebar-active: 30 25% 65%;
+  --sidebar-border: 30 8% 14%;
+  --sidebar-background: 30 10% 5%;
+  --sidebar-foreground: 30 8% 52%;
+  --sidebar-primary: 30 25% 65%;
+  --sidebar-primary-foreground: 30 8% 7%;
+  --sidebar-accent: 30 8% 12%;
+  --sidebar-accent-foreground: 30 12% 88%;
+  --sidebar-ring: 30 25% 65%;
+
+  --bento-bg: #1e1c19;
+  --bento-bg-hover: #252320;
+  --bento-border: rgba(184, 175, 166, 0.1);
+  --bento-border-h: rgba(184, 175, 166, 0.18);
+}
+
+[data-palette="neutrals"].light {
+  --background: 35 30% 97%;
+  --foreground: 25 15% 16%;
+  --card: 35 25% 98%;
+  --card-foreground: 25 15% 16%;
+  --popover: 35 25% 97%;
+  --popover-foreground: 25 15% 16%;
+  --primary: 30 30% 42%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 30 15% 91%;
+  --secondary-foreground: 25 10% 38%;
+  --muted: 30 12% 93%;
+  --muted-foreground: 25 8% 48%;
+  --accent: 30 20% 88%;
+  --accent-foreground: 30 25% 30%;
+  --border: 30 15% 86%;
+  --input: 30 15% 89%;
+  --ring: 30 30% 42%;
+
+  --sidebar-bg: 30 10% 5%;
+  --sidebar-fg: 30 8% 52%;
+  --sidebar-fg-bright: 30 12% 88%;
+  --sidebar-hover: 30 8% 12%;
+  --sidebar-active: 30 30% 48%;
+  --sidebar-border: 30 8% 14%;
+  --sidebar-background: 30 10% 5%;
+  --sidebar-foreground: 30 8% 52%;
+  --sidebar-primary: 30 30% 48%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 30 8% 12%;
+  --sidebar-accent-foreground: 30 12% 88%;
+  --sidebar-ring: 30 30% 48%;
+}
+
+[data-palette="neutrals"].mixed {
+  --background: 35 30% 97%;
+  --foreground: 25 15% 16%;
+  --card: 35 25% 98%;
+  --card-foreground: 25 15% 16%;
+  --popover: 35 25% 97%;
+  --popover-foreground: 25 15% 16%;
+  --primary: 30 30% 42%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 30 15% 91%;
+  --secondary-foreground: 25 10% 38%;
+  --muted: 30 12% 93%;
+  --muted-foreground: 25 8% 48%;
+  --accent: 30 20% 88%;
+  --accent-foreground: 30 25% 30%;
+  --border: 30 15% 86%;
+  --input: 30 15% 89%;
+  --ring: 30 30% 42%;
+
+  --sidebar-bg: 30 10% 5%;
+  --sidebar-fg: 30 8% 52%;
+  --sidebar-fg-bright: 30 12% 88%;
+  --sidebar-hover: 30 8% 12%;
+  --sidebar-active: 30 30% 48%;
+  --sidebar-border: 30 8% 14%;
+  --sidebar-background: 30 10% 5%;
+  --sidebar-foreground: 30 8% 52%;
+  --sidebar-primary: 30 30% 48%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 30 8% 12%;
+  --sidebar-accent-foreground: 30 12% 88%;
+  --sidebar-ring: 30 30% 48%;
+}
+
+/* ─────────────────────────────────────────────────────
+   PALETTE: Sapphire Depth — Bleu profond
+───────────────────────────────────────────────────── */
+[data-palette="sapphire"] {
+  --background: 222 30% 5%;
+  --foreground: 210 20% 92%;
+  --card: 220 25% 10%;
+  --card-foreground: 210 20% 92%;
+  --popover: 220 28% 8%;
+  --popover-foreground: 210 20% 92%;
+  --primary: 173 80% 42%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 220 20% 15%;
+  --secondary-foreground: 210 15% 75%;
+  --muted: 220 18% 14%;
+  --muted-foreground: 215 12% 48%;
+  --accent: 173 60% 18%;
+  --accent-foreground: 173 80% 72%;
+  --destructive: 0 72% 55%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 220 20% 18%;
+  --input: 220 20% 16%;
+  --ring: 173 80% 42%;
+
+  --sidebar-bg: 220 32% 6%;
+  --sidebar-fg: 210 15% 62%;
+  --sidebar-fg-bright: 0 0% 94%;
+  --sidebar-hover: 220 25% 12%;
+  --sidebar-active: 173 80% 42%;
+  --sidebar-border: 220 22% 14%;
+  --sidebar-background: 220 32% 6%;
+  --sidebar-foreground: 210 15% 62%;
+  --sidebar-primary: 173 80% 42%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 220 25% 12%;
+  --sidebar-accent-foreground: 0 0% 94%;
+  --sidebar-ring: 173 80% 42%;
+
+  --bento-bg: #111318;
+  --bento-bg-hover: #161920;
+  --bento-border: rgba(255, 255, 255, 0.07);
+  --bento-border-h: rgba(255, 255, 255, 0.12);
+}

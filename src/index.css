@@ -8,7 +8,7 @@
 @layer base {
   html,
   body {
-    background: #08090d;
+    background: hsl(var(--background));
     min-height: 100vh;
   }
 }

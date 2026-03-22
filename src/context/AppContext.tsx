@@ -252,7 +252,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // Add task mutation
   const addTaskMutation = useMutation({
     mutationFn: async (task: Omit<Task, 'id' | 'createdAt' | 'order'>) => {
-      const { data, error } = await supabase.from('tasks').insert({
+      const taskPayload = {
         title: task.title,
         description: task.description,
         status: task.status,
@@ -268,10 +268,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         recurrence: task.recurrence || null,
         recurrence_end_date: task.recurrenceEndDate || null,
         sort_order: tasks.length,
-      }).select().single();
+      };
+
+      if (!navigator.onLine) {
+        await enqueue({ table: 'tasks', operation: 'insert', payload: taskPayload });
+        toast.info('Tâche enregistrée hors-ligne — sera synchronisée au retour de la connexion');
+        return null;
+      }
+
+      const { data, error } = await supabase.from('tasks').insert(taskPayload).select().single();
       if (error) throw error;
 
-      // Insert assignees
       if (task.assigneeIds.length > 0) {
         const { error: aErr } = await supabase.from('task_assignees').insert(
           task.assigneeIds.map(mid => ({ task_id: data.id, member_id: mid }))

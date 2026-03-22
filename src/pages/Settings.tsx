@@ -164,6 +164,9 @@ function MembersPanel() {
     }
     const isCurrentlyAdmin = roles[userId]?.includes('admin');
     if (isCurrentlyAdmin) {
+      const member = members.find(m => m.id === memberId);
+      const confirmed = confirm(`Retirer le rôle administrateur à ${member?.name ?? 'ce membre'} ? Il n'aura plus accès aux paramètres.`);
+      if (!confirmed) return;
       const { error } = await supabase.from('user_roles').delete().eq('user_id', userId).eq('role', 'admin');
       if (error) { toast.error(error.message); return; }
       toast.success('Rôle admin retiré');

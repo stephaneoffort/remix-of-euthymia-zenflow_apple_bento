@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export type ThemeMode = 'light' | 'dark' | 'mixed';
-export type ThemePalette = 'clubroom' | 'neutrals' | 'sapphire';
+export type ThemePalette = 'clubroom' | 'neutrals' | 'sapphire' | 'cinematic' | 'teal';
 
 interface ThemeContextType {
   theme: ThemeMode;
@@ -27,6 +27,16 @@ export const PALETTE_META: Record<ThemePalette, { label: string; description: st
     label: 'Sapphire Depth',
     description: 'Bleu saphir profond — Tech & élégance',
     colors: ['#1B2A4A', '#2E5090', '#F8F9FB', '#E8ECF2'],
+  },
+  cinematic: {
+    label: 'Cinematic Glow',
+    description: 'Gradients doux et cinématiques — Tech premium',
+    colors: ['#0F0B1E', '#1A1035', '#7C3AED', '#EC4899'],
+  },
+  teal: {
+    label: 'Ocean Teal',
+    description: 'Bleu-vert océan — Mystère & modernité',
+    colors: ['#0A1A1F', '#134E4A', '#14B8A6', '#CCFBF1'],
   },
 };
 

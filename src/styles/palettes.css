@@ -610,4 +610,10 @@
   --sidebar-accent: 185 25% 10%;
   --sidebar-accent-foreground: 170 12% 90%;
   --sidebar-ring: 168 76% 42%;
+
+  --bento-bg: hsl(170, 25%, 98%);
+  --bento-bg-hover: hsl(170, 20%, 95%);
+  --bento-border: rgba(20, 184, 166, 0.08);
+  --bento-border-h: rgba(20, 184, 166, 0.14);
+  --bento-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 16px rgba(0, 0, 0, 0.03);
 }

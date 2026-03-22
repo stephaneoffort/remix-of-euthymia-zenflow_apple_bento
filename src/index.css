@@ -124,7 +124,12 @@
     transition:
       border-color 0.2s,
       transform 0.15s;
-    min-height: 160px;
+    min-height: 140px;
+  }
+  @media (min-width: 640px) {
+    .bento-cell {
+      min-height: 160px;
+    }
   }
   .bento-cell:hover {
     border-color: var(--bento-border-h);

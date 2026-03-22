@@ -120,15 +120,16 @@
     border-radius: var(--bento-radius);
     box-shadow: var(--bento-shadow);
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     transition:
       border-color 0.2s,
       transform 0.15s;
-    min-height: 140px;
+    min-height: 0;
   }
   @media (min-width: 640px) {
     .bento-cell {
       min-height: 160px;
+      overflow: hidden;
     }
   }
   .bento-cell:hover {
@@ -343,6 +344,15 @@
     flex-direction: column;
     gap: 8px;
     flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+  }
+  @media (min-width: 640px) {
+    .bento-task-list {
+      max-height: 220px;
+    }
   }
   .bento-task-item {
     display: flex;
@@ -423,6 +433,15 @@
     flex-direction: column;
     gap: 10px;
     flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+  }
+  @media (min-width: 640px) {
+    .bento-team-list {
+      max-height: 240px;
+    }
   }
   .bento-member {
     display: flex;

@@ -51,7 +51,7 @@ export default function Settings() {
   return (
     <div className="min-h-screen bg-background">
       <header className="h-14 border-b border-border flex items-center gap-3 px-6 bg-card">
-        <button onClick={() => navigate('/')} className="p-1.5 rounded-md hover:bg-muted transition-colors">
+        <button onClick={() => navigate('/')} className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground">
           <ArrowLeft className="w-5 h-5" />
         </button>
         <Shield className="w-5 h-5 text-primary" />

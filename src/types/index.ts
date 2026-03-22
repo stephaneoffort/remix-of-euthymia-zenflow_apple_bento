@@ -1,3 +1,4 @@
+import BentoDashboard from "@/components/BentoDashboard";
 export type Priority = "urgent" | "high" | "normal" | "low";
 export type Status = "todo" | "in_progress" | "in_review" | "done" | "blocked" | (string & {});
 

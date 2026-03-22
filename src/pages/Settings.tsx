@@ -641,8 +641,21 @@ function ChatCategoriesPanel() {
 }
 
 function ThemePalettePanel() {
-  const { palette, setPalette } = useThemeMode();
+  const { palette, savePaletteToDb } = useThemeMode();
+  const [saving, setSaving] = useState(false);
   const palettes = Object.entries(PALETTE_META) as [ThemePalette, typeof PALETTE_META[ThemePalette]][];
+
+  const handleSelect = async (key: ThemePalette) => {
+    if (key === palette || saving) return;
+    setSaving(true);
+    const ok = await savePaletteToDb(key);
+    setSaving(false);
+    if (ok) {
+      toast.success(`Palette "${PALETTE_META[key].label}" appliquée pour tous`);
+    } else {
+      toast.error('Erreur lors de la sauvegarde');
+    }
+  };
 
   return (
     <Card className="border-border bg-card">
@@ -662,12 +675,13 @@ function ThemePalettePanel() {
             return (
               <button
                 key={key}
-                onClick={() => setPalette(key)}
+                onClick={() => handleSelect(key)}
+                disabled={saving}
                 className={`group relative flex flex-col gap-3 p-5 rounded-xl border-2 transition-all text-left ${
                   active
                     ? 'border-primary bg-accent/40 shadow-md'
                     : 'border-border bg-card hover:border-muted-foreground/30 hover:bg-muted/30'
-                }`}
+                } ${saving ? 'opacity-60 cursor-wait' : ''}`}
               >
                 {active && (
                   <span className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center">

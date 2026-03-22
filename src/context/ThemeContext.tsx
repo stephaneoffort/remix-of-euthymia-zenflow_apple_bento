@@ -12,7 +12,7 @@ const ThemeContext = createContext<ThemeContextType | null>(null);
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<ThemeMode>(() => {
     const saved = localStorage.getItem('euthymia-theme') as ThemeMode;
-    return saved || 'light';
+    return saved || 'dark';
   });
 
   const setTheme = (t: ThemeMode) => {

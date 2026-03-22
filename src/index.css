@@ -632,29 +632,183 @@
   }
 }
 
+/* ─────────────────────────────────────────────────────
+   BENTO LIGHT / MIXED OVERRIDES
+───────────────────────────────────────────────────── */
+@layer components {
+  .light .bento-hero,
+  .mixed .bento-hero {
+    background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 60%);
+  }
+  .light .bento-hero-glow,
+  .mixed .bento-hero-glow {
+    background: radial-gradient(ellipse 60% 80% at 0% 100%, hsl(var(--primary) / 0.08) 0%, transparent 70%);
+  }
+  .light .bento-hero-label,
+  .mixed .bento-hero-label {
+    color: hsl(var(--muted-foreground));
+  }
+  .light .bento-hero-title,
+  .mixed .bento-hero-title {
+    color: hsl(var(--foreground));
+  }
+  .light .bento-hero-sub,
+  .mixed .bento-hero-sub {
+    color: hsl(var(--muted-foreground));
+  }
+  .light .bento-stat-n,
+  .mixed .bento-stat-n {
+    color: hsl(var(--foreground) / 0.85);
+  }
+  .light .bento-stat-l,
+  .mixed .bento-stat-l {
+    color: hsl(var(--muted-foreground));
+  }
+  .light .bento-progress-bar,
+  .mixed .bento-progress-bar {
+    background: hsl(var(--muted));
+  }
+  .light .bento-btn-primary,
+  .mixed .bento-btn-primary {
+    background: hsl(var(--primary) / 0.12);
+    border-color: hsl(var(--primary) / 0.25);
+    color: hsl(var(--primary));
+  }
+  .light .bento-btn-primary:hover,
+  .mixed .bento-btn-primary:hover {
+    background: hsl(var(--primary) / 0.18);
+  }
+  .light .bento-btn-ghost,
+  .mixed .bento-btn-ghost {
+    background: hsl(var(--muted));
+    border-color: hsl(var(--border));
+    color: hsl(var(--foreground) / 0.6);
+  }
+  .light .bento-btn-ghost:hover,
+  .mixed .bento-btn-ghost:hover {
+    background: hsl(var(--accent));
+  }
+  .light .bento-cell-title,
+  .mixed .bento-cell-title {
+    color: hsl(var(--muted-foreground));
+  }
+  .light .bento-task-item,
+  .mixed .bento-task-item {
+    background: hsl(var(--muted) / 0.5);
+    border-color: hsl(var(--border));
+  }
+  .light .bento-task-item:hover,
+  .mixed .bento-task-item:hover {
+    background: hsl(var(--accent));
+  }
+  .light .bento-task-title,
+  .mixed .bento-task-title {
+    color: hsl(var(--foreground) / 0.85);
+  }
+  .light .bento-task-meta,
+  .mixed .bento-task-meta {
+    color: hsl(var(--muted-foreground));
+  }
+  .light .bento-more,
+  .mixed .bento-more {
+    color: hsl(var(--muted-foreground));
+  }
+  .light .bento-btn-link,
+  .mixed .bento-btn-link {
+    color: hsl(var(--muted-foreground));
+  }
+  .light .bento-btn-link:hover,
+  .mixed .bento-btn-link:hover {
+    color: hsl(var(--foreground));
+  }
+  .light .bento-urgent,
+  .mixed .bento-urgent {
+    background: var(--bento-bg);
+  }
+  .light .bento-member-name,
+  .mixed .bento-member-name {
+    color: hsl(var(--foreground) / 0.85);
+  }
+  .light .bento-member-role,
+  .mixed .bento-member-role {
+    color: hsl(var(--muted-foreground));
+  }
+  .light .bento-ai,
+  .mixed .bento-ai {
+    background: var(--bento-bg);
+  }
+  .light .bento-ai-glow,
+  .mixed .bento-ai-glow {
+    background: radial-gradient(ellipse 80% 60% at 100% 0%, hsl(var(--primary) / 0.06) 0%, transparent 65%);
+  }
+  .light .bento-ai-text,
+  .mixed .bento-ai-text {
+    color: hsl(var(--muted-foreground));
+  }
+  .light .bento-project-item,
+  .mixed .bento-project-item {
+    background: hsl(var(--muted) / 0.5);
+    border-color: hsl(var(--border));
+  }
+  .light .bento-project-item:hover,
+  .mixed .bento-project-item:hover {
+    background: hsl(var(--accent));
+    border-color: hsl(var(--border));
+  }
+  .light .bento-project-name,
+  .mixed .bento-project-name {
+    color: hsl(var(--foreground) / 0.8);
+  }
+  .light .bento-mini-bar,
+  .mixed .bento-mini-bar {
+    background: hsl(var(--muted));
+  }
+  .light .bento-project-pct,
+  .mixed .bento-project-pct {
+    color: hsl(var(--muted-foreground));
+  }
+  .light .bento-empty,
+  .mixed .bento-empty {
+    color: hsl(var(--muted-foreground));
+  }
+  .light .bento-task-list,
+  .mixed .bento-task-list {
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+  .light .bento-container::-webkit-scrollbar-thumb,
+  .mixed .bento-container::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+  }
+}
+
 /* ─── Surcharges globales composants ─── */
 @layer base {
-  [data-radix-popper-content-wrapper] > *,
-  [role="dialog"] {
+  .dark [data-radix-popper-content-wrapper] > *,
+  .dark [role="dialog"] {
     background: #13151c !important;
     border: 1px solid rgba(255, 255, 255, 0.09) !important;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6) !important;
   }
-  input,
-  textarea {
+  .dark input,
+  .dark textarea {
     background: rgba(255, 255, 255, 0.05) !important;
     border-color: rgba(255, 255, 255, 0.08) !important;
     color: rgba(255, 255, 255, 0.88) !important;
   }
-  input:focus,
-  textarea:focus {
+  .dark input:focus,
+  .dark textarea:focus {
     border-color: hsl(var(--primary)) !important;
-    box-shadow: 0 0 0 3px rgba(13, 205, 165, 0.15) !important;
+    box-shadow: 0 0 0 3px hsl(var(--primary) / 0.15) !important;
     outline: none !important;
   }
-  * {
+  .dark * {
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+  }
+  .light *,
+  .mixed * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
   }
 }
 

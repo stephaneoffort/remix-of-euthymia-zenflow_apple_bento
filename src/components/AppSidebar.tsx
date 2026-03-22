@@ -177,6 +177,21 @@ export default function AppSidebar() {
 
           <div className="w-6 border-t border-sidebar-border-color my-1.5" />
 
+          {/* Dashboard */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => { setSelectedView('dashboard'); setSelectedProjectId(null); setSelectedSpaceId(null); setQuickFilter('all'); }}
+                className={`p-2 rounded-md transition-colors ${
+                  selectedView === 'dashboard' ? 'bg-sidebar-active text-sidebar-fg-bright' : 'text-sidebar-fg hover:bg-sidebar-hover'
+                }`}
+              >
+                <Home className="w-4 h-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Dashboard</TooltipContent>
+          </Tooltip>
+
           {/* Quick Filters */}
           {QUICK_FILTERS.map(f => (
             <Tooltip key={f.key}>

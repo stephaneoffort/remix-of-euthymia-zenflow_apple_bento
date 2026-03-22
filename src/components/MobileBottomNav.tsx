@@ -61,7 +61,7 @@ export default function MobileBottomNav() {
   });
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border safe-area-bottom">
+    <div className="fixed bottom-0 left-0 right-0 z-40 bg-card/95 backdrop-blur-md border-t border-border pb-[env(safe-area-inset-bottom)]">
       <div className="flex items-center justify-around h-14 px-2">
         {/* Home */}
         <button
@@ -71,7 +71,7 @@ export default function MobileBottomNav() {
           } active:text-foreground`}
         >
           <Home className="w-5 h-5" />
-          <span className="text-label font-medium">Accueil</span>
+          <span className="text-[10px] font-medium">Accueil</span>
         </button>
 
         {/* Quick Add - central prominent button */}
@@ -86,7 +86,7 @@ export default function MobileBottomNav() {
               <Plus className="w-6 h-6" />
             </button>
           </DrawerTrigger>
-          <DrawerContent className="pb-safe">
+          <DrawerContent className="pb-[env(safe-area-inset-bottom)]">
             <div className="px-4 pt-2 pb-6">
               <DrawerTitle className="text-base font-semibold text-foreground mb-4">Nouvelle tâche</DrawerTitle>
 
@@ -147,12 +147,12 @@ export default function MobileBottomNav() {
           <div className="relative">
             <MessageCircle className="w-5 h-5" />
             {totalUnread > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-label font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
+              <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
                 {totalUnread > 99 ? '99+' : totalUnread}
               </span>
             )}
           </div>
-          <span className="text-label font-medium">Chat</span>
+          <span className="text-[10px] font-medium">Chat</span>
         </button>
 
         {/* Menu / Sidebar */}
@@ -161,7 +161,7 @@ export default function MobileBottomNav() {
           className="flex flex-col items-center justify-center gap-0.5 min-w-[56px] py-1 text-muted-foreground active:text-foreground transition-colors"
         >
           <Menu className="w-5 h-5" />
-          <span className="text-label font-medium">Menu</span>
+          <span className="text-[10px] font-medium">Menu</span>
         </button>
       </div>
     </div>

@@ -642,3 +642,17 @@
     scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
   }
 }
+
+/* ─── Utilitaires mobile ─── */
+@layer utilities {
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}

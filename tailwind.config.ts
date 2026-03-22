@@ -12,16 +12,28 @@ export default {
     },
     extend: {
       fontSize: {
-        'label': ['0.6875rem', { lineHeight: '1rem' }],      // 11px — badges, counters
-        'caption': ['0.75rem', { lineHeight: '1rem' }],       // 12px — metadata, timestamps
-        'body-sm': ['0.8125rem', { lineHeight: '1.25rem' }],  // 13px — secondary text
-        'body': ['0.875rem', { lineHeight: '1.375rem' }],     // 14px — default body
-        'body-lg': ['0.9375rem', { lineHeight: '1.5rem' }],   // 15px — emphasized body
-        'heading-sm': ['1rem', { lineHeight: '1.5rem' }],     // 16px — section titles
-        'heading': ['1.125rem', { lineHeight: '1.75rem' }],   // 18px — page titles
+        label: ["0.6875rem", { lineHeight: "1rem" }], // 11px — badges, counters
+        caption: ["0.75rem", { lineHeight: "1rem" }], // 12px — metadata, timestamps
+        "body-sm": ["0.8125rem", { lineHeight: "1.25rem" }], // 13px — secondary text
+        body: ["0.875rem", { lineHeight: "1.375rem" }], // 14px — default body
+        "body-lg": ["0.9375rem", { lineHeight: "1.5rem" }], // 15px — emphasized body
+        "heading-sm": ["1rem", { lineHeight: "1.5rem" }], // 16px — section titles
+        heading: ["1.125rem", { lineHeight: "1.75rem" }], // 18px — page titles
       },
       fontFamily: {
         sans: ['"Plus Jakarta Sans"', "system-ui", "ui-sans-serif", "sans-serif"],
+      },
+      backdropBlur: {
+        xs: "4px",
+        sm: "8px",
+        md: "14px",
+        lg: "24px",
+        xl: "40px",
+      },
+      boxShadow: {
+        glass: "0 4px 24px rgba(0,0,0,.45), 0 1px 0 rgba(255,255,255,.04) inset",
+        "glass-lg": "0 8px 40px rgba(0,0,0,.6),  0 1px 0 rgba(255,255,255,.06) inset",
+        "glow-teal": "0 0 20px rgba(13,205,165,.2), 0 0 40px rgba(13,205,165,.08)",
       },
       colors: {
         border: "hsl(var(--border))",

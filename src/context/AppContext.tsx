@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
+import { enqueue } from '@/lib/offlineQueue';
 
 export interface AdvancedFilters {
   statuses: string[];

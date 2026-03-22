@@ -89,9 +89,6 @@
     gap: var(--bento-gap);
     padding: 12px;
     width: 100%;
-    height: 100%;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
     box-sizing: border-box;
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
@@ -120,16 +117,15 @@
     border-radius: var(--bento-radius);
     box-shadow: var(--bento-shadow);
     position: relative;
-    overflow: visible;
+    overflow: hidden;
     transition:
       border-color 0.2s,
       transform 0.15s;
-    min-height: 0;
+    min-height: auto;
   }
   @media (min-width: 640px) {
     .bento-cell {
       min-height: 160px;
-      overflow: hidden;
     }
   }
   .bento-cell:hover {

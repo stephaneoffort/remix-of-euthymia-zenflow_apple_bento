@@ -259,7 +259,7 @@
   [data-radix-popper-content-wrapper] > *,
   [role="dialog"],
   [role="listbox"] {
-    background: hsl(220 28% 9%) !important;
+    background: hsl(var(--popover)) !important;
     backdrop-filter: var(--glass-blur-lg);
     -webkit-backdrop-filter: var(--glass-blur-lg);
     border: 1px solid var(--glass-border-bright) !important;
@@ -270,21 +270,21 @@
   input,
   textarea,
   select {
-    background: rgba(255, 255, 255, 0.05) !important;
+    background: var(--glass-bg) !important;
     border-color: var(--glass-border) !important;
     color: hsl(var(--foreground));
   }
   input:focus,
   textarea:focus {
-    background: rgba(255, 255, 255, 0.07) !important;
+    background: var(--glass-bg-md) !important;
     border-color: hsl(var(--primary)) !important;
-    box-shadow: 0 0 0 2px rgba(13, 205, 165, 0.2) !important;
+    box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2) !important;
   }
 
-  /* Scrollbar fine sur fond sombre */
+  /* Scrollbar fine */
   * {
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.2) transparent;
   }
   *::-webkit-scrollbar {
     width: 5px;
@@ -294,10 +294,10 @@
     background: transparent;
   }
   *::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
+    background: hsl(var(--muted-foreground) / 0.2);
     border-radius: 10px;
   }
   *::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.18);
+    background: hsl(var(--muted-foreground) / 0.35);
   }
 }

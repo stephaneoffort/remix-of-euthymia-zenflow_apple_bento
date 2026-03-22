@@ -53,6 +53,11 @@ export default function DataExportImport() {
         { data: custom_statuses },
         { data: chat_categories },
         { data: chat_messages },
+        { data: chat_reactions },
+        { data: direct_conversations },
+        { data: direct_conversation_members },
+        { data: direct_messages },
+        { data: dm_reactions },
       ] = await Promise.all([
         supabase.from('team_members').select('*'),
         supabase.from('spaces').select('*').order('sort_order'),
@@ -92,6 +97,11 @@ export default function DataExportImport() {
         custom_statuses: custom_statuses || [],
         chat_categories: chat_categories || [],
         chat_messages: chat_messages || [],
+        chat_reactions: chat_reactions || [],
+        direct_conversations: direct_conversations || [],
+        direct_conversation_members: direct_conversation_members || [],
+        direct_messages: direct_messages || [],
+        dm_reactions: dm_reactions || [],
       };
 
       const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });

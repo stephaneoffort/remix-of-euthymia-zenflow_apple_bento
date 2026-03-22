@@ -524,8 +524,13 @@
   /* ─── Cellule PROJETS (full width) ─── */
   .bento-projects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: 1fr;
     gap: 10px;
+  }
+  @media (min-width: 480px) {
+    .bento-projects-grid {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
   }
   .bento-project-item {
     display: flex;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import logoEuthymia from '@/assets/logo-euthymia.png';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
-import { ChevronRight, ChevronDown, LayoutGrid, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle, Shield, Crown, Lock, Sun, Moon, SunMoon, MoreHorizontal, Pencil } from 'lucide-react';
+import { ChevronRight, ChevronDown, LayoutGrid, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle, Shield, Crown, Lock, Sun, Moon, SunMoon, MoreHorizontal, Pencil, Home } from 'lucide-react';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
@@ -44,7 +44,7 @@ const PROJECT_COLORS = ['#4f46e5', '#0891b2', '#059669', '#d97706', '#dc2626', '
 export default function AppSidebar() {
   const {
     spaces, selectedProjectId, setSelectedProjectId, selectedSpaceId, setSelectedSpaceId,
-    quickFilter, setQuickFilter,
+    quickFilter, setQuickFilter, selectedView, setSelectedView,
     getProjectsForSpace, getTasksForProject, teamMembers, sidebarCollapsed, setSidebarCollapsed, lists,
     tasks, addSpace, addProject, renameSpace, renameProject, deleteSpace, deleteProject,
     reorderSpaces, reorderProjects, canAccessSpace, isSpaceManager, getSpaceManagers, refreshSpaceAccess,
@@ -176,6 +176,21 @@ export default function AppSidebar() {
           </Tooltip>
 
           <div className="w-6 border-t border-sidebar-border-color my-1.5" />
+
+          {/* Dashboard */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => { setSelectedView('dashboard'); setSelectedProjectId(null); setSelectedSpaceId(null); setQuickFilter('all'); }}
+                className={`p-2 rounded-md transition-colors ${
+                  selectedView === 'dashboard' ? 'bg-sidebar-active text-sidebar-fg-bright' : 'text-sidebar-fg hover:bg-sidebar-hover'
+                }`}
+              >
+                <Home className="w-4 h-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Dashboard</TooltipContent>
+          </Tooltip>
 
           {/* Quick Filters */}
           {QUICK_FILTERS.map(f => (
@@ -318,6 +333,19 @@ export default function AppSidebar() {
         </button>
       </div>
 
+
+      {/* Dashboard button */}
+      <div className="px-3 pt-3 pb-1">
+        <button
+          onClick={() => { setSelectedView('dashboard'); setSelectedProjectId(null); setSelectedSpaceId(null); setQuickFilter('all'); handleNavClick(); }}
+          className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm font-medium transition-colors ${
+            selectedView === 'dashboard' ? 'bg-sidebar-active text-sidebar-fg-bright' : 'text-sidebar-fg hover:bg-sidebar-hover'
+          }`}
+        >
+          <Home className="w-4 h-4" />
+          Dashboard
+        </button>
+      </div>
 
       {/* Quick Filters - collapsible on mobile */}
       <div className="px-3 py-3 border-b border-sidebar-border-color">

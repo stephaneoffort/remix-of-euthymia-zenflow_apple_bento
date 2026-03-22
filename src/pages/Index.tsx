@@ -357,7 +357,7 @@ export default function Index() {
         </header>
 
         {/* Main content - add bottom padding on mobile for nav bar */}
-        <main className={`flex-1 overflow-hidden ${isMobile ? "pb-16" : ""}`}>
+        <main className={`flex-1 overflow-y-auto ${isMobile ? "pb-16" : ""}`}>
           {selectedView === "dashboard" && <BentoDashboard />}
           {selectedView === "kanban" && <KanbanBoard />}
           {selectedView === "list" && <ListView />}

@@ -321,11 +321,12 @@ function MembersPanel() {
                       <Button
                         variant={memberIsAdmin ? 'default' : 'outline'}
                         size="sm"
-                        className="text-xs gap-1"
+                        className={`text-xs gap-1 ${memberIsAdmin ? 'bg-primary hover:bg-primary/90' : ''}`}
                         onClick={() => handleToggleAdmin(m.id)}
+                        title={memberIsAdmin ? 'Retirer les droits admin' : 'Promouvoir administrateur'}
                       >
-                        <Shield className="w-3 h-3" />
-                        Admin
+                        <Crown className="w-3 h-3" />
+                        {memberIsAdmin ? 'Admin ✓' : 'Promouvoir'}
                       </Button>
                     )}
                     <Button

@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
+import { enqueue } from '@/lib/offlineQueue';
 
 export interface AdvancedFilters {
   statuses: string[];
@@ -251,7 +252,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // Add task mutation
   const addTaskMutation = useMutation({
     mutationFn: async (task: Omit<Task, 'id' | 'createdAt' | 'order'>) => {
-      const { data, error } = await supabase.from('tasks').insert({
+      const taskPayload = {
         title: task.title,
         description: task.description,
         status: task.status,
@@ -267,10 +268,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         recurrence: task.recurrence || null,
         recurrence_end_date: task.recurrenceEndDate || null,
         sort_order: tasks.length,
-      }).select().single();
+      };
+
+      if (!navigator.onLine) {
+        await enqueue({ table: 'tasks', operation: 'insert', payload: taskPayload });
+        toast.info('Tâche enregistrée hors-ligne — sera synchronisée au retour de la connexion');
+        return null;
+      }
+
+      const { data, error } = await supabase.from('tasks').insert(taskPayload).select().single();
       if (error) throw error;
 
-      // Insert assignees
       if (task.assigneeIds.length > 0) {
         const { error: aErr } = await supabase.from('task_assignees').insert(
           task.assigneeIds.map(mid => ({ task_id: data.id, member_id: mid }))
@@ -300,12 +308,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (updates.recurrenceEndDate !== undefined) dbUpdates.recurrence_end_date = updates.recurrenceEndDate;
 
       if (Object.keys(dbUpdates).length > 0) {
+        if (!navigator.onLine) {
+          await enqueue({ table: 'tasks', operation: 'update', payload: dbUpdates, match: { id } });
+          return;
+        }
         const { error } = await supabase.from('tasks').update(dbUpdates).eq('id', id);
         if (error) throw error;
       }
 
       // Handle assignee changes
       if (updates.assigneeIds !== undefined) {
+        if (!navigator.onLine) {
+          await enqueue({ table: 'task_assignees', operation: 'delete', payload: null, match: { task_id: id } });
+          if (updates.assigneeIds.length > 0) {
+            await enqueue({ table: 'task_assignees', operation: 'insert', payload: updates.assigneeIds.map(mid => ({ task_id: id, member_id: mid })) });
+          }
+          return;
+        }
         await supabase.from('task_assignees').delete().eq('task_id', id);
         if (updates.assigneeIds.length > 0) {
           const { error } = await supabase.from('task_assignees').insert(
@@ -321,6 +340,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         const existingIds = new Set(existingTask?.comments.map(c => c.id) || []);
         const newComments = updates.comments.filter(c => !existingIds.has(c.id));
         for (const c of newComments) {
+          if (!navigator.onLine) {
+            await enqueue({ table: 'comments', operation: 'insert', payload: { id: c.id, task_id: id, author_id: c.authorId, content: c.content } });
+            continue;
+          }
           const { error } = await supabase.from('comments').insert({
             id: c.id,
             task_id: id,
@@ -337,6 +360,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // Delete task mutation
   const deleteTaskMutation = useMutation({
     mutationFn: async (id: string) => {
+      if (!navigator.onLine) {
+        await enqueue({ table: 'tasks', operation: 'delete', payload: null, match: { id } });
+        toast.info('Suppression enregistrée hors-ligne');
+        return;
+      }
       const { error } = await supabase.from('tasks').delete().eq('id', id);
       if (error) throw error;
     },

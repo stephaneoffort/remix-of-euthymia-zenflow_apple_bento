@@ -253,16 +253,23 @@ function MembersPanel() {
 
           return (
             <div key={m.id} className="flex items-center gap-3 p-3 rounded-lg border border-border">
-              {m.avatarUrl ? (
-                <img src={m.avatarUrl} alt={m.name} className="w-10 h-10 rounded-full object-cover shrink-0" />
-              ) : (
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0"
-                  style={{ backgroundColor: m.avatarColor }}
-                >
-                  {m.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                </div>
-              )}
+              <div className="relative shrink-0">
+                {m.avatarUrl ? (
+                  <img src={m.avatarUrl} alt={m.name} className="w-10 h-10 rounded-full object-cover" />
+                ) : (
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white"
+                    style={{ backgroundColor: m.avatarColor }}
+                  >
+                    {m.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                  </div>
+                )}
+                {memberIsAdmin && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-amber-500 flex items-center justify-center ring-2 ring-background">
+                    <Crown className="w-3 h-3 text-white" />
+                  </span>
+                )}
+              </div>
 
               {isEditing ? (
                 <div className="flex-1 min-w-0 space-y-1.5">
@@ -281,7 +288,15 @@ function MembersPanel() {
                 </div>
               ) : (
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-foreground text-sm truncate">{m.name}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium text-foreground text-sm truncate">{m.name}</p>
+                    {memberIsAdmin && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
+                        <Crown className="w-2.5 h-2.5" />
+                        Admin
+                      </span>
+                    )}
+                  </div>
                   <p className="text-xs text-muted-foreground truncate">{m.role} · {m.email}</p>
                 </div>
               )}
@@ -321,12 +336,12 @@ function MembersPanel() {
                       <Button
                         variant={memberIsAdmin ? 'default' : 'outline'}
                         size="sm"
-                        className={`text-xs gap-1 ${memberIsAdmin ? 'bg-primary hover:bg-primary/90' : ''}`}
+                        className={`text-xs gap-1.5 h-8 px-3 ${memberIsAdmin ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-500' : 'hover:border-amber-400 hover:text-amber-600'}`}
                         onClick={() => handleToggleAdmin(m.id)}
-                        title={memberIsAdmin ? 'Retirer les droits admin' : 'Promouvoir administrateur'}
+                        title={memberIsAdmin ? 'Retirer les droits admin' : 'Nommer administrateur'}
                       >
-                        <Crown className="w-3 h-3" />
-                        {memberIsAdmin ? 'Admin ✓' : 'Promouvoir'}
+                        <Crown className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">{memberIsAdmin ? 'Admin ✓' : 'Nommer Admin'}</span>
                       </Button>
                     )}
                     <Button

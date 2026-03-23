@@ -613,6 +613,11 @@ export default function AppSidebar() {
                       }}
                       className="flex-1 text-sm bg-sidebar-bg border border-sidebar-border-color rounded-md px-2 py-0.5 outline-none text-sidebar-fg-bright font-medium min-w-0"
                     />
+                  ) : dragOverSpaceId === space.id ? (
+                    <span className="flex-1 font-medium text-sm text-primary flex items-center gap-1.5 animate-pulse">
+                      <ArrowDownToLine className="w-3.5 h-3.5" />
+                      Déposer ici
+                    </span>
                   ) : (
                     <span
                       className={`flex-1 font-medium text-sm cursor-pointer truncate flex items-center gap-1 ${

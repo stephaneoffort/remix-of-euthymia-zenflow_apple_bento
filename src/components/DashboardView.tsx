@@ -64,14 +64,11 @@ function MyTasksCard({ tasks, onTaskClick }: { tasks: ReturnType<typeof Array<an
               <button
                 key={task.id}
                 onClick={() => onTaskClick(task.id)}
-                className="w-full text-left py-1.5 hover:bg-muted/50 transition-colors flex items-center gap-3 px-1 rounded-md"
+                className="w-full text-left py-1.5 hover:bg-muted/50 transition-colors flex items-center gap-2 px-1 rounded-md"
               >
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm text-foreground truncate">{task.title}</p>
-                </div>
+                <p className="text-sm text-foreground truncate min-w-0 flex-1">{task.title}</p>
                 <PriorityBadge priority={task.priority} />
                 <StatusBadge status={task.status} />
-                </div>
                 {daysLeft !== null ? (
                   <span className={`text-xs font-medium shrink-0 ${isOverdue ? 'text-destructive' : 'text-muted-foreground'}`}>
                     {isOverdue ? `${Math.abs(daysLeft)}j retard` : daysLeft === 0 ? "Aujourd'hui" : `${daysLeft}j`}

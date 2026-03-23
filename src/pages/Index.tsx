@@ -423,6 +423,14 @@ export default function Index() {
             />
             <div className="flex items-center justify-between mt-3">
               <span className="text-xs text-muted-foreground">Entrée pour créer · Échap pour annuler</span>
+              <button
+                onClick={() => { setQuickAddOpen(false); setVoiceAddOpen(true); }}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                title="Dicter une tâche"
+              >
+                <Mic className="w-3.5 h-3.5" />
+                Dicter
+              </button>
             </div>
           </div>
         </div>

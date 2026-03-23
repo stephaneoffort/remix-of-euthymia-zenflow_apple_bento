@@ -629,6 +629,22 @@ export default function AppSidebar() {
                                     <Pencil className="w-4 h-4 mr-2" />
                                     Renommer
                                   </DropdownMenuItem>
+                                  {spaces.filter(s => s.id !== space.id).length > 0 && (
+                                    <DropdownMenuSub>
+                                      <DropdownMenuSubTrigger>
+                                        <FolderInput className="w-4 h-4 mr-2" />
+                                        Déplacer vers
+                                      </DropdownMenuSubTrigger>
+                                      <DropdownMenuSubContent className="w-44">
+                                        {spaces.filter(s => s.id !== space.id).map(s => (
+                                          <DropdownMenuItem key={s.id} onClick={() => moveProject(project.id, s.id)}>
+                                            <span className="mr-2">{s.icon}</span>
+                                            {s.name}
+                                          </DropdownMenuItem>
+                                        ))}
+                                      </DropdownMenuSubContent>
+                                    </DropdownMenuSub>
+                                  )}
                                   {isAdmin && (
                                     <>
                                       <DropdownMenuSeparator />

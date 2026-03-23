@@ -156,11 +156,32 @@ function collectConnectors(items: Positioned[]): { from: Positioned; to: Positio
 
 /* ─── Main component ─── */
 export default function MindMapView() {
-  const { getFilteredTasks, setSelectedTaskId, addTask } = useApp();
-  const tasks = getFilteredTasks();
+  const { getFilteredTasks, setSelectedTaskId, addTask, tasks: allTasks, getSubtasks } = useApp();
+  const rootTasks = getFilteredTasks();
   const isMobile = useIsMobile();
 
-  const { roots, maxDepth } = useMemo(() => buildTree(tasks), [tasks]);
+  // Build full task list: filtered root tasks + all their descendants
+  const tasksWithChildren = useMemo(() => {
+    const rootIds = new Set(rootTasks.map(t => t.id));
+    const result = [...rootTasks];
+    const visited = new Set(rootIds);
+
+    function collectChildren(parentId: string) {
+      const children = allTasks.filter(t => t.parentTaskId === parentId);
+      children.forEach(child => {
+        if (!visited.has(child.id)) {
+          visited.add(child.id);
+          result.push(child);
+          collectChildren(child.id);
+        }
+      });
+    }
+
+    rootTasks.forEach(t => collectChildren(t.id));
+    return result;
+  }, [rootTasks, allTasks]);
+
+  const { roots, maxDepth } = useMemo(() => buildTree(tasksWithChildren), [tasksWithChildren]);
 
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [visibleDepth, setVisibleDepth] = useState(1);
@@ -315,7 +336,7 @@ export default function MindMapView() {
     lastTouchDist.current = null;
   }, []);
 
-  if (tasks.length === 0) {
+  if (rootTasks.length === 0) {
     return <EmptyState variant="generic" message="Aucune tâche à afficher" />;
   }
 

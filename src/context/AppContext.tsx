@@ -17,6 +17,8 @@ const EMPTY_FILTERS: AdvancedFilters = { statuses: [], priorities: [], assigneeI
 
 interface AppState {
   spaces: Space[];
+  archivedSpaces: Space[];
+  archivedProjects: Project[];
   projects: Project[];
   lists: TaskList[];
   tasks: Task[];

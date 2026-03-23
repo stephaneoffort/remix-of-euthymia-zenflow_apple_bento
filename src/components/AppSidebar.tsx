@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { toast } from '@/hooks/use-toast';
 import logoEuthymia from '@/assets/logo-euthymia.png';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { ChevronRight, ChevronDown, LayoutGrid, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle, Shield, Crown, Lock, Sun, Moon, SunMoon, MoreHorizontal, Pencil, Home, FolderInput } from 'lucide-react';
@@ -184,7 +185,9 @@ export default function AppSidebar() {
       const projectId = e.dataTransfer.getData('projectId');
       const project = spaces.flatMap(s => getProjectsForSpace(s.id)).find(p => p.id === projectId);
       if (project && project.spaceId !== spaceId) {
+        const targetSpace = spaces.find(s => s.id === spaceId);
         moveProject(projectId, spaceId);
+        toast({ title: 'Projet déplacé', description: `« ${project.name} » → ${targetSpace?.icon || ''} ${targetSpace?.name || 'espace'}` });
       }
     }
   };
@@ -213,8 +216,11 @@ export default function AppSidebar() {
       if (taskId) {
         const targetLists = getListsForProject(projectId);
         if (targetLists.length > 0) {
+          const task = tasks.find(t => t.id === taskId);
+          const targetProject = spaces.flatMap(s => getProjectsForSpace(s.id)).find(p => p.id === projectId);
           updateTask(taskId, { listId: targetLists[0].id });
           setSelectedProjectId(projectId);
+          toast({ title: 'Tâche déplacée', description: `« ${task?.title || 'Tâche'} » → ${targetProject?.name || 'projet'}` });
         }
       }
     } else if (type === 'project') {

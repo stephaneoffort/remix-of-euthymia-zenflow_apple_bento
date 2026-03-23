@@ -143,7 +143,7 @@ export default function TaskChecklist({ taskId }: TaskChecklistProps) {
           </button>
           <button
             onClick={() => { setIsAdding(false); setNewTitle(''); }}
-            className="px-2 py-1.5 text-xs text-muted-foreground hover:text-foreground"
+            className="px-2 py-1.5 text-xs text-foreground/60 hover:text-foreground"
           >
             Annuler
           </button>

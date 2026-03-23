@@ -969,6 +969,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo(() => ({
     spaces: accessibleSpaces,
+    archivedSpaces,
+    archivedProjects,
     projects: accessibleProjects,
     lists,
     tasks: accessibleTasks,

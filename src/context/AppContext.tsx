@@ -522,6 +522,46 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     duplicateProjectMutation.mutate(projectId);
   }, [duplicateProjectMutation]);
 
+  // Archive space mutation
+  const archiveSpaceMutation = useMutation({
+    mutationFn: async (spaceId: string) => {
+      const space = spaces.find(s => s.id === spaceId);
+      if (!space) throw new Error('Space not found');
+      const newVal = !space.isArchived;
+      const { error } = await supabase.from('spaces').update({ is_archived: newVal } as any).eq('id', spaceId);
+      if (error) throw error;
+      return newVal;
+    },
+    onSuccess: (newVal) => {
+      queryClient.invalidateQueries({ queryKey: ['spaces'] });
+      toast.success(newVal ? 'Espace archivé' : 'Espace désarchivé');
+    },
+  });
+
+  const archiveSpace = useCallback((spaceId: string) => {
+    archiveSpaceMutation.mutate(spaceId);
+  }, [archiveSpaceMutation]);
+
+  // Archive project mutation
+  const archiveProjectMutation = useMutation({
+    mutationFn: async (projectId: string) => {
+      const project = projects.find(p => p.id === projectId);
+      if (!project) throw new Error('Project not found');
+      const newVal = !project.isArchived;
+      const { error } = await supabase.from('projects').update({ is_archived: newVal } as any).eq('id', projectId);
+      if (error) throw error;
+      return newVal;
+    },
+    onSuccess: (newVal) => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      toast.success(newVal ? 'Projet archivé' : 'Projet désarchivé');
+    },
+  });
+
+  const archiveProject = useCallback((projectId: string) => {
+    archiveProjectMutation.mutate(projectId);
+  }, [archiveProjectMutation]);
+
   // Rename space mutation
   const renameSpaceMutation = useMutation({
     mutationFn: async ({ id, name }: { id: string; name: string }) => {

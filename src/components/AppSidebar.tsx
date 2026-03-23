@@ -109,19 +109,27 @@ export default function AppSidebar() {
     if (isMobile) setSidebarCollapsed(true);
   }, [isMobile]);
 
-  // Keep new spaces expanded
+  // Only auto-expand truly new spaces (never seen before), preserve user's collapsed state
   useEffect(() => {
-    setExpandedSpaces(prev => {
-      const next = new Set(prev);
-      spaces.forEach(s => next.add(s.id));
-      return next;
-    });
+    const currentIds = new Set(spaces.map(s => s.id));
+    const newIds = [...currentIds].filter(id => !knownSpaceIds.has(id));
+    if (newIds.length > 0) {
+      setExpandedSpaces(prev => {
+        const next = new Set(prev);
+        newIds.forEach(id => next.add(id));
+        return next;
+      });
+    }
+    setKnownSpaceIds(currentIds);
   }, [spaces]);
 
-  // Persist expanded state to localStorage
+  // Persist expanded state and known IDs to localStorage
   useEffect(() => {
     localStorage.setItem('euthymia:expandedSpaces', JSON.stringify([...expandedSpaces]));
   }, [expandedSpaces]);
+  useEffect(() => {
+    localStorage.setItem('euthymia:knownSpaceIds', JSON.stringify([...knownSpaceIds]));
+  }, [knownSpaceIds]);
 
   const toggleSpace = (id: string) => {
     setExpandedSpaces(prev => {

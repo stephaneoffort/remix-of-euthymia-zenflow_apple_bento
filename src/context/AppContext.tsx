@@ -319,7 +319,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }
       return data;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks'] }),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      if (data) toast.success('Tâche créée');
+    },
+    onError: (error) => {
+      console.error('Failed to add task:', error);
+      toast.error('Erreur lors de la création de la tâche');
+    },
   });
 
   // Update task mutation
@@ -866,10 +873,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     let filtered = tasks.filter(t => !t.parentTaskId);
     const today = new Date().toISOString().split('T')[0];
 
-    if (selectedProjectId && quickFilter === 'all') {
+    // Always apply project/space scoping
+    if (selectedProjectId) {
       const listIds = new Set(lists.filter(l => l.projectId === selectedProjectId).map(l => l.id));
       filtered = filtered.filter(t => listIds.has(t.listId));
-    } else if (selectedSpaceId && quickFilter === 'all') {
+    } else if (selectedSpaceId) {
       const spaceProjectIds = new Set(projects.filter(p => p.spaceId === selectedSpaceId).map(p => p.id));
       const listIds = new Set(lists.filter(l => spaceProjectIds.has(l.projectId)).map(l => l.id));
       filtered = filtered.filter(t => listIds.has(t.listId));

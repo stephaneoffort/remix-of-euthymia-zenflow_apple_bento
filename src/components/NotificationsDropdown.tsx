@@ -1,12 +1,15 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
-import { Bell, AlertTriangle, Clock, ChevronRight, BellRing } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { Bell, AlertTriangle, Clock, ChevronRight, BellRing, BellOff } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { formatDistanceToNow, isPast, isToday, isTomorrow, subDays, subHours } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { supabase } from '@/integrations/supabase/client';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
+import { toast } from '@/hooks/use-toast';
 
 interface Reminder {
   id: string;

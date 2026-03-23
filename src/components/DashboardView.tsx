@@ -7,7 +7,7 @@ import { STATUS_LABELS, PRIORITY_LABELS, Priority } from '@/types';
 import { PriorityBadge, StatusBadge } from '@/components/TaskBadges';
 import {
   CheckCircle2, Clock, AlertTriangle, TrendingUp, ListTodo, Users,
-  CalendarDays, BarChart3,
+  CalendarDays, BarChart3, Flame,
 } from 'lucide-react';
 import { format, isToday, isPast, parseISO, differenceInDays } from 'date-fns';
 import { fr } from 'date-fns/locale';

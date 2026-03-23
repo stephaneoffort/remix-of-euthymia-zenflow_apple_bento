@@ -413,8 +413,10 @@ export default function TaskDetailPanel() {
                         if (targetProjectId === currentProjectId) return;
                         const targetLists = getListsForProject(targetProjectId);
                         if (targetLists.length === 0) return;
-                        updateTask(task.id, { listId: targetLists[0].id });
+                        const targetProject = projects.find(p => p.id === targetProjectId);
+                        updateTask(task.id, { listId: targetLists[0].id, parentTaskId: null });
                         setSelectedProjectId(targetProjectId);
+                        toast({ title: 'Tâche déplacée', description: `« ${task.title} » → ${targetProject?.name || 'projet'}` });
                       }}
                       className="w-full text-sm text-foreground bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
                     >

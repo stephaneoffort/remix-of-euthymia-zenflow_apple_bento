@@ -281,10 +281,10 @@ export default function TaskDetailPanel() {
           >
             <Trash2 className="w-4 h-4" />
           </button>
-          <button onClick={() => setExpanded(!expanded)} className="p-1.5 hover:bg-muted rounded-md transition-colors hidden sm:flex" title={expanded ? 'Réduire' : 'Agrandir'}>
+          <button onClick={() => setExpanded(!expanded)} className="p-1.5 hover:bg-muted text-muted-foreground hover:text-foreground rounded-md transition-colors hidden sm:flex" title={expanded ? 'Réduire' : 'Agrandir'}>
             {expanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
           </button>
-          <button onClick={() => setSelectedTaskId(null)} className="p-1.5 hover:bg-muted rounded-md transition-colors">
+          <button onClick={() => setSelectedTaskId(null)} className="p-1.5 hover:bg-muted text-muted-foreground hover:text-foreground rounded-md transition-colors">
             <X className="w-4 h-4" />
           </button>
         </div>

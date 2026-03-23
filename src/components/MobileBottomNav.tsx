@@ -15,7 +15,8 @@ interface MobileBottomNavProps {
 }
 
 export default function MobileBottomNav({ onOpenVoice }: MobileBottomNavProps) {
-  const { setSidebarCollapsed, addTask, selectedProjectId, getListsForProject, projects, spaces } = useApp();
+  const { setSidebarCollapsed, addTask, selectedProjectId, getListsForProject, projects, spaces, quickFilter } = useApp();
+  const { teamMemberId } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { totalUnread } = useChatNotifications();

@@ -853,7 +853,10 @@ export default function AppSidebar() {
                                     <Pencil className="w-4 h-4 mr-2" />
                                     Renommer
                                   </DropdownMenuItem>
-                                  {spaces.filter(s => s.id !== space.id).length > 0 && (
+                                  <DropdownMenuItem onClick={() => duplicateProject(project.id)}>
+                                    <Copy className="w-4 h-4 mr-2" />
+                                    Dupliquer
+                                  </DropdownMenuItem>
                                     <DropdownMenuSub>
                                       <DropdownMenuSubTrigger>
                                         <FolderInput className="w-4 h-4 mr-2" />

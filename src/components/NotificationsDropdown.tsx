@@ -1,12 +1,15 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
-import { Bell, AlertTriangle, Clock, ChevronRight, BellRing } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { Bell, AlertTriangle, Clock, ChevronRight, BellRing, BellOff } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { formatDistanceToNow, isPast, isToday, isTomorrow, subDays, subHours } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { supabase } from '@/integrations/supabase/client';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
+import { toast } from '@/hooks/use-toast';
 
 interface Reminder {
   id: string;
@@ -34,6 +37,8 @@ function getOffsetMs(key: string): number {
 
 export default function NotificationsDropdown() {
   const { tasks, teamMembers, setSelectedTaskId, setQuickFilter } = useApp();
+  const { teamMemberId } = useAuth();
+  const { isSupported: pushSupported, isSubscribed: pushSubscribed, subscribe: pushSubscribe, unsubscribe: pushUnsubscribe } = usePushNotifications(teamMemberId);
   const [open, setOpen] = useState(false);
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
   const [reminders, setReminders] = useState<Reminder[]>([]);
@@ -163,11 +168,30 @@ export default function NotificationsDropdown() {
         </button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-80 p-0">
-        <div className="px-4 py-3 border-b border-border">
-          <h3 className="font-semibold text-sm text-foreground">Notifications</h3>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {totalCount === 0 ? 'Aucune notification' : `${totalCount} notification${totalCount > 1 ? 's' : ''}`}
-          </p>
+        <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+          <div>
+            <h3 className="font-semibold text-sm text-foreground">Notifications</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {totalCount === 0 ? 'Aucune notification' : `${totalCount} notification${totalCount > 1 ? 's' : ''}`}
+            </p>
+          </div>
+          {pushSupported && (
+            <button
+              onClick={async () => {
+                if (pushSubscribed) {
+                  await pushUnsubscribe();
+                  toast({ title: 'Notifications push désactivées' });
+                } else {
+                  const ok = await pushSubscribe();
+                  toast({ title: ok ? 'Notifications push activées' : 'Permission refusée' });
+                }
+              }}
+              className={`p-1.5 rounded-md transition-colors ${pushSubscribed ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
+              title={pushSubscribed ? 'Désactiver les notifications push' : 'Activer les notifications push'}
+            >
+              {pushSubscribed ? <BellRing className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
+            </button>
+          )}
         </div>
         {totalCount > 0 ? (
           <ScrollArea className="max-h-80">

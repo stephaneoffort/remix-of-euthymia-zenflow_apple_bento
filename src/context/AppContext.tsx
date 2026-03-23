@@ -109,19 +109,37 @@ function dbToTask(row: any, assigneeIds: string[], comments: Comment[], attachme
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
   const { teamMemberId } = useAuth();
-  const [selectedProjectId, _setSelectedProjectId] = useState<string | null>('p1');
-  const [selectedSpaceId, _setSelectedSpaceId] = useState<string | null>(null);
+  const [selectedProjectId, _setSelectedProjectId] = useState<string | null>(() => {
+    return localStorage.getItem('euthymia:selectedProject') || null;
+  });
+  const [selectedSpaceId, _setSelectedSpaceId] = useState<string | null>(() => {
+    return localStorage.getItem('euthymia:selectedSpace') || null;
+  });
 
   const setSelectedProjectId = useCallback((id: string | null) => {
     _setSelectedProjectId(id);
-    if (id) _setSelectedSpaceId(null);
+    if (id) {
+      _setSelectedSpaceId(null);
+      localStorage.removeItem('euthymia:selectedSpace');
+      localStorage.setItem('euthymia:selectedProject', id);
+    } else {
+      localStorage.removeItem('euthymia:selectedProject');
+    }
   }, []);
 
   const setSelectedSpaceId = useCallback((id: string | null) => {
     _setSelectedSpaceId(id);
-    if (id) _setSelectedProjectId(null);
+    if (id) {
+      _setSelectedProjectId(null);
+      localStorage.removeItem('euthymia:selectedProject');
+      localStorage.setItem('euthymia:selectedSpace', id);
+    } else {
+      localStorage.removeItem('euthymia:selectedSpace');
+    }
   }, []);
-  const [selectedView, _setSelectedView] = useState<ViewType>('dashboard');
+  const [selectedView, _setSelectedView] = useState<ViewType>(() => {
+    return (localStorage.getItem('euthymia:view') as ViewType) || 'dashboard';
+  });
   const setSelectedView = useCallback((view: ViewType) => {
     _setSelectedView(view);
     localStorage.setItem('euthymia:view', view);

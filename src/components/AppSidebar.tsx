@@ -67,7 +67,13 @@ export default function AppSidebar() {
       .then(({ data }) => setIsAdmin(!!data && data.length > 0));
   }, [user]);
 
-  const [expandedSpaces, setExpandedSpaces] = useState<Set<string>>(new Set(spaces.map(s => s.id)));
+  const [expandedSpaces, setExpandedSpaces] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem('euthymia:expandedSpaces');
+      if (saved) return new Set(JSON.parse(saved) as string[]);
+    } catch {}
+    return new Set(spaces.map(s => s.id));
+  });
   const [addingSpace, setAddingSpace] = useState(false);
   const [newSpaceName, setNewSpaceName] = useState('');
   const [newSpaceIcon, setNewSpaceIcon] = useState('📁');
@@ -103,6 +109,11 @@ export default function AppSidebar() {
       return next;
     });
   }, [spaces]);
+
+  // Persist expanded state to localStorage
+  useEffect(() => {
+    localStorage.setItem('euthymia:expandedSpaces', JSON.stringify([...expandedSpaces]));
+  }, [expandedSpaces]);
 
   const toggleSpace = (id: string) => {
     setExpandedSpaces(prev => {

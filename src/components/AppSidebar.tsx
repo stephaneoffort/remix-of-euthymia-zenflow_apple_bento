@@ -216,8 +216,11 @@ export default function AppSidebar() {
       if (taskId) {
         const targetLists = getListsForProject(projectId);
         if (targetLists.length > 0) {
+          const task = tasks.find(t => t.id === taskId);
+          const targetProject = spaces.flatMap(s => getProjectsForSpace(s.id)).find(p => p.id === projectId);
           updateTask(taskId, { listId: targetLists[0].id });
           setSelectedProjectId(projectId);
+          toast({ title: 'Tâche déplacée', description: `« ${task?.title || 'Tâche'} » → ${targetProject?.name || 'projet'}` });
         }
       }
     } else if (type === 'project') {

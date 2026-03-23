@@ -522,7 +522,37 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     moveProjectMutation.mutate({ projectId, newSpaceId });
   }, [moveProjectMutation]);
 
-  const deleteSpaceMutation = useMutation({
+  // Convert task to project: create project + list, move task & subtasks
+  const convertTaskToProject = useCallback(async (taskId: string, spaceId: string, color: string = '#6366f1') => {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
+    const projectId = `p_${Date.now()}`;
+    const listId = `l_${Date.now()}`;
+    // Create project with task title as name
+    const { error: pErr } = await supabase.from('projects').insert({
+      id: projectId, name: task.title, space_id: spaceId, color, sort_order: projects.length,
+    });
+    if (pErr) { toast.error('Erreur lors de la création du projet'); return; }
+    // Create default list
+    const { error: lErr } = await supabase.from('task_lists').insert({
+      id: listId, name: 'Général', project_id: projectId, sort_order: 0,
+    });
+    if (lErr) { toast.error('Erreur lors de la création de la liste'); return; }
+    // Move subtasks to the new list
+    const subtaskIds = tasks.filter(t => t.parentTaskId === taskId).map(t => t.id);
+    if (subtaskIds.length > 0) {
+      // Convert subtasks to top-level tasks in the new project
+      await supabase.from('tasks').update({ list_id: listId, parent_task_id: null }).in('id', subtaskIds);
+    }
+    // Delete the original parent task
+    await supabase.from('tasks').delete().eq('id', taskId);
+    // Refresh
+    queryClient.invalidateQueries({ queryKey: ['projects'] });
+    queryClient.invalidateQueries({ queryKey: ['task_lists'] });
+    queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    toast.success(`"${task.title}" converti en projet`);
+  }, [tasks, projects, queryClient]);
+
     mutationFn: async (id: string) => {
       const spaceProjects = projects.filter(p => p.spaceId === id);
       for (const proj of spaceProjects) {

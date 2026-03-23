@@ -264,10 +264,14 @@ export default function DataExportImport() {
             Téléchargez un fichier JSON contenant tous vos espaces, projets, tâches, sous-tâches, responsables, avancements, chat, messages privés, réactions et catégories.
           </p>
         </CardHeader>
-        <CardContent>
-          <Button onClick={handleExport} disabled={exporting} className="gap-2">
+        <CardContent className="flex flex-wrap gap-3">
+          <Button onClick={handleExport} disabled={exporting || exportingCsv} className="gap-2">
             {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-            {exporting ? 'Export en cours…' : 'Exporter tout'}
+            {exporting ? 'Export en cours…' : 'Exporter tout (JSON)'}
+          </Button>
+          <Button variant="outline" onClick={handleExportCsv} disabled={exporting || exportingCsv} className="gap-2">
+            {exportingCsv ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileSpreadsheet className="w-4 h-4" />}
+            {exportingCsv ? 'Export en cours…' : 'Exporter les tâches (CSV)'}
           </Button>
         </CardContent>
       </Card>

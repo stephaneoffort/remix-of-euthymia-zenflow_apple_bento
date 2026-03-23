@@ -667,7 +667,7 @@ export default function TaskDetailPanel() {
               ) : (
                 <button
                   onClick={() => setAddingSubtaskFor(task.id)}
-                  className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground mt-2 transition-colors"
+                  className="inline-flex items-center gap-1 text-xs text-foreground/60 hover:text-foreground mt-2 transition-colors"
                 >
                   <Plus className="w-3.5 h-3.5" /> Ajouter une sous-tâche
                 </button>

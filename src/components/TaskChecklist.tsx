@@ -151,7 +151,7 @@ export default function TaskChecklist({ taskId }: TaskChecklistProps) {
       ) : (
         <button
           onClick={() => setIsAdding(true)}
-          className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground mt-2 transition-colors"
+          className="inline-flex items-center gap-1 text-xs text-foreground/60 hover:text-foreground mt-2 transition-colors"
         >
           <Plus className="w-3.5 h-3.5" /> Ajouter un élément
         </button>

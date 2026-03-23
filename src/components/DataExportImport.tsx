@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { Download, Upload, Loader2, AlertTriangle } from 'lucide-react';
+import { Download, Upload, Loader2, AlertTriangle, FileSpreadsheet } from 'lucide-react';
 import CsvTaskImport from '@/components/CsvTaskImport';
 
 interface ExportData {
@@ -32,6 +32,7 @@ interface ExportData {
 
 export default function DataExportImport() {
   const [exporting, setExporting] = useState(false);
+  const [exportingCsv, setExportingCsv] = useState(false);
   const [importing, setImporting] = useState(false);
   const [importPreview, setImportPreview] = useState<ExportData | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -118,6 +119,83 @@ export default function DataExportImport() {
       console.error(err);
     }
     setExporting(false);
+  };
+
+  const handleExportCsv = async () => {
+    setExportingCsv(true);
+    try {
+      const [
+        { data: tasks },
+        { data: task_assignees },
+        { data: task_lists },
+        { data: projects },
+        { data: spaces },
+        { data: team_members },
+      ] = await Promise.all([
+        supabase.from('tasks').select('*').order('sort_order'),
+        supabase.from('task_assignees').select('*'),
+        supabase.from('task_lists').select('*'),
+        supabase.from('projects').select('*'),
+        supabase.from('spaces').select('*'),
+        supabase.from('team_members').select('*'),
+      ]);
+
+      const listMap = Object.fromEntries((task_lists || []).map(l => [l.id, l]));
+      const projMap = Object.fromEntries((projects || []).map(p => [p.id, p]));
+      const spaceMap = Object.fromEntries((spaces || []).map(s => [s.id, s]));
+      const memberMap = Object.fromEntries((team_members || []).map(m => [m.id, m.name]));
+
+      const assigneesByTask: Record<string, string[]> = {};
+      (task_assignees || []).forEach(a => {
+        if (!assigneesByTask[a.task_id]) assigneesByTask[a.task_id] = [];
+        assigneesByTask[a.task_id].push(memberMap[a.member_id] || a.member_id);
+      });
+
+      const csvEscape = (val: string) => {
+        if (val.includes(',') || val.includes('"') || val.includes('\n')) {
+          return '"' + val.replace(/"/g, '""') + '"';
+        }
+        return val;
+      };
+
+      const headers = ['title', 'description', 'status', 'priority', 'due_date', 'start_date', 'tags', 'assignees', 'time_estimate', 'time_logged', 'recurrence', 'list', 'project', 'space', 'created_at'];
+      const rows = (tasks || []).map(t => {
+        const list = listMap[t.list_id];
+        const proj = list ? projMap[list.project_id] : null;
+        const space = proj ? spaceMap[proj.space_id] : null;
+        return [
+          t.title,
+          t.description || '',
+          t.status,
+          t.priority,
+          t.due_date ? new Date(t.due_date).toISOString().slice(0, 10) : '',
+          t.start_date ? new Date(t.start_date).toISOString().slice(0, 10) : '',
+          (t.tags || []).join(', '),
+          (assigneesByTask[t.id] || []).join(', '),
+          t.time_estimate != null ? String(t.time_estimate) : '',
+          t.time_logged != null ? String(t.time_logged) : '',
+          t.recurrence || '',
+          list?.name || '',
+          proj?.name || '',
+          space?.name || '',
+          t.created_at ? new Date(t.created_at).toISOString().slice(0, 10) : '',
+        ].map(v => csvEscape(v));
+      });
+
+      const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `euthymia-tasks-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success('Export CSV terminé');
+    } catch (err) {
+      toast.error("Erreur lors de l'export CSV");
+      console.error(err);
+    }
+    setExportingCsv(false);
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -263,10 +341,14 @@ export default function DataExportImport() {
             Téléchargez un fichier JSON contenant tous vos espaces, projets, tâches, sous-tâches, responsables, avancements, chat, messages privés, réactions et catégories.
           </p>
         </CardHeader>
-        <CardContent>
-          <Button onClick={handleExport} disabled={exporting} className="gap-2">
+        <CardContent className="flex flex-wrap gap-3">
+          <Button onClick={handleExport} disabled={exporting || exportingCsv} className="gap-2">
             {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-            {exporting ? 'Export en cours…' : 'Exporter tout'}
+            {exporting ? 'Export en cours…' : 'Exporter tout (JSON)'}
+          </Button>
+          <Button variant="outline" onClick={handleExportCsv} disabled={exporting || exportingCsv} className="gap-2">
+            {exportingCsv ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileSpreadsheet className="w-4 h-4" />}
+            {exportingCsv ? 'Export en cours…' : 'Exporter les tâches (CSV)'}
           </Button>
         </CardContent>
       </Card>

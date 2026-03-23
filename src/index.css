@@ -790,13 +790,19 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6) !important;
   }
   .dark input,
-  .dark textarea {
+  .dark textarea,
+  .dark select {
     background: rgba(255, 255, 255, 0.05) !important;
     border-color: rgba(255, 255, 255, 0.08) !important;
     color: rgba(255, 255, 255, 0.88) !important;
   }
+  .dark select option {
+    background: hsl(var(--popover));
+    color: hsl(var(--popover-foreground));
+  }
   .dark input:focus,
-  .dark textarea:focus {
+  .dark textarea:focus,
+  .dark select:focus {
     border-color: hsl(var(--primary)) !important;
     box-shadow: 0 0 0 3px hsl(var(--primary) / 0.15) !important;
     outline: none !important;

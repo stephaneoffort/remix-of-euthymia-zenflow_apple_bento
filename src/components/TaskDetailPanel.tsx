@@ -124,7 +124,7 @@ function DateTimeField({ value, onChange }: { value: string | null | undefined; 
               type="time"
               value={formatTimeValue(value!)}
               onChange={handleTimeChange}
-              className="text-sm bg-muted/50 border border-border rounded-md px-2 py-1 outline-none focus:ring-1 focus:ring-ring"
+              className="text-sm text-foreground bg-muted/50 border border-border rounded-md px-2 py-1 outline-none focus:ring-1 focus:ring-ring"
             />
           )}
         </div>
@@ -310,7 +310,7 @@ export default function TaskDetailPanel() {
                 <select
                   value={task.status}
                   onChange={e => updateTask(task.id, { status: e.target.value as Status })}
-                  className="w-full text-sm bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
+                  className="w-full text-sm text-foreground bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
                 >
                   {allStatuses.map(s => <option key={s} value={s}>{getStatusLabel(s)}</option>)}
                 </select>
@@ -320,7 +320,7 @@ export default function TaskDetailPanel() {
                 <select
                   value={task.priority}
                   onChange={e => updateTask(task.id, { priority: e.target.value as Priority })}
-                  className="w-full text-sm bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
+                  className="w-full text-sm text-foreground bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
                 >
                   {Object.entries(PRIORITY_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
                 </select>
@@ -346,7 +346,7 @@ export default function TaskDetailPanel() {
                 <select
                   value={task.recurrence || ''}
                   onChange={e => updateTask(task.id, { recurrence: (e.target.value || null) as Recurrence })}
-                  className="w-full text-sm bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
+                  className="w-full text-sm text-foreground bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
                 >
                   <option value="">Aucune</option>
                   {Object.entries(RECURRENCE_LABELS).map(([k, v]) => (
@@ -484,7 +484,7 @@ export default function TaskDetailPanel() {
                     value={newLinkUrl}
                     onChange={e => setNewLinkUrl(e.target.value)}
                     placeholder="https://..."
-                    className="w-full text-sm bg-muted/50 border border-border rounded-md px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
+                    className="w-full text-sm text-foreground bg-muted/50 border border-border rounded-md px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground"
                     onKeyDown={e => {
                       if (e.key === 'Enter') handleAddLink();
                       if (e.key === 'Escape') { setAddingLink(false); setNewLinkUrl(''); setNewLinkName(''); }
@@ -494,7 +494,7 @@ export default function TaskDetailPanel() {
                     value={newLinkName}
                     onChange={e => setNewLinkName(e.target.value)}
                     placeholder="Nom du lien (optionnel)"
-                    className="w-full text-sm bg-muted/50 border border-border rounded-md px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
+                    className="w-full text-sm text-foreground bg-muted/50 border border-border rounded-md px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground"
                     onKeyDown={e => {
                       if (e.key === 'Enter') handleAddLink();
                       if (e.key === 'Escape') { setAddingLink(false); setNewLinkUrl(''); setNewLinkName(''); }
@@ -541,11 +541,11 @@ export default function TaskDetailPanel() {
             <div className="flex gap-3 sm:gap-4">
               <div className="flex-1">
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1"><Clock className="w-3 h-3" />Estimation (min)</label>
-                <input type="number" value={task.timeEstimate || ''} onChange={e => updateTask(task.id, { timeEstimate: e.target.value ? parseInt(e.target.value) : null })} className="w-full text-sm bg-muted/50 border border-border rounded-md px-2.5 py-1.5 outline-none" />
+                <input type="number" value={task.timeEstimate || ''} onChange={e => updateTask(task.id, { timeEstimate: e.target.value ? parseInt(e.target.value) : null })} className="w-full text-sm text-foreground bg-muted/50 border border-border rounded-md px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring" />
               </div>
               <div className="flex-1">
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1"><Clock className="w-3 h-3" />Temps passé (min)</label>
-                <input type="number" value={task.timeLogged || ''} onChange={e => updateTask(task.id, { timeLogged: e.target.value ? parseInt(e.target.value) : null })} className="w-full text-sm bg-muted/50 border border-border rounded-md px-2.5 py-1.5 outline-none" />
+                <input type="number" value={task.timeLogged || ''} onChange={e => updateTask(task.id, { timeLogged: e.target.value ? parseInt(e.target.value) : null })} className="w-full text-sm text-foreground bg-muted/50 border border-border rounded-md px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring" />
               </div>
             </div>
 
@@ -654,7 +654,7 @@ export default function TaskDetailPanel() {
                       if (e.key === 'Escape') { setAddingSubtaskFor(null); setNewSubtaskTitle(''); }
                     }}
                     placeholder="Titre de la sous-tâche..."
-                    className="flex-1 text-sm bg-muted/50 border border-border rounded-md px-2.5 py-1.5 outline-none"
+                    className="flex-1 text-sm text-foreground bg-muted/50 border border-border rounded-md px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground"
                   />
                   <button
                     onClick={() => handleAddSubtask(task.id)}
@@ -842,7 +842,7 @@ function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {
                   }}
                   onBlur={() => { if (!newTitle.trim()) { setAddingFor(null); setNewTitle(''); } }}
                   placeholder="Sous-tâche..."
-                  className="flex-1 text-sm bg-muted/50 border border-border rounded-md px-2.5 py-1 outline-none min-w-0"
+                  className="flex-1 text-sm text-foreground bg-muted/50 border border-border rounded-md px-2.5 py-1 outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground"
                 />
                 <button
                   onClick={() => handleAdd(st.id)}

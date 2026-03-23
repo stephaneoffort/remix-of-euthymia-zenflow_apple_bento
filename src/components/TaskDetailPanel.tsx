@@ -842,7 +842,7 @@ function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {
                   }}
                   onBlur={() => { if (!newTitle.trim()) { setAddingFor(null); setNewTitle(''); } }}
                   placeholder="Sous-tâche..."
-                  className="flex-1 text-sm bg-muted/50 border border-border rounded-md px-2.5 py-1 outline-none min-w-0"
+                  className="flex-1 text-sm text-foreground bg-muted/50 border border-border rounded-md px-2.5 py-1 outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground"
                 />
                 <button
                   onClick={() => handleAdd(st.id)}

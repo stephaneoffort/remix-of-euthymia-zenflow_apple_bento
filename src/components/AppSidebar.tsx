@@ -678,6 +678,10 @@ export default function AppSidebar() {
                             <Copy className="w-4 h-4 mr-2" />
                             Dupliquer
                           </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => archiveSpace(space.id)}>
+                            <Archive className="w-4 h-4 mr-2" />
+                            {space.isArchived ? 'Désarchiver' : 'Archiver'}
+                          </DropdownMenuItem>
                           {isAdmin && (
                             <>
                               <DropdownMenuSeparator />

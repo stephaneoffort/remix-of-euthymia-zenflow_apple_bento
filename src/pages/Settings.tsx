@@ -12,6 +12,7 @@ import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, M
 import { useThemeMode, PALETTE_META, type ThemePalette } from '@/context/ThemeContext';
 import DataExportImport from '@/components/DataExportImport';
 import InviteMemberDialog from '@/components/InviteMemberDialog';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 

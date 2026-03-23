@@ -193,7 +193,6 @@ export default function NotificationsDropdown() {
             </button>
           )}
         </div>
-        </div>
         {totalCount > 0 ? (
           <ScrollArea className="max-h-80">
             <div className="divide-y divide-border">

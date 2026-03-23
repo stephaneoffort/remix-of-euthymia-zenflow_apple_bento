@@ -1368,7 +1368,7 @@ function InstallAppLink() {
 }
 
 
-  const { signOut } = useAuth();
+  function LogoutButton() {
   return (
     <TooltipProvider>
       <Tooltip>

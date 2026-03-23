@@ -254,7 +254,7 @@ export default function TaskDetailPanel() {
     }`}>
       {/* Header */}
       <div className="flex items-center justify-between px-3 sm:px-5 py-3 sm:py-4 border-b border-border">
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground min-w-0 overflow-x-auto">
+        <div className="flex items-center gap-1.5 text-xs text-foreground/60 min-w-0 overflow-x-auto">
           {breadcrumb.map((t, i) => (
             <React.Fragment key={t.id}>
               {i > 0 && <ChevronRight className="w-3 h-3 shrink-0" />}

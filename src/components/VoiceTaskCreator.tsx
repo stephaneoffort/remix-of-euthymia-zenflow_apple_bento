@@ -223,6 +223,11 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
       })
       .filter(Boolean) as string[];
 
+    // Auto-assign current user if 'my_tasks' filter is active and no assignees detected
+    if (assigneeIds.length === 0 && quickFilter === 'my_tasks' && teamMemberId) {
+      assigneeIds.push(teamMemberId);
+    }
+
     // Create main task
     addTask({
       title: parsedTask.title,

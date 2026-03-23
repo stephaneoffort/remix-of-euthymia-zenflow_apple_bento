@@ -407,12 +407,13 @@ export default function TaskDetailPanel() {
                   return (
                     <select
                       value={currentProjectId}
-                      onChange={e => {
+                       onChange={e => {
                         const targetProjectId = e.target.value;
                         if (targetProjectId === currentProjectId) return;
                         const targetLists = getListsForProject(targetProjectId);
                         if (targetLists.length === 0) return;
                         updateTask(task.id, { listId: targetLists[0].id });
+                        setSelectedProjectId(targetProjectId);
                       }}
                       className="w-full text-sm text-foreground bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
                     >

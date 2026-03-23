@@ -550,7 +550,12 @@ export default function AppSidebar() {
           <SortableContext items={visibleSpaces.map(s => s.id)} strategy={verticalListSortingStrategy}>
             {visibleSpaces.map(space => (
               <SortableSpace key={space.id} space={space}>
-                <div className="flex items-center group">
+                <div
+                  className={`flex items-center group transition-colors ${dragOverSpaceId === space.id ? 'bg-primary/20 rounded-md ring-1 ring-primary/40' : ''}`}
+                  onDragOver={e => handleSpaceDragOver(e, space.id)}
+                  onDragLeave={handleSpaceDragLeave}
+                  onDrop={e => handleSpaceDrop(e, space.id)}
+                >
                   <button
                     onClick={() => toggleSpace(space.id)}
                     className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors"

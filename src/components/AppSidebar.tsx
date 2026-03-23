@@ -77,6 +77,11 @@ export default function AppSidebar() {
   const [filtersExpanded, setFiltersExpanded] = useState(() => !window.matchMedia('(max-width: 767px)').matches);
   const [accessDialogSpace, setAccessDialogSpace] = useState<{ id: string; name: string; isPrivate: boolean } | null>(null);
 
+  // Drag & drop state for cross-space project moves and task-to-project drops
+  const [dragOverSpaceId, setDragOverSpaceId] = useState<string | null>(null);
+  const [dragOverProjectId, setDragOverProjectId] = useState<string | null>(null);
+  const [draggingProjectId, setDraggingProjectId] = useState<string | null>(null);
+
   // Filter spaces based on access
   const visibleSpaces = spaces.filter(s => canAccessSpace(s.id));
 

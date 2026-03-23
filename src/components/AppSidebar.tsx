@@ -46,7 +46,7 @@ export default function AppSidebar() {
     spaces, selectedProjectId, setSelectedProjectId, selectedSpaceId, setSelectedSpaceId,
     quickFilter, setQuickFilter, selectedView, setSelectedView,
     getProjectsForSpace, getTasksForProject, teamMembers, sidebarCollapsed, setSidebarCollapsed, lists,
-    tasks, addSpace, addProject, renameSpace, renameProject, deleteSpace, deleteProject,
+    tasks, addSpace, addProject, renameSpace, renameProject, moveProject, deleteSpace, deleteProject,
     reorderSpaces, reorderProjects, canAccessSpace, isSpaceManager, getSpaceManagers, refreshSpaceAccess,
   } = useApp();
   const isMobile = useIsMobile();

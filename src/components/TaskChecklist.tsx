@@ -132,7 +132,7 @@ export default function TaskChecklist({ taskId }: TaskChecklistProps) {
               if (e.key === 'Escape') { setIsAdding(false); setNewTitle(''); }
             }}
             placeholder="Élément de la checklist..."
-            className="flex-1 text-sm bg-muted/50 border border-border rounded-md px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
+            className="flex-1 text-sm text-foreground bg-muted/50 border border-border rounded-md px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground"
           />
           <button
             onClick={addItem}

@@ -1118,6 +1118,69 @@ function CollapsedChatIcon() {
   );
 }
 
+function ArchivesSection() {
+  const { archivedSpaces, archivedProjects, archiveSpace, archiveProject } = useApp();
+  const [expanded, setExpanded] = useState(false);
+
+  const totalArchived = archivedSpaces.length + archivedProjects.length;
+  if (totalArchived === 0) return null;
+
+  return (
+    <div className="px-4 py-2 border-t border-sidebar-border-color">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="flex items-center gap-2 w-full text-xs font-semibold text-sidebar-fg uppercase tracking-wider hover:text-sidebar-fg-bright transition-colors"
+      >
+        {expanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+        <Archive className="w-3.5 h-3.5" />
+        <span>Archives</span>
+        <span className="ml-auto text-[10px] bg-sidebar-hover rounded-full px-1.5 py-0.5">{totalArchived}</span>
+      </button>
+      {expanded && (
+        <div className="mt-2 space-y-1 pl-2">
+          {archivedSpaces.map(space => (
+            <div key={space.id} className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg group">
+              <span>{space.icon}</span>
+              <span className="flex-1 truncate opacity-60">{space.name}</span>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => archiveSpace(space.id)}
+                    className="opacity-0 group-hover:opacity-100 text-sidebar-fg hover:text-sidebar-fg-bright transition-opacity p-0.5"
+                    title="Désarchiver"
+                  >
+                    <Archive className="w-3.5 h-3.5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="text-xs">Désarchiver</TooltipContent>
+              </Tooltip>
+            </div>
+          ))}
+          {archivedProjects.map(project => (
+            <div key={project.id} className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg group ml-2">
+              <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: project.color }} />
+              <span className="flex-1 truncate opacity-60">{project.name}</span>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => archiveProject(project.id)}
+                    className="opacity-0 group-hover:opacity-100 text-sidebar-fg hover:text-sidebar-fg-bright transition-opacity p-0.5"
+                    title="Désarchiver"
+                  >
+                    <Archive className="w-3.5 h-3.5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="text-xs">Désarchiver</TooltipContent>
+              </Tooltip>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+
 function ChatLink({ handleNavClick }: { handleNavClick: () => void }) {
   const navigate = useNavigate();
   const { totalUnread } = useChatNotifications();

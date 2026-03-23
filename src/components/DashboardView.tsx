@@ -1,13 +1,15 @@
 import React, { useMemo } from 'react';
+import { useApp } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { STATUS_LABELS, PRIORITY_LABELS, Priority, Task, TeamMember, Space, Project } from '@/types';
+import { STATUS_LABELS, PRIORITY_LABELS, Priority } from '@/types';
 import { PriorityBadge, StatusBadge } from '@/components/TaskBadges';
 import {
   CheckCircle2, Clock, AlertTriangle, TrendingUp, ListTodo, Users,
   CalendarDays, BarChart3,
 } from 'lucide-react';
-import { format, isPast, parseISO, differenceInDays } from 'date-fns';
+import { format, isToday, isPast, parseISO, differenceInDays } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -37,16 +39,18 @@ const fadeUp = {
   show: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.06, duration: 0.35 } }),
 };
 
-/* ─── PROPS ─── */
-interface DashboardProps {
-  tasks: Task[];
-  teamMembers: TeamMember[];
-  spaces: Space[];
-  projects: Project[];
-  onTaskClick?: (taskId: string) => void;
-}
+export default function DashboardView() {
+  const { tasks, teamMembers, spaces, projects, setSelectedTaskId } = useApp();
+  const { teamMemberId } = useAuth();
 
-export default function DashboardView({ tasks, teamMembers, spaces, projects, onTaskClick }: DashboardProps) {
+  // ─── Personal stats ───
+  const myTasks = useMemo(() => tasks.filter(t => t.assigneeIds.includes(teamMemberId || '')), [tasks, teamMemberId]);
+  const myDone = myTasks.filter(t => t.status === 'done').length;
+  const myInProgress = myTasks.filter(t => t.status === 'in_progress').length;
+  const myOverdue = myTasks.filter(t => t.dueDate && isPast(parseISO(t.dueDate)) && t.status !== 'done').length;
+  const myDueToday = myTasks.filter(t => t.dueDate && isToday(parseISO(t.dueDate)) && t.status !== 'done').length;
+  const myCompletion = myTasks.length > 0 ? Math.round((myDone / myTasks.length) * 100) : 0;
+
 
   // ═══ DONNÉES CALCULÉES ═══
   const totalTasks = tasks.length;

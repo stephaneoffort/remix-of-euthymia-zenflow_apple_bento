@@ -3,7 +3,7 @@ import { toast } from '@/hooks/use-toast';
 import { useApp } from '@/context/AppContext';
 import { Status, Priority, PRIORITY_LABELS, RECURRENCE_LABELS, Recurrence } from '@/types';
 import { PriorityBadge, StatusBadge, AvatarGroup, SubtaskProgress, StatusCircle } from '@/components/TaskBadges';
-import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Clock, Paperclip, ChevronDown, Maximize2, Minimize2, CalendarPlus, Link, Upload, Trash2, ExternalLink, FileText, Send, CalendarIcon, Repeat, FolderInput, PackagePlus } from 'lucide-react';
+import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Clock, Paperclip, ChevronDown, Maximize2, Minimize2, CalendarPlus, Link, Upload, Trash2, ExternalLink, FileText, Send, CalendarIcon, Repeat, FolderInput, PackagePlus, GitBranchPlus } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { generateGoogleCalendarUrl, generateOutlookCalendarUrl, generateYahooCalendarUrl } from '@/lib/calendarLinks';
 import { supabase } from '@/integrations/supabase/client';

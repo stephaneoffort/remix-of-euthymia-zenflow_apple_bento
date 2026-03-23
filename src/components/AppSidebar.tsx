@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { toast } from '@/hooks/use-toast';
+import { ToastAction } from '@/components/ui/toast';
 import logoEuthymia from '@/assets/logo-euthymia.png';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { ChevronRight, ChevronDown, LayoutGrid, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle, Shield, Crown, Lock, Sun, Moon, SunMoon, MoreHorizontal, Pencil, Home, FolderInput } from 'lucide-react';
@@ -186,8 +187,13 @@ export default function AppSidebar() {
       const project = spaces.flatMap(s => getProjectsForSpace(s.id)).find(p => p.id === projectId);
       if (project && project.spaceId !== spaceId) {
         const targetSpace = spaces.find(s => s.id === spaceId);
+        const prevSpaceId = project.spaceId;
         moveProject(projectId, spaceId);
-        toast({ title: 'Projet déplacé', description: `« ${project.name} » → ${targetSpace?.icon || ''} ${targetSpace?.name || 'espace'}` });
+        toast({
+          title: 'Projet déplacé',
+          description: `« ${project.name} » → ${targetSpace?.icon || ''} ${targetSpace?.name || 'espace'}`,
+          action: <ToastAction altText="Annuler" onClick={() => moveProject(projectId, prevSpaceId)}>Annuler</ToastAction>,
+        });
       }
     }
   };
@@ -218,9 +224,14 @@ export default function AppSidebar() {
         if (targetLists.length > 0) {
           const task = tasks.find(t => t.id === taskId);
           const targetProject = spaces.flatMap(s => getProjectsForSpace(s.id)).find(p => p.id === projectId);
+          const prevListId = task?.listId;
           updateTask(taskId, { listId: targetLists[0].id });
           setSelectedProjectId(projectId);
-          toast({ title: 'Tâche déplacée', description: `« ${task?.title || 'Tâche'} » → ${targetProject?.name || 'projet'}` });
+          toast({
+            title: 'Tâche déplacée',
+            description: `« ${task?.title || 'Tâche'} » → ${targetProject?.name || 'projet'}`,
+            action: prevListId ? <ToastAction altText="Annuler" onClick={() => updateTask(taskId, { listId: prevListId })}>Annuler</ToastAction> : undefined,
+          });
         }
       }
     } else if (type === 'project') {

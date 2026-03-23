@@ -491,7 +491,7 @@ export default function AppSidebar() {
 
       {/* Spaces & Projects */}
       <div className="flex-1 overflow-y-auto scrollbar-thin px-3 py-3">
-        <div className="flex items-center justify-between px-2 mb-2">
+        <div className="flex items-center justify-between px-2 mb-1">
           <p className="text-xs font-semibold text-sidebar-fg uppercase tracking-wider">Espaces</p>
           <button
             onClick={() => setAddingSpace(true)}
@@ -501,6 +501,11 @@ export default function AppSidebar() {
             <Plus className="w-3.5 h-3.5" />
           </button>
         </div>
+        {!draggingProjectId && (
+          <p className="text-[10px] text-sidebar-fg/50 px-2 mb-2 leading-tight">
+            Glissez un projet vers un autre espace pour le déplacer
+          </p>
+        )}
 
         {/* Add space form */}
         {addingSpace && (

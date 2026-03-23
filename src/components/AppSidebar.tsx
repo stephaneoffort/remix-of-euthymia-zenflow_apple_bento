@@ -870,6 +870,10 @@ export default function AppSidebar() {
                                     <Copy className="w-4 h-4 mr-2" />
                                     Dupliquer
                                   </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => archiveProject(project.id)}>
+                                    <Archive className="w-4 h-4 mr-2" />
+                                    {project.isArchived ? 'Désarchiver' : 'Archiver'}
+                                  </DropdownMenuItem>
                                   {spaces.filter(s => s.id !== space.id).length > 0 && (
                                     <DropdownMenuSub>
                                       <DropdownMenuSubTrigger>

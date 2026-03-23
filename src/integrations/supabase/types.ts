@@ -513,6 +513,7 @@ export type Database = {
         Row: {
           color: string
           id: string
+          is_archived: boolean
           name: string
           sort_order: number
           space_id: string
@@ -520,6 +521,7 @@ export type Database = {
         Insert: {
           color: string
           id: string
+          is_archived?: boolean
           name: string
           sort_order?: number
           space_id: string
@@ -527,6 +529,7 @@ export type Database = {
         Update: {
           color?: string
           id?: string
+          is_archived?: boolean
           name?: string
           sort_order?: number
           space_id?: string
@@ -605,6 +608,7 @@ export type Database = {
         Row: {
           icon: string
           id: string
+          is_archived: boolean
           is_private: boolean
           name: string
           owner_member_id: string | null
@@ -613,6 +617,7 @@ export type Database = {
         Insert: {
           icon: string
           id: string
+          is_archived?: boolean
           is_private?: boolean
           name: string
           owner_member_id?: string | null
@@ -621,6 +626,7 @@ export type Database = {
         Update: {
           icon?: string
           id?: string
+          is_archived?: boolean
           is_private?: boolean
           name?: string
           owner_member_id?: string | null

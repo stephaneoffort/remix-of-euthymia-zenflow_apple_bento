@@ -966,6 +966,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     addProject,
     duplicateSpace,
     duplicateProject,
+    archiveSpace,
+    archiveProject,
     renameSpace,
     renameProject,
     moveProject,

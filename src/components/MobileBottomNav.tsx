@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { MessageCircle, Menu, Plus, Home } from 'lucide-react';
+import { MessageCircle, Menu, Plus, Home, Mic } from 'lucide-react';
 import { Priority, PRIORITY_LABELS } from '@/types';
 import { useChatNotifications } from '@/hooks/useChatNotifications';
 import { Drawer, DrawerContent, DrawerTrigger, DrawerTitle } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import VoiceTaskCreator from '@/components/VoiceTaskCreator';
 
 export default function MobileBottomNav() {
   const { setSidebarCollapsed, addTask, selectedProjectId, getListsForProject, projects, spaces } = useApp();
@@ -15,6 +16,7 @@ export default function MobileBottomNav() {
   const location = useLocation();
   const { totalUnread } = useChatNotifications();
   const [quickAddOpen, setQuickAddOpen] = useState(false);
+  const [voiceAddOpen, setVoiceAddOpen] = useState(false);
 
   const [newTitle, setNewTitle] = useState('');
   const [newPriority, setNewPriority] = useState<Priority>('normal');
@@ -124,14 +126,24 @@ export default function MobileBottomNav() {
                   </Select>
                 </div>
 
-                <Button
-                  onClick={handleQuickAddSubmit}
-                  disabled={!newTitle.trim() || !newProjectId}
-                  className="w-full h-11 text-base"
-                >
-                  <Plus className="w-4 h-4 mr-1" />
-                  Créer la tâche
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleQuickAddSubmit}
+                    disabled={!newTitle.trim() || !newProjectId}
+                    className="flex-1 h-11 text-base"
+                  >
+                    <Plus className="w-4 h-4 mr-1" />
+                    Créer la tâche
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => { setQuickAddOpen(false); setVoiceAddOpen(true); }}
+                    className="h-11 px-4"
+                    title="Dicter une tâche"
+                  >
+                    <Mic className="w-5 h-5" />
+                  </Button>
+                </div>
               </div>
             </div>
           </DrawerContent>
@@ -164,6 +176,16 @@ export default function MobileBottomNav() {
           <span className="text-[10px] font-medium">Menu</span>
         </button>
       </div>
+
+      {voiceAddOpen && (
+        <VoiceTaskCreator
+          onClose={() => setVoiceAddOpen(false)}
+          defaultListId={(() => {
+            const lists = selectedProjectId ? getListsForProject(selectedProjectId) : [];
+            return lists[0]?.id || "l1";
+          })()}
+        />
+      )}
     </div>
   );
 }

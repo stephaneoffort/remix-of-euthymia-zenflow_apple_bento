@@ -605,9 +605,9 @@ export default function TaskDetailPanel() {
             {/* Subtasks */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+                <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider flex items-center gap-1">
                   Sous-tâches
-                  {subtasks.length > 0 && <span className="text-muted-foreground">({doneSubtasks.length}/{subtasks.length})</span>}
+                  {subtasks.length > 0 && <span className="text-foreground/60">({doneSubtasks.length}/{subtasks.length})</span>}
                 </label>
               </div>
 

@@ -378,7 +378,13 @@ export default function Index() {
         <main className={`flex-1 overflow-hidden ${isMobile ? "pb-16" : ""}`}>
           {selectedView === "dashboard" && (
             <div className="h-full overflow-y-auto">
-              <BentoDashboard />
+              <DashboardView
+                tasks={tasks}
+                teamMembers={teamMembers}
+                spaces={spaces}
+                projects={projects}
+                onTaskClick={(id) => setSelectedTaskId(id)}
+              />
             </div>
           )}
           {selectedView === "kanban" && <KanbanBoard />}

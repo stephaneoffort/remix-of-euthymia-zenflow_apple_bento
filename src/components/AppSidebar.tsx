@@ -584,25 +584,13 @@ export default function AppSidebar() {
                   onDragLeave={handleSpaceDragLeave}
                   onDrop={e => handleSpaceDrop(e, space.id)}
                 >
-                  {dragOverSpaceId === space.id && (
-                    <span className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium text-primary animate-pulse">
-                      <ArrowDownToLine className="w-3 h-3" />
-                    </span>
-                  )}
-                  {dragOverSpaceId !== space.id && (
-                    <button
-                      onClick={() => toggleSpace(space.id)}
-                      className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors"
-                    >
-                      {expandedSpaces.has(space.id) ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
-                      <span>{space.icon}</span>
-                    </button>
-                  )}
-                  {dragOverSpaceId === space.id && (
-                    <span className="flex items-center gap-1 px-1 text-sm">
-                      <span>{space.icon}</span>
-                    </span>
-                  )}
+                  <button
+                    onClick={() => toggleSpace(space.id)}
+                    className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors"
+                  >
+                    {expandedSpaces.has(space.id) ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+                    <span>{space.icon}</span>
+                  </button>
                   {editingSpaceId === space.id ? (
                     <input
                       autoFocus

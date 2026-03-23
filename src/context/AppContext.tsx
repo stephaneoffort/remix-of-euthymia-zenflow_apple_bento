@@ -484,7 +484,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       queryClient.invalidateQueries({ queryKey: ['spaces'] });
       queryClient.invalidateQueries({ queryKey: ['projects'] });
       queryClient.invalidateQueries({ queryKey: ['task_lists'] });
-      toast({ title: 'Espace dupliqué' });
+      toast.success('Espace dupliqué');
     },
   });
 

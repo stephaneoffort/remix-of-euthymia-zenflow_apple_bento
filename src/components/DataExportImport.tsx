@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { Download, Upload, Loader2, AlertTriangle } from 'lucide-react';
+import { Download, Upload, Loader2, AlertTriangle, FileSpreadsheet } from 'lucide-react';
 import CsvTaskImport from '@/components/CsvTaskImport';
 
 interface ExportData {

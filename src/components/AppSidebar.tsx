@@ -48,6 +48,7 @@ export default function AppSidebar() {
     getProjectsForSpace, getTasksForProject, teamMembers, sidebarCollapsed, setSidebarCollapsed, lists,
     tasks, addSpace, addProject, renameSpace, renameProject, moveProject, deleteSpace, deleteProject,
     reorderSpaces, reorderProjects, canAccessSpace, isSpaceManager, getSpaceManagers, refreshSpaceAccess,
+    updateTask, getListsForProject,
   } = useApp();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
@@ -76,6 +77,11 @@ export default function AppSidebar() {
   const [deleteConfirm, setDeleteConfirm] = useState<{ type: 'space' | 'project'; id: string; name: string } | null>(null);
   const [filtersExpanded, setFiltersExpanded] = useState(() => !window.matchMedia('(max-width: 767px)').matches);
   const [accessDialogSpace, setAccessDialogSpace] = useState<{ id: string; name: string; isPrivate: boolean } | null>(null);
+
+  // Drag & drop state for cross-space project moves and task-to-project drops
+  const [dragOverSpaceId, setDragOverSpaceId] = useState<string | null>(null);
+  const [dragOverProjectId, setDragOverProjectId] = useState<string | null>(null);
+  const [draggingProjectId, setDraggingProjectId] = useState<string | null>(null);
 
   // Filter spaces based on access
   const visibleSpaces = spaces.filter(s => canAccessSpace(s.id));
@@ -149,6 +155,85 @@ export default function AppSidebar() {
     setNewProjectName('');
     setNewProjectColor(PROJECT_COLORS[0]);
     setAddingProjectForSpace(null);
+  };
+
+  // Native drag & drop: project dragged to a different space
+  const handleProjectNativeDragStart = (e: React.DragEvent, projectId: string) => {
+    e.dataTransfer.setData('type', 'project');
+    e.dataTransfer.setData('projectId', projectId);
+    e.dataTransfer.effectAllowed = 'move';
+    setDraggingProjectId(projectId);
+  };
+
+  const handleSpaceDragOver = (e: React.DragEvent, spaceId: string) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverSpaceId(spaceId);
+  };
+
+  const handleSpaceDragLeave = () => {
+    setDragOverSpaceId(null);
+  };
+
+  const handleSpaceDrop = (e: React.DragEvent, spaceId: string) => {
+    e.preventDefault();
+    setDragOverSpaceId(null);
+    setDraggingProjectId(null);
+    const type = e.dataTransfer.getData('type');
+    if (type === 'project') {
+      const projectId = e.dataTransfer.getData('projectId');
+      const project = spaces.flatMap(s => getProjectsForSpace(s.id)).find(p => p.id === projectId);
+      if (project && project.spaceId !== spaceId) {
+        moveProject(projectId, spaceId);
+      }
+    }
+  };
+
+  // Native drag & drop: task dragged to a project in sidebar
+  const handleProjectNativeDragOver = (e: React.DragEvent, projectId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverProjectId(projectId);
+  };
+
+  const handleProjectNativeDragLeave = (e: React.DragEvent) => {
+    e.stopPropagation();
+    setDragOverProjectId(null);
+  };
+
+  const handleProjectNativeDrop = (e: React.DragEvent, projectId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOverProjectId(null);
+    setDraggingProjectId(null);
+    const type = e.dataTransfer.getData('type');
+    if (type === 'task') {
+      const taskId = e.dataTransfer.getData('taskId');
+      if (taskId) {
+        const targetLists = getListsForProject(projectId);
+        if (targetLists.length > 0) {
+          updateTask(taskId, { listId: targetLists[0].id });
+          setSelectedProjectId(projectId);
+        }
+      }
+    } else if (type === 'project') {
+      // Project dropped on another project → move to same space
+      const draggedProjId = e.dataTransfer.getData('projectId');
+      const targetProject = spaces.flatMap(s => getProjectsForSpace(s.id)).find(p => p.id === projectId);
+      if (draggedProjId && targetProject) {
+        const sourceProject = spaces.flatMap(s => getProjectsForSpace(s.id)).find(p => p.id === draggedProjId);
+        if (sourceProject && sourceProject.spaceId !== targetProject.spaceId) {
+          moveProject(draggedProjId, targetProject.spaceId);
+        }
+      }
+    }
+  };
+
+  const handleNativeDragEnd = () => {
+    setDraggingProjectId(null);
+    setDragOverSpaceId(null);
+    setDragOverProjectId(null);
   };
   // Swipe-to-close for mobile sidebar
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -465,7 +550,12 @@ export default function AppSidebar() {
           <SortableContext items={visibleSpaces.map(s => s.id)} strategy={verticalListSortingStrategy}>
             {visibleSpaces.map(space => (
               <SortableSpace key={space.id} space={space}>
-                <div className="flex items-center group">
+                <div
+                  className={`flex items-center group transition-colors ${dragOverSpaceId === space.id ? 'bg-primary/20 rounded-md ring-1 ring-primary/40' : ''}`}
+                  onDragOver={e => handleSpaceDragOver(e, space.id)}
+                  onDragLeave={handleSpaceDragLeave}
+                  onDrop={e => handleSpaceDrop(e, space.id)}
+                >
                   <button
                     onClick={() => toggleSpace(space.id)}
                     className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors"
@@ -593,6 +683,12 @@ export default function AppSidebar() {
                           ) : (
                             <SortableProject key={project.id} id={project.id}>
                               <button
+                                draggable
+                                onDragStart={e => handleProjectNativeDragStart(e, project.id)}
+                                onDragEnd={handleNativeDragEnd}
+                                onDragOver={e => handleProjectNativeDragOver(e, project.id)}
+                                onDragLeave={handleProjectNativeDragLeave}
+                                onDrop={e => handleProjectNativeDrop(e, project.id)}
                                 onClick={() => {
                                   setSelectedProjectId(project.id);
                                   setQuickFilter('all');
@@ -604,10 +700,12 @@ export default function AppSidebar() {
                                   setEditingProjectName(project.name);
                                 }}
                                 className={`flex-1 flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors ${
-                                  selectedProjectId === project.id
-                                    ? 'bg-sidebar-active text-sidebar-fg-bright'
-                                    : 'text-sidebar-fg hover:bg-sidebar-hover'
-                                }`}
+                                  dragOverProjectId === project.id
+                                    ? 'bg-primary/20 ring-1 ring-primary/40'
+                                    : selectedProjectId === project.id
+                                      ? 'bg-sidebar-active text-sidebar-fg-bright'
+                                      : 'text-sidebar-fg hover:bg-sidebar-hover'
+                                } ${draggingProjectId === project.id ? 'opacity-50' : ''}`}
                               >
                                 <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: project.color }} />
                                 <span className="flex-1 min-w-0 truncate">{project.name}</span>

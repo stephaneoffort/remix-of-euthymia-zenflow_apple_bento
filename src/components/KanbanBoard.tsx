@@ -65,6 +65,7 @@ export default function KanbanBoard() {
   const handleTaskDragStart = (e: React.DragEvent, taskId: string) => {
     setDraggedTaskId(taskId);
     e.dataTransfer.setData('type', 'task');
+    e.dataTransfer.setData('taskId', taskId);
     e.dataTransfer.effectAllowed = 'move';
   };
 

@@ -336,7 +336,7 @@ export default function MindMapView() {
     lastTouchDist.current = null;
   }, []);
 
-  if (tasks.length === 0) {
+  if (rootTasks.length === 0) {
     return <EmptyState variant="generic" message="Aucune tâche à afficher" />;
   }
 

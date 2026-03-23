@@ -320,7 +320,7 @@ export default function TaskDetailPanel() {
                 <select
                   value={task.priority}
                   onChange={e => updateTask(task.id, { priority: e.target.value as Priority })}
-                  className="w-full text-sm bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
+                  className="w-full text-sm text-foreground bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
                 >
                   {Object.entries(PRIORITY_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
                 </select>

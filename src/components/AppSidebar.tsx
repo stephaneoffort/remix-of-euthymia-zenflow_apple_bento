@@ -1025,6 +1025,7 @@ export default function AppSidebar() {
         <ThemeSwitcher />
         <div className="flex items-center gap-1 mt-1">
           <AdminSettingsLink />
+          <InstallAppLink />
           <LogoutButton />
         </div>
       </div>

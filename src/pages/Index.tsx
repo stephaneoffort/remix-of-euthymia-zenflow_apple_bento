@@ -66,8 +66,6 @@ export default function Index() {
     setSelectedTaskId,
     projects,
     spaces,
-    tasks,
-    teamMembers,
     sidebarCollapsed,
     setSidebarCollapsed,
     advancedFilters,
@@ -378,13 +376,7 @@ export default function Index() {
         <main className={`flex-1 overflow-hidden ${isMobile ? "pb-16" : ""}`}>
           {selectedView === "dashboard" && (
             <div className="h-full overflow-y-auto">
-              <DashboardView
-                tasks={tasks}
-                teamMembers={teamMembers}
-                spaces={spaces}
-                projects={projects}
-                onTaskClick={(id) => setSelectedTaskId(id)}
-              />
+              <DashboardView />
             </div>
           )}
           {selectedView === "kanban" && <KanbanBoard />}

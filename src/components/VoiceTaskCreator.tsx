@@ -279,7 +279,7 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
       : '';
     toast.success(`Tâche créée : "${parsedTask.title}"${subtaskMsg}`);
     onClose();
-  }, [parsedTask, addTask, teamMembers, listId, parentTaskId, onClose]);
+  }, [parsedTask, addTask, teamMembers, listId, parentTaskId, onClose, quickFilter, teamMemberId]);
 
   // ─── Cleanup on unmount ───
   useEffect(() => {

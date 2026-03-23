@@ -437,7 +437,7 @@ function KanbanCard({
           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
             <PriorityBadge priority={task.priority} />
             {task.dueDate && (
-              <span className={`text-label sm:text-xs ${isOverdue ? 'text-priority-urgent font-medium' : 'text-muted-foreground'}`}>
+              <span className={`text-label sm:text-xs ${isOverdue ? 'text-priority-urgent font-medium' : 'text-foreground/60'}`}>
                 {new Date(task.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
               </span>
             )}

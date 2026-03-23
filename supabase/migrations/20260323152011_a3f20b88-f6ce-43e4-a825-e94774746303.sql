@@ -1,0 +1,1 @@
+DELETE FROM tasks WHERE title IN ('Test ajout tâche', 'Test avec filtre actif', 'bbb');

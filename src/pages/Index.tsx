@@ -459,7 +459,7 @@ export default function Index() {
       )}
 
       {/* Mobile bottom navigation */}
-      {isMobile && !selectedTaskId && <MobileBottomNav />}
+      {isMobile && !selectedTaskId && <MobileBottomNav onOpenVoice={() => setVoiceAddOpen(true)} />}
     </div>
   );
 }

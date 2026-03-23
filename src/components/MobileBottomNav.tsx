@@ -8,15 +8,17 @@ import { Drawer, DrawerContent, DrawerTrigger, DrawerTitle } from '@/components/
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import VoiceTaskCreator from '@/components/VoiceTaskCreator';
 
-export default function MobileBottomNav() {
+interface MobileBottomNavProps {
+  onOpenVoice?: () => void;
+}
+
+export default function MobileBottomNav({ onOpenVoice }: MobileBottomNavProps) {
   const { setSidebarCollapsed, addTask, selectedProjectId, getListsForProject, projects, spaces } = useApp();
   const navigate = useNavigate();
   const location = useLocation();
   const { totalUnread } = useChatNotifications();
   const [quickAddOpen, setQuickAddOpen] = useState(false);
-  const [voiceAddOpen, setVoiceAddOpen] = useState(false);
 
   const [newTitle, setNewTitle] = useState('');
   const [newPriority, setNewPriority] = useState<Priority>('normal');
@@ -137,7 +139,7 @@ export default function MobileBottomNav() {
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={() => { setQuickAddOpen(false); setVoiceAddOpen(true); }}
+                    onClick={() => { setQuickAddOpen(false); if (onOpenVoice) setTimeout(onOpenVoice, 350); }}
                     className="h-11 px-4"
                     title="Dicter une tâche"
                   >
@@ -177,15 +179,6 @@ export default function MobileBottomNav() {
         </button>
       </div>
 
-      {voiceAddOpen && (
-        <VoiceTaskCreator
-          onClose={() => setVoiceAddOpen(false)}
-          defaultListId={(() => {
-            const lists = selectedProjectId ? getListsForProject(selectedProjectId) : [];
-            return lists[0]?.id || "l1";
-          })()}
-        />
-      )}
     </div>
   );
 }

@@ -990,46 +990,79 @@ export default function AppSidebar() {
       {/* Archives */}
       <ArchivesSection />
 
-      {/* Team */}
-      <div className="px-4 py-3 border-t border-sidebar-border-color">
-        <p className="text-xs font-semibold text-sidebar-fg uppercase tracking-wider mb-2">Équipe</p>
-        <div className="flex gap-1 flex-wrap">
-          {teamMembers.map(m => (
-            <div key={m.id} className="relative">
-              {m.avatarUrl ? (
-                <img
-                  src={m.avatarUrl}
-                  alt={m.name}
-                  title={`${m.name} — ${m.role}`}
-                  className="w-8 h-8 rounded-full object-cover cursor-default"
-                />
-              ) : (
-                <div
-                  title={`${m.name} — ${m.role}`}
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold cursor-default"
-                  style={{ backgroundColor: m.avatarColor, color: 'white' }}
-                >
-                  {m.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                </div>
-              )}
-              {isOnline(m.id) && (
-                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-card rounded-full" />
-              )}
+      {/* Team + Settings — collapsible on mobile, closed by default */}
+      {isMobile ? (
+        <Collapsible defaultOpen={false}>
+          <div className="px-4 py-2 border-t border-sidebar-border-color">
+            <CollapsibleTrigger className="flex items-center justify-between w-full text-xs font-semibold text-sidebar-fg uppercase tracking-wider">
+              <span className="flex items-center gap-1.5"><Users className="w-3.5 h-3.5" /> Équipe & Paramètres</span>
+              <ChevronDown className="w-3.5 h-3.5 transition-transform duration-200 [[data-state=open]>&]:rotate-180" />
+            </CollapsibleTrigger>
+          </div>
+          <CollapsibleContent>
+            <div className="px-4 pb-2">
+              <div className="flex gap-1 flex-wrap">
+                {teamMembers.map(m => (
+                  <div key={m.id} className="relative">
+                    {m.avatarUrl ? (
+                      <img src={m.avatarUrl} alt={m.name} title={`${m.name} — ${m.role}`} className="w-8 h-8 rounded-full object-cover cursor-default" />
+                    ) : (
+                      <div title={`${m.name} — ${m.role}`} className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold cursor-default" style={{ backgroundColor: m.avatarColor, color: 'white' }}>
+                        {m.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                      </div>
+                    )}
+                    {isOnline(m.id) && (
+                      <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-card rounded-full" />
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Current user + Settings + Logout */}
-      <div className="px-4 py-3 border-t border-sidebar-border-color mt-auto">
-        <CurrentUserBadge />
-        <ThemeSwitcher />
-        <div className="flex items-center gap-1 mt-1">
-          <AdminSettingsLink />
-          <InstallAppLink />
-          <LogoutButton />
-        </div>
-      </div>
+            <div className="px-4 py-3 border-t border-sidebar-border-color">
+              <CurrentUserBadge />
+              <ThemeSwitcher />
+              <div className="flex items-center gap-1 mt-1">
+                <AdminSettingsLink />
+                <InstallAppLink />
+                <LogoutButton />
+              </div>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      ) : (
+        <>
+          {/* Team */}
+          <div className="px-4 py-3 border-t border-sidebar-border-color">
+            <p className="text-xs font-semibold text-sidebar-fg uppercase tracking-wider mb-2">Équipe</p>
+            <div className="flex gap-1 flex-wrap">
+              {teamMembers.map(m => (
+                <div key={m.id} className="relative">
+                  {m.avatarUrl ? (
+                    <img src={m.avatarUrl} alt={m.name} title={`${m.name} — ${m.role}`} className="w-8 h-8 rounded-full object-cover cursor-default" />
+                  ) : (
+                    <div title={`${m.name} — ${m.role}`} className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold cursor-default" style={{ backgroundColor: m.avatarColor, color: 'white' }}>
+                      {m.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                    </div>
+                  )}
+                  {isOnline(m.id) && (
+                    <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-card rounded-full" />
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Current user + Settings + Logout */}
+          <div className="px-4 py-3 border-t border-sidebar-border-color mt-auto">
+            <CurrentUserBadge />
+            <ThemeSwitcher />
+            <div className="flex items-center gap-1 mt-1">
+              <AdminSettingsLink />
+              <InstallAppLink />
+              <LogoutButton />
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Delete confirmation dialog */}
       <AlertDialog open={!!deleteConfirm} onOpenChange={(open) => { if (!open) setDeleteConfirm(null); }}>

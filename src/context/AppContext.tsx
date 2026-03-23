@@ -946,6 +946,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const archivedProjects = useMemo(() =>
     projects.filter(p => p.isArchived),
     [projects]
+  );
+
   const accessibleProjectIds = useMemo(() => {
     const accessibleSpaceIds = new Set(accessibleSpaces.map(s => s.id));
     return new Set(projects.filter(p => accessibleSpaceIds.has(p.spaceId)).map(p => p.id));

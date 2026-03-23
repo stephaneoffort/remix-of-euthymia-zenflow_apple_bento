@@ -524,13 +524,13 @@ export default function TaskDetailPanel() {
                 <label
                   htmlFor="task-file-upload"
                   aria-disabled={uploading}
-                  className={`inline-flex items-center gap-1 text-xs transition-colors ${uploading ? 'pointer-events-none text-muted-foreground/60' : 'cursor-pointer text-muted-foreground hover:text-foreground'}`}
+                  className={`inline-flex items-center gap-1 text-xs transition-colors ${uploading ? 'pointer-events-none text-foreground/35' : 'cursor-pointer text-foreground/60 hover:text-foreground'}`}
                 >
                   <Upload className="w-3.5 h-3.5" /> {uploading ? 'Envoi...' : 'Fichier'}
                 </label>
                 <button
                   onClick={() => setAddingLink(true)}
-                  className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  className="inline-flex items-center gap-1 text-xs text-foreground/60 hover:text-foreground transition-colors"
                 >
                   <Link className="w-3.5 h-3.5" /> Lien
                 </button>

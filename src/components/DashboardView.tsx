@@ -7,7 +7,7 @@ import { STATUS_LABELS, PRIORITY_LABELS, Priority } from '@/types';
 import { PriorityBadge, StatusBadge } from '@/components/TaskBadges';
 import {
   CheckCircle2, Clock, AlertTriangle, TrendingUp, ListTodo, Users,
-  CalendarDays, BarChart3,
+  CalendarDays, BarChart3, Flame,
 } from 'lucide-react';
 import { format, isToday, isPast, parseISO, differenceInDays } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -43,16 +43,41 @@ export default function DashboardView() {
   const { tasks, teamMembers, spaces, projects, setSelectedTaskId } = useApp();
   const { teamMemberId } = useAuth();
 
-  // ─── Personal stats ───
-  const myTasks = useMemo(() => tasks.filter(t => t.assigneeIds.includes(teamMemberId || '')), [tasks, teamMemberId]);
-  const myDone = myTasks.filter(t => t.status === 'done').length;
-  const myInProgress = myTasks.filter(t => t.status === 'in_progress').length;
-  const myOverdue = myTasks.filter(t => t.dueDate && isPast(parseISO(t.dueDate)) && t.status !== 'done').length;
-  const myDueToday = myTasks.filter(t => t.dueDate && isToday(parseISO(t.dueDate)) && t.status !== 'done').length;
-  const myCompletion = myTasks.length > 0 ? Math.round((myDone / myTasks.length) * 100) : 0;
+  // ─── Current member name ───
+  const currentMember = useMemo(
+    () => teamMembers.find(m => m.id === teamMemberId),
+    [teamMembers, teamMemberId]
+  );
+  const firstName = currentMember?.name?.split(' ')[0] || 'là';
+
+  // ─── Greeting ───
+  const greeting = useMemo(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Bonjour';
+    if (hour < 18) return 'Bon après-midi';
+    return 'Bonsoir';
+  }, []);
+
+  // ─── My pending tasks (sorted by urgency then due date) ───
+  const myPendingTasks = useMemo(() => {
+    const priorityOrder: Record<string, number> = { urgent: 0, high: 1, normal: 2, low: 3 };
+    return tasks
+      .filter(t => t.assigneeIds.includes(teamMemberId || '') && t.status !== 'done')
+      .sort((a, b) => {
+        const aOverdue = a.dueDate && isPast(parseISO(a.dueDate)) ? 0 : 1;
+        const bOverdue = b.dueDate && isPast(parseISO(b.dueDate)) ? 0 : 1;
+        if (aOverdue !== bOverdue) return aOverdue - bOverdue;
+        const aPrio = priorityOrder[a.priority] ?? 2;
+        const bPrio = priorityOrder[b.priority] ?? 2;
+        if (aPrio !== bPrio) return aPrio - bPrio;
+        if (a.dueDate && b.dueDate) return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+        if (a.dueDate) return -1;
+        if (b.dueDate) return 1;
+        return 0;
+      });
+  }, [tasks, teamMemberId]);
 
 
-  // ═══ DONNÉES CALCULÉES ═══
   const totalTasks = tasks.length;
   const globalDone = tasks.filter(t => t.status === 'done').length;
   const globalOverdue = tasks.filter(t => t.dueDate && isPast(parseISO(t.dueDate)) && t.status !== 'done').length;
@@ -135,6 +160,62 @@ export default function DashboardView() {
   // ═══ RENDU ═══
   return (
     <div className="p-4 sm:p-6 space-y-8 max-w-7xl mx-auto">
+
+      {/* ═══ GREETING + MY TASKS ═══ */}
+      <section>
+        <div className="mb-4">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">
+            {greeting}, {firstName} 👋
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {myPendingTasks.length === 0
+              ? 'Aucune tâche en attente — profite de ta journée !'
+              : `Tu as ${myPendingTasks.length} tâche${myPendingTasks.length > 1 ? 's' : ''} en cours`
+            }
+          </p>
+        </div>
+
+        {myPendingTasks.length > 0 && (
+          <Card className="bg-card border-border">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-foreground flex items-center gap-2">
+                <Flame className="w-4 h-4 text-destructive" />
+                Mes tâches à traiter
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-1">
+                {myPendingTasks.map(task => {
+                  const daysLeft = task.dueDate ? differenceInDays(parseISO(task.dueDate), new Date()) : null;
+                  const isOverdue = daysLeft !== null && daysLeft < 0;
+                  return (
+                    <button
+                      key={task.id}
+                      onClick={() => setSelectedTaskId(task.id)}
+                      className="w-full text-left py-2.5 hover:bg-muted/50 transition-colors flex items-center gap-3 px-1 rounded-md"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm text-foreground truncate">{task.title}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <PriorityBadge priority={task.priority} />
+                          <StatusBadge status={task.status} />
+                        </div>
+                      </div>
+                      {daysLeft !== null ? (
+                        <span className={`text-xs font-medium shrink-0 ${isOverdue ? 'text-destructive' : 'text-muted-foreground'}`}>
+                          {isOverdue ? `${Math.abs(daysLeft)}j retard` : daysLeft === 0 ? "Aujourd'hui" : `${daysLeft}j`}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-muted-foreground shrink-0">—</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </section>
 
       {/* ═══ SECTION 1 : VUE D'ENSEMBLE ═══ */}
       <section>

@@ -573,7 +573,13 @@ export default function AppSidebar() {
             {visibleSpaces.map(space => (
               <SortableSpace key={space.id} space={space}>
                 <div
-                  className={`flex items-center group transition-colors ${dragOverSpaceId === space.id ? 'bg-primary/20 rounded-md ring-1 ring-primary/40' : ''}`}
+                  className={`flex items-center group transition-all ${
+                    dragOverSpaceId === space.id
+                      ? 'bg-primary/20 rounded-md ring-2 ring-primary/50 shadow-sm shadow-primary/10'
+                      : draggingProjectId
+                        ? 'rounded-md border border-dashed border-sidebar-fg/20'
+                        : ''
+                  }`}
                   onDragOver={e => handleSpaceDragOver(e, space.id)}
                   onDragLeave={handleSpaceDragLeave}
                   onDrop={e => handleSpaceDrop(e, space.id)}

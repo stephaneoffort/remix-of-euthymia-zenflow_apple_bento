@@ -126,14 +126,24 @@ export default function MobileBottomNav() {
                   </Select>
                 </div>
 
-                <Button
-                  onClick={handleQuickAddSubmit}
-                  disabled={!newTitle.trim() || !newProjectId}
-                  className="w-full h-11 text-base"
-                >
-                  <Plus className="w-4 h-4 mr-1" />
-                  Créer la tâche
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleQuickAddSubmit}
+                    disabled={!newTitle.trim() || !newProjectId}
+                    className="flex-1 h-11 text-base"
+                  >
+                    <Plus className="w-4 h-4 mr-1" />
+                    Créer la tâche
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => { setQuickAddOpen(false); setVoiceAddOpen(true); }}
+                    className="h-11 px-4"
+                    title="Dicter une tâche"
+                  >
+                    <Mic className="w-5 h-5" />
+                  </Button>
+                </div>
               </div>
             </div>
           </DrawerContent>

@@ -90,7 +90,7 @@ export default function TaskChecklist({ taskId }: TaskChecklistProps) {
       )}
 
       {loading ? (
-        <p className="text-xs text-muted-foreground">Chargement...</p>
+        <p className="text-xs text-foreground/60">Chargement...</p>
       ) : (
         <div className="space-y-1">
           {items.map(item => (

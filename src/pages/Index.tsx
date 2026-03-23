@@ -177,8 +177,8 @@ export default function Index() {
         {/* Top bar */}
         <header className="border-b border-border bg-card shrink-0">
           {/* Row 1: Title + actions */}
-          <div className="h-12 sm:h-14 flex items-center px-3 sm:px-6 gap-2">
-            <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+          <div className="h-12 sm:h-14 flex items-center px-3 sm:px-6 gap-1.5 sm:gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 flex-1 overflow-hidden">
               {sidebarCollapsed && !isMobile && (
                 <button
                   onClick={() => setSidebarCollapsed(false)}
@@ -189,37 +189,53 @@ export default function Index() {
               )}
               {/* Breadcrumb navigation */}
               {breadcrumbs.length > 0 ? (
-                <nav className="flex items-center gap-1 min-w-0 text-sm sm:text-lg">
-                  {breadcrumbs.map((crumb, i) => (
-                    <React.Fragment key={i}>
-                      {i > 0 && <span className="text-muted-foreground mx-0.5 shrink-0">›</span>}
-                      {crumb.onClick ? (
-                        <button
-                          onClick={crumb.onClick}
-                          className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors truncate shrink min-w-0"
-                        >
-                          {crumb.icon && <span className="shrink-0">{crumb.icon}</span>}
-                          <span className="truncate">{crumb.label}</span>
-                        </button>
-                      ) : (
-                        <h2 className="flex items-center gap-1.5 font-bold text-foreground truncate min-w-0">
-                          {crumb.color && (
-                            <div className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: crumb.color }} />
-                          )}
-                          {crumb.icon && <span className="shrink-0">{crumb.icon}</span>}
-                          <span className="truncate">{crumb.label}</span>
-                        </h2>
+                <nav className="flex items-center gap-1 min-w-0 text-sm sm:text-lg overflow-hidden">
+                  {isMobile ? (
+                    // Mobile: only show last breadcrumb to prevent overflow
+                    <h2 className="font-bold text-foreground text-sm truncate min-w-0">
+                      {breadcrumbs[breadcrumbs.length - 1].color && (
+                        <span
+                          className="inline-block w-2.5 h-2.5 rounded-sm mr-1.5 align-middle"
+                          style={{ backgroundColor: breadcrumbs[breadcrumbs.length - 1].color }}
+                        />
                       )}
-                    </React.Fragment>
-                  ))}
+                      {breadcrumbs[breadcrumbs.length - 1].icon && (
+                        <span className="mr-1">{breadcrumbs[breadcrumbs.length - 1].icon}</span>
+                      )}
+                      <span className="truncate">{breadcrumbs[breadcrumbs.length - 1].label}</span>
+                    </h2>
+                  ) : (
+                    breadcrumbs.map((crumb, i) => (
+                      <React.Fragment key={i}>
+                        {i > 0 && <span className="text-muted-foreground mx-0.5 shrink-0">›</span>}
+                        {crumb.onClick ? (
+                          <button
+                            onClick={crumb.onClick}
+                            className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors truncate shrink min-w-0"
+                          >
+                            {crumb.icon && <span className="shrink-0">{crumb.icon}</span>}
+                            <span className="truncate">{crumb.label}</span>
+                          </button>
+                        ) : (
+                          <h2 className="flex items-center gap-1.5 font-bold text-foreground truncate min-w-0">
+                            {crumb.color && (
+                              <div className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: crumb.color }} />
+                            )}
+                            {crumb.icon && <span className="shrink-0">{crumb.icon}</span>}
+                            <span className="truncate">{crumb.label}</span>
+                          </h2>
+                        )}
+                      </React.Fragment>
+                    ))
+                  )}
                 </nav>
               ) : (
-                <h2 className="font-bold text-foreground text-sm sm:text-lg truncate">{title}</h2>
+                <h2 className="font-bold text-foreground text-sm sm:text-lg truncate min-w-0">{title}</h2>
               )}
 
               {/* View selector — desktop inline */}
               {!isMobile && (
-                <div className="flex items-center gap-0.5 ml-2 bg-muted/50 rounded-lg p-0.5">
+                <div className="flex items-center gap-0.5 ml-2 bg-muted/50 rounded-lg p-0.5 shrink-0">
                   {VIEW_OPTIONS.map((v) => (
                     <Tooltip key={v.key}>
                       <TooltipTrigger asChild>
@@ -243,9 +259,9 @@ export default function Index() {
                 </div>
               )}
             </div>
-            <div className="flex items-center gap-1.5 shrink-0">
+            <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
               <NotificationsDropdown />
-              {/* Search button */}
+              {/* Search button — desktop */}
               <button
                 onClick={() => setSearchOpen(true)}
                 className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-border bg-muted/30 text-muted-foreground text-xs hover:bg-muted hover:text-foreground transition-colors"
@@ -256,6 +272,7 @@ export default function Index() {
                   ⌘K
                 </kbd>
               </button>
+              {/* Search button — mobile */}
               {isMobile && (
                 <button
                   onClick={() => setSearchOpen(true)}
@@ -264,12 +281,12 @@ export default function Index() {
                   <Search className="w-4 h-4" />
                 </button>
               )}
-              {/* Mobile filter button → opens bottom sheet */}
+              {/* Mobile filter button */}
               {isMobile && (
                 <Drawer open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
                   <DrawerTrigger asChild>
                     <button
-                      className={`relative inline-flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-medium border transition-colors ${
+                      className={`relative inline-flex items-center gap-1 px-1.5 py-1.5 rounded-md text-xs font-medium border transition-colors ${
                         hasActiveFilters
                           ? "border-primary/30 bg-primary/5 text-primary"
                           : "border-border bg-card text-muted-foreground"
@@ -316,11 +333,10 @@ export default function Index() {
                 <TooltipTrigger asChild>
                   <button
                     onClick={() => setSuggestionsOpen(true)}
-                    className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded-md bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors shrink-0 active:scale-[0.97]"
+                    className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-1.5 rounded-md bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors shrink-0 active:scale-[0.97]"
                   >
                     <Sparkles className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">Proposer des tâches</span>
-                    <span className="sm:hidden">IA</span>
                   </button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">Générer des suggestions de tâches basées sur votre projet</TooltipContent>
@@ -328,7 +344,7 @@ export default function Index() {
             </div>
           </div>
 
-          {/* Row 2: Mobile view selector — horizontally scrollable */}
+          {/* Row 2: Mobile view selector */}
           {isMobile && (
             <div className="flex items-center gap-1 px-3 pb-2 overflow-x-auto scrollbar-none -mt-1">
               {VIEW_OPTIONS.map((v) => (
@@ -348,7 +364,7 @@ export default function Index() {
             </div>
           )}
 
-          {/* Filters - desktop only inline */}
+          {/* Filters - desktop only */}
           {!isMobile && (
             <div className="px-3 sm:px-6 pb-2">
               <TaskFilterBar />

@@ -338,6 +338,8 @@ export default function DataExportImport() {
           )}
         </CardContent>
       </Card>
+      {/* CSV Import */}
+      <CsvTaskImport />
     </div>
   );
 }

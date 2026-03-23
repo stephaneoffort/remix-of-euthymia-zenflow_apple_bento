@@ -90,6 +90,7 @@ export interface Project {
   spaceId: string;
   color: string;
   order: number;
+  isArchived?: boolean;
 }
 
 export interface Space {
@@ -99,6 +100,7 @@ export interface Space {
   order: number;
   isPrivate: boolean;
   ownerMemberId?: string | null;
+  isArchived?: boolean;
 }
 
 export interface SpaceMember {

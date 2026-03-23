@@ -167,7 +167,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     queryFn: async () => {
       const { data, error } = await supabase.from('projects').select('*').order('sort_order');
       if (error) throw error;
-      return data.map(p => ({ id: p.id, name: p.name, spaceId: p.space_id, color: p.color, order: p.sort_order })) as Project[];
+      return data.map(p => ({ id: p.id, name: p.name, spaceId: p.space_id, color: p.color, order: p.sort_order, isArchived: (p as any).is_archived ?? false })) as Project[];
     },
   });
 

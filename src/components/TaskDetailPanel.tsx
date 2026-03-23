@@ -463,10 +463,10 @@ export default function TaskDetailPanel() {
                       >
                         {att.name}
                       </a>
-                      <ExternalLink className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 shrink-0" />
+                      <ExternalLink className="w-3 h-3 text-foreground/45 opacity-60 group-hover:opacity-100 shrink-0 transition-opacity" />
                       <button
                         onClick={() => deleteAttachment(att.id)}
-                        className="p-0.5 opacity-0 group-hover:opacity-100 hover:text-destructive transition-all shrink-0"
+                        className="p-0.5 opacity-60 group-hover:opacity-100 text-foreground/45 hover:text-destructive transition-all shrink-0"
                         title="Supprimer"
                       >
                         <Trash2 className="w-3 h-3" />

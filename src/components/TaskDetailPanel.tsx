@@ -268,6 +268,32 @@ export default function TaskDetailPanel() {
           ))}
         </div>
         <div className="flex items-center gap-1 shrink-0 ml-2">
+          {/* Convert to project */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="p-1.5 hover:bg-primary/10 text-muted-foreground hover:text-primary rounded-md transition-colors"
+                title="Convertir en projet"
+              >
+                <PackagePlus className="w-4 h-4" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-52">
+              <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">Convertir en projet dans…</div>
+              {spaces.map(s => (
+                <DropdownMenuItem
+                  key={s.id}
+                  onClick={() => {
+                    convertTaskToProject(task.id, s.id);
+                    setSelectedTaskId(null);
+                  }}
+                >
+                  <span className="mr-2">{s.icon}</span>
+                  {s.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
           <button
             onClick={() => {
               if (window.confirm('Supprimer cette tâche et ses sous-tâches ?')) {

@@ -496,7 +496,31 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     renameProjectMutation.mutate({ id, name });
   }, [renameProjectMutation]);
 
-  // Delete space mutation (cascade: delete projects, task_lists, tasks)
+  // Move project to another space mutation
+  const moveProjectMutation = useMutation({
+    mutationFn: async ({ projectId, newSpaceId }: { projectId: string; newSpaceId: string }) => {
+      const { error } = await supabase.from('projects').update({ space_id: newSpaceId }).eq('id', projectId);
+      if (error) throw error;
+    },
+    onMutate: async ({ projectId, newSpaceId }) => {
+      await queryClient.cancelQueries({ queryKey: ['projects'] });
+      const previous = queryClient.getQueryData(['projects']);
+      queryClient.setQueryData(['projects'], (old: any) =>
+        old?.map((p: any) => p.id === projectId ? { ...p, spaceId: newSpaceId } : p)
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      queryClient.setQueryData(['projects'], context?.previous);
+      toast.error('Erreur lors du déplacement');
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['projects'] }),
+  });
+
+  const moveProject = useCallback((projectId: string, newSpaceId: string) => {
+    moveProjectMutation.mutate({ projectId, newSpaceId });
+  }, [moveProjectMutation]);
+
   const deleteSpaceMutation = useMutation({
     mutationFn: async (id: string) => {
       const spaceProjects = projects.filter(p => p.spaceId === id);

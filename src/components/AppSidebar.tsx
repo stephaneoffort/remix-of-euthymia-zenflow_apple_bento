@@ -970,6 +970,9 @@ export default function AppSidebar() {
         </DndContext>
       </div>
 
+      {/* Archives */}
+      <ArchivesSection />
+
       {/* Team */}
       <div className="px-4 py-3 border-t border-sidebar-border-color">
         <p className="text-xs font-semibold text-sidebar-fg uppercase tracking-wider mb-2">Équipe</p>

@@ -390,7 +390,7 @@ export default function TaskDetailPanel() {
                     <div className="w-5 h-5 rounded-full flex items-center justify-center text-label font-bold" style={{ backgroundColor: m.avatarColor, color: 'white' }}>
                       {m.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                     </div>
-                    <span className="truncate">{m.name}</span>
+                    <span className="truncate" style={{ color: '#777269' }}>{m.name}</span>
                   </label>
                 ))}
               </div>

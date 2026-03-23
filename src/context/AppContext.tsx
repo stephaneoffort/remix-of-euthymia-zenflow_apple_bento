@@ -144,7 +144,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     _setSelectedView(view);
     localStorage.setItem('euthymia:view', view);
   }, []);
-  const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');
+  const [quickFilter, _setQuickFilter] = useState<QuickFilter>(() => {
+    return (localStorage.getItem('euthymia:quickFilter') as QuickFilter) || 'all';
+  });
+  const setQuickFilter = useCallback((filter: QuickFilter) => {
+    _setQuickFilter(filter);
+    localStorage.setItem('euthymia:quickFilter', filter);
+  }, []);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>(EMPTY_FILTERS);

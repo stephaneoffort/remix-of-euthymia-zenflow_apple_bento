@@ -654,7 +654,7 @@ export default function TaskDetailPanel() {
                       if (e.key === 'Escape') { setAddingSubtaskFor(null); setNewSubtaskTitle(''); }
                     }}
                     placeholder="Titre de la sous-tâche..."
-                    className="flex-1 text-sm bg-muted/50 border border-border rounded-md px-2.5 py-1.5 outline-none"
+                    className="flex-1 text-sm text-foreground bg-muted/50 border border-border rounded-md px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground"
                   />
                   <button
                     onClick={() => handleAddSubtask(task.id)}

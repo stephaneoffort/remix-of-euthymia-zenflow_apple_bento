@@ -121,7 +121,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     _setSelectedSpaceId(id);
     if (id) _setSelectedProjectId(null);
   }, []);
-  const [selectedView, _setSelectedView] = useState<ViewType>('dashboard');
+  const [selectedView, _setSelectedView] = useState<ViewType>(() => {
+    return (localStorage.getItem('euthymia:view') as ViewType) || 'dashboard';
+  });
   const setSelectedView = useCallback((view: ViewType) => {
     _setSelectedView(view);
     localStorage.setItem('euthymia:view', view);

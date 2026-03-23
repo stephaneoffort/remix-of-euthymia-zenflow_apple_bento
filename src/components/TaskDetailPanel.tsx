@@ -432,6 +432,38 @@ export default function TaskDetailPanel() {
                   );
                 })()}
               </div>
+
+              {/* Make subtask of another task */}
+              <div className="col-span-2">
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1 block">
+                  <GitBranchPlus className="w-3 h-3" /> Tâche parente
+                </label>
+                <select
+                  value={task.parentTaskId || ''}
+                  onChange={e => {
+                    const parentId = e.target.value || null;
+                    if (parentId === task.parentTaskId) return;
+                    // Prevent setting self or own subtask as parent
+                    if (parentId === task.id) return;
+                    const parentTask = parentId ? tasks.find(t => t.id === parentId) : null;
+                    updateTask(task.id, { parentTaskId: parentId, ...(parentTask ? { listId: parentTask.listId } : {}) });
+                    toast({
+                      title: parentId ? 'Sous-tâche définie' : 'Tâche détachée',
+                      description: parentId
+                        ? `« ${task.title} » est maintenant sous-tâche de « ${parentTask?.title} »`
+                        : `« ${task.title} » est maintenant une tâche indépendante`,
+                    });
+                  }}
+                  className="w-full text-sm text-foreground bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
+                >
+                  <option value="">— Aucune (tâche indépendante)</option>
+                  {tasks
+                    .filter(t => t.id !== task.id && t.parentTaskId !== task.id)
+                    .map(t => (
+                      <option key={t.id} value={t.id}>{t.title}</option>
+                    ))}
+                </select>
+              </div>
             </div>
 
             {/* Assignees */}

@@ -224,9 +224,14 @@ export default function AppSidebar() {
         if (targetLists.length > 0) {
           const task = tasks.find(t => t.id === taskId);
           const targetProject = spaces.flatMap(s => getProjectsForSpace(s.id)).find(p => p.id === projectId);
+          const prevListId = task?.listId;
           updateTask(taskId, { listId: targetLists[0].id });
           setSelectedProjectId(projectId);
-          toast({ title: 'Tâche déplacée', description: `« ${task?.title || 'Tâche'} » → ${targetProject?.name || 'projet'}` });
+          toast({
+            title: 'Tâche déplacée',
+            description: `« ${task?.title || 'Tâche'} » → ${targetProject?.name || 'projet'}`,
+            action: prevListId ? <ToastAction altText="Annuler" onClick={() => updateTask(taskId, { listId: prevListId })}>Annuler</ToastAction> : undefined,
+          });
         }
       }
     } else if (type === 'project') {

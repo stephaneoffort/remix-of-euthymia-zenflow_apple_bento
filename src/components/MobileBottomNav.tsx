@@ -44,7 +44,7 @@ export default function MobileBottomNav({ onOpenVoice }: MobileBottomNavProps) {
       priority: newPriority,
       dueDate: null,
       startDate: null,
-      assigneeIds: [],
+      assigneeIds: quickFilter === 'my_tasks' && teamMemberId ? [teamMemberId] : [],
       tags: [],
       parentTaskId: null,
       listId,

@@ -9,6 +9,7 @@ import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { AppProvider } from "@/context/AppContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { Skeleton } from "@/components/ui/skeleton";
+import InstallPrompt from "@/components/InstallPrompt";
 
 const Index = lazy(() => import("./pages/Index.tsx"));
 const Auth = lazy(() => import("./pages/Auth.tsx"));

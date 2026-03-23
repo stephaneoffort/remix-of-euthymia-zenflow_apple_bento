@@ -580,113 +580,146 @@ export default function AppSidebar() {
           <SortableContext items={visibleSpaces.map(s => s.id)} strategy={verticalListSortingStrategy}>
             {visibleSpaces.map(space => (
               <SortableSpace key={space.id} space={space}>
-                <div
-                  className={`flex items-center group transition-all ${
-                    dragOverSpaceId === space.id
-                      ? 'bg-primary/20 rounded-md ring-2 ring-primary/50 shadow-sm shadow-primary/10'
-                      : draggingProjectId
-                        ? 'rounded-md border border-dashed border-sidebar-fg/20'
-                        : ''
-                  }`}
-                  onDragOver={e => handleSpaceDragOver(e, space.id)}
-                  onDragLeave={handleSpaceDragLeave}
-                  onDrop={e => handleSpaceDrop(e, space.id)}
-                >
-                  <button
-                    onClick={() => toggleSpace(space.id)}
-                    className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors"
-                  >
-                    {expandedSpaces.has(space.id) ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
-                    <span>{space.icon}</span>
-                  </button>
-                  {editingSpaceId === space.id ? (
-                    <input
-                      autoFocus
-                      value={editingSpaceName}
-                      onChange={e => setEditingSpaceName(e.target.value)}
-                      onBlur={() => {
-                        if (editingSpaceName.trim() && editingSpaceName.trim() !== space.name) {
-                          renameSpace(space.id, editingSpaceName.trim());
-                        }
-                        setEditingSpaceId(null);
-                      }}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter') {
-                          if (editingSpaceName.trim() && editingSpaceName.trim() !== space.name) {
-                            renameSpace(space.id, editingSpaceName.trim());
-                          }
-                          setEditingSpaceId(null);
-                        }
-                        if (e.key === 'Escape') setEditingSpaceId(null);
-                      }}
-                      className="flex-1 text-sm bg-sidebar-bg border border-sidebar-border-color rounded-md px-2 py-0.5 outline-none text-sidebar-fg-bright font-medium min-w-0"
-                    />
-                  ) : dragOverSpaceId === space.id ? (
-                    <span className="flex-1 font-medium text-sm text-primary flex items-center gap-1.5 animate-pulse">
-                      <ArrowDownToLine className="w-3.5 h-3.5" />
-                      Déposer ici
-                    </span>
-                  ) : (
-                    <span
-                      className={`flex-1 font-medium text-sm cursor-pointer truncate flex items-center gap-1 ${
-                        selectedSpaceId === space.id ? 'text-sidebar-fg-bright' : 'text-sidebar-fg'
+                <ContextMenu>
+                  <ContextMenuTrigger asChild>
+                    <div
+                      className={`flex items-center group transition-all ${
+                        dragOverSpaceId === space.id
+                          ? 'bg-primary/20 rounded-md ring-2 ring-primary/50 shadow-sm shadow-primary/10'
+                          : draggingProjectId
+                            ? 'rounded-md border border-dashed border-sidebar-fg/20'
+                            : ''
                       }`}
-                      onClick={() => {
-                        setSelectedSpaceId(space.id);
-                        setQuickFilter('all');
-                        handleNavClick();
-                        if (!expandedSpaces.has(space.id)) toggleSpace(space.id);
-                      }}
-                      onDoubleClick={(e) => {
-                        e.stopPropagation();
-                        setEditingSpaceId(space.id);
-                        setEditingSpaceName(space.name);
-                      }}
+                      onDragOver={e => handleSpaceDragOver(e, space.id)}
+                      onDragLeave={handleSpaceDragLeave}
+                      onDrop={e => handleSpaceDrop(e, space.id)}
                     >
-                      {space.name}
-                      {space.isPrivate && <Lock className="w-3 h-3 text-sidebar-fg shrink-0" />}
-                    </span>
-                  )}
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
                       <button
-                        className={`p-2 -m-1 rounded-md hover:bg-sidebar-hover text-sidebar-fg transition-opacity mr-0.5 ${isMobile ? 'opacity-80' : 'opacity-40 group-hover:opacity-100'}`}
-                        onClick={e => e.stopPropagation()}
+                        onClick={() => toggleSpace(space.id)}
+                        className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors"
                       >
-                        <MoreHorizontal className="w-4 h-4" />
+                        {expandedSpaces.has(space.id) ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+                        <span>{space.icon}</span>
                       </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48">
-                      <DropdownMenuItem onClick={() => setAccessDialogSpace({ id: space.id, name: space.name, isPrivate: space.isPrivate })}>
-                        <Shield className="w-4 h-4 mr-2" />
-                        Gérer les accès
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setAddingProjectForSpace(space.id)}>
-                        <Plus className="w-4 h-4 mr-2" />
-                        Ajouter un projet
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => {
-                        setEditingSpaceId(space.id);
-                        setEditingSpaceName(space.name);
-                      }}>
-                        <Pencil className="w-4 h-4 mr-2" />
-                        Renommer
-                      </DropdownMenuItem>
-                      {isAdmin && (
-                        <>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            onClick={() => setDeleteConfirm({ type: 'space', id: space.id, name: space.name })}
-                            className="text-destructive focus:text-destructive"
-                          >
-                            <Trash2 className="w-4 h-4 mr-2" />
-                            Supprimer
-                          </DropdownMenuItem>
-                        </>
+                      {editingSpaceId === space.id ? (
+                        <input
+                          autoFocus
+                          value={editingSpaceName}
+                          onChange={e => setEditingSpaceName(e.target.value)}
+                          onBlur={() => {
+                            if (editingSpaceName.trim() && editingSpaceName.trim() !== space.name) {
+                              renameSpace(space.id, editingSpaceName.trim());
+                            }
+                            setEditingSpaceId(null);
+                          }}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter') {
+                              if (editingSpaceName.trim() && editingSpaceName.trim() !== space.name) {
+                                renameSpace(space.id, editingSpaceName.trim());
+                              }
+                              setEditingSpaceId(null);
+                            }
+                            if (e.key === 'Escape') setEditingSpaceId(null);
+                          }}
+                          className="flex-1 text-sm bg-sidebar-bg border border-sidebar-border-color rounded-md px-2 py-0.5 outline-none text-sidebar-fg-bright font-medium min-w-0"
+                        />
+                      ) : dragOverSpaceId === space.id ? (
+                        <span className="flex-1 font-medium text-sm text-primary flex items-center gap-1.5 animate-pulse">
+                          <ArrowDownToLine className="w-3.5 h-3.5" />
+                          Déposer ici
+                        </span>
+                      ) : (
+                        <span
+                          className={`flex-1 font-medium text-sm cursor-pointer truncate flex items-center gap-1 ${
+                            selectedSpaceId === space.id ? 'text-sidebar-fg-bright' : 'text-sidebar-fg'
+                          }`}
+                          onClick={() => {
+                            setSelectedSpaceId(space.id);
+                            setQuickFilter('all');
+                            handleNavClick();
+                            if (!expandedSpaces.has(space.id)) toggleSpace(space.id);
+                          }}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            setEditingSpaceId(space.id);
+                            setEditingSpaceName(space.name);
+                          }}
+                        >
+                          {space.name}
+                          {space.isPrivate && <Lock className="w-3 h-3 text-sidebar-fg shrink-0" />}
+                        </span>
                       )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            className={`p-2 -m-1 rounded-md hover:bg-sidebar-hover text-sidebar-fg transition-opacity mr-0.5 ${isMobile ? 'opacity-80' : 'opacity-40 group-hover:opacity-100'}`}
+                            onClick={e => e.stopPropagation()}
+                          >
+                            <MoreHorizontal className="w-4 h-4" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48">
+                          <DropdownMenuItem onClick={() => setAccessDialogSpace({ id: space.id, name: space.name, isPrivate: space.isPrivate })}>
+                            <Shield className="w-4 h-4 mr-2" />
+                            Gérer les accès
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setAddingProjectForSpace(space.id)}>
+                            <Plus className="w-4 h-4 mr-2" />
+                            Ajouter un projet
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => {
+                            setEditingSpaceId(space.id);
+                            setEditingSpaceName(space.name);
+                          }}>
+                            <Pencil className="w-4 h-4 mr-2" />
+                            Renommer
+                          </DropdownMenuItem>
+                          {isAdmin && (
+                            <>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                onClick={() => setDeleteConfirm({ type: 'space', id: space.id, name: space.name })}
+                                className="text-destructive focus:text-destructive"
+                              >
+                                <Trash2 className="w-4 h-4 mr-2" />
+                                Supprimer
+                              </DropdownMenuItem>
+                            </>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent className="w-48">
+                    <ContextMenuItem onClick={() => setAccessDialogSpace({ id: space.id, name: space.name, isPrivate: space.isPrivate })}>
+                      <Shield className="w-4 h-4 mr-2" />
+                      Gérer les accès
+                    </ContextMenuItem>
+                    <ContextMenuItem onClick={() => setAddingProjectForSpace(space.id)}>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Ajouter un projet
+                    </ContextMenuItem>
+                    <ContextMenuItem onClick={() => {
+                      setEditingSpaceId(space.id);
+                      setEditingSpaceName(space.name);
+                    }}>
+                      <Pencil className="w-4 h-4 mr-2" />
+                      Renommer
+                    </ContextMenuItem>
+                    {isAdmin && (
+                      <>
+                        <ContextMenuSeparator />
+                        <ContextMenuItem
+                          onClick={() => setDeleteConfirm({ type: 'space', id: space.id, name: space.name })}
+                          className="text-destructive focus:text-destructive"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Supprimer
+                        </ContextMenuItem>
+                      </>
+                    )}
+                  </ContextMenuContent>
+                </ContextMenu>
                 {expandedSpaces.has(space.id) && (
                   <div className="ml-4">
                     <DndContext

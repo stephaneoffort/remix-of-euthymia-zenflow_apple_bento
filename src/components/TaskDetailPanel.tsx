@@ -541,7 +541,7 @@ export default function TaskDetailPanel() {
             <div className="flex gap-3 sm:gap-4">
               <div className="flex-1">
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1"><Clock className="w-3 h-3" />Estimation (min)</label>
-                <input type="number" value={task.timeEstimate || ''} onChange={e => updateTask(task.id, { timeEstimate: e.target.value ? parseInt(e.target.value) : null })} className="w-full text-sm bg-muted/50 border border-border rounded-md px-2.5 py-1.5 outline-none" />
+                <input type="number" value={task.timeEstimate || ''} onChange={e => updateTask(task.id, { timeEstimate: e.target.value ? parseInt(e.target.value) : null })} className="w-full text-sm text-foreground bg-muted/50 border border-border rounded-md px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring" />
               </div>
               <div className="flex-1">
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1"><Clock className="w-3 h-3" />Temps passé (min)</label>

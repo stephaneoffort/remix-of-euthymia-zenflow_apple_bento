@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Download, Upload, Loader2, AlertTriangle } from 'lucide-react';
+import CsvTaskImport from '@/components/CsvTaskImport';
 
 interface ExportData {
   version: string;
@@ -337,6 +338,8 @@ export default function DataExportImport() {
           )}
         </CardContent>
       </Card>
+      {/* CSV Import */}
+      <CsvTaskImport />
     </div>
   );
 }

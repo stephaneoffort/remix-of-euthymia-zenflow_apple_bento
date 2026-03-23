@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,7 +7,7 @@ import { STATUS_LABELS, PRIORITY_LABELS, Priority } from '@/types';
 import { PriorityBadge, StatusBadge } from '@/components/TaskBadges';
 import {
   CheckCircle2, Clock, AlertTriangle, TrendingUp, ListTodo, Users,
-  CalendarDays, BarChart3, Flame,
+  CalendarDays, BarChart3, Flame, ChevronDown, ChevronUp,
 } from 'lucide-react';
 import { format, isToday, isPast, parseISO, differenceInDays } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -39,7 +39,69 @@ const fadeUp = {
   show: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.06, duration: 0.35 } }),
 };
 
-export default function DashboardView() {
+/* ─── My Tasks foldable card ─── */
+function MyTasksCard({ tasks, onTaskClick }: { tasks: ReturnType<typeof Array<any>>; onTaskClick: (id: string) => void }) {
+  const [expanded, setExpanded] = useState(false);
+  const COLLAPSED_COUNT = 5;
+  const visibleTasks = expanded ? tasks : tasks.slice(0, COLLAPSED_COUNT);
+  const hasMore = tasks.length > COLLAPSED_COUNT;
+
+  return (
+    <Card className="bg-card border-border">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium text-foreground flex items-center gap-2">
+          <Flame className="w-4 h-4 text-destructive" />
+          Mes tâches à traiter
+          <span className="text-xs text-muted-foreground font-normal ml-auto">{tasks.length}</span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-1">
+          {visibleTasks.map((task: any) => {
+            const daysLeft = task.dueDate ? differenceInDays(parseISO(task.dueDate), new Date()) : null;
+            const isOverdue = daysLeft !== null && daysLeft < 0;
+            return (
+              <button
+                key={task.id}
+                onClick={() => onTaskClick(task.id)}
+                className="w-full text-left py-2.5 hover:bg-muted/50 transition-colors flex items-center gap-3 px-1 rounded-md"
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm text-foreground truncate">{task.title}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <PriorityBadge priority={task.priority} />
+                    <StatusBadge status={task.status} />
+                  </div>
+                </div>
+                {daysLeft !== null ? (
+                  <span className={`text-xs font-medium shrink-0 ${isOverdue ? 'text-destructive' : 'text-muted-foreground'}`}>
+                    {isOverdue ? `${Math.abs(daysLeft)}j retard` : daysLeft === 0 ? "Aujourd'hui" : `${daysLeft}j`}
+                  </span>
+                ) : (
+                  <span className="text-xs text-muted-foreground shrink-0">—</span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+        {hasMore && (
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="w-full mt-2 py-2 flex items-center justify-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 transition-colors rounded-md hover:bg-muted/50"
+          >
+            {expanded ? (
+              <>Voir moins <ChevronUp className="w-3.5 h-3.5" /></>
+            ) : (
+              <>Voir les {tasks.length - COLLAPSED_COUNT} autres <ChevronDown className="w-3.5 h-3.5" /></>
+            )}
+          </button>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+
   const { tasks, teamMembers, spaces, projects, setSelectedTaskId } = useApp();
   const { teamMemberId } = useAuth();
 
@@ -175,46 +237,7 @@ export default function DashboardView() {
           </p>
         </div>
 
-        {myPendingTasks.length > 0 && (
-          <Card className="bg-card border-border">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-foreground flex items-center gap-2">
-                <Flame className="w-4 h-4 text-destructive" />
-                Mes tâches à traiter
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-1">
-                {myPendingTasks.map(task => {
-                  const daysLeft = task.dueDate ? differenceInDays(parseISO(task.dueDate), new Date()) : null;
-                  const isOverdue = daysLeft !== null && daysLeft < 0;
-                  return (
-                    <button
-                      key={task.id}
-                      onClick={() => setSelectedTaskId(task.id)}
-                      className="w-full text-left py-2.5 hover:bg-muted/50 transition-colors flex items-center gap-3 px-1 rounded-md"
-                    >
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm text-foreground truncate">{task.title}</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <PriorityBadge priority={task.priority} />
-                          <StatusBadge status={task.status} />
-                        </div>
-                      </div>
-                      {daysLeft !== null ? (
-                        <span className={`text-xs font-medium shrink-0 ${isOverdue ? 'text-destructive' : 'text-muted-foreground'}`}>
-                          {isOverdue ? `${Math.abs(daysLeft)}j retard` : daysLeft === 0 ? "Aujourd'hui" : `${daysLeft}j`}
-                        </span>
-                      ) : (
-                        <span className="text-xs text-muted-foreground shrink-0">—</span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        {myPendingTasks.length > 0 && <MyTasksCard tasks={myPendingTasks} onTaskClick={setSelectedTaskId} />}
       </section>
 
       {/* ═══ SECTION 1 : VUE D'ENSEMBLE ═══ */}

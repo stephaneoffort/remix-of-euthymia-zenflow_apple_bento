@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useApp } from '@/context/AppContext';
 import { Status, Priority, PRIORITY_LABELS, RECURRENCE_LABELS, Recurrence } from '@/types';
 import { PriorityBadge, StatusBadge, AvatarGroup, SubtaskProgress, StatusCircle } from '@/components/TaskBadges';
-import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Clock, Paperclip, ChevronDown, Maximize2, Minimize2, CalendarPlus, Link, Upload, Trash2, ExternalLink, FileText, Send, CalendarIcon, Repeat, FolderInput } from 'lucide-react';
+import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Clock, Paperclip, ChevronDown, Maximize2, Minimize2, CalendarPlus, Link, Upload, Trash2, ExternalLink, FileText, Send, CalendarIcon, Repeat, FolderInput, PackagePlus } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { generateGoogleCalendarUrl, generateOutlookCalendarUrl, generateYahooCalendarUrl } from '@/lib/calendarLinks';
 import { supabase } from '@/integrations/supabase/client';
@@ -135,7 +135,7 @@ function DateTimeField({ value, onChange }: { value: string | null | undefined; 
 
 
 export default function TaskDetailPanel() {
-  const { selectedTaskId, setSelectedTaskId, getTaskById, updateTask, deleteTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks, teamMembers, allStatuses, getStatusLabel, addAttachment, deleteAttachment, projects, spaces, getListsForProject } = useApp();
+  const { selectedTaskId, setSelectedTaskId, getTaskById, updateTask, deleteTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks, teamMembers, allStatuses, getStatusLabel, addAttachment, deleteAttachment, projects, spaces, getListsForProject, convertTaskToProject } = useApp();
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [addingSubtaskFor, setAddingSubtaskFor] = useState<string | null>(null);
   const [newComment, setNewComment] = useState('');
@@ -268,6 +268,32 @@ export default function TaskDetailPanel() {
           ))}
         </div>
         <div className="flex items-center gap-1 shrink-0 ml-2">
+          {/* Convert to project */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="p-1.5 hover:bg-primary/10 text-muted-foreground hover:text-primary rounded-md transition-colors"
+                title="Convertir en projet"
+              >
+                <PackagePlus className="w-4 h-4" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-52">
+              <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">Convertir en projet dans…</div>
+              {spaces.map(s => (
+                <DropdownMenuItem
+                  key={s.id}
+                  onClick={() => {
+                    convertTaskToProject(task.id, s.id);
+                    setSelectedTaskId(null);
+                  }}
+                >
+                  <span className="mr-2">{s.icon}</span>
+                  {s.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
           <button
             onClick={() => {
               if (window.confirm('Supprimer cette tâche et ses sous-tâches ?')) {

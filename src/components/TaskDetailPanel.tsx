@@ -415,9 +415,15 @@ export default function TaskDetailPanel() {
                         const targetLists = getListsForProject(targetProjectId);
                         if (targetLists.length === 0) return;
                         const targetProject = projects.find(p => p.id === targetProjectId);
+                        const prevListId = task.listId;
+                        const prevParentTaskId = task.parentTaskId;
                         updateTask(task.id, { listId: targetLists[0].id, parentTaskId: null });
                         setSelectedProjectId(targetProjectId);
-                        toast({ title: 'Tâche déplacée', description: `« ${task.title} » → ${targetProject?.name || 'projet'}` });
+                        toast({
+                          title: 'Tâche déplacée',
+                          description: `« ${task.title} » → ${targetProject?.name || 'projet'}`,
+                          action: <ToastAction altText="Annuler" onClick={() => { updateTask(task.id, { listId: prevListId, parentTaskId: prevParentTaskId }); }}>Annuler</ToastAction>,
+                        });
                       }}
                       className="w-full text-sm text-foreground bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
                     >

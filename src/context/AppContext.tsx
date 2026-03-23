@@ -520,7 +520,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const moveProject = useCallback((projectId: string, newSpaceId: string) => {
     moveProjectMutation.mutate({ projectId, newSpaceId });
-  }, [moveProjectMutation]);
+    // Navigate to the moved project immediately
+    setSelectedProjectId(projectId);
+  }, [moveProjectMutation, setSelectedProjectId]);
 
   // Convert task to project: create project + list, move task & subtasks
   const convertTaskToProject = useCallback(async (taskId: string, spaceId: string, color: string = '#6366f1') => {

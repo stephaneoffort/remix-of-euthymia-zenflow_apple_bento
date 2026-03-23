@@ -319,7 +319,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }
       return data;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks'] }),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      if (data) toast.success('Tâche créée');
+    },
+    onError: (error) => {
+      console.error('Failed to add task:', error);
+      toast.error('Erreur lors de la création de la tâche');
+    },
   });
 
   // Update task mutation

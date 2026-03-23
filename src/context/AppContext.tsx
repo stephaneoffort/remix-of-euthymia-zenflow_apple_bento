@@ -866,7 +866,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     isSpaceManager: isSpaceManagerFn,
     getSpaceManagers: getSpaceManagersFn,
     refreshSpaceAccess,
-  }), [accessibleSpaces, accessibleProjects, lists, accessibleTasks, teamMembers, customStatuses, allStatuses, spaceMembers, spaceManagers, selectedProjectId, selectedSpaceId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, setSelectedProjectId, setSelectedSpaceId, addTask, updateTask, deleteTask, addAttachment, deleteAttachment, moveTask, addSpace, addProject, renameSpace, renameProject, moveProject, deleteSpace, deleteProject, reorderSpaces, reorderProjects, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb, getStatusLabel, canAccessSpace, isSpaceManagerFn, getSpaceManagersFn, refreshSpaceAccess]);
+  }), [accessibleSpaces, accessibleProjects, lists, accessibleTasks, teamMembers, customStatuses, allStatuses, spaceMembers, spaceManagers, selectedProjectId, selectedSpaceId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, setSelectedProjectId, setSelectedSpaceId, addTask, updateTask, deleteTask, addAttachment, deleteAttachment, moveTask, addSpace, addProject, renameSpace, renameProject, moveProject, deleteSpace, deleteProject, convertTaskToProject, reorderSpaces, reorderProjects, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb, getStatusLabel, canAccessSpace, isSpaceManagerFn, getSpaceManagersFn, refreshSpaceAccess]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

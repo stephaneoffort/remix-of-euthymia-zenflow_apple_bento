@@ -225,7 +225,7 @@ export default function ListView() {
               <span className={`text-sm ${isOverdue ? 'text-priority-urgent font-medium' : 'text-foreground/60'}`}>
                 {new Date(task.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
               </span>
-            ) : <span className="text-muted-foreground text-sm">—</span>}
+            ) : <span className="text-foreground/40 text-sm">—</span>}
           </td>
         </tr>
         {isExpanded && subtasks.map(st => renderRow(st, depth + 1))}

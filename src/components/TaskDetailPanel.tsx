@@ -360,7 +360,7 @@ export default function TaskDetailPanel() {
                       value={task.recurrenceEndDate}
                       onChange={(val) => updateTask(task.id, { recurrenceEndDate: val })}
                     />
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-foreground/60">
                       {task.recurrenceEndDate
                         ? `La récurrence s'arrêtera après le ${format(new Date(task.recurrenceEndDate), 'dd MMM yyyy', { locale: fr })}.`
                         : 'Une nouvelle tâche sera créée automatiquement à chaque complétion, sans limite.'}

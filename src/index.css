@@ -825,3 +825,108 @@
     padding-bottom: env(safe-area-inset-bottom);
   }
 }
+
+/* ─── TipTap / ProseMirror — Styles éditeur ─── */
+.tiptap {
+  outline: none;
+}
+
+/* Placeholder */
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: hsl(var(--muted-foreground));
+  opacity: 0.5;
+  pointer-events: none;
+  height: 0;
+}
+
+/* Listes — forcer l'affichage des marqueurs */
+.tiptap ul {
+  list-style-type: disc;
+  padding-left: 1.5em;
+}
+.tiptap ol {
+  list-style-type: decimal;
+  padding-left: 1.5em;
+}
+.tiptap ul li,
+.tiptap ol li {
+  display: list-item;
+}
+.tiptap ul ul { list-style-type: circle; }
+.tiptap ul ul ul { list-style-type: square; }
+
+/* Titres */
+.tiptap h1 {
+  font-size: 1.75em;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0.75em 0 0.4em;
+}
+.tiptap h2 {
+  font-size: 1.35em;
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 0.6em 0 0.3em;
+}
+
+/* Citation */
+.tiptap blockquote {
+  border-left: 3px solid hsl(var(--primary));
+  padding-left: 1em;
+  margin: 0.75em 0;
+  color: hsl(var(--muted-foreground));
+  font-style: italic;
+}
+
+/* Bloc de code */
+.tiptap pre {
+  background: hsl(var(--muted));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.5rem;
+  padding: 0.75em 1em;
+  margin: 0.75em 0;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-size: 0.85em;
+  line-height: 1.6;
+}
+.tiptap pre code {
+  background: none;
+  padding: 0;
+  border: none;
+  font-size: inherit;
+  color: inherit;
+}
+
+/* Code inline */
+.tiptap code {
+  background: hsl(var(--muted));
+  border-radius: 0.25rem;
+  padding: 0.15em 0.35em;
+  font-size: 0.85em;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+}
+
+/* Séparateur horizontal */
+.tiptap hr {
+  border: none;
+  border-top: 1px solid hsl(var(--border));
+  margin: 1.25em 0;
+}
+
+/* Affichage lecture (RichTextDisplay) */
+.prose ul { list-style-type: disc; padding-left: 1.5em; }
+.prose ol { list-style-type: decimal; padding-left: 1.5em; }
+.prose ul li, .prose ol li { display: list-item; }
+.prose blockquote {
+  border-left: 3px solid hsl(var(--primary));
+  padding-left: 1em;
+  color: hsl(var(--muted-foreground));
+  font-style: italic;
+}
+.prose hr {
+  border: none;
+  border-top: 1px solid hsl(var(--border));
+}

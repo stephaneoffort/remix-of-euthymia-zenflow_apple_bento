@@ -124,7 +124,7 @@ function DateTimeField({ value, onChange }: { value: string | null | undefined; 
               type="time"
               value={formatTimeValue(value!)}
               onChange={handleTimeChange}
-              className="text-sm bg-muted/50 border border-border rounded-md px-2 py-1 outline-none focus:ring-1 focus:ring-ring"
+              className="text-sm text-foreground bg-muted/50 border border-border rounded-md px-2 py-1 outline-none focus:ring-1 focus:ring-ring"
             />
           )}
         </div>

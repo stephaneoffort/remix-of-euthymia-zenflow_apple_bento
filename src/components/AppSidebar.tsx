@@ -7,6 +7,9 @@ import { ChevronRight, ChevronDown, LayoutGrid, AlertCircle, Clock, User, Flame,
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent,
 } from '@/components/ui/dropdown-menu';
+import {
+  ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger, ContextMenuSeparator, ContextMenuSub, ContextMenuSubTrigger, ContextMenuSubContent,
+} from '@/components/ui/context-menu';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
@@ -720,34 +723,75 @@ export default function AppSidebar() {
                             </div>
                           ) : (
                             <SortableProject key={project.id} id={project.id}>
-                              <button
-                                draggable
-                                onDragStart={e => handleProjectNativeDragStart(e, project.id)}
-                                onDragEnd={handleNativeDragEnd}
-                                onDragOver={e => handleProjectNativeDragOver(e, project.id)}
-                                onDragLeave={handleProjectNativeDragLeave}
-                                onDrop={e => handleProjectNativeDrop(e, project.id)}
-                                onClick={() => {
-                                  setSelectedProjectId(project.id);
-                                  setQuickFilter('all');
-                                  handleNavClick();
-                                }}
-                                onDoubleClick={(e) => {
-                                  e.preventDefault();
-                                  setEditingProjectId(project.id);
-                                  setEditingProjectName(project.name);
-                                }}
-                                className={`flex-1 flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-all cursor-grab active:cursor-grabbing ${
-                                  dragOverProjectId === project.id
-                                    ? 'bg-primary/20 ring-2 ring-primary/50 shadow-sm shadow-primary/10'
-                                    : selectedProjectId === project.id
-                                      ? 'bg-sidebar-active text-sidebar-fg-bright'
-                                      : 'text-sidebar-fg hover:bg-sidebar-hover'
-                                } ${draggingProjectId === project.id ? 'opacity-50 scale-95' : ''}`}
-                              >
-                                <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: project.color }} />
-                                <span className="flex-1 min-w-0 truncate">{project.name}</span>
-                              </button>
+                              <ContextMenu>
+                                <ContextMenuTrigger asChild>
+                                  <button
+                                    draggable
+                                    onDragStart={e => handleProjectNativeDragStart(e, project.id)}
+                                    onDragEnd={handleNativeDragEnd}
+                                    onDragOver={e => handleProjectNativeDragOver(e, project.id)}
+                                    onDragLeave={handleProjectNativeDragLeave}
+                                    onDrop={e => handleProjectNativeDrop(e, project.id)}
+                                    onClick={() => {
+                                      setSelectedProjectId(project.id);
+                                      setQuickFilter('all');
+                                      handleNavClick();
+                                    }}
+                                    onDoubleClick={(e) => {
+                                      e.preventDefault();
+                                      setEditingProjectId(project.id);
+                                      setEditingProjectName(project.name);
+                                    }}
+                                    className={`flex-1 flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-all cursor-grab active:cursor-grabbing ${
+                                      dragOverProjectId === project.id
+                                        ? 'bg-primary/20 ring-2 ring-primary/50 shadow-sm shadow-primary/10'
+                                        : selectedProjectId === project.id
+                                          ? 'bg-sidebar-active text-sidebar-fg-bright'
+                                          : 'text-sidebar-fg hover:bg-sidebar-hover'
+                                    } ${draggingProjectId === project.id ? 'opacity-50 scale-95' : ''}`}
+                                  >
+                                    <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: project.color }} />
+                                    <span className="flex-1 min-w-0 truncate">{project.name}</span>
+                                  </button>
+                                </ContextMenuTrigger>
+                                <ContextMenuContent className="w-44">
+                                  <ContextMenuItem onClick={() => {
+                                    setEditingProjectId(project.id);
+                                    setEditingProjectName(project.name);
+                                  }}>
+                                    <Pencil className="w-4 h-4 mr-2" />
+                                    Renommer
+                                  </ContextMenuItem>
+                                  {spaces.filter(s => s.id !== space.id).length > 0 && (
+                                    <ContextMenuSub>
+                                      <ContextMenuSubTrigger>
+                                        <FolderInput className="w-4 h-4 mr-2" />
+                                        Déplacer vers
+                                      </ContextMenuSubTrigger>
+                                      <ContextMenuSubContent className="w-44">
+                                        {spaces.filter(s => s.id !== space.id).map(s => (
+                                          <ContextMenuItem key={s.id} onClick={() => moveProject(project.id, s.id)}>
+                                            <span className="mr-2">{s.icon}</span>
+                                            {s.name}
+                                          </ContextMenuItem>
+                                        ))}
+                                      </ContextMenuSubContent>
+                                    </ContextMenuSub>
+                                  )}
+                                  {isAdmin && (
+                                    <>
+                                      <ContextMenuSeparator />
+                                      <ContextMenuItem
+                                        onClick={() => setDeleteConfirm({ type: 'project', id: project.id, name: project.name })}
+                                        className="text-destructive focus:text-destructive"
+                                      >
+                                        <Trash2 className="w-4 h-4 mr-2" />
+                                        Supprimer
+                                      </ContextMenuItem>
+                                    </>
+                                  )}
+                                </ContextMenuContent>
+                              </ContextMenu>
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                   <button

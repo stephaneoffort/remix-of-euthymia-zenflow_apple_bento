@@ -156,6 +156,85 @@ export default function AppSidebar() {
     setNewProjectColor(PROJECT_COLORS[0]);
     setAddingProjectForSpace(null);
   };
+
+  // Native drag & drop: project dragged to a different space
+  const handleProjectNativeDragStart = (e: React.DragEvent, projectId: string) => {
+    e.dataTransfer.setData('type', 'project');
+    e.dataTransfer.setData('projectId', projectId);
+    e.dataTransfer.effectAllowed = 'move';
+    setDraggingProjectId(projectId);
+  };
+
+  const handleSpaceDragOver = (e: React.DragEvent, spaceId: string) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverSpaceId(spaceId);
+  };
+
+  const handleSpaceDragLeave = () => {
+    setDragOverSpaceId(null);
+  };
+
+  const handleSpaceDrop = (e: React.DragEvent, spaceId: string) => {
+    e.preventDefault();
+    setDragOverSpaceId(null);
+    setDraggingProjectId(null);
+    const type = e.dataTransfer.getData('type');
+    if (type === 'project') {
+      const projectId = e.dataTransfer.getData('projectId');
+      const project = lists.find(l => false) ? null : spaces.flatMap(s => getProjectsForSpace(s.id)).find(p => p.id === projectId);
+      if (project && project.spaceId !== spaceId) {
+        moveProject(projectId, spaceId);
+      }
+    }
+  };
+
+  // Native drag & drop: task dragged to a project in sidebar
+  const handleProjectNativeDragOver = (e: React.DragEvent, projectId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverProjectId(projectId);
+  };
+
+  const handleProjectNativeDragLeave = (e: React.DragEvent) => {
+    e.stopPropagation();
+    setDragOverProjectId(null);
+  };
+
+  const handleProjectNativeDrop = (e: React.DragEvent, projectId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOverProjectId(null);
+    setDraggingProjectId(null);
+    const type = e.dataTransfer.getData('type');
+    if (type === 'task') {
+      const taskId = e.dataTransfer.getData('taskId');
+      if (taskId) {
+        const targetLists = getListsForProject(projectId);
+        if (targetLists.length > 0) {
+          updateTask(taskId, { listId: targetLists[0].id });
+          setSelectedProjectId(projectId);
+        }
+      }
+    } else if (type === 'project') {
+      // Project dropped on another project → move to same space
+      const draggedProjId = e.dataTransfer.getData('projectId');
+      const targetProject = spaces.flatMap(s => getProjectsForSpace(s.id)).find(p => p.id === projectId);
+      if (draggedProjId && targetProject) {
+        const sourceProject = spaces.flatMap(s => getProjectsForSpace(s.id)).find(p => p.id === draggedProjId);
+        if (sourceProject && sourceProject.spaceId !== targetProject.spaceId) {
+          moveProject(draggedProjId, targetProject.spaceId);
+        }
+      }
+    }
+  };
+
+  const handleNativeDragEnd = () => {
+    setDraggingProjectId(null);
+    setDragOverSpaceId(null);
+    setDragOverProjectId(null);
+  };
   // Swipe-to-close for mobile sidebar
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const handleTouchStart = (e: React.TouchEvent) => setTouchStart(e.touches[0].clientX);

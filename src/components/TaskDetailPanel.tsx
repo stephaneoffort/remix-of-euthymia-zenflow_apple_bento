@@ -622,7 +622,7 @@ export default function TaskDetailPanel() {
                       }}
                     />
                   </div>
-                  <span className="text-xs text-muted-foreground tabular-nums">{Math.round((doneSubtasks.length / subtasks.length) * 100)}%</span>
+                  <span className="text-xs text-foreground/60 tabular-nums">{Math.round((doneSubtasks.length / subtasks.length) * 100)}%</span>
                 </div>
               )}
 

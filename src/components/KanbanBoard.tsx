@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useApp } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
 import { Task } from '@/types';
 import { PriorityBadge, AvatarGroup, SubtaskProgress } from '@/components/TaskBadges';
 import { Plus, GripVertical, GripHorizontal, ChevronRight, ChevronsLeftRight, ChevronsRightLeft, Repeat, ArrowRightLeft } from 'lucide-react';

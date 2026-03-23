@@ -84,6 +84,7 @@ export default function Index() {
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [quickAddTitle, setQuickAddTitle] = useState("");
+  const [voiceAddOpen, setVoiceAddOpen] = useState(false);
 
   // Keyboard shortcuts
   useKeyboardShortcuts({

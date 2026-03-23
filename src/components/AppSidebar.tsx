@@ -803,7 +803,10 @@ export default function AppSidebar() {
                                     <Pencil className="w-4 h-4 mr-2" />
                                     Renommer
                                   </ContextMenuItem>
-                                  {spaces.filter(s => s.id !== space.id).length > 0 && (
+                                  <ContextMenuItem onClick={() => duplicateProject(project.id)}>
+                                    <Copy className="w-4 h-4 mr-2" />
+                                    Dupliquer
+                                  </ContextMenuItem>
                                     <ContextMenuSub>
                                       <ContextMenuSubTrigger>
                                         <FolderInput className="w-4 h-4 mr-2" />

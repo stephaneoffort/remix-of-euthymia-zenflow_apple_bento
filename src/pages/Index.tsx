@@ -1,4 +1,4 @@
-import BentoDashboard from "@/components/BentoDashboard";
+import DashboardView from "@/components/DashboardView";
 import React, { useState, useCallback } from "react";
 import { useApp } from "@/context/AppContext";
 import AppSidebar from "@/components/AppSidebar";

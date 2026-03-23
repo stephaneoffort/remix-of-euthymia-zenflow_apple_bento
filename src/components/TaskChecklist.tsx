@@ -104,14 +104,14 @@ export default function TaskChecklist({ taskId }: TaskChecklistProps) {
               />
               <span
                 className={`flex-1 text-sm transition-colors ${
-                  item.is_checked ? 'line-through text-muted-foreground' : 'text-foreground'
+                  item.is_checked ? 'line-through text-foreground/50' : 'text-foreground'
                 }`}
               >
                 {item.title}
               </span>
               <button
                 onClick={() => deleteItem(item.id)}
-                className="p-0.5 opacity-0 group-hover:opacity-100 hover:text-destructive transition-all shrink-0"
+                className="p-0.5 opacity-60 group-hover:opacity-100 text-foreground/45 hover:text-destructive transition-all shrink-0"
                 title="Supprimer"
               >
                 <Trash2 className="w-3 h-3" />

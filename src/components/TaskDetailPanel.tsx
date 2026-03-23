@@ -310,7 +310,7 @@ export default function TaskDetailPanel() {
                 <select
                   value={task.status}
                   onChange={e => updateTask(task.id, { status: e.target.value as Status })}
-                  className="w-full text-sm bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
+                  className="w-full text-sm text-foreground bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
                 >
                   {allStatuses.map(s => <option key={s} value={s}>{getStatusLabel(s)}</option>)}
                 </select>

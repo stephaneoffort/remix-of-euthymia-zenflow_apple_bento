@@ -37,6 +37,8 @@ function getOffsetMs(key: string): number {
 
 export default function NotificationsDropdown() {
   const { tasks, teamMembers, setSelectedTaskId, setQuickFilter } = useApp();
+  const { teamMemberId } = useAuth();
+  const { isSupported: pushSupported, isSubscribed: pushSubscribed, subscribe: pushSubscribe, unsubscribe: pushUnsubscribe } = usePushNotifications(teamMemberId);
   const [open, setOpen] = useState(false);
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
   const [reminders, setReminders] = useState<Reminder[]>([]);

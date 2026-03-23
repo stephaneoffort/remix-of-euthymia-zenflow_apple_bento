@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import EmptyState from '@/components/EmptyState';
 import { useApp } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
 import { PRIORITY_LABELS, Status, Priority } from '@/types';
 import { PriorityBadge, StatusBadge, AvatarGroup, SubtaskProgress } from '@/components/TaskBadges';
 import { ChevronRight, ChevronDown, ArrowUpDown, Plus, Repeat } from 'lucide-react';

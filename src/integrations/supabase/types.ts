@@ -544,6 +544,33 @@ export type Database = {
           },
         ]
       }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          member_id: string
+          p256dh: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          member_id: string
+          p256dh: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          member_id?: string
+          p256dh?: string
+        }
+        Relationships: []
+      }
       space_managers: {
         Row: {
           member_id: string
@@ -700,6 +727,7 @@ export type Database = {
           offset_key: string
           reminder_type: string
           task_id: string
+          triggered_at: string | null
         }
         Insert: {
           created_at?: string
@@ -707,6 +735,7 @@ export type Database = {
           offset_key: string
           reminder_type: string
           task_id: string
+          triggered_at?: string | null
         }
         Update: {
           created_at?: string
@@ -714,6 +743,7 @@ export type Database = {
           offset_key?: string
           reminder_type?: string
           task_id?: string
+          triggered_at?: string | null
         }
         Relationships: [
           {

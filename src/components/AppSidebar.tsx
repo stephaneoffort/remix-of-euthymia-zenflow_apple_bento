@@ -1367,8 +1367,8 @@ function InstallAppLink() {
   );
 }
 
-
-  function LogoutButton() {
+function LogoutButton() {
+  const { signOut } = useAuth();
   return (
     <TooltipProvider>
       <Tooltip>

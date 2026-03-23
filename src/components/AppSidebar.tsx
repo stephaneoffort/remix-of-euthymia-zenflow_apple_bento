@@ -110,6 +110,11 @@ export default function AppSidebar() {
     });
   }, [spaces]);
 
+  // Persist expanded state to localStorage
+  useEffect(() => {
+    localStorage.setItem('euthymia:expandedSpaces', JSON.stringify([...expandedSpaces]));
+  }, [expandedSpaces]);
+
   const toggleSpace = (id: string) => {
     setExpandedSpaces(prev => {
       const next = new Set(prev);

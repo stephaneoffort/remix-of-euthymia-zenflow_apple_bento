@@ -16,29 +16,29 @@ const ThemeContext = createContext<ThemeContextType | null>(null);
 
 export const PALETTE_META: Record<ThemePalette, { label: string; description: string; colors: string[] }> = {
   clubroom: {
-    label: 'Clubroom Contrast',
-    description: 'Noir profond + Or chaud — Luxe & confiance',
-    colors: ['#1A1A1A', '#2D2D2D', '#D4A853', '#F5F0E8'],
+    label: 'Obsidian & Gold',
+    description: 'Noir chromatique + Or signature — Luxe absolu',
+    colors: ['#13121A', '#1A1924', '#C9A84C', '#F5EFE0'],
   },
   neutrals: {
-    label: 'Elevated Neutrals',
-    description: 'Gris doux, sable chaud — Mature & reposant',
-    colors: ['#F7F5F2', '#E8E2DA', '#B8AFA6', '#2D2926'],
+    label: 'Sable & Pierre',
+    description: 'Neutres élevés, sable chaud — Mature & premium',
+    colors: ['#171513', '#1E1C19', '#A08868', '#F5F3EF'],
   },
   sapphire: {
     label: 'Sapphire Depth',
-    description: 'Bleu saphir profond — Tech & élégance',
-    colors: ['#1B2A4A', '#2E5090', '#F8F9FB', '#E8ECF2'],
+    description: 'Bleu profond + Teal — Tech B2B élégante',
+    colors: ['#0C1018', '#111620', '#2DD4BF', '#EEF2F7'],
   },
   cinematic: {
     label: 'Cinematic Glow',
-    description: 'Gradients doux et cinématiques — Tech premium',
-    colors: ['#0F0B1E', '#1A1035', '#7C3AED', '#EC4899'],
+    description: 'Violet & Rose — Créatif & lifestyle premium',
+    colors: ['#0E0A1C', '#151026', '#7C5CED', '#EC4899'],
   },
   teal: {
     label: 'Ocean Teal',
-    description: 'Bleu-vert océan — Mystère & modernité',
-    colors: ['#0A1A1F', '#134E4A', '#14B8A6', '#CCFBF1'],
+    description: 'Bleu-vert organique — Wellness & mindfulness',
+    colors: ['#0A1518', '#0F1C20', '#14B8A6', '#E8FAF5'],
   },
 };
 

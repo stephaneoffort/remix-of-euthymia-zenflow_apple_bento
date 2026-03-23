@@ -1124,34 +1124,68 @@ function ChatLink({ handleNavClick }: { handleNavClick: () => void }) {
   );
 }
 function ThemeSwitcher() {
-  const { theme, setTheme } = useThemeMode();
+  const { theme, setTheme, palette, setPalette } = useThemeMode();
   const options: { key: 'light' | 'dark' | 'mixed'; label: string; title: string; icon: React.ReactNode }[] = [
     { key: 'light', label: 'Clair', title: 'Thème clair', icon: <Sun className="w-3.5 h-3.5" /> },
     { key: 'dark', label: 'Sombre', title: 'Thème sombre', icon: <Moon className="w-3.5 h-3.5" /> },
     { key: 'mixed', label: 'Mixte', title: 'Sidebar sombre, contenu clair', icon: <SunMoon className="w-3.5 h-3.5" /> },
   ];
 
+  const palettes: { key: typeof palette; label: string; colors: string[] }[] = [
+    { key: 'clubroom', label: 'Obsidian & Gold', colors: ['#13121A', '#C9A84C'] },
+    { key: 'neutrals', label: 'Sable & Pierre', colors: ['#171513', '#A08868'] },
+    { key: 'sapphire', label: 'Sapphire Depth', colors: ['#0C1018', '#2DD4BF'] },
+    { key: 'cinematic', label: 'Cinematic Glow', colors: ['#0E0A1C', '#7C5CED'] },
+    { key: 'teal', label: 'Ocean Teal', colors: ['#0A1518', '#14B8A6'] },
+  ];
+
   return (
-    <div className="flex items-center gap-0.5 px-1 py-1 rounded-md bg-sidebar-hover/50 mb-1">
-      {options.map(opt => (
-        <button
-          key={opt.key}
-          onClick={() => setTheme(opt.key)}
-          className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors flex-1 justify-center ${
-            theme === opt.key
-              ? 'bg-sidebar-active text-white'
-              : 'text-sidebar-fg hover:text-sidebar-fg-bright'
-          }`}
-          title={opt.title}
-        >
-          {opt.icon}
-          <span className="hidden md:inline">{opt.label}</span>
-        </button>
-      ))}
+    <div className="space-y-1 mb-1">
+      <div className="flex items-center gap-0.5 px-1 py-1 rounded-md bg-sidebar-hover/50">
+        {options.map(opt => (
+          <button
+            key={opt.key}
+            onClick={() => setTheme(opt.key)}
+            className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors flex-1 justify-center ${
+              theme === opt.key
+                ? 'bg-sidebar-active text-white'
+                : 'text-sidebar-fg hover:text-sidebar-fg-bright'
+            }`}
+            title={opt.title}
+          >
+            {opt.icon}
+            <span className="hidden md:inline">{opt.label}</span>
+          </button>
+        ))}
+      </div>
+      <div className="flex items-center gap-1 px-1 py-1 rounded-md bg-sidebar-hover/50">
+        {palettes.map(p => (
+          <Tooltip key={p.key}>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => setPalette(p.key)}
+                className={`flex-1 flex items-center justify-center gap-1 py-1 rounded transition-all ${
+                  palette === p.key
+                    ? 'ring-1 ring-primary bg-sidebar-active/60'
+                    : 'hover:bg-sidebar-hover'
+                }`}
+              >
+                {p.colors.map((c, i) => (
+                  <div
+                    key={i}
+                    className="w-3 h-3 rounded-full border border-white/10"
+                    style={{ backgroundColor: c }}
+                  />
+                ))}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="text-xs">{p.label}</TooltipContent>
+          </Tooltip>
+        ))}
+      </div>
     </div>
   );
 }
-
 function CurrentUserBadge() {
   const { teamMemberId } = useAuth();
   const { teamMembers } = useApp();

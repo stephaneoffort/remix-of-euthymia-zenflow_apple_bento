@@ -17,6 +17,7 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Switch } from '@/components/ui/switch';
+import TaskReminders from '@/components/TaskReminders';
 // Format date for display
 function formatDateDisplay(isoStr: string): string {
   const d = new Date(isoStr);

@@ -908,7 +908,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   // ─── Accessibility-filtered data: hide private spaces/projects/tasks from non-owners ───
   const accessibleSpaces = useMemo(() =>
-    spaces.filter(s => !s.isPrivate || s.ownerMemberId === teamMemberId),
+    spaces.filter(s => (!s.isPrivate || s.ownerMemberId === teamMemberId) && !s.isArchived),
     [spaces, teamMemberId]
   );
 

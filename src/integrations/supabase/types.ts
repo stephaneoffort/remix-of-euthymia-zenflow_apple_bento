@@ -693,6 +693,38 @@ export type Database = {
           },
         ]
       }
+      task_reminders: {
+        Row: {
+          created_at: string
+          id: string
+          offset_key: string
+          reminder_type: string
+          task_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          offset_key: string
+          reminder_type: string
+          task_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          offset_key?: string
+          reminder_type?: string
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_reminders_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tasks: {
         Row: {
           ai_summary: string | null

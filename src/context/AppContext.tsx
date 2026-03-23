@@ -549,11 +549,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     // Delete the original parent task
     await supabase.from('tasks').delete().eq('id', taskId);
     // Refresh
-    queryClient.invalidateQueries({ queryKey: ['projects'] });
-    queryClient.invalidateQueries({ queryKey: ['task_lists'] });
-    queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    await queryClient.invalidateQueries({ queryKey: ['projects'] });
+    await queryClient.invalidateQueries({ queryKey: ['task_lists'] });
+    await queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    // Navigate to the new project
+    setSelectedProjectId(projectId);
     toast.success(`"${task.title}" converti en projet`);
-  }, [tasks, projects, queryClient]);
+  }, [tasks, projects, queryClient, setSelectedProjectId]);
 
   const deleteSpaceMutation = useMutation({
     mutationFn: async (id: string) => {

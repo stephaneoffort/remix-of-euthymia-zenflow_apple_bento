@@ -79,6 +79,7 @@ export default function Index() {
     addTask,
     getListsForProject,
   } = useApp();
+  const { teamMemberId } = useAuth();
   const isMobile = useIsMobile();
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);

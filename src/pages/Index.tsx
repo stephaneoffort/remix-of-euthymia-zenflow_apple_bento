@@ -2,6 +2,7 @@ import DashboardView from "@/components/DashboardView";
 import VoiceTaskCreator from "@/components/VoiceTaskCreator";
 import React, { useState, useCallback } from "react";
 import { useApp } from "@/context/AppContext";
+import { useAuth } from "@/context/AuthContext";
 import AppSidebar from "@/components/AppSidebar";
 import KanbanBoard from "@/components/KanbanBoard";
 import ListView from "@/components/ListView";

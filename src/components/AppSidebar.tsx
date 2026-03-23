@@ -39,7 +39,7 @@ const QUICK_FILTERS: { key: QuickFilter; label: string; icon: React.ReactNode }[
 
 
 const SPACE_ICONS = ['📁', '🚀', '💡', '🎯', '📊', '🛠️', '📚', '🌟', '🧘', '🎨'];
-const PROJECT_COLORS = ['#4f46e5', '#0891b2', '#059669', '#d97706', '#dc2626', '#7c3aed', '#db2777', '#0d9488'];
+const PROJECT_COLORS = ['#C9A84C', '#E2D08A', '#F5EFE0', '#D4915C', '#4A6FA5', '#3D8B7A', '#C47B7B', '#7B68AE'];
 
 export default function AppSidebar() {
   const {

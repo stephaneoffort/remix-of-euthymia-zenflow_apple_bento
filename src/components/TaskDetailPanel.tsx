@@ -346,7 +346,7 @@ export default function TaskDetailPanel() {
                 <select
                   value={task.recurrence || ''}
                   onChange={e => updateTask(task.id, { recurrence: (e.target.value || null) as Recurrence })}
-                  className="w-full text-sm bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
+                  className="w-full text-sm text-foreground bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
                 >
                   <option value="">Aucune</option>
                   {Object.entries(RECURRENCE_LABELS).map(([k, v]) => (

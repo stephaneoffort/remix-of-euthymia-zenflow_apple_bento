@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { MessageCircle, Menu, Plus, Home } from 'lucide-react';
+import { MessageCircle, Menu, Plus, Home, Mic } from 'lucide-react';
 import { Priority, PRIORITY_LABELS } from '@/types';
 import { useChatNotifications } from '@/hooks/useChatNotifications';
 import { Drawer, DrawerContent, DrawerTrigger, DrawerTitle } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import VoiceTaskCreator from '@/components/VoiceTaskCreator';
 
 export default function MobileBottomNav() {
   const { setSidebarCollapsed, addTask, selectedProjectId, getListsForProject, projects, spaces } = useApp();

@@ -161,6 +161,62 @@ export default function DashboardView() {
   return (
     <div className="p-4 sm:p-6 space-y-8 max-w-7xl mx-auto">
 
+      {/* ═══ GREETING + MY TASKS ═══ */}
+      <section>
+        <div className="mb-4">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">
+            {greeting}, {firstName} 👋
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {myPendingTasks.length === 0
+              ? 'Aucune tâche en attente — profite de ta journée !'
+              : `Tu as ${myPendingTasks.length} tâche${myPendingTasks.length > 1 ? 's' : ''} en cours`
+            }
+          </p>
+        </div>
+
+        {myPendingTasks.length > 0 && (
+          <Card className="bg-card border-border">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-foreground flex items-center gap-2">
+                <Flame className="w-4 h-4 text-destructive" />
+                Mes tâches à traiter
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-1">
+                {myPendingTasks.map(task => {
+                  const daysLeft = task.dueDate ? differenceInDays(parseISO(task.dueDate), new Date()) : null;
+                  const isOverdue = daysLeft !== null && daysLeft < 0;
+                  return (
+                    <button
+                      key={task.id}
+                      onClick={() => setSelectedTaskId(task.id)}
+                      className="w-full text-left py-2.5 hover:bg-muted/50 transition-colors flex items-center gap-3 px-1 rounded-md"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm text-foreground truncate">{task.title}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <PriorityBadge priority={task.priority} />
+                          <StatusBadge status={task.status} />
+                        </div>
+                      </div>
+                      {daysLeft !== null ? (
+                        <span className={`text-xs font-medium shrink-0 ${isOverdue ? 'text-destructive' : 'text-muted-foreground'}`}>
+                          {isOverdue ? `${Math.abs(daysLeft)}j retard` : daysLeft === 0 ? "Aujourd'hui" : `${daysLeft}j`}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-muted-foreground shrink-0">—</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </section>
+
       {/* ═══ SECTION 1 : VUE D'ENSEMBLE ═══ */}
       <section>
         <div className="flex items-center gap-2 mb-4">

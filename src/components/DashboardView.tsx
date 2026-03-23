@@ -101,7 +101,7 @@ function MyTasksCard({ tasks, onTaskClick }: { tasks: ReturnType<typeof Array<an
   );
 }
 
-
+export default function DashboardView() {
   const { tasks, teamMembers, spaces, projects, setSelectedTaskId } = useApp();
   const { teamMemberId } = useAuth();
 

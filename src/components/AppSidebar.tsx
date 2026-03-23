@@ -727,13 +727,13 @@ export default function AppSidebar() {
                                   setEditingProjectId(project.id);
                                   setEditingProjectName(project.name);
                                 }}
-                                className={`flex-1 flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors ${
+                                className={`flex-1 flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-all cursor-grab active:cursor-grabbing ${
                                   dragOverProjectId === project.id
-                                    ? 'bg-primary/20 ring-1 ring-primary/40'
+                                    ? 'bg-primary/20 ring-2 ring-primary/50 shadow-sm shadow-primary/10'
                                     : selectedProjectId === project.id
                                       ? 'bg-sidebar-active text-sidebar-fg-bright'
                                       : 'text-sidebar-fg hover:bg-sidebar-hover'
-                                } ${draggingProjectId === project.id ? 'opacity-50' : ''}`}
+                                } ${draggingProjectId === project.id ? 'opacity-50 scale-95' : ''}`}
                               >
                                 <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: project.color }} />
                                 <span className="flex-1 min-w-0 truncate">{project.name}</span>

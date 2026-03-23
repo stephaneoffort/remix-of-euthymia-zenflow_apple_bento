@@ -512,7 +512,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
       queryClient.invalidateQueries({ queryKey: ['task_lists'] });
-      toast({ title: 'Projet dupliqué' });
+      toast.success('Projet dupliqué');
     },
   });
 

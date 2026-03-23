@@ -8,9 +8,12 @@ import { Drawer, DrawerContent, DrawerTrigger, DrawerTitle } from '@/components/
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import VoiceTaskCreator from '@/components/VoiceTaskCreator';
 
-export default function MobileBottomNav() {
+interface MobileBottomNavProps {
+  onOpenVoice?: () => void;
+}
+
+export default function MobileBottomNav({ onOpenVoice }: MobileBottomNavProps) {
   const { setSidebarCollapsed, addTask, selectedProjectId, getListsForProject, projects, spaces } = useApp();
   const navigate = useNavigate();
   const location = useLocation();

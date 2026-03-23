@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useApp } from '@/context/AppContext';
 import { Status, Priority, PRIORITY_LABELS, RECURRENCE_LABELS, Recurrence } from '@/types';
 import { PriorityBadge, StatusBadge, AvatarGroup, SubtaskProgress, StatusCircle } from '@/components/TaskBadges';
-import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Clock, Paperclip, ChevronDown, Maximize2, Minimize2, CalendarPlus, Link, Upload, Trash2, ExternalLink, FileText, Send, CalendarIcon, Repeat } from 'lucide-react';
+import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Clock, Paperclip, ChevronDown, Maximize2, Minimize2, CalendarPlus, Link, Upload, Trash2, ExternalLink, FileText, Send, CalendarIcon, Repeat, FolderInput } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { generateGoogleCalendarUrl, generateOutlookCalendarUrl, generateYahooCalendarUrl } from '@/lib/calendarLinks';
 import { supabase } from '@/integrations/supabase/client';
@@ -135,7 +135,7 @@ function DateTimeField({ value, onChange }: { value: string | null | undefined; 
 
 
 export default function TaskDetailPanel() {
-  const { selectedTaskId, setSelectedTaskId, getTaskById, updateTask, deleteTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks, teamMembers, allStatuses, getStatusLabel, addAttachment, deleteAttachment } = useApp();
+  const { selectedTaskId, setSelectedTaskId, getTaskById, updateTask, deleteTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks, teamMembers, allStatuses, getStatusLabel, addAttachment, deleteAttachment, projects, spaces, getListsForProject } = useApp();
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [addingSubtaskFor, setAddingSubtaskFor] = useState<string | null>(null);
   const [newComment, setNewComment] = useState('');
@@ -367,6 +367,40 @@ export default function TaskDetailPanel() {
                     </p>
                   </div>
                 )}
+              </div>
+
+              {/* Move to project */}
+              <div className="col-span-2">
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1 block">
+                  <FolderInput className="w-3 h-3" /> Projet
+                </label>
+                {(() => {
+                  // Find current project from task's listId
+                  const currentList = projects.flatMap(p => getListsForProject(p.id).map(l => ({ ...l, project: p }))).find(l => l.id === task.listId);
+                  const currentProjectId = currentList?.project?.id || '';
+                  return (
+                    <select
+                      value={currentProjectId}
+                      onChange={e => {
+                        const targetProjectId = e.target.value;
+                        if (targetProjectId === currentProjectId) return;
+                        const targetLists = getListsForProject(targetProjectId);
+                        if (targetLists.length === 0) return;
+                        updateTask(task.id, { listId: targetLists[0].id });
+                      }}
+                      className="w-full text-sm text-foreground bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
+                    >
+                      {projects.map(p => {
+                        const space = spaces.find(s => s.id === p.spaceId);
+                        return (
+                          <option key={p.id} value={p.id}>
+                            {space ? `${space.name} › ` : ''}{p.name}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  );
+                })()}
               </div>
             </div>
 

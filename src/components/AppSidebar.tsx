@@ -74,6 +74,14 @@ export default function AppSidebar() {
     } catch {}
     return new Set(spaces.map(s => s.id));
   });
+  // Track which space IDs we've already seen, to only auto-expand truly new ones
+  const [knownSpaceIds, setKnownSpaceIds] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem('euthymia:knownSpaceIds');
+      if (saved) return new Set(JSON.parse(saved) as string[]);
+    } catch {}
+    return new Set<string>();
+  });
   const [addingSpace, setAddingSpace] = useState(false);
   const [newSpaceName, setNewSpaceName] = useState('');
   const [newSpaceIcon, setNewSpaceIcon] = useState('📁');

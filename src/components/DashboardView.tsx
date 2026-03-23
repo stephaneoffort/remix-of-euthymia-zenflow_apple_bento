@@ -43,16 +43,41 @@ export default function DashboardView() {
   const { tasks, teamMembers, spaces, projects, setSelectedTaskId } = useApp();
   const { teamMemberId } = useAuth();
 
-  // ─── Personal stats ───
-  const myTasks = useMemo(() => tasks.filter(t => t.assigneeIds.includes(teamMemberId || '')), [tasks, teamMemberId]);
-  const myDone = myTasks.filter(t => t.status === 'done').length;
-  const myInProgress = myTasks.filter(t => t.status === 'in_progress').length;
-  const myOverdue = myTasks.filter(t => t.dueDate && isPast(parseISO(t.dueDate)) && t.status !== 'done').length;
-  const myDueToday = myTasks.filter(t => t.dueDate && isToday(parseISO(t.dueDate)) && t.status !== 'done').length;
-  const myCompletion = myTasks.length > 0 ? Math.round((myDone / myTasks.length) * 100) : 0;
+  // ─── Current member name ───
+  const currentMember = useMemo(
+    () => teamMembers.find(m => m.id === teamMemberId),
+    [teamMembers, teamMemberId]
+  );
+  const firstName = currentMember?.name?.split(' ')[0] || 'là';
+
+  // ─── Greeting ───
+  const greeting = useMemo(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Bonjour';
+    if (hour < 18) return 'Bon après-midi';
+    return 'Bonsoir';
+  }, []);
+
+  // ─── My pending tasks (sorted by urgency then due date) ───
+  const myPendingTasks = useMemo(() => {
+    const priorityOrder: Record<string, number> = { urgent: 0, high: 1, normal: 2, low: 3 };
+    return tasks
+      .filter(t => t.assigneeIds.includes(teamMemberId || '') && t.status !== 'done')
+      .sort((a, b) => {
+        const aOverdue = a.dueDate && isPast(parseISO(a.dueDate)) ? 0 : 1;
+        const bOverdue = b.dueDate && isPast(parseISO(b.dueDate)) ? 0 : 1;
+        if (aOverdue !== bOverdue) return aOverdue - bOverdue;
+        const aPrio = priorityOrder[a.priority] ?? 2;
+        const bPrio = priorityOrder[b.priority] ?? 2;
+        if (aPrio !== bPrio) return aPrio - bPrio;
+        if (a.dueDate && b.dueDate) return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+        if (a.dueDate) return -1;
+        if (b.dueDate) return 1;
+        return 0;
+      });
+  }, [tasks, teamMemberId]);
 
 
-  // ═══ DONNÉES CALCULÉES ═══
   const totalTasks = tasks.length;
   const globalDone = tasks.filter(t => t.status === 'done').length;
   const globalOverdue = tasks.filter(t => t.dueDate && isPast(parseISO(t.dueDate)) && t.status !== 'done').length;

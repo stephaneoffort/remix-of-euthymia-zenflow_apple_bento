@@ -52,6 +52,8 @@ interface AppContextType extends AppState {
   addProject: (name: string, spaceId: string, color: string) => void;
   duplicateSpace: (spaceId: string) => void;
   duplicateProject: (projectId: string) => void;
+  archiveSpace: (spaceId: string) => void;
+  archiveProject: (projectId: string) => void;
   renameSpace: (id: string, name: string) => void;
   renameProject: (id: string, name: string) => void;
   moveProject: (projectId: string, newSpaceId: string) => void;
@@ -135,7 +137,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     queryFn: async () => {
       const { data, error } = await supabase.from('spaces').select('*').order('sort_order');
       if (error) throw error;
-      return data.map(s => ({ id: s.id, name: s.name, icon: s.icon, order: s.sort_order, isPrivate: (s as any).is_private ?? false, ownerMemberId: (s as any).owner_member_id ?? null })) as Space[];
+      return data.map(s => ({ id: s.id, name: s.name, icon: s.icon, order: s.sort_order, isPrivate: (s as any).is_private ?? false, ownerMemberId: (s as any).owner_member_id ?? null, isArchived: (s as any).is_archived ?? false })) as Space[];
     },
   });
 
@@ -165,7 +167,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     queryFn: async () => {
       const { data, error } = await supabase.from('projects').select('*').order('sort_order');
       if (error) throw error;
-      return data.map(p => ({ id: p.id, name: p.name, spaceId: p.space_id, color: p.color, order: p.sort_order })) as Project[];
+      return data.map(p => ({ id: p.id, name: p.name, spaceId: p.space_id, color: p.color, order: p.sort_order, isArchived: (p as any).is_archived ?? false })) as Project[];
     },
   });
 
@@ -520,6 +522,46 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     duplicateProjectMutation.mutate(projectId);
   }, [duplicateProjectMutation]);
 
+  // Archive space mutation
+  const archiveSpaceMutation = useMutation({
+    mutationFn: async (spaceId: string) => {
+      const space = spaces.find(s => s.id === spaceId);
+      if (!space) throw new Error('Space not found');
+      const newVal = !space.isArchived;
+      const { error } = await supabase.from('spaces').update({ is_archived: newVal } as any).eq('id', spaceId);
+      if (error) throw error;
+      return newVal;
+    },
+    onSuccess: (newVal) => {
+      queryClient.invalidateQueries({ queryKey: ['spaces'] });
+      toast.success(newVal ? 'Espace archivé' : 'Espace désarchivé');
+    },
+  });
+
+  const archiveSpace = useCallback((spaceId: string) => {
+    archiveSpaceMutation.mutate(spaceId);
+  }, [archiveSpaceMutation]);
+
+  // Archive project mutation
+  const archiveProjectMutation = useMutation({
+    mutationFn: async (projectId: string) => {
+      const project = projects.find(p => p.id === projectId);
+      if (!project) throw new Error('Project not found');
+      const newVal = !project.isArchived;
+      const { error } = await supabase.from('projects').update({ is_archived: newVal } as any).eq('id', projectId);
+      if (error) throw error;
+      return newVal;
+    },
+    onSuccess: (newVal) => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      toast.success(newVal ? 'Projet archivé' : 'Projet désarchivé');
+    },
+  });
+
+  const archiveProject = useCallback((projectId: string) => {
+    archiveProjectMutation.mutate(projectId);
+  }, [archiveProjectMutation]);
+
   // Rename space mutation
   const renameSpaceMutation = useMutation({
     mutationFn: async ({ id, name }: { id: string; name: string }) => {
@@ -866,7 +908,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   // ─── Accessibility-filtered data: hide private spaces/projects/tasks from non-owners ───
   const accessibleSpaces = useMemo(() =>
-    spaces.filter(s => !s.isPrivate || s.ownerMemberId === teamMemberId),
+    spaces.filter(s => (!s.isPrivate || s.ownerMemberId === teamMemberId) && !s.isArchived),
     [spaces, teamMemberId]
   );
 
@@ -876,7 +918,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [accessibleSpaces, projects]);
 
   const accessibleProjects = useMemo(() =>
-    projects.filter(p => accessibleProjectIds.has(p.id)),
+    projects.filter(p => accessibleProjectIds.has(p.id) && !p.isArchived),
     [projects, accessibleProjectIds]
   );
 
@@ -924,6 +966,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     addProject,
     duplicateSpace,
     duplicateProject,
+    archiveSpace,
+    archiveProject,
     renameSpace,
     renameProject,
     moveProject,
@@ -945,7 +989,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     isSpaceManager: isSpaceManagerFn,
     getSpaceManagers: getSpaceManagersFn,
     refreshSpaceAccess,
-  }), [accessibleSpaces, accessibleProjects, lists, accessibleTasks, teamMembers, customStatuses, allStatuses, spaceMembers, spaceManagers, selectedProjectId, selectedSpaceId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, setSelectedProjectId, setSelectedSpaceId, addTask, updateTask, deleteTask, addAttachment, deleteAttachment, moveTask, addSpace, addProject, duplicateSpace, duplicateProject, renameSpace, renameProject, moveProject, deleteSpace, deleteProject, convertTaskToProject, reorderSpaces, reorderProjects, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb, getStatusLabel, canAccessSpace, isSpaceManagerFn, getSpaceManagersFn, refreshSpaceAccess]);
+  }), [accessibleSpaces, accessibleProjects, lists, accessibleTasks, teamMembers, customStatuses, allStatuses, spaceMembers, spaceManagers, selectedProjectId, selectedSpaceId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, setSelectedProjectId, setSelectedSpaceId, addTask, updateTask, deleteTask, addAttachment, deleteAttachment, moveTask, addSpace, addProject, duplicateSpace, duplicateProject, archiveSpace, archiveProject, renameSpace, renameProject, moveProject, deleteSpace, deleteProject, convertTaskToProject, reorderSpaces, reorderProjects, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb, getStatusLabel, canAccessSpace, isSpaceManagerFn, getSpaceManagersFn, refreshSpaceAccess]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

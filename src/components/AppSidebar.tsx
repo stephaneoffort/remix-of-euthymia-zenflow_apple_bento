@@ -3,7 +3,7 @@ import { toast } from '@/hooks/use-toast';
 import { ToastAction } from '@/components/ui/toast';
 import logoEuthymia from '@/assets/logo-euthymia.png';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
-import { ChevronRight, ChevronDown, LayoutGrid, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle, Shield, Crown, Lock, Sun, Moon, SunMoon, MoreHorizontal, Pencil, Home, FolderInput, ArrowDownToLine, MoveHorizontal, Copy } from 'lucide-react';
+import { ChevronRight, ChevronDown, LayoutGrid, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle, Shield, Crown, Lock, Sun, Moon, SunMoon, MoreHorizontal, Pencil, Home, FolderInput, ArrowDownToLine, MoveHorizontal, Copy, Archive } from 'lucide-react';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent,
 } from '@/components/ui/dropdown-menu';
@@ -51,7 +51,7 @@ export default function AppSidebar() {
     spaces, selectedProjectId, setSelectedProjectId, selectedSpaceId, setSelectedSpaceId,
     quickFilter, setQuickFilter, selectedView, setSelectedView,
     getProjectsForSpace, getTasksForProject, teamMembers, sidebarCollapsed, setSidebarCollapsed, lists,
-    tasks, addSpace, addProject, duplicateSpace, duplicateProject, renameSpace, renameProject, moveProject, deleteSpace, deleteProject,
+    tasks, addSpace, addProject, duplicateSpace, duplicateProject, archiveSpace, archiveProject, renameSpace, renameProject, moveProject, deleteSpace, deleteProject,
     reorderSpaces, reorderProjects, canAccessSpace, isSpaceManager, getSpaceManagers, refreshSpaceAccess,
     updateTask, getListsForProject,
   } = useApp();
@@ -678,6 +678,10 @@ export default function AppSidebar() {
                             <Copy className="w-4 h-4 mr-2" />
                             Dupliquer
                           </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => archiveSpace(space.id)}>
+                            <Archive className="w-4 h-4 mr-2" />
+                            {space.isArchived ? 'Désarchiver' : 'Archiver'}
+                          </DropdownMenuItem>
                           {isAdmin && (
                             <>
                               <DropdownMenuSeparator />
@@ -713,6 +717,10 @@ export default function AppSidebar() {
                     <ContextMenuItem onClick={() => duplicateSpace(space.id)}>
                       <Copy className="w-4 h-4 mr-2" />
                       Dupliquer
+                    </ContextMenuItem>
+                    <ContextMenuItem onClick={() => archiveSpace(space.id)}>
+                      <Archive className="w-4 h-4 mr-2" />
+                      {space.isArchived ? 'Désarchiver' : 'Archiver'}
                     </ContextMenuItem>
                     {isAdmin && (
                       <>
@@ -807,6 +815,10 @@ export default function AppSidebar() {
                                     <Copy className="w-4 h-4 mr-2" />
                                     Dupliquer
                                   </ContextMenuItem>
+                                  <ContextMenuItem onClick={() => archiveProject(project.id)}>
+                                    <Archive className="w-4 h-4 mr-2" />
+                                    {project.isArchived ? 'Désarchiver' : 'Archiver'}
+                                  </ContextMenuItem>
                                   {spaces.filter(s => s.id !== space.id).length > 0 && (
                                     <ContextMenuSub>
                                       <ContextMenuSubTrigger>
@@ -857,6 +869,10 @@ export default function AppSidebar() {
                                   <DropdownMenuItem onClick={() => duplicateProject(project.id)}>
                                     <Copy className="w-4 h-4 mr-2" />
                                     Dupliquer
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => archiveProject(project.id)}>
+                                    <Archive className="w-4 h-4 mr-2" />
+                                    {project.isArchived ? 'Désarchiver' : 'Archiver'}
                                   </DropdownMenuItem>
                                   {spaces.filter(s => s.id !== space.id).length > 0 && (
                                     <DropdownMenuSub>

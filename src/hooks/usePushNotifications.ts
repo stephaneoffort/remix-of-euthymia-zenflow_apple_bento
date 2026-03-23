@@ -1,6 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
+type PushSubscriptionResult = {
+  ok: boolean;
+  reason?: 'unsupported' | 'permission_denied' | 'db_error' | 'unknown_error';
+};
+
 const VAPID_PUBLIC_KEY = 'BH60WPWbXxd73SIbLKmFX7MsuDj4p-liploW-VZwNJhu_NtUo78K22FtGxmTzcM-bgjsrKG8_1xfU9aVDGozQF4';
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
@@ -41,12 +46,16 @@ export function usePushNotifications(memberId: string | null) {
     setLoading(false);
   }, []);
 
-  const subscribe = useCallback(async () => {
-    if (!memberId || !isSupported) return false;
+  const subscribe = useCallback(async (): Promise<PushSubscriptionResult> => {
+    if (!memberId || !isSupported) {
+      return { ok: false, reason: 'unsupported' };
+    }
 
     try {
       const permission = await Notification.requestPermission();
-      if (permission !== 'granted') return false;
+      if (permission !== 'granted') {
+        return { ok: false, reason: 'permission_denied' };
+      }
 
       // Register the push service worker
       const registration = await navigator.serviceWorker.register('/sw-push.js', { scope: '/' });
@@ -78,14 +87,15 @@ export function usePushNotifications(memberId: string | null) {
         });
         if (insertErr) {
           console.error('Push subscription insert fallback error:', insertErr);
+          return { ok: false, reason: 'db_error' };
         }
       }
 
       setIsSubscribed(true);
-      return true;
+      return { ok: true };
     } catch (e) {
       console.error('Push subscription error:', e);
-      return false;
+      return { ok: false, reason: 'unknown_error' };
     }
   }, [memberId, isSupported]);
 

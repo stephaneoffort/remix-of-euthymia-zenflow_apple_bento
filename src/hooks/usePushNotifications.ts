@@ -60,12 +60,26 @@ export function usePushNotifications(memberId: string | null) {
 
       const json = subscription.toJSON();
       
-      await (supabase as any).from('push_subscriptions').upsert({
+      const { error: dbError } = await (supabase as any).from('push_subscriptions').upsert({
         member_id: memberId,
         endpoint: json.endpoint,
         p256dh: json.keys?.p256dh || '',
         auth: json.keys?.auth || '',
       }, { onConflict: 'member_id,endpoint' });
+
+      if (dbError) {
+        console.error('Push subscription DB error:', dbError);
+        // Fallback: try insert directly
+        const { error: insertErr } = await (supabase as any).from('push_subscriptions').insert({
+          member_id: memberId,
+          endpoint: json.endpoint,
+          p256dh: json.keys?.p256dh || '',
+          auth: json.keys?.auth || '',
+        });
+        if (insertErr) {
+          console.error('Push subscription insert fallback error:', insertErr);
+        }
+      }
 
       setIsSubscribed(true);
       return true;

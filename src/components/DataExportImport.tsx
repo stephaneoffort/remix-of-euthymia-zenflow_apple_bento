@@ -32,6 +32,7 @@ interface ExportData {
 
 export default function DataExportImport() {
   const [exporting, setExporting] = useState(false);
+  const [exportingCsv, setExportingCsv] = useState(false);
   const [importing, setImporting] = useState(false);
   const [importPreview, setImportPreview] = useState<ExportData | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);

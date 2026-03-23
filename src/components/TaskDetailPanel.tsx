@@ -355,7 +355,7 @@ export default function TaskDetailPanel() {
                 </select>
                 {task.recurrence && (
                   <div className="mt-2 space-y-1.5">
-                    <label className="text-xs text-muted-foreground">Fin de récurrence (optionnel)</label>
+                    <label className="text-xs text-foreground/60">Fin de récurrence (optionnel)</label>
                     <DateTimeField
                       value={task.recurrenceEndDate}
                       onChange={(val) => updateTask(task.id, { recurrenceEndDate: val })}

@@ -683,6 +683,12 @@ export default function AppSidebar() {
                           ) : (
                             <SortableProject key={project.id} id={project.id}>
                               <button
+                                draggable
+                                onDragStart={e => handleProjectNativeDragStart(e, project.id)}
+                                onDragEnd={handleNativeDragEnd}
+                                onDragOver={e => handleProjectNativeDragOver(e, project.id)}
+                                onDragLeave={handleProjectNativeDragLeave}
+                                onDrop={e => handleProjectNativeDrop(e, project.id)}
                                 onClick={() => {
                                   setSelectedProjectId(project.id);
                                   setQuickFilter('all');
@@ -694,10 +700,12 @@ export default function AppSidebar() {
                                   setEditingProjectName(project.name);
                                 }}
                                 className={`flex-1 flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors ${
-                                  selectedProjectId === project.id
-                                    ? 'bg-sidebar-active text-sidebar-fg-bright'
-                                    : 'text-sidebar-fg hover:bg-sidebar-hover'
-                                }`}
+                                  dragOverProjectId === project.id
+                                    ? 'bg-primary/20 ring-1 ring-primary/40'
+                                    : selectedProjectId === project.id
+                                      ? 'bg-sidebar-active text-sidebar-fg-bright'
+                                      : 'text-sidebar-fg hover:bg-sidebar-hover'
+                                } ${draggingProjectId === project.id ? 'opacity-50' : ''}`}
                               >
                                 <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: project.color }} />
                                 <span className="flex-1 min-w-0 truncate">{project.name}</span>

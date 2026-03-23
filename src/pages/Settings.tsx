@@ -709,3 +709,125 @@ function ThemePalettePanel() {
     </Card>
   );
 }
+
+function PushDebugPanel() {
+  const { teamMemberId } = useAuth();
+  const { isSupported, isSubscribed, loading, subscribe, unsubscribe } = usePushNotifications(teamMemberId);
+  const [backendSubs, setBackendSubs] = useState<any[]>([]);
+  const [backendLoading, setBackendLoading] = useState(true);
+  const [browserPermission, setBrowserPermission] = useState<string>('unknown');
+
+  useEffect(() => {
+    if ('Notification' in window) {
+      setBrowserPermission(Notification.permission);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!teamMemberId) { setBackendLoading(false); return; }
+    (supabase as any).from('push_subscriptions').select('*').eq('member_id', teamMemberId)
+      .then(({ data, error }: any) => {
+        setBackendSubs(data || []);
+        setBackendLoading(false);
+      });
+  }, [teamMemberId, isSubscribed]);
+
+  const StatusDot = ({ ok }: { ok: boolean }) => (
+    <span className={`inline-block w-2.5 h-2.5 rounded-full ${ok ? 'bg-green-500' : 'bg-destructive'}`} />
+  );
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <BellRing className="w-5 h-5 text-primary" />
+          Diagnostic Push Notifications
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-3 text-sm">
+          <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+            <span className="text-muted-foreground">Push API supporté</span>
+            <div className="flex items-center gap-2">
+              <StatusDot ok={isSupported} />
+              <span className="font-medium text-foreground">{isSupported ? 'Oui' : 'Non'}</span>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+            <span className="text-muted-foreground">Permission navigateur</span>
+            <div className="flex items-center gap-2">
+              <StatusDot ok={browserPermission === 'granted'} />
+              <span className="font-medium text-foreground">{browserPermission}</span>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+            <span className="text-muted-foreground">Abonnement navigateur actif</span>
+            <div className="flex items-center gap-2">
+              {loading ? (
+                <span className="text-muted-foreground">Chargement…</span>
+              ) : (
+                <>
+                  <StatusDot ok={isSubscribed} />
+                  <span className="font-medium text-foreground">{isSubscribed ? 'Oui' : 'Non'}</span>
+                </>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+            <span className="text-muted-foreground">Enregistrements backend</span>
+            <div className="flex items-center gap-2">
+              {backendLoading ? (
+                <span className="text-muted-foreground">Chargement…</span>
+              ) : (
+                <>
+                  <StatusDot ok={backendSubs.length > 0} />
+                  <span className="font-medium text-foreground">{backendSubs.length} abonnement(s)</span>
+                </>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+            <span className="text-muted-foreground">Member ID</span>
+            <span className="font-mono text-xs text-foreground">{teamMemberId || '—'}</span>
+          </div>
+        </div>
+
+        {backendSubs.length > 0 && (
+          <div className="mt-4">
+            <p className="text-xs font-medium text-muted-foreground mb-2">Endpoints enregistrés :</p>
+            <div className="space-y-1">
+              {backendSubs.map((sub: any) => (
+                <div key={sub.id} className="text-xs font-mono text-muted-foreground bg-muted/30 p-2 rounded break-all">
+                  {sub.endpoint?.slice(0, 80)}…
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="flex gap-2 pt-2">
+          {!isSubscribed ? (
+            <Button size="sm" onClick={async () => {
+              const r = await subscribe();
+              toast(r.ok ? 'Abonnement push activé ✅' : `Échec : ${r.reason}`);
+              setBrowserPermission(Notification.permission);
+            }}>
+              Activer les notifications push
+            </Button>
+          ) : (
+            <Button size="sm" variant="outline" onClick={async () => {
+              await unsubscribe();
+              toast('Abonnement push supprimé');
+            }}>
+              Désactiver
+            </Button>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

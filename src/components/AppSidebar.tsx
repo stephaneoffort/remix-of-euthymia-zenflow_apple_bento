@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import logoEuthymia from '@/assets/logo-euthymia.png';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
-import { ChevronRight, ChevronDown, LayoutGrid, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle, Shield, Crown, Lock, Sun, Moon, SunMoon, MoreHorizontal, Pencil, Home } from 'lucide-react';
+import { ChevronRight, ChevronDown, LayoutGrid, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle, Shield, Crown, Lock, Sun, Moon, SunMoon, MoreHorizontal, Pencil, Home, FolderInput } from 'lucide-react';
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator,
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent,
 } from '@/components/ui/dropdown-menu';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/context/AppContext';
@@ -46,7 +46,7 @@ export default function AppSidebar() {
     spaces, selectedProjectId, setSelectedProjectId, selectedSpaceId, setSelectedSpaceId,
     quickFilter, setQuickFilter, selectedView, setSelectedView,
     getProjectsForSpace, getTasksForProject, teamMembers, sidebarCollapsed, setSidebarCollapsed, lists,
-    tasks, addSpace, addProject, renameSpace, renameProject, deleteSpace, deleteProject,
+    tasks, addSpace, addProject, renameSpace, renameProject, moveProject, deleteSpace, deleteProject,
     reorderSpaces, reorderProjects, canAccessSpace, isSpaceManager, getSpaceManagers, refreshSpaceAccess,
   } = useApp();
   const isMobile = useIsMobile();
@@ -629,6 +629,22 @@ export default function AppSidebar() {
                                     <Pencil className="w-4 h-4 mr-2" />
                                     Renommer
                                   </DropdownMenuItem>
+                                  {spaces.filter(s => s.id !== space.id).length > 0 && (
+                                    <DropdownMenuSub>
+                                      <DropdownMenuSubTrigger>
+                                        <FolderInput className="w-4 h-4 mr-2" />
+                                        Déplacer vers
+                                      </DropdownMenuSubTrigger>
+                                      <DropdownMenuSubContent className="w-44">
+                                        {spaces.filter(s => s.id !== space.id).map(s => (
+                                          <DropdownMenuItem key={s.id} onClick={() => moveProject(project.id, s.id)}>
+                                            <span className="mr-2">{s.icon}</span>
+                                            {s.name}
+                                          </DropdownMenuItem>
+                                        ))}
+                                      </DropdownMenuSubContent>
+                                    </DropdownMenuSub>
+                                  )}
                                   {isAdmin && (
                                     <>
                                       <DropdownMenuSeparator />

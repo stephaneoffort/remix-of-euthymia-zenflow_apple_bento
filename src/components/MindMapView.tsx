@@ -1,12 +1,16 @@
-import React, { useMemo, useState, useRef, useCallback, useEffect } from 'react';
+import React, { useMemo, useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react';
 import EmptyState from '@/components/EmptyState';
 import { useApp } from '@/context/AppContext';
 import { Task } from '@/types';
-import { PriorityBadge, StatusBadge } from '@/components/TaskBadges';
-import { ChevronDown, ChevronRight, ZoomIn, ZoomOut, Maximize2, Plus, X, Check, Layers, Repeat } from 'lucide-react';
+import { StatusBadge, PriorityBadge } from '@/components/TaskBadges';
+import {
+  ChevronDown, ChevronRight, ZoomIn, ZoomOut, Maximize2,
+  Plus, X, Check, Layers, Repeat, Minus as MinusIcon,
+} from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-const STATUS_PROGRESS_COLORS: Record<string, string> = {
+/* ─── Status colors ─── */
+const STATUS_COLORS: Record<string, string> = {
   todo: 'hsl(var(--muted-foreground))',
   in_progress: 'hsl(var(--primary))',
   in_review: 'hsl(38, 92%, 50%)',
@@ -14,75 +18,174 @@ const STATUS_PROGRESS_COLORS: Record<string, string> = {
   blocked: 'hsl(0, 84%, 60%)',
 };
 
+/* ─── Tree types ─── */
 interface TreeNode {
   task: Task;
   children: TreeNode[];
   progress: number;
   totalDescendants: number;
   doneDescendants: number;
+  depth: number;
 }
 
-function buildTree(tasks: Task[]): TreeNode[] {
-  const taskMap = new Map<string, Task>();
-  tasks.forEach(t => taskMap.set(t.id, t));
-
+/* ─── Build tree ─── */
+function buildTree(tasks: Task[]): { roots: TreeNode[]; maxDepth: number } {
   const childrenMap = new Map<string, Task[]>();
   tasks.forEach(t => {
-    const parentId = t.parentTaskId || '__root__';
-    if (!childrenMap.has(parentId)) childrenMap.set(parentId, []);
-    childrenMap.get(parentId)!.push(t);
+    const pid = t.parentTaskId || '__root__';
+    if (!childrenMap.has(pid)) childrenMap.set(pid, []);
+    childrenMap.get(pid)!.push(t);
   });
 
-  function buildNode(task: Task): TreeNode {
+  let maxDepth = 0;
+
+  function build(task: Task, depth: number): TreeNode {
+    if (depth > maxDepth) maxDepth = depth;
     const children = (childrenMap.get(task.id) || [])
       .sort((a, b) => a.order - b.order)
-      .map(buildNode);
+      .map(c => build(c, depth + 1));
 
-    let totalDescendants = 0;
-    let doneDescendants = 0;
-
-    if (children.length > 0) {
-      children.forEach(c => {
-        totalDescendants += 1 + c.totalDescendants;
-        doneDescendants += (c.task.status === 'done' ? 1 : 0) + c.doneDescendants;
-      });
-    }
+    let total = 0, done = 0;
+    children.forEach(c => {
+      total += 1 + c.totalDescendants;
+      done += (c.task.status === 'done' ? 1 : 0) + c.doneDescendants;
+    });
 
     const progress = children.length > 0
-      ? Math.round((doneDescendants / totalDescendants) * 100)
+      ? Math.round((done / total) * 100)
       : task.status === 'done' ? 100 : task.status === 'in_progress' ? 50 : task.status === 'in_review' ? 75 : 0;
 
-    return { task, children, progress, totalDescendants, doneDescendants };
+    return { task, children, progress, totalDescendants: total, doneDescendants: done, depth };
   }
 
   const roots = (childrenMap.get('__root__') || [])
     .filter(t => !t.parentTaskId)
     .sort((a, b) => a.order - b.order)
-    .map(buildNode);
+    .map(t => build(t, 0));
 
-  return roots;
+  return { roots, maxDepth };
 }
 
+/* ─── Layout constants ─── */
+const NODE_W = 220;
+const NODE_H = 72;
+const H_GAP = 80;
+const V_GAP = 16;
+
+/* ─── Position calculator ─── */
+interface Positioned {
+  node: TreeNode;
+  x: number;
+  y: number;
+  children: Positioned[];
+}
+
+function layoutTree(nodes: TreeNode[], expandedIds: Set<string>, visibleDepth: number): { positioned: Positioned[]; width: number; height: number } {
+  let currentY = 0;
+
+  function measure(node: TreeNode, depth: number): Positioned {
+    const x = depth * (NODE_W + H_GAP);
+    const isExpanded = expandedIds.has(node.task.id);
+    const showChildren = isExpanded && depth < visibleDepth && node.children.length > 0;
+
+    if (!showChildren) {
+      const y = currentY;
+      currentY += NODE_H + V_GAP;
+      return { node, x, y, children: [] };
+    }
+
+    const childPositions = node.children.map(c => measure(c, depth + 1));
+    const firstChildY = childPositions[0].y;
+    const lastChildY = childPositions[childPositions.length - 1].y;
+    const y = Math.round((firstChildY + lastChildY) / 2);
+
+    return { node, x, y, children: childPositions };
+  }
+
+  const positioned: Positioned[] = [];
+  nodes.forEach(root => {
+    positioned.push(measure(root, 0));
+  });
+
+  // Calculate bounds
+  let maxX = 0, maxY = 0;
+  function walk(p: Positioned) {
+    if (p.x + NODE_W > maxX) maxX = p.x + NODE_W;
+    if (p.y + NODE_H > maxY) maxY = p.y + NODE_H;
+    p.children.forEach(walk);
+  }
+  positioned.forEach(walk);
+
+  return { positioned, width: maxX + 60, height: maxY + 60 };
+}
+
+/* ─── SVG connector (bezier curve) ─── */
+function Connector({ from, to }: { from: Positioned; to: Positioned }) {
+  const x1 = from.x + NODE_W;
+  const y1 = from.y + NODE_H / 2;
+  const x2 = to.x;
+  const y2 = to.y + NODE_H / 2;
+  const midX = (x1 + x2) / 2;
+
+  const statusColor = STATUS_COLORS[to.node.task.status] || 'hsl(var(--border))';
+
+  return (
+    <path
+      d={`M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`}
+      fill="none"
+      stroke={statusColor}
+      strokeWidth="2"
+      strokeOpacity="0.35"
+      className="transition-all duration-300"
+    />
+  );
+}
+
+/* ─── Collect all connectors recursively ─── */
+function collectConnectors(items: Positioned[]): { from: Positioned; to: Positioned }[] {
+  const result: { from: Positioned; to: Positioned }[] = [];
+  function walk(p: Positioned) {
+    p.children.forEach(child => {
+      result.push({ from: p, to: child });
+      walk(child);
+    });
+  }
+  items.forEach(walk);
+  return result;
+}
+
+/* ─── Main component ─── */
 export default function MindMapView() {
-  const { getFilteredTasks, setSelectedTaskId, addTask, tasks: allTasks } = useApp();
+  const { getFilteredTasks, setSelectedTaskId, addTask } = useApp();
   const tasks = getFilteredTasks();
   const isMobile = useIsMobile();
+
+  const { roots, maxDepth } = useMemo(() => buildTree(tasks), [tasks]);
+
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
-  const [zoom, setZoom] = useState(isMobile ? 0.85 : 1);
-  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [visibleDepth, setVisibleDepth] = useState(1);
+  const [zoom, setZoom] = useState(isMobile ? 0.7 : 0.85);
+  const [pan, setPan] = useState({ x: 20, y: 20 });
   const [isPanning, setIsPanning] = useState(false);
   const panStart = useRef({ x: 0, y: 0, panX: 0, panY: 0 });
-  const lastTouchDistance = useRef<number | null>(null);
+  const lastTouchDist = useRef<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const tree = useMemo(() => buildTree(tasks), [tasks]);
-
+  // Auto-expand roots on mount
   useEffect(() => {
-    if (expandedIds.size === 0 && tree.length > 0) {
-      setExpandedIds(new Set(tree.map(n => n.task.id)));
+    if (roots.length > 0 && expandedIds.size === 0) {
+      setExpandedIds(new Set(roots.map(r => r.task.id)));
     }
-  }, [tree]);
+  }, [roots]);
 
+  // Layout
+  const { positioned, width, height } = useMemo(
+    () => layoutTree(roots, expandedIds, visibleDepth),
+    [roots, expandedIds, visibleDepth]
+  );
+  const connectors = useMemo(() => collectConnectors(positioned), [positioned]);
+
+  // Toggle single node
   const toggleExpand = useCallback((id: string) => {
     setExpandedIds(prev => {
       const next = new Set(prev);
@@ -92,26 +195,70 @@ export default function MindMapView() {
     });
   }, []);
 
-  const expandAll = useCallback(() => {
-    const allIds = new Set<string>();
-    function collect(nodes: TreeNode[]) {
+  // Expand a specific depth level
+  const expandToDepth = useCallback((depth: number) => {
+    setVisibleDepth(depth);
+    const ids = new Set<string>();
+    function collect(nodes: TreeNode[], d: number) {
       nodes.forEach(n => {
-        if (n.children.length > 0) {
-          allIds.add(n.task.id);
-          collect(n.children);
+        if (d < depth && n.children.length > 0) {
+          ids.add(n.task.id);
+          collect(n.children, d + 1);
         }
       });
     }
-    collect(tree);
-    setExpandedIds(allIds);
-  }, [tree]);
+    collect(roots, 0);
+    setExpandedIds(ids);
+  }, [roots]);
 
+  // Expand all
+  const expandAll = useCallback(() => {
+    const ids = new Set<string>();
+    function collect(nodes: TreeNode[]) {
+      nodes.forEach(n => {
+        if (n.children.length > 0) { ids.add(n.task.id); collect(n.children); }
+      });
+    }
+    collect(roots);
+    setExpandedIds(ids);
+    setVisibleDepth(maxDepth + 1);
+  }, [roots, maxDepth]);
+
+  // Collapse all
+  const collapseAll = useCallback(() => {
+    setExpandedIds(new Set(roots.map(r => r.task.id)));
+    setVisibleDepth(1);
+  }, [roots]);
+
+  // Reset view
   const resetView = useCallback(() => {
-    setZoom(isMobile ? 0.85 : 1);
-    setPan({ x: 0, y: 0 });
+    setZoom(isMobile ? 0.7 : 0.85);
+    setPan({ x: 20, y: 20 });
   }, [isMobile]);
 
-  // Mouse pan handlers
+  // Add subtask
+  const handleAddSubtask = useCallback((parentTask: Task, title: string) => {
+    addTask({
+      title,
+      description: '',
+      status: 'todo',
+      priority: 'normal',
+      dueDate: null,
+      startDate: null,
+      assigneeIds: [],
+      tags: [],
+      parentTaskId: parentTask.id,
+      listId: parentTask.listId,
+      comments: [],
+      attachments: [],
+      timeEstimate: null,
+      timeLogged: null,
+      aiSummary: null,
+    });
+    setExpandedIds(prev => new Set([...prev, parentTask.id]));
+  }, [addTask]);
+
+  // ─── Pan & Zoom handlers ───
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (e.button !== 0) return;
     if ((e.target as HTMLElement).closest('[data-node]')) return;
@@ -131,10 +278,9 @@ export default function MindMapView() {
 
   const handleWheel = useCallback((e: React.WheelEvent) => {
     e.preventDefault();
-    setZoom(z => Math.min(2, Math.max(0.3, z - e.deltaY * 0.001)));
+    setZoom(z => Math.min(2, Math.max(0.2, z - e.deltaY * 0.001)));
   }, []);
 
-  // Touch pan & pinch-zoom handlers
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     if ((e.target as HTMLElement).closest('[data-node]')) return;
     if (e.touches.length === 1) {
@@ -144,7 +290,7 @@ export default function MindMapView() {
     if (e.touches.length === 2) {
       const dx = e.touches[0].clientX - e.touches[1].clientX;
       const dy = e.touches[0].clientY - e.touches[1].clientY;
-      lastTouchDistance.current = Math.sqrt(dx * dx + dy * dy);
+      lastTouchDist.current = Math.sqrt(dx * dx + dy * dy);
     }
   }, [pan]);
 
@@ -155,19 +301,18 @@ export default function MindMapView() {
         y: panStart.current.panY + (e.touches[0].clientY - panStart.current.y),
       });
     }
-    if (e.touches.length === 2 && lastTouchDistance.current !== null) {
+    if (e.touches.length === 2 && lastTouchDist.current !== null) {
       const dx = e.touches[0].clientX - e.touches[1].clientX;
       const dy = e.touches[0].clientY - e.touches[1].clientY;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      const scale = dist / lastTouchDistance.current;
-      setZoom(z => Math.min(2, Math.max(0.3, z * scale)));
-      lastTouchDistance.current = dist;
+      setZoom(z => Math.min(2, Math.max(0.2, z * (dist / lastTouchDist.current!))));
+      lastTouchDist.current = dist;
     }
   }, [isPanning]);
 
   const handleTouchEnd = useCallback(() => {
     setIsPanning(false);
-    lastTouchDistance.current = null;
+    lastTouchDist.current = null;
   }, []);
 
   if (tasks.length === 0) {
@@ -176,28 +321,52 @@ export default function MindMapView() {
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
-      {/* Toolbar */}
-      <div className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 border-b border-border bg-card shrink-0 overflow-x-auto">
-        <button onClick={() => setZoom(z => Math.min(2, z + 0.15))} className="p-1.5 rounded-md hover:bg-muted active:bg-muted transition-colors shrink-0" title="Zoom in">
+      {/* ─── Toolbar ─── */}
+      <div className="flex items-center gap-1.5 px-3 py-2 border-b border-border bg-card shrink-0 overflow-x-auto">
+        {/* Zoom */}
+        <button onClick={() => setZoom(z => Math.min(2, z + 0.15))} className="p-1.5 rounded-md hover:bg-muted transition-colors shrink-0" title="Zoom +">
           <ZoomIn className="w-4 h-4 text-muted-foreground" />
         </button>
         <span className="text-xs text-muted-foreground w-10 text-center shrink-0">{Math.round(zoom * 100)}%</span>
-        <button onClick={() => setZoom(z => Math.max(0.3, z - 0.15))} className="p-1.5 rounded-md hover:bg-muted active:bg-muted transition-colors shrink-0" title="Zoom out">
+        <button onClick={() => setZoom(z => Math.max(0.2, z - 0.15))} className="p-1.5 rounded-md hover:bg-muted transition-colors shrink-0" title="Zoom -">
           <ZoomOut className="w-4 h-4 text-muted-foreground" />
         </button>
-        <div className="w-px h-5 bg-border mx-0.5 shrink-0" />
-        <button onClick={expandAll} className="px-2 py-1 text-xs text-muted-foreground hover:bg-muted active:bg-muted rounded-md transition-colors whitespace-nowrap shrink-0">
-          {isMobile ? <Layers className="w-4 h-4" /> : 'Tout déplier'}
+
+        <div className="w-px h-5 bg-border mx-1 shrink-0" />
+
+        {/* Level-by-level controls */}
+        <span className="text-xs text-muted-foreground shrink-0 mr-1">Niveau :</span>
+        {Array.from({ length: Math.min(maxDepth + 1, 6) }, (_, i) => i + 1).map(level => (
+          <button
+            key={level}
+            onClick={() => expandToDepth(level)}
+            className={`w-7 h-7 rounded-md text-xs font-semibold transition-colors shrink-0 ${
+              visibleDepth === level
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:bg-muted'
+            }`}
+            title={`Afficher niveau ${level}`}
+          >
+            {level}
+          </button>
+        ))}
+
+        <div className="w-px h-5 bg-border mx-1 shrink-0" />
+
+        <button onClick={expandAll} className="px-2 py-1 text-xs text-muted-foreground hover:bg-muted rounded-md transition-colors whitespace-nowrap shrink-0">
+          <Layers className="w-4 h-4 inline mr-1" />
+          Tout
         </button>
-        <button onClick={() => setExpandedIds(new Set(tree.map(n => n.task.id)))} className="px-2 py-1 text-xs text-muted-foreground hover:bg-muted active:bg-muted rounded-md transition-colors whitespace-nowrap shrink-0">
-          {isMobile ? 'Replier' : 'Replier'}
+        <button onClick={collapseAll} className="px-2 py-1 text-xs text-muted-foreground hover:bg-muted rounded-md transition-colors whitespace-nowrap shrink-0">
+          <MinusIcon className="w-4 h-4 inline mr-1" />
+          Replier
         </button>
-        <button onClick={resetView} className="p-1.5 rounded-md hover:bg-muted active:bg-muted transition-colors shrink-0" title="Reset">
+        <button onClick={resetView} className="p-1.5 rounded-md hover:bg-muted transition-colors shrink-0" title="Recentrer">
           <Maximize2 className="w-4 h-4 text-muted-foreground" />
         </button>
       </div>
 
-      {/* Canvas */}
+      {/* ─── Canvas ─── */}
       <div
         ref={containerRef}
         className="flex-1 overflow-hidden cursor-grab active:cursor-grabbing select-none touch-none"
@@ -211,298 +380,186 @@ export default function MindMapView() {
         onTouchEnd={handleTouchEnd}
       >
         <div
-          className="min-w-max p-4 sm:p-8"
           style={{
             transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
             transformOrigin: '0 0',
+            width: width,
+            height: height,
+            position: 'relative',
           }}
         >
-          {isMobile ? (
-            // Mobile: vertical tree layout
-            <div className="flex flex-col gap-3">
-              {tree.map(node => (
-                <MobileTreeNode
-                  key={node.task.id}
-                  node={node}
-                  depth={0}
-                  expandedIds={expandedIds}
-                  toggleExpand={toggleExpand}
-                  onSelectTask={setSelectedTaskId}
-                  onAddSubtask={(parentTask, title) => {
-                    addTask({
-                      title,
-                      description: '',
-                      status: 'todo',
-                      priority: 'normal',
-                      dueDate: null,
-                      startDate: null,
-                      assigneeIds: [],
-                      tags: [],
-                      parentTaskId: parentTask.id,
-                      listId: parentTask.listId,
-                      comments: [],
-                      attachments: [],
-                      timeEstimate: null,
-                      timeLogged: null,
-                      aiSummary: null,
-                    });
-                    setExpandedIds(prev => new Set([...prev, parentTask.id]));
-                  }}
-                />
-              ))}
-            </div>
-          ) : (
-            // Desktop: horizontal tree layout
-            <div className="flex flex-col gap-6">
-              {tree.map(node => (
-                <MindMapNode
-                  key={node.task.id}
-                  node={node}
-                  depth={0}
-                  expandedIds={expandedIds}
-                  toggleExpand={toggleExpand}
-                  onSelectTask={setSelectedTaskId}
-                  onAddSubtask={(parentTask, title) => {
-                    addTask({
-                      title,
-                      description: '',
-                      status: 'todo',
-                      priority: 'normal',
-                      dueDate: null,
-                      startDate: null,
-                      assigneeIds: [],
-                      tags: [],
-                      parentTaskId: parentTask.id,
-                      listId: parentTask.listId,
-                      comments: [],
-                      attachments: [],
-                      timeEstimate: null,
-                      timeLogged: null,
-                      aiSummary: null,
-                    });
-                    setExpandedIds(prev => new Set([...prev, parentTask.id]));
-                  }}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ============================================================
-// Mobile vertical tree node
-// ============================================================
-interface MobileTreeNodeProps {
-  node: TreeNode;
-  depth: number;
-  expandedIds: Set<string>;
-  toggleExpand: (id: string) => void;
-  onSelectTask: (id: string) => void;
-  onAddSubtask: (parentTask: Task, title: string) => void;
-}
-
-function MobileTreeNode({ node, depth, expandedIds, toggleExpand, onSelectTask, onAddSubtask }: MobileTreeNodeProps) {
-  const { task, children, progress } = node;
-  const hasChildren = children.length > 0;
-  const isExpanded = expandedIds.has(task.id);
-  const progressColor = STATUS_PROGRESS_COLORS[task.status] || 'hsl(var(--primary))';
-  const [isAdding, setIsAdding] = useState(false);
-  const [newTitle, setNewTitle] = useState('');
-
-  const handleSubmit = () => {
-    const trimmed = newTitle.trim();
-    if (trimmed) {
-      onAddSubtask(task, trimmed);
-      setNewTitle('');
-      setIsAdding(false);
-    }
-  };
-
-  return (
-    <div data-node style={{ paddingLeft: `${depth * 16}px` }}>
-      {/* Node card */}
-      <div
-        className="flex items-center gap-2 px-3 py-2.5 rounded-lg border bg-card active:bg-muted/50 transition-colors"
-        style={{ borderLeftWidth: '3px', borderLeftColor: progressColor }}
-        onClick={(e) => { e.stopPropagation(); onSelectTask(task.id); }}
-      >
-        {hasChildren && (
-          <button
-            onClick={(e) => { e.stopPropagation(); toggleExpand(task.id); }}
-            className="p-1 rounded active:bg-muted transition-colors shrink-0"
+          {/* SVG connectors layer */}
+          <svg
+            width={width}
+            height={height}
+            className="absolute inset-0 pointer-events-none"
+            style={{ overflow: 'visible' }}
           >
-            {isExpanded
-              ? <ChevronDown className="w-4 h-4 text-muted-foreground" />
-              : <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            }
-          </button>
-        )}
-        {!hasChildren && <div className="w-6" />}
+            {connectors.map(({ from, to }, i) => (
+              <Connector key={i} from={from} to={to} />
+            ))}
+          </svg>
 
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-foreground leading-tight truncate flex items-center gap-1">{task.title}{task.recurrence && <Repeat className="w-3 h-3 text-primary shrink-0" />}</p>
-          <div className="flex items-center gap-1.5 mt-1">
-            <StatusBadge status={task.status} />
-            <PriorityBadge priority={task.priority} />
-            {hasChildren && (
-              <span className="text-label text-muted-foreground ml-auto">
-                {node.doneDescendants}/{node.totalDescendants}
-              </span>
-            )}
-          </div>
-          {hasChildren && (
-            <div className="mt-1.5 flex items-center gap-2">
-              <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all"
-                  style={{ width: `${progress}%`, backgroundColor: progressColor }}
-                />
-              </div>
-              <span className="text-label font-medium text-muted-foreground">{progress}%</span>
-            </div>
-          )}
-        </div>
-
-        <button
-          onClick={(e) => { e.stopPropagation(); setIsAdding(true); }}
-          className="p-1.5 rounded active:bg-muted transition-colors shrink-0"
-        >
-          <Plus className="w-4 h-4 text-muted-foreground" />
-        </button>
-      </div>
-
-      {/* Inline add */}
-      {isAdding && (
-        <div data-node className="flex items-center gap-1.5 mt-1.5 ml-8" onClick={(e) => e.stopPropagation()}>
-          <input
-            autoFocus
-            type="text"
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') handleSubmit();
-              if (e.key === 'Escape') { setIsAdding(false); setNewTitle(''); }
-            }}
-            placeholder="Sous-tâche..."
-            className="flex-1 px-2.5 py-2 text-sm border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-          />
-          <button onClick={handleSubmit} className="p-1.5 rounded active:bg-primary/10 transition-colors" disabled={!newTitle.trim()}>
-            <Check className="w-4 h-4 text-primary" />
-          </button>
-          <button onClick={() => { setIsAdding(false); setNewTitle(''); }} className="p-1.5 rounded active:bg-muted transition-colors">
-            <X className="w-4 h-4 text-muted-foreground" />
-          </button>
-        </div>
-      )}
-
-      {/* Children */}
-      {hasChildren && isExpanded && (
-        <div className="mt-1.5 space-y-1.5 relative">
-          <div className="absolute left-[7px] top-0 bottom-0 w-px bg-border" style={{ marginLeft: `${depth * 16}px` }} />
-          {children.map(child => (
-            <MobileTreeNode
-              key={child.task.id}
-              node={child}
-              depth={depth + 1}
+          {/* Node cards layer */}
+          {positioned.map(p => (
+            <MindMapNodeGroup
+              key={p.node.task.id}
+              positioned={p}
               expandedIds={expandedIds}
+              visibleDepth={visibleDepth}
               toggleExpand={toggleExpand}
-              onSelectTask={onSelectTask}
-              onAddSubtask={onAddSubtask}
+              onSelectTask={setSelectedTaskId}
+              onAddSubtask={handleAddSubtask}
             />
           ))}
         </div>
-      )}
+      </div>
     </div>
   );
 }
 
-// ============================================================
-// Desktop horizontal tree node (unchanged)
-// ============================================================
-interface MindMapNodeProps {
-  node: TreeNode;
-  depth: number;
+/* ─── Recursive node renderer ─── */
+interface MindMapNodeGroupProps {
+  positioned: Positioned;
   expandedIds: Set<string>;
+  visibleDepth: number;
   toggleExpand: (id: string) => void;
   onSelectTask: (id: string) => void;
   onAddSubtask: (parentTask: Task, title: string) => void;
 }
 
-function MindMapNode({ node, depth, expandedIds, toggleExpand, onSelectTask, onAddSubtask }: MindMapNodeProps) {
-  const { task, children, progress } = node;
+function MindMapNodeGroup({ positioned, expandedIds, visibleDepth, toggleExpand, onSelectTask, onAddSubtask }: MindMapNodeGroupProps) {
+  return (
+    <>
+      <NodeCard
+        positioned={positioned}
+        expandedIds={expandedIds}
+        visibleDepth={visibleDepth}
+        toggleExpand={toggleExpand}
+        onSelectTask={onSelectTask}
+        onAddSubtask={onAddSubtask}
+      />
+      {positioned.children.map(child => (
+        <MindMapNodeGroup
+          key={child.node.task.id}
+          positioned={child}
+          expandedIds={expandedIds}
+          visibleDepth={visibleDepth}
+          toggleExpand={toggleExpand}
+          onSelectTask={onSelectTask}
+          onAddSubtask={onAddSubtask}
+        />
+      ))}
+    </>
+  );
+}
+
+/* ─── Individual node card ─── */
+function NodeCard({ positioned, expandedIds, visibleDepth, toggleExpand, onSelectTask, onAddSubtask }: MindMapNodeGroupProps) {
+  const { node, x, y } = positioned;
+  const { task, children, progress, totalDescendants, doneDescendants, depth } = node;
   const hasChildren = children.length > 0;
   const isExpanded = expandedIds.has(task.id);
-  const progressColor = STATUS_PROGRESS_COLORS[task.status] || 'hsl(var(--primary))';
+  const canExpand = hasChildren && depth < visibleDepth;
+  const statusColor = STATUS_COLORS[task.status] || 'hsl(var(--primary))';
+
   const [isAdding, setIsAdding] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (isAdding && inputRef.current) {
-      inputRef.current.focus();
-    }
+    if (isAdding && inputRef.current) inputRef.current.focus();
   }, [isAdding]);
 
   const handleSubmit = () => {
-    const trimmed = newTitle.trim();
-    if (trimmed) {
-      onAddSubtask(task, trimmed);
-      setNewTitle('');
-      setIsAdding(false);
-    }
+    const t = newTitle.trim();
+    if (t) { onAddSubtask(task, t); setNewTitle(''); setIsAdding(false); }
   };
 
-  const connectorColor = depth === 0 ? 'hsl(var(--primary))' : 'hsl(var(--border))';
+  const isRoot = depth === 0;
 
   return (
-    <div className="flex items-start gap-0">
-      <div data-node className="flex flex-col items-start gap-1">
-        <div
-          className="relative group flex items-center gap-2 px-3 py-2 rounded-lg border bg-card hover:shadow-md hover:border-primary/40 transition-all cursor-pointer"
-          style={{
-            borderLeftWidth: '3px',
-            borderLeftColor: progressColor,
-            minWidth: depth === 0 ? '260px' : '220px',
-          }}
-          onClick={(e) => { e.stopPropagation(); onSelectTask(task.id); }}
-        >
-          {hasChildren && (
+    <div
+      data-node
+      className="absolute transition-all duration-300 ease-out"
+      style={{
+        left: x,
+        top: y,
+        width: NODE_W,
+      }}
+    >
+      {/* Main card */}
+      <div
+        className={`
+          relative group rounded-xl border bg-card cursor-pointer
+          transition-all duration-200
+          hover:shadow-lg hover:border-primary/40
+          ${isRoot ? 'ring-1 ring-primary/20' : ''}
+        `}
+        style={{
+          borderLeftWidth: '3px',
+          borderLeftColor: statusColor,
+          minHeight: NODE_H,
+        }}
+        onClick={(e) => { e.stopPropagation(); onSelectTask(task.id); }}
+      >
+        <div className="px-3 py-2.5 flex items-start gap-2">
+          {/* Expand/collapse button */}
+          {hasChildren ? (
             <button
               onClick={(e) => { e.stopPropagation(); toggleExpand(task.id); }}
-              className="p-0.5 rounded hover:bg-muted transition-colors shrink-0"
+              className="p-0.5 rounded hover:bg-muted transition-colors shrink-0 mt-0.5"
             >
-              {isExpanded
+              {isExpanded && canExpand
                 ? <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
                 : <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
               }
             </button>
+          ) : (
+            <div className="w-4.5 shrink-0" />
           )}
-          {!hasChildren && <div className="w-4.5" />}
 
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-foreground truncate leading-tight flex items-center gap-1">{task.title}{task.recurrence && <Repeat className="w-3 h-3 text-primary shrink-0" />}</p>
+            {/* Title */}
+            <p className={`text-sm font-medium text-foreground truncate leading-tight flex items-center gap-1 ${isRoot ? 'text-base font-bold' : ''}`}>
+              {task.title}
+              {task.recurrence && <Repeat className="w-3 h-3 text-primary shrink-0" />}
+            </p>
+
+            {/* Badges */}
             <div className="flex items-center gap-1.5 mt-1">
               <StatusBadge status={task.status} />
               <PriorityBadge priority={task.priority} />
             </div>
+
+            {/* Progress bar for parents */}
             {hasChildren && (
               <div className="mt-1.5 flex items-center gap-2">
                 <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
-                  <div className="h-full rounded-full transition-all" style={{ width: `${progress}%`, backgroundColor: progressColor }} />
+                  <div
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{ width: `${progress}%`, backgroundColor: statusColor }}
+                  />
                 </div>
-                <span className="text-label font-medium text-muted-foreground whitespace-nowrap">{progress}%</span>
+                <span className="text-[10px] font-medium text-muted-foreground whitespace-nowrap">
+                  {doneDescendants}/{totalDescendants}
+                </span>
               </div>
             )}
-            {hasChildren && (
-              <p className="text-label text-muted-foreground mt-0.5">
-                {node.doneDescendants}/{node.totalDescendants} sous-tâche{node.totalDescendants !== 1 ? 's' : ''}
-              </p>
+
+            {/* Collapsed children count badge */}
+            {hasChildren && (!isExpanded || !canExpand) && (
+              <button
+                onClick={(e) => { e.stopPropagation(); toggleExpand(task.id); }}
+                className="mt-1 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-primary/10 text-primary text-[10px] font-semibold hover:bg-primary/20 transition-colors"
+              >
+                <Plus className="w-2.5 h-2.5" />
+                {children.length} sous-tâche{children.length > 1 ? 's' : ''}
+              </button>
             )}
           </div>
 
+          {/* Add subtask button */}
           <button
             onClick={(e) => { e.stopPropagation(); setIsAdding(true); }}
             className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-muted transition-all shrink-0"
@@ -511,56 +568,29 @@ function MindMapNode({ node, depth, expandedIds, toggleExpand, onSelectTask, onA
             <Plus className="w-3.5 h-3.5 text-muted-foreground" />
           </button>
         </div>
-
-        {isAdding && (
-          <div data-node className="flex items-center gap-1.5 ml-6" onClick={(e) => e.stopPropagation()}>
-            <input
-              ref={inputRef}
-              type="text"
-              value={newTitle}
-              onChange={(e) => setNewTitle(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleSubmit();
-                if (e.key === 'Escape') { setIsAdding(false); setNewTitle(''); }
-              }}
-              placeholder="Nom de la sous-tâche..."
-              className="px-2 py-1.5 text-xs border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary w-48"
-            />
-            <button onClick={handleSubmit} className="p-1 rounded hover:bg-primary/10 transition-colors" disabled={!newTitle.trim()}>
-              <Check className="w-3.5 h-3.5 text-primary" />
-            </button>
-            <button onClick={() => { setIsAdding(false); setNewTitle(''); }} className="p-1 rounded hover:bg-muted transition-colors">
-              <X className="w-3.5 h-3.5 text-muted-foreground" />
-            </button>
-          </div>
-        )}
       </div>
 
-      {hasChildren && isExpanded && (
-        <div className="flex items-start ml-0">
-          <div className="flex flex-col items-start justify-start pt-4">
-            <div className="w-6 h-px" style={{ backgroundColor: connectorColor }} />
-          </div>
-          <div className="relative flex flex-col gap-2">
-            {children.length > 1 && (
-              <div className="absolute left-0 top-0 bottom-0 w-px" style={{ backgroundColor: 'hsl(var(--border))' }} />
-            )}
-            {children.map((child) => (
-              <div key={child.task.id} className="flex items-start">
-                <div className="flex items-center shrink-0">
-                  <div className="w-4 h-px" style={{ backgroundColor: 'hsl(var(--border))' }} />
-                </div>
-                <MindMapNode
-                  node={child}
-                  depth={depth + 1}
-                  expandedIds={expandedIds}
-                  toggleExpand={toggleExpand}
-                  onSelectTask={onSelectTask}
-                  onAddSubtask={onAddSubtask}
-                />
-              </div>
-            ))}
-          </div>
+      {/* Inline add subtask */}
+      {isAdding && (
+        <div data-node className="flex items-center gap-1.5 mt-1.5" onClick={(e) => e.stopPropagation()}>
+          <input
+            ref={inputRef}
+            type="text"
+            value={newTitle}
+            onChange={(e) => setNewTitle(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleSubmit();
+              if (e.key === 'Escape') { setIsAdding(false); setNewTitle(''); }
+            }}
+            placeholder="Sous-tâche..."
+            className="flex-1 px-2 py-1.5 text-xs border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+          />
+          <button onClick={handleSubmit} className="p-1 rounded hover:bg-primary/10 transition-colors" disabled={!newTitle.trim()}>
+            <Check className="w-3.5 h-3.5 text-primary" />
+          </button>
+          <button onClick={() => { setIsAdding(false); setNewTitle(''); }} className="p-1 rounded hover:bg-muted transition-colors">
+            <X className="w-3.5 h-3.5 text-muted-foreground" />
+          </button>
         </div>
       )}
     </div>

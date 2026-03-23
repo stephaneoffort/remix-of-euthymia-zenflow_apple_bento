@@ -50,6 +50,8 @@ interface AppContextType extends AppState {
   moveTask: (taskId: string, newStatus: string) => void;
   addSpace: (name: string, icon: string, isPrivate?: boolean) => void;
   addProject: (name: string, spaceId: string, color: string) => void;
+  duplicateSpace: (spaceId: string) => void;
+  duplicateProject: (projectId: string) => void;
   renameSpace: (id: string, name: string) => void;
   renameProject: (id: string, name: string) => void;
   moveProject: (projectId: string, newSpaceId: string) => void;
@@ -446,6 +448,77 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const addProject = useCallback((name: string, spaceId: string, color: string) => {
     addProjectMutation.mutate({ name, spaceId, color });
   }, [addProjectMutation]);
+
+  // Duplicate space mutation
+  const duplicateSpaceMutation = useMutation({
+    mutationFn: async (spaceId: string) => {
+      const space = spaces.find(s => s.id === spaceId);
+      if (!space) throw new Error('Space not found');
+      const newSpaceId = `s_${Date.now()}`;
+      const { error } = await supabase.from('spaces').insert({
+        id: newSpaceId,
+        name: `${space.name} (copie)`,
+        icon: space.icon,
+        sort_order: spaces.length,
+        is_private: space.isPrivate,
+        owner_member_id: space.ownerMemberId || null,
+      });
+      if (error) throw error;
+      // Duplicate projects within the space
+      const spaceProjects = projects.filter(p => p.spaceId === spaceId);
+      for (const proj of spaceProjects) {
+        const newProjectId = `p_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+        const newListId = `l_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+        const { error: pErr } = await supabase.from('projects').insert({
+          id: newProjectId, name: proj.name, space_id: newSpaceId, color: proj.color, sort_order: proj.order,
+        });
+        if (pErr) throw pErr;
+        const { error: lErr } = await supabase.from('task_lists').insert({
+          id: newListId, name: 'Général', project_id: newProjectId, sort_order: 0,
+        });
+        if (lErr) throw lErr;
+      }
+      return newSpaceId;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['spaces'] });
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      queryClient.invalidateQueries({ queryKey: ['task_lists'] });
+      toast.success('Espace dupliqué');
+    },
+  });
+
+  const duplicateSpace = useCallback((spaceId: string) => {
+    duplicateSpaceMutation.mutate(spaceId);
+  }, [duplicateSpaceMutation]);
+
+  // Duplicate project mutation
+  const duplicateProjectMutation = useMutation({
+    mutationFn: async (projectId: string) => {
+      const project = projects.find(p => p.id === projectId);
+      if (!project) throw new Error('Project not found');
+      const newProjectId = `p_${Date.now()}`;
+      const newListId = `l_${Date.now()}`;
+      const { error: pErr } = await supabase.from('projects').insert({
+        id: newProjectId, name: `${project.name} (copie)`, space_id: project.spaceId, color: project.color, sort_order: projects.length,
+      });
+      if (pErr) throw pErr;
+      const { error: lErr } = await supabase.from('task_lists').insert({
+        id: newListId, name: 'Général', project_id: newProjectId, sort_order: 0,
+      });
+      if (lErr) throw lErr;
+      return newProjectId;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      queryClient.invalidateQueries({ queryKey: ['task_lists'] });
+      toast.success('Projet dupliqué');
+    },
+  });
+
+  const duplicateProject = useCallback((projectId: string) => {
+    duplicateProjectMutation.mutate(projectId);
+  }, [duplicateProjectMutation]);
 
   // Rename space mutation
   const renameSpaceMutation = useMutation({
@@ -849,6 +922,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     moveTask,
     addSpace,
     addProject,
+    duplicateSpace,
+    duplicateProject,
     renameSpace,
     renameProject,
     moveProject,
@@ -870,7 +945,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     isSpaceManager: isSpaceManagerFn,
     getSpaceManagers: getSpaceManagersFn,
     refreshSpaceAccess,
-  }), [accessibleSpaces, accessibleProjects, lists, accessibleTasks, teamMembers, customStatuses, allStatuses, spaceMembers, spaceManagers, selectedProjectId, selectedSpaceId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, setSelectedProjectId, setSelectedSpaceId, addTask, updateTask, deleteTask, addAttachment, deleteAttachment, moveTask, addSpace, addProject, renameSpace, renameProject, moveProject, deleteSpace, deleteProject, convertTaskToProject, reorderSpaces, reorderProjects, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb, getStatusLabel, canAccessSpace, isSpaceManagerFn, getSpaceManagersFn, refreshSpaceAccess]);
+  }), [accessibleSpaces, accessibleProjects, lists, accessibleTasks, teamMembers, customStatuses, allStatuses, spaceMembers, spaceManagers, selectedProjectId, selectedSpaceId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, setSelectedProjectId, setSelectedSpaceId, addTask, updateTask, deleteTask, addAttachment, deleteAttachment, moveTask, addSpace, addProject, duplicateSpace, duplicateProject, renameSpace, renameProject, moveProject, deleteSpace, deleteProject, convertTaskToProject, reorderSpaces, reorderProjects, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb, getStatusLabel, canAccessSpace, isSpaceManagerFn, getSpaceManagersFn, refreshSpaceAccess]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

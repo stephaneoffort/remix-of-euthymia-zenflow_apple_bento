@@ -484,7 +484,7 @@ export default function TaskDetailPanel() {
                     value={newLinkUrl}
                     onChange={e => setNewLinkUrl(e.target.value)}
                     placeholder="https://..."
-                    className="w-full text-sm bg-muted/50 border border-border rounded-md px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
+                    className="w-full text-sm text-foreground bg-muted/50 border border-border rounded-md px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground"
                     onKeyDown={e => {
                       if (e.key === 'Enter') handleAddLink();
                       if (e.key === 'Escape') { setAddingLink(false); setNewLinkUrl(''); setNewLinkName(''); }

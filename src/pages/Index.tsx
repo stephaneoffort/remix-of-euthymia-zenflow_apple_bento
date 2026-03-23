@@ -66,8 +66,6 @@ export default function Index() {
     setSelectedTaskId,
     projects,
     spaces,
-    tasks,
-    teamMembers,
     sidebarCollapsed,
     setSidebarCollapsed,
     advancedFilters,

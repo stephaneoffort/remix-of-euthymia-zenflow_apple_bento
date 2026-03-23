@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { MessageCircle, Menu, Plus, Home, Mic } from 'lucide-react';
 import { Priority, PRIORITY_LABELS } from '@/types';
@@ -14,7 +15,8 @@ interface MobileBottomNavProps {
 }
 
 export default function MobileBottomNav({ onOpenVoice }: MobileBottomNavProps) {
-  const { setSidebarCollapsed, addTask, selectedProjectId, getListsForProject, projects, spaces } = useApp();
+  const { setSidebarCollapsed, addTask, selectedProjectId, getListsForProject, projects, spaces, quickFilter } = useApp();
+  const { teamMemberId } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { totalUnread } = useChatNotifications();
@@ -42,7 +44,7 @@ export default function MobileBottomNav({ onOpenVoice }: MobileBottomNavProps) {
       priority: newPriority,
       dueDate: null,
       startDate: null,
-      assigneeIds: [],
+      assigneeIds: quickFilter === 'my_tasks' && teamMemberId ? [teamMemberId] : [],
       tags: [],
       parentTaskId: null,
       listId,

@@ -2,6 +2,7 @@ import DashboardView from "@/components/DashboardView";
 import VoiceTaskCreator from "@/components/VoiceTaskCreator";
 import React, { useState, useCallback } from "react";
 import { useApp } from "@/context/AppContext";
+import { useAuth } from "@/context/AuthContext";
 import AppSidebar from "@/components/AppSidebar";
 import KanbanBoard from "@/components/KanbanBoard";
 import ListView from "@/components/ListView";
@@ -78,6 +79,7 @@ export default function Index() {
     addTask,
     getListsForProject,
   } = useApp();
+  const { teamMemberId } = useAuth();
   const isMobile = useIsMobile();
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
@@ -108,7 +110,7 @@ export default function Index() {
       priority: "normal",
       dueDate: null,
       startDate: null,
-      assigneeIds: [],
+      assigneeIds: quickFilter === 'my_tasks' && teamMemberId ? [teamMemberId] : [],
       tags: [],
       parentTaskId: null,
       listId,

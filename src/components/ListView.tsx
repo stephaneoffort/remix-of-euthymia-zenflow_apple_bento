@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import EmptyState from '@/components/EmptyState';
 import { useApp } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
 import { PRIORITY_LABELS, Status, Priority } from '@/types';
 import { PriorityBadge, StatusBadge, AvatarGroup, SubtaskProgress } from '@/components/TaskBadges';
 import { ChevronRight, ChevronDown, ArrowUpDown, Plus, Repeat } from 'lucide-react';
@@ -11,7 +12,8 @@ type SortKey = 'title' | 'priority' | 'dueDate' | 'status';
 const PRIORITY_ORDER: Priority[] = ['urgent', 'high', 'normal', 'low'];
 
 export default function ListView() {
-  const { getFilteredTasks, setSelectedTaskId, getMemberById, tasks, addTask, selectedProjectId, getListsForProject, lists, projects } = useApp();
+  const { getFilteredTasks, setSelectedTaskId, getMemberById, tasks, addTask, selectedProjectId, getListsForProject, lists, projects, quickFilter } = useApp();
+  const { teamMemberId } = useAuth();
   const [sortKey, setSortKey] = useState<SortKey>('priority');
   const [sortAsc, setSortAsc] = useState(true);
   const [expandedTasks, setExpandedTasks] = useState<Set<string>>(new Set());
@@ -64,7 +66,7 @@ export default function ListView() {
       priority: 'normal',
       dueDate: null,
       startDate: null,
-      assigneeIds: [],
+      assigneeIds: quickFilter === 'my_tasks' && teamMemberId ? [teamMemberId] : [],
       tags: [],
       parentTaskId: null,
       listId,

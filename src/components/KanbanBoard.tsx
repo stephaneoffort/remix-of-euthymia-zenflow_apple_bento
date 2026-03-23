@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useApp } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
 import { Task } from '@/types';
 import { PriorityBadge, AvatarGroup, SubtaskProgress } from '@/components/TaskBadges';
 import { Plus, GripVertical, GripHorizontal, ChevronRight, ChevronsLeftRight, ChevronsRightLeft, Repeat, ArrowRightLeft } from 'lucide-react';
@@ -19,7 +20,8 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function KanbanBoard() {
-  const { getFilteredTasks, moveTask, setSelectedTaskId, getMemberById, addTask, selectedProjectId, selectedSpaceId, getListsForProject, tasks, allStatuses, getStatusLabel, getTasksForProject, projects, lists } = useApp();
+  const { getFilteredTasks, moveTask, setSelectedTaskId, getMemberById, addTask, selectedProjectId, selectedSpaceId, getListsForProject, tasks, allStatuses, getStatusLabel, getTasksForProject, projects, lists, quickFilter } = useApp();
+  const { teamMemberId } = useAuth();
 
   const getProjectName = useCallback((listId: string) => {
     const list = lists.find(l => l.id === listId);
@@ -126,7 +128,7 @@ export default function KanbanBoard() {
       priority: 'normal',
       dueDate: null,
       startDate: null,
-      assigneeIds: [],
+      assigneeIds: quickFilter === 'my_tasks' && teamMemberId ? [teamMemberId] : [],
       tags: [],
       parentTaskId: null,
       listId,

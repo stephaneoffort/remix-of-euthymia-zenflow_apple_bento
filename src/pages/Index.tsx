@@ -1,4 +1,5 @@
 import DashboardView from "@/components/DashboardView";
+import VoiceTaskCreator from "@/components/VoiceTaskCreator";
 import React, { useState, useCallback } from "react";
 import { useApp } from "@/context/AppContext";
 import AppSidebar from "@/components/AppSidebar";
@@ -35,6 +36,7 @@ import {
   Search,
   X,
   Keyboard,
+  Mic,
 } from "lucide-react";
 import NotificationsDropdown from "@/components/NotificationsDropdown";
 
@@ -83,6 +85,7 @@ export default function Index() {
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [quickAddTitle, setQuickAddTitle] = useState("");
+  const [voiceAddOpen, setVoiceAddOpen] = useState(false);
 
   // Keyboard shortcuts
   useKeyboardShortcuts({
@@ -421,9 +424,27 @@ export default function Index() {
             />
             <div className="flex items-center justify-between mt-3">
               <span className="text-xs text-muted-foreground">Entrée pour créer · Échap pour annuler</span>
+              <button
+                onClick={() => { setQuickAddOpen(false); setVoiceAddOpen(true); }}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                title="Dicter une tâche"
+              >
+                <Mic className="w-3.5 h-3.5" />
+                Dicter
+              </button>
             </div>
           </div>
         </div>
+      )}
+
+      {voiceAddOpen && (
+        <VoiceTaskCreator
+          onClose={() => setVoiceAddOpen(false)}
+          defaultListId={(() => {
+            const lists = selectedProjectId ? getListsForProject(selectedProjectId) : [];
+            return lists[0]?.id || "l1";
+          })()}
+        />
       )}
 
       {/* Shortcuts hint button — desktop only */}

@@ -355,7 +355,7 @@ export default function DashboardView() {
                 return (
                   <button
                     key={task.id}
-                    onClick={() => onTaskClick?.(task.id)}
+                    onClick={() => setSelectedTaskId(task.id)}
                     className="w-full text-left py-2.5 hover:bg-muted/50 transition-colors flex items-center gap-3 px-1 rounded-md"
                   >
                     <div className="min-w-0 flex-1">

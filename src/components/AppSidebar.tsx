@@ -185,7 +185,9 @@ export default function AppSidebar() {
       const projectId = e.dataTransfer.getData('projectId');
       const project = spaces.flatMap(s => getProjectsForSpace(s.id)).find(p => p.id === projectId);
       if (project && project.spaceId !== spaceId) {
+        const targetSpace = spaces.find(s => s.id === spaceId);
         moveProject(projectId, spaceId);
+        toast({ title: 'Projet déplacé', description: `« ${project.name} » → ${targetSpace?.icon || ''} ${targetSpace?.name || 'espace'}` });
       }
     }
   };

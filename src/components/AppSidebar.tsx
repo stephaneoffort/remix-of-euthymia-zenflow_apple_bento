@@ -182,7 +182,7 @@ export default function AppSidebar() {
     const type = e.dataTransfer.getData('type');
     if (type === 'project') {
       const projectId = e.dataTransfer.getData('projectId');
-      const project = lists.find(l => false) ? null : spaces.flatMap(s => getProjectsForSpace(s.id)).find(p => p.id === projectId);
+      const project = spaces.flatMap(s => getProjectsForSpace(s.id)).find(p => p.id === projectId);
       if (project && project.spaceId !== spaceId) {
         moveProject(projectId, spaceId);
       }

@@ -710,6 +710,10 @@ export default function AppSidebar() {
                       <Pencil className="w-4 h-4 mr-2" />
                       Renommer
                     </ContextMenuItem>
+                    <ContextMenuItem onClick={() => duplicateSpace(space.id)}>
+                      <Copy className="w-4 h-4 mr-2" />
+                      Dupliquer
+                    </ContextMenuItem>
                     {isAdmin && (
                       <>
                         <ContextMenuSeparator />

@@ -90,7 +90,7 @@ interface VoiceTaskCreatorProps {
 }
 
 export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId = null }: VoiceTaskCreatorProps) {
-  const { addTask, teamMembers, selectedProjectId, getListsForProject } = useApp();
+  const { addTask, teamMembers, selectedProjectId, getListsForProject, quickFilter } = useApp();
   const { teamMemberId } = useAuth();
 
   const [phase, setPhase] = useState<'idle' | 'listening' | 'parsing' | 'preview'>('idle');
@@ -223,6 +223,11 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
       })
       .filter(Boolean) as string[];
 
+    // Auto-assign current user if 'my_tasks' filter is active and no assignees detected
+    if (assigneeIds.length === 0 && quickFilter === 'my_tasks' && teamMemberId) {
+      assigneeIds.push(teamMemberId);
+    }
+
     // Create main task
     addTask({
       title: parsedTask.title,
@@ -274,7 +279,7 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
       : '';
     toast.success(`Tâche créée : "${parsedTask.title}"${subtaskMsg}`);
     onClose();
-  }, [parsedTask, addTask, teamMembers, listId, parentTaskId, onClose]);
+  }, [parsedTask, addTask, teamMembers, listId, parentTaskId, onClose, quickFilter, teamMemberId]);
 
   // ─── Cleanup on unmount ───
   useEffect(() => {

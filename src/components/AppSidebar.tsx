@@ -999,7 +999,7 @@ export default function AppSidebar() {
               <ChevronDown className="w-3.5 h-3.5 transition-transform duration-200 [[data-state=open]>&]:rotate-180" />
             </CollapsibleTrigger>
           </div>
-          <CollapsibleContent>
+          <CollapsibleContent className="overflow-hidden data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
             <div className="px-4 pb-2">
               <div className="flex gap-1 flex-wrap">
                 {teamMembers.map(m => (

@@ -36,6 +36,7 @@ import {
   Search,
   X,
   Keyboard,
+  Mic,
 } from "lucide-react";
 import NotificationsDropdown from "@/components/NotificationsDropdown";
 

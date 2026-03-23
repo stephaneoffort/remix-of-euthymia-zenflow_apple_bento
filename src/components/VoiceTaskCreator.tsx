@@ -90,7 +90,7 @@ interface VoiceTaskCreatorProps {
 }
 
 export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId = null }: VoiceTaskCreatorProps) {
-  const { addTask, teamMembers, selectedProjectId, getListsForProject } = useApp();
+  const { addTask, teamMembers, selectedProjectId, getListsForProject, quickFilter } = useApp();
   const { teamMemberId } = useAuth();
 
   const [phase, setPhase] = useState<'idle' | 'listening' | 'parsing' | 'preview'>('idle');

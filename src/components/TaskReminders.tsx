@@ -37,11 +37,11 @@ export default function TaskReminders({ taskId, hasStartDate, hasDueDate }: Task
   }, [taskId]);
 
   const fetchReminders = async () => {
-    const { data } = await supabase
+    const { data } = await (supabase as any)
       .from('task_reminders')
       .select('*')
       .eq('task_id', taskId);
-    setReminders(data || []);
+    setReminders((data as Reminder[]) || []);
     setLoading(false);
   };
 
@@ -51,11 +51,11 @@ export default function TaskReminders({ taskId, hasStartDate, hasDueDate }: Task
     );
 
     if (existing) {
-      await supabase.from('task_reminders').delete().eq('id', existing.id);
+      await (supabase as any).from('task_reminders').delete().eq('id', existing.id);
       setReminders(prev => prev.filter(r => r.id !== existing.id));
       toast({ title: 'Rappel supprimé' });
     } else {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('task_reminders')
         .insert({ task_id: taskId, reminder_type: reminderType, offset_key: offsetKey })
         .select()

@@ -52,6 +52,7 @@ interface AppContextType extends AppState {
   addProject: (name: string, spaceId: string, color: string) => void;
   renameSpace: (id: string, name: string) => void;
   renameProject: (id: string, name: string) => void;
+  moveProject: (projectId: string, newSpaceId: string) => void;
   deleteSpace: (id: string) => void;
   deleteProject: (id: string) => void;
   reorderSpaces: (orderedIds: string[]) => void;

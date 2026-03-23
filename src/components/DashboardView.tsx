@@ -47,48 +47,58 @@ function MyTasksCard({ tasks, onTaskClick }: { tasks: ReturnType<typeof Array<an
   const hasMore = tasks.length > COLLAPSED_COUNT;
 
   return (
-    <Card className="bg-card border-border">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-foreground flex items-center gap-2">
-          <Flame className="w-4 h-4 text-destructive" />
-          Mes tâches à traiter
-          <span className="text-xs text-muted-foreground font-normal ml-auto">{tasks.length}</span>
+    <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-lg overflow-hidden">
+      <CardHeader className="pb-3 pt-4 px-5">
+        <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2.5 tracking-wide uppercase">
+          <div className="p-1.5 rounded-md bg-destructive/10">
+            <Flame className="w-3.5 h-3.5 text-destructive" />
+          </div>
+          À traiter
+          <span className="ml-auto text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
+            {tasks.length}
+          </span>
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-0.5">
-          {visibleTasks.map((task: any) => {
+      <CardContent className="px-3 pb-3">
+        <div className="space-y-px">
+          {visibleTasks.map((task: any, index: number) => {
             const daysLeft = task.dueDate ? differenceInDays(parseISO(task.dueDate), new Date()) : null;
             const isOverdue = daysLeft !== null && daysLeft < 0;
             return (
-              <button
+              <motion.button
                 key={task.id}
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.04, duration: 0.25 }}
                 onClick={() => onTaskClick(task.id)}
-                className="w-full text-left py-1.5 hover:bg-muted/50 transition-colors flex items-center gap-2 px-1 rounded-md"
+                className="w-full text-left py-2.5 px-3 hover:bg-primary/5 transition-all duration-200 flex items-center gap-2.5 rounded-lg group"
               >
-                <p className="text-sm text-foreground truncate min-w-0 flex-1">{task.title}</p>
+                <div className="w-1 h-6 rounded-full shrink-0 opacity-60 group-hover:opacity-100 transition-opacity"
+                  style={{ backgroundColor: isOverdue ? 'hsl(0 84% 60%)' : 'hsl(var(--primary))' }}
+                />
+                <p className="text-sm text-foreground truncate min-w-0 flex-1 font-medium">{task.title}</p>
                 <PriorityBadge priority={task.priority} />
                 <StatusBadge status={task.status} />
                 {daysLeft !== null ? (
-                  <span className={`text-xs font-medium shrink-0 ${isOverdue ? 'text-destructive' : 'text-muted-foreground'}`}>
-                    {isOverdue ? `${Math.abs(daysLeft)}j retard` : daysLeft === 0 ? "Aujourd'hui" : `${daysLeft}j`}
+                  <span className={`text-[11px] font-semibold shrink-0 tabular-nums ${isOverdue ? 'text-destructive' : 'text-muted-foreground'}`}>
+                    {isOverdue ? `−${Math.abs(daysLeft)}j` : daysLeft === 0 ? "Auj." : `${daysLeft}j`}
                   </span>
                 ) : (
-                  <span className="text-xs text-muted-foreground shrink-0">—</span>
+                  <span className="text-[11px] text-muted-foreground/40 shrink-0">—</span>
                 )}
-              </button>
+              </motion.button>
             );
           })}
         </div>
         {hasMore && (
           <button
             onClick={() => setExpanded(!expanded)}
-            className="w-full mt-2 py-2 flex items-center justify-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 transition-colors rounded-md hover:bg-muted/50"
+            className="w-full mt-1.5 py-2 flex items-center justify-center gap-1.5 text-xs font-semibold text-primary/70 hover:text-primary transition-colors rounded-lg hover:bg-primary/5"
           >
             {expanded ? (
-              <>Voir moins <ChevronUp className="w-3.5 h-3.5" /></>
+              <>Réduire <ChevronUp className="w-3.5 h-3.5" /></>
             ) : (
-              <>Voir les {tasks.length - COLLAPSED_COUNT} autres <ChevronDown className="w-3.5 h-3.5" /></>
+              <>+{tasks.length - COLLAPSED_COUNT} autres <ChevronDown className="w-3.5 h-3.5" /></>
             )}
           </button>
         )}

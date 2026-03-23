@@ -814,7 +814,7 @@ function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {
                 </button>
               </div>
               {/* Metadata row */}
-              <div className="flex items-center gap-1.5 flex-wrap pl-[30px] sm:pl-[34px] pb-1.5 text-label">
+              <div className="flex items-center gap-1.5 flex-wrap pl-[30px] sm:pl-[34px] pb-1.5 text-xs">
                 <PriorityBadge priority={st.priority} />
                 {st.dueDate && (
                   <span className={`${isOverdue ? 'text-priority-urgent font-medium' : 'text-muted-foreground'}`}>

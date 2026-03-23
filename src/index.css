@@ -936,3 +936,12 @@
   border: none;
   border-top: 1px solid hsl(var(--border));
 }
+
+.subtask-date {
+  color: #777269;
+  transition: color 0.15s ease;
+}
+.subtask-date:hover,
+.subtask-date:active {
+  color: hsl(var(--foreground)) !important;
+}

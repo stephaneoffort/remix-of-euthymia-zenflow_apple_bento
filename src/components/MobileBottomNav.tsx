@@ -137,7 +137,7 @@ export default function MobileBottomNav() {
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={() => { setQuickAddOpen(false); setVoiceAddOpen(true); }}
+                    onClick={() => { setQuickAddOpen(false); setTimeout(() => setVoiceAddOpen(true), 350); }}
                     className="h-11 px-4"
                     title="Dicter une tâche"
                   >

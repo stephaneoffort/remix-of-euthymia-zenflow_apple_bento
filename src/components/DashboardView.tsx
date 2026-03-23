@@ -56,7 +56,7 @@ function MyTasksCard({ tasks, onTaskClick }: { tasks: ReturnType<typeof Array<an
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-1">
+        <div className="space-y-0.5">
           {visibleTasks.map((task: any) => {
             const daysLeft = task.dueDate ? differenceInDays(parseISO(task.dueDate), new Date()) : null;
             const isOverdue = daysLeft !== null && daysLeft < 0;

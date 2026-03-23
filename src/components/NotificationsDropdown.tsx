@@ -168,11 +168,31 @@ export default function NotificationsDropdown() {
         </button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-80 p-0">
-        <div className="px-4 py-3 border-b border-border">
-          <h3 className="font-semibold text-sm text-foreground">Notifications</h3>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {totalCount === 0 ? 'Aucune notification' : `${totalCount} notification${totalCount > 1 ? 's' : ''}`}
-          </p>
+        <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+          <div>
+            <h3 className="font-semibold text-sm text-foreground">Notifications</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {totalCount === 0 ? 'Aucune notification' : `${totalCount} notification${totalCount > 1 ? 's' : ''}`}
+            </p>
+          </div>
+          {pushSupported && (
+            <button
+              onClick={async () => {
+                if (pushSubscribed) {
+                  await pushUnsubscribe();
+                  toast({ title: 'Notifications push désactivées' });
+                } else {
+                  const ok = await pushSubscribe();
+                  toast({ title: ok ? 'Notifications push activées' : 'Permission refusée' });
+                }
+              }}
+              className={`p-1.5 rounded-md transition-colors ${pushSubscribed ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
+              title={pushSubscribed ? 'Désactiver les notifications push' : 'Activer les notifications push'}
+            >
+              {pushSubscribed ? <BellRing className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
+            </button>
+          )}
+        </div>
         </div>
         {totalCount > 0 ? (
           <ScrollArea className="max-h-80">

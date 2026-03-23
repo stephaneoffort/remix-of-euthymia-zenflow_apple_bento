@@ -674,6 +674,10 @@ export default function AppSidebar() {
                             <Pencil className="w-4 h-4 mr-2" />
                             Renommer
                           </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => duplicateSpace(space.id)}>
+                            <Copy className="w-4 h-4 mr-2" />
+                            Dupliquer
+                          </DropdownMenuItem>
                           {isAdmin && (
                             <>
                               <DropdownMenuSeparator />

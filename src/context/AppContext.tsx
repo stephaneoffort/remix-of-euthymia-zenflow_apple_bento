@@ -17,6 +17,8 @@ const EMPTY_FILTERS: AdvancedFilters = { statuses: [], priorities: [], assigneeI
 
 interface AppState {
   spaces: Space[];
+  archivedSpaces: Space[];
+  archivedProjects: Project[];
   projects: Project[];
   lists: TaskList[];
   tasks: Task[];
@@ -936,6 +938,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [spaces, teamMemberId]
   );
 
+  const archivedSpaces = useMemo(() =>
+    spaces.filter(s => s.isArchived),
+    [spaces]
+  );
+
+  const archivedProjects = useMemo(() =>
+    projects.filter(p => p.isArchived),
+    [projects]
+  );
+
   const accessibleProjectIds = useMemo(() => {
     const accessibleSpaceIds = new Set(accessibleSpaces.map(s => s.id));
     return new Set(projects.filter(p => accessibleSpaceIds.has(p.spaceId)).map(p => p.id));
@@ -957,6 +969,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo(() => ({
     spaces: accessibleSpaces,
+    archivedSpaces,
+    archivedProjects,
     projects: accessibleProjects,
     lists,
     tasks: accessibleTasks,
@@ -1013,7 +1027,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     isSpaceManager: isSpaceManagerFn,
     getSpaceManagers: getSpaceManagersFn,
     refreshSpaceAccess,
-  }), [accessibleSpaces, accessibleProjects, lists, accessibleTasks, teamMembers, customStatuses, allStatuses, spaceMembers, spaceManagers, selectedProjectId, selectedSpaceId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, setSelectedProjectId, setSelectedSpaceId, addTask, updateTask, deleteTask, addAttachment, deleteAttachment, moveTask, addSpace, addProject, duplicateSpace, duplicateProject, archiveSpace, archiveProject, renameSpace, renameProject, moveProject, deleteSpace, deleteProject, convertTaskToProject, reorderSpaces, reorderProjects, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb, getStatusLabel, canAccessSpace, isSpaceManagerFn, getSpaceManagersFn, refreshSpaceAccess]);
+  }), [accessibleSpaces, archivedSpaces, archivedProjects, accessibleProjects, lists, accessibleTasks, teamMembers, customStatuses, allStatuses, spaceMembers, spaceManagers, selectedProjectId, selectedSpaceId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, setSelectedProjectId, setSelectedSpaceId, addTask, updateTask, deleteTask, addAttachment, deleteAttachment, moveTask, addSpace, addProject, duplicateSpace, duplicateProject, archiveSpace, archiveProject, renameSpace, renameProject, moveProject, deleteSpace, deleteProject, convertTaskToProject, reorderSpaces, reorderProjects, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb, getStatusLabel, canAccessSpace, isSpaceManagerFn, getSpaceManagersFn, refreshSpaceAccess]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { MessageCircle, Menu, Plus, Home, Mic } from 'lucide-react';
 import { Priority, PRIORITY_LABELS } from '@/types';

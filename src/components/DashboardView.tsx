@@ -42,7 +42,7 @@ const fadeUp = {
 /* ─── My Tasks foldable card ─── */
 function MyTasksCard({ tasks, onTaskClick }: { tasks: ReturnType<typeof Array<any>>; onTaskClick: (id: string) => void }) {
   const [expanded, setExpanded] = useState(false);
-  const COLLAPSED_COUNT = 5;
+  const COLLAPSED_COUNT = 4;
   const visibleTasks = expanded ? tasks : tasks.slice(0, COLLAPSED_COUNT);
   const hasMore = tasks.length > COLLAPSED_COUNT;
 

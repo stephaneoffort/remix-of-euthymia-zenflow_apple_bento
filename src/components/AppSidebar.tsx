@@ -718,6 +718,10 @@ export default function AppSidebar() {
                       <Copy className="w-4 h-4 mr-2" />
                       Dupliquer
                     </ContextMenuItem>
+                    <ContextMenuItem onClick={() => archiveSpace(space.id)}>
+                      <Archive className="w-4 h-4 mr-2" />
+                      {space.isArchived ? 'Désarchiver' : 'Archiver'}
+                    </ContextMenuItem>
                     {isAdmin && (
                       <>
                         <ContextMenuSeparator />

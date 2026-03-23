@@ -61,7 +61,7 @@ export default function Settings() {
 
       <div className="max-w-3xl mx-auto p-6">
         <Tabs defaultValue="members">
-          <TabsList className="grid w-full grid-cols-5 mb-6">
+          <TabsList className="grid w-full grid-cols-6 mb-6">
             <TabsTrigger value="members" className="gap-2">
               <Users className="w-4 h-4" />
               <span className="hidden sm:inline">Membres</span>
@@ -81,6 +81,10 @@ export default function Settings() {
             <TabsTrigger value="data" className="gap-2">
               <DatabaseBackup className="w-4 h-4" />
               <span className="hidden sm:inline">Données</span>
+            </TabsTrigger>
+            <TabsTrigger value="push" className="gap-2">
+              <BellRing className="w-4 h-4" />
+              <span className="hidden sm:inline">Push</span>
             </TabsTrigger>
           </TabsList>
 
@@ -102,6 +106,10 @@ export default function Settings() {
 
           <TabsContent value="data">
             <DataExportImport />
+          </TabsContent>
+
+          <TabsContent value="push">
+            <PushDebugPanel />
           </TabsContent>
         </Tabs>
       </div>

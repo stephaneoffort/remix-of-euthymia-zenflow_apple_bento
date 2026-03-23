@@ -850,6 +850,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     moveProject,
     deleteSpace,
     deleteProject,
+    convertTaskToProject,
     reorderSpaces,
     reorderProjects,
     getSubtasks,

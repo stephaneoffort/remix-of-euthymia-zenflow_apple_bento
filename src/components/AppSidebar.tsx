@@ -815,6 +815,10 @@ export default function AppSidebar() {
                                     <Copy className="w-4 h-4 mr-2" />
                                     Dupliquer
                                   </ContextMenuItem>
+                                  <ContextMenuItem onClick={() => archiveProject(project.id)}>
+                                    <Archive className="w-4 h-4 mr-2" />
+                                    {project.isArchived ? 'Désarchiver' : 'Archiver'}
+                                  </ContextMenuItem>
                                   {spaces.filter(s => s.id !== space.id).length > 0 && (
                                     <ContextMenuSub>
                                       <ContextMenuSubTrigger>

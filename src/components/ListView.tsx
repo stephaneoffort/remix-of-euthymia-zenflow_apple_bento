@@ -124,7 +124,7 @@ export default function ListView() {
                 </div>
                 <div className="flex items-center justify-between mt-1.5">
                   {task.dueDate ? (
-                    <span className={`text-xs ${isOverdue ? 'text-priority-urgent font-medium' : 'text-muted-foreground'}`}>
+                    <span className={`text-xs ${isOverdue ? 'text-priority-urgent font-medium' : 'text-foreground/60'}`}>
                       {new Date(task.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                     </span>
                   ) : <span />}
@@ -222,10 +222,10 @@ export default function ListView() {
           </td>
           <td className="py-2.5 px-3">
             {task.dueDate ? (
-              <span className={`text-sm ${isOverdue ? 'text-priority-urgent font-medium' : 'text-muted-foreground'}`}>
+              <span className={`text-sm ${isOverdue ? 'text-priority-urgent font-medium' : 'text-foreground/60'}`}>
                 {new Date(task.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
               </span>
-            ) : <span className="text-muted-foreground text-sm">—</span>}
+            ) : <span className="text-foreground/40 text-sm">—</span>}
           </td>
         </tr>
         {isExpanded && subtasks.map(st => renderRow(st, depth + 1))}

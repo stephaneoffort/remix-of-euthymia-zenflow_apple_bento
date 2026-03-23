@@ -690,7 +690,7 @@ export default function TaskDetailPanel() {
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-medium text-foreground truncate">{author?.name || 'Inconnu'}</span>
-                          <span className="text-label text-muted-foreground shrink-0">{new Date(c.createdAt).toLocaleDateString('fr-FR')}</span>
+                          <span className="text-xs text-foreground/50 shrink-0">{new Date(c.createdAt).toLocaleDateString('fr-FR')}</span>
                         </div>
                         <RichTextDisplay content={c.content} className="text-sm mt-0.5 break-words" />
                       </div>
@@ -814,10 +814,10 @@ function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {
                 </button>
               </div>
               {/* Metadata row */}
-              <div className="flex items-center gap-1.5 flex-wrap pl-[30px] sm:pl-[34px] pb-1.5 text-label">
+              <div className="flex items-center gap-1.5 flex-wrap pl-[30px] sm:pl-[34px] pb-1.5 text-xs">
                 <PriorityBadge priority={st.priority} />
                 {st.dueDate && (
-                  <span className={`${isOverdue ? 'text-priority-urgent font-medium' : 'text-muted-foreground'}`}>
+                  <span className={`text-xs ${isOverdue ? 'text-priority-urgent font-medium' : 'text-foreground/60'}`}>
                     {new Date(st.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                   </span>
                 )}

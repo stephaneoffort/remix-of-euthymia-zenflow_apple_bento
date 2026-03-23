@@ -182,8 +182,18 @@ export default function NotificationsDropdown() {
                   await pushUnsubscribe();
                   toast({ title: 'Notifications push désactivées' });
                 } else {
-                  const ok = await pushSubscribe();
-                  toast({ title: ok ? 'Notifications push activées' : 'Permission refusée' });
+                  const result = await pushSubscribe();
+                  toast({
+                    title: result.ok
+                      ? 'Notifications push activées'
+                      : result.reason === 'permission_denied'
+                        ? 'Permission refusée'
+                        : result.reason === 'db_error'
+                          ? "Abonnement créé côté navigateur, mais l'enregistrement a échoué"
+                          : result.reason === 'unsupported'
+                            ? 'Notifications push non prises en charge'
+                            : "Impossible d'activer les notifications push",
+                  });
                 }
               }}
               className={`p-1.5 rounded-md transition-colors ${pushSubscribed ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}

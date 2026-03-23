@@ -436,6 +436,16 @@ export default function Index() {
         </div>
       )}
 
+      {voiceAddOpen && (
+        <VoiceTaskCreator
+          onClose={() => setVoiceAddOpen(false)}
+          defaultListId={(() => {
+            const lists = selectedProjectId ? getListsForProject(selectedProjectId) : [];
+            return lists[0]?.id || "l1";
+          })()}
+        />
+      )}
+
       {/* Shortcuts hint button — desktop only */}
       {!isMobile && (
         <button

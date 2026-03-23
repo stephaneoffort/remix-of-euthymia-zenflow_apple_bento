@@ -807,6 +807,7 @@ export default function AppSidebar() {
                                     <Copy className="w-4 h-4 mr-2" />
                                     Dupliquer
                                   </ContextMenuItem>
+                                  {spaces.filter(s => s.id !== space.id).length > 0 && (
                                     <ContextMenuSub>
                                       <ContextMenuSubTrigger>
                                         <FolderInput className="w-4 h-4 mr-2" />

@@ -858,6 +858,7 @@ export default function AppSidebar() {
                                     <Copy className="w-4 h-4 mr-2" />
                                     Dupliquer
                                   </DropdownMenuItem>
+                                  {spaces.filter(s => s.id !== space.id).length > 0 && (
                                     <DropdownMenuSub>
                                       <DropdownMenuSubTrigger>
                                         <FolderInput className="w-4 h-4 mr-2" />

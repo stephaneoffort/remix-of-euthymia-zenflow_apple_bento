@@ -70,7 +70,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [palette]);
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, palette, setPalette, savePaletteToDb }}>
+    <ThemeContext.Provider value={{ theme, setTheme, palette, setPalette }}>
       {children}
     </ThemeContext.Provider>
   );

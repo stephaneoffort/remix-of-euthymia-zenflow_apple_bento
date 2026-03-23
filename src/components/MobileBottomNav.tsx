@@ -19,7 +19,6 @@ export default function MobileBottomNav({ onOpenVoice }: MobileBottomNavProps) {
   const location = useLocation();
   const { totalUnread } = useChatNotifications();
   const [quickAddOpen, setQuickAddOpen] = useState(false);
-  const [voiceAddOpen, setVoiceAddOpen] = useState(false);
 
   const [newTitle, setNewTitle] = useState('');
   const [newPriority, setNewPriority] = useState<Priority>('normal');

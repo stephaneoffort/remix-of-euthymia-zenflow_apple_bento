@@ -227,7 +227,7 @@ export default function DashboardView() {
       <section>
         <div className="mb-4">
           <h1 className="text-xl sm:text-2xl font-bold text-foreground">
-            {greeting}, {firstName} 👋
+            {greeting}, {firstName}
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
             {myPendingTasks.length === 0

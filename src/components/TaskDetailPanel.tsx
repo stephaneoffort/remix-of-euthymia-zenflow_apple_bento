@@ -546,6 +546,18 @@ export default function TaskDetailPanel() {
               </div>
             </div>
 
+            {/* Rappels */}
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1 block">
+                <Bell className="w-3 h-3" /> Rappels
+              </label>
+              <TaskReminders
+                taskId={task.id}
+                hasStartDate={!!task.startDate}
+                hasDueDate={!!task.dueDate}
+              />
+            </div>
+
             {/* Attachments & Links */}
             <div>
               <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1">

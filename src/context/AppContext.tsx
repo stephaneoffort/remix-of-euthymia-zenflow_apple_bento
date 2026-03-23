@@ -553,6 +553,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     toast.success(`"${task.title}" converti en projet`);
   }, [tasks, projects, queryClient]);
 
+  const deleteSpaceMutation = useMutation({
     mutationFn: async (id: string) => {
       const spaceProjects = projects.filter(p => p.spaceId === id);
       for (const proj of spaceProjects) {

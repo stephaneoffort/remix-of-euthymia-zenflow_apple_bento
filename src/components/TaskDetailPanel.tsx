@@ -135,7 +135,7 @@ function DateTimeField({ value, onChange }: { value: string | null | undefined; 
 
 
 export default function TaskDetailPanel() {
-  const { selectedTaskId, setSelectedTaskId, getTaskById, updateTask, deleteTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks, teamMembers, allStatuses, getStatusLabel, addAttachment, deleteAttachment, projects, spaces, getListsForProject, convertTaskToProject } = useApp();
+  const { selectedTaskId, setSelectedTaskId, setSelectedProjectId, getTaskById, updateTask, deleteTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks, teamMembers, allStatuses, getStatusLabel, addAttachment, deleteAttachment, projects, spaces, getListsForProject, convertTaskToProject } = useApp();
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [addingSubtaskFor, setAddingSubtaskFor] = useState<string | null>(null);
   const [newComment, setNewComment] = useState('');
@@ -407,12 +407,13 @@ export default function TaskDetailPanel() {
                   return (
                     <select
                       value={currentProjectId}
-                      onChange={e => {
+                       onChange={e => {
                         const targetProjectId = e.target.value;
                         if (targetProjectId === currentProjectId) return;
                         const targetLists = getListsForProject(targetProjectId);
                         if (targetLists.length === 0) return;
                         updateTask(task.id, { listId: targetLists[0].id });
+                        setSelectedProjectId(targetProjectId);
                       }}
                       className="w-full text-sm text-foreground bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
                     >

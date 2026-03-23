@@ -520,7 +520,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const moveProject = useCallback((projectId: string, newSpaceId: string) => {
     moveProjectMutation.mutate({ projectId, newSpaceId });
-  }, [moveProjectMutation]);
+    // Navigate to the moved project immediately
+    setSelectedProjectId(projectId);
+  }, [moveProjectMutation, setSelectedProjectId]);
 
   // Convert task to project: create project + list, move task & subtasks
   const convertTaskToProject = useCallback(async (taskId: string, spaceId: string, color: string = '#6366f1') => {
@@ -547,11 +549,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     // Delete the original parent task
     await supabase.from('tasks').delete().eq('id', taskId);
     // Refresh
-    queryClient.invalidateQueries({ queryKey: ['projects'] });
-    queryClient.invalidateQueries({ queryKey: ['task_lists'] });
-    queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    await queryClient.invalidateQueries({ queryKey: ['projects'] });
+    await queryClient.invalidateQueries({ queryKey: ['task_lists'] });
+    await queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    // Navigate to the new project
+    setSelectedProjectId(projectId);
     toast.success(`"${task.title}" converti en projet`);
-  }, [tasks, projects, queryClient]);
+  }, [tasks, projects, queryClient, setSelectedProjectId]);
 
   const deleteSpaceMutation = useMutation({
     mutationFn: async (id: string) => {

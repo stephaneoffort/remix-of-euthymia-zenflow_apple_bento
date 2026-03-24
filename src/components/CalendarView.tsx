@@ -376,9 +376,6 @@ export default function CalendarView() {
 
   // ─── Mobile: uses selectedDay for navigation ───
   if (isMobile) {
-    const mobileWeekDays = useMemo(() => getWeekDays(selectedDay), [selectedDay]);
-    const selectedDateStr = toDateStr(selectedDay);
-    const selectedDayTasks = tasksByDate.get(selectedDateStr) || [];
 
     const navigateMobile = (dir: number) => {
       const d = new Date(selectedDay);

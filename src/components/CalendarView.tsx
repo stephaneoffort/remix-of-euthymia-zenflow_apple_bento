@@ -182,7 +182,7 @@ function DroppableDay({ dateStr, isCurrentMonth, isToday, dayNum, children, onAd
 
 // ─── Mobile components ───
 
-function MobileTaskCard({ task, onClick, members }: { task: Task; onClick: () => void; members: { id: string; name: string; avatarColor: string }[] }) {
+function MobileTaskCard({ task, onClick, members, allTasks }: { task: Task; onClick: () => void; members: { id: string; name: string; avatarColor: string }[]; allTasks: Task[] }) {
   const assignees = members.filter(m => task.assigneeIds.includes(m.id));
 
   return (

@@ -531,7 +531,7 @@ function NodeCard({ positioned, expandedIds, visibleDepth, toggleExpand, onSelec
         style={{
           borderLeftWidth: '3px',
           borderLeftColor: statusColor,
-          minHeight: NODE_H,
+          minHeight: NODE_MIN_H,
         }}
         onClick={(e) => { e.stopPropagation(); onSelectTask(task.id); }}
       >

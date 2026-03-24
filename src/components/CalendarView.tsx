@@ -248,7 +248,15 @@ export default function CalendarView() {
   const [addingForDate, setAddingForDate] = useState<string | null>(null);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
-  const [mode, setMode] = useState<CalendarMode>('month');
+  const [mode, setMode] = useState<CalendarMode>(() => {
+    const saved = localStorage.getItem('euthymia_calendar_mode');
+    return (saved === 'day' || saved === 'week' || saved === 'month') ? saved : 'month';
+  });
+
+  const handleModeChange = (m: CalendarMode) => {
+    setMode(m);
+    localStorage.setItem('euthymia_calendar_mode', m);
+  };
   const isMobile = useIsMobile();
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
@@ -420,7 +428,7 @@ export default function CalendarView() {
               </PopoverContent>
             </Popover>
             <div className="flex items-center gap-1">
-              <ModeSwitcher mode={mode} onChange={setMode} compact />
+              <ModeSwitcher mode={mode} onChange={handleModeChange} compact />
               <button onClick={exportToICS} className="p-1.5 hover:bg-muted rounded-md transition-colors"><Download className="w-4 h-4 text-muted-foreground" /></button>
               <button onClick={() => navigateMobile(-1)} className="p-1.5 hover:bg-muted rounded-md transition-colors"><ChevronLeft className="w-4 h-4" /></button>
               <button onClick={() => setSelectedDay(new Date())} className="px-2 py-1 text-xs hover:bg-muted rounded-md transition-colors font-medium">Auj.</button>
@@ -465,7 +473,7 @@ export default function CalendarView() {
           <div className="flex items-center justify-between px-3 py-2">
             <span className="text-sm font-bold text-foreground">{mobileTitle}</span>
             <div className="flex items-center gap-1">
-              <ModeSwitcher mode={mode} onChange={setMode} compact />
+              <ModeSwitcher mode={mode} onChange={handleModeChange} compact />
               <button onClick={() => navigateMobile(-1)} className="p-1.5 hover:bg-muted rounded-md transition-colors"><ChevronLeft className="w-4 h-4" /></button>
               <button onClick={() => setSelectedDay(new Date())} className="px-2 py-1 text-xs hover:bg-muted rounded-md transition-colors font-medium">Auj.</button>
               <button onClick={() => navigateMobile(1)} className="p-1.5 hover:bg-muted rounded-md transition-colors"><ChevronRight className="w-4 h-4" /></button>
@@ -492,7 +500,7 @@ export default function CalendarView() {
             </PopoverContent>
           </Popover>
           <div className="flex items-center gap-1">
-            <ModeSwitcher mode={mode} onChange={setMode} compact />
+            <ModeSwitcher mode={mode} onChange={handleModeChange} compact />
             <button onClick={exportToICS} className="p-1.5 hover:bg-muted rounded-md transition-colors"><Download className="w-4 h-4 text-muted-foreground" /></button>
             <button onClick={() => navigateMobile(-1)} className="p-1.5 hover:bg-muted rounded-md transition-colors"><ChevronLeft className="w-4 h-4" /></button>
             <button onClick={() => setSelectedDay(new Date())} className="px-2 py-1 text-xs hover:bg-muted rounded-md transition-colors font-medium">Auj.</button>
@@ -543,7 +551,7 @@ export default function CalendarView() {
             <MonthYearPicker year={year} month={month} onSelect={(y, m) => setCurrentDate(new Date(y, m, 1))} />
           </PopoverContent>
         </Popover>
-        <ModeSwitcher mode={mode} onChange={setMode} />
+        <ModeSwitcher mode={mode} onChange={handleModeChange} />
       </div>
       <div className="flex items-center gap-2">
         <Tooltip>

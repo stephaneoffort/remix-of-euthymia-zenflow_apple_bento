@@ -78,6 +78,7 @@ interface Positioned {
   x: number;
   y: number;
   children: Positioned[];
+  height: number;
 }
 
 function layoutTree(nodes: TreeNode[], expandedIds: Set<string>, visibleDepth: number): { positioned: Positioned[]; width: number; height: number } {

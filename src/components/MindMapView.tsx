@@ -553,7 +553,7 @@ function NodeCard({ positioned, expandedIds, visibleDepth, toggleExpand, onSelec
 
           <div className="flex-1 min-w-0">
             {/* Title */}
-            <p className={`text-sm font-medium text-foreground truncate leading-tight flex items-center gap-1 ${isRoot ? 'text-base font-bold' : ''}`}>
+            <p className={`text-sm font-medium text-foreground leading-tight flex items-center gap-1 ${isRoot ? 'text-base font-bold' : ''}`}>
               {task.title}
               {task.recurrence && <Repeat className="w-3 h-3 text-primary shrink-0" />}
             </p>

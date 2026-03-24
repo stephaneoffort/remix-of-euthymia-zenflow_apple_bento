@@ -67,10 +67,10 @@ function buildTree(tasks: Task[]): { roots: TreeNode[]; maxDepth: number } {
 }
 
 /* ─── Layout constants ─── */
-const NODE_W = 220;
-const NODE_H = 72;
+const NODE_W = 260;
+const NODE_MIN_H = 72;
 const H_GAP = 80;
-const V_GAP = 16;
+const V_GAP = 20;
 
 /* ─── Position calculator ─── */
 interface Positioned {

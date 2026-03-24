@@ -196,7 +196,16 @@ function MobileTaskCard({ task, onClick, members, allTasks }: { task: Task; onCl
     >
       <div className="flex items-start justify-between gap-2">
         <p className="text-sm font-medium text-foreground leading-tight flex-1 flex items-center gap-1.5">
-          {task.parentTaskId && <CornerDownRight className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />}
+          {task.parentTaskId && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <CornerDownRight className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
+              </TooltipTrigger>
+              <TooltipContent side="top" className="text-xs">
+                Sous-tâche de : {allTasks.find(t => t.id === task.parentTaskId)?.title ?? 'Tâche parente'}
+              </TooltipContent>
+            </Tooltip>
+          )}
           {task.title}
         </p>
         <span className={`shrink-0 px-1.5 py-0.5 rounded text-label font-medium ${PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.normal}`}>

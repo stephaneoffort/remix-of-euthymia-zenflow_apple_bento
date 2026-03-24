@@ -75,7 +75,7 @@ const STATUS_LABELS: Record<string, string> = {
 
 // ─── Desktop components ───
 
-function DraggableTask({ task, onClick, members }: { task: Task; onClick: () => void; members: { id: string; name: string; avatarColor: string }[] }) {
+function DraggableTask({ task, onClick, members, allTasks }: { task: Task; onClick: () => void; members: { id: string; name: string; avatarColor: string }[]; allTasks: Task[] }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: task.id });
   const assignees = members.filter(m => task.assigneeIds.includes(m.id));
 
@@ -93,7 +93,16 @@ function DraggableTask({ task, onClick, members }: { task: Task; onClick: () => 
               : 'bg-primary/10 text-primary hover:bg-primary/20'
           } ${isDragging ? 'opacity-30' : ''}`}
         >
-          {task.parentTaskId && <CornerDownRight className="w-3 h-3 shrink-0 opacity-60" />}
+          {task.parentTaskId && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <CornerDownRight className="w-3 h-3 shrink-0 opacity-60" />
+              </TooltipTrigger>
+              <TooltipContent side="top" className="text-xs">
+                Sous-tâche de : {allTasks.find(t => t.id === task.parentTaskId)?.title ?? 'Tâche parente'}
+              </TooltipContent>
+            </Tooltip>
+          )}
           {task.recurrence && <Repeat className="w-3 h-3 shrink-0" />}
           <span className="truncate">{task.title}</span>
         </div>
@@ -173,7 +182,7 @@ function DroppableDay({ dateStr, isCurrentMonth, isToday, dayNum, children, onAd
 
 // ─── Mobile components ───
 
-function MobileTaskCard({ task, onClick, members }: { task: Task; onClick: () => void; members: { id: string; name: string; avatarColor: string }[] }) {
+function MobileTaskCard({ task, onClick, members, allTasks }: { task: Task; onClick: () => void; members: { id: string; name: string; avatarColor: string }[]; allTasks: Task[] }) {
   const assignees = members.filter(m => task.assigneeIds.includes(m.id));
 
   return (
@@ -187,7 +196,16 @@ function MobileTaskCard({ task, onClick, members }: { task: Task; onClick: () =>
     >
       <div className="flex items-start justify-between gap-2">
         <p className="text-sm font-medium text-foreground leading-tight flex-1 flex items-center gap-1.5">
-          {task.parentTaskId && <CornerDownRight className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />}
+          {task.parentTaskId && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <CornerDownRight className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
+              </TooltipTrigger>
+              <TooltipContent side="top" className="text-xs">
+                Sous-tâche de : {allTasks.find(t => t.id === task.parentTaskId)?.title ?? 'Tâche parente'}
+              </TooltipContent>
+            </Tooltip>
+          )}
           {task.title}
         </p>
         <span className={`shrink-0 px-1.5 py-0.5 rounded text-label font-medium ${PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.normal}`}>
@@ -448,7 +466,7 @@ export default function CalendarView() {
             <EmptyState variant="calendar" />
           ) : (
             selectedDayTasks.map(t => (
-              <MobileTaskCard key={t.id} task={t} onClick={() => setSelectedTaskId(t.id)} members={teamMembers} />
+              <MobileTaskCard key={t.id} task={t} onClick={() => setSelectedTaskId(t.id)} members={teamMembers} allTasks={allTasks} />
             ))
           )}
 
@@ -536,7 +554,7 @@ export default function CalendarView() {
             return (
               <DroppableDay key={i} dateStr={dateStr} isCurrentMonth={day.isCurrentMonth} isToday={isToday} dayNum={day.date.getDate()} onAddClick={() => setAddingForDate(dateStr)}>
                 {dayTasks.slice(0, 3).map(t => (
-                  <DraggableTask key={t.id} task={t} onClick={() => setSelectedTaskId(t.id)} members={teamMembers} />
+                  <DraggableTask key={t.id} task={t} onClick={() => setSelectedTaskId(t.id)} members={teamMembers} allTasks={allTasks} />
                 ))}
                 {dayTasks.length > 3 && (
                   <span className="text-label text-muted-foreground px-1">+{dayTasks.length - 3}</span>

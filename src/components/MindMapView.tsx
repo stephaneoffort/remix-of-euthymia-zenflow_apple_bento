@@ -67,10 +67,10 @@ function buildTree(tasks: Task[]): { roots: TreeNode[]; maxDepth: number } {
 }
 
 /* ─── Layout constants ─── */
-const NODE_W = 220;
-const NODE_H = 72;
+const NODE_W = 260;
+const NODE_MIN_H = 72;
 const H_GAP = 80;
-const V_GAP = 16;
+const V_GAP = 20;
 
 /* ─── Position calculator ─── */
 interface Positioned {
@@ -78,6 +78,7 @@ interface Positioned {
   x: number;
   y: number;
   children: Positioned[];
+  height: number;
 }
 
 function layoutTree(nodes: TreeNode[], expandedIds: Set<string>, visibleDepth: number): { positioned: Positioned[]; width: number; height: number } {
@@ -88,10 +89,20 @@ function layoutTree(nodes: TreeNode[], expandedIds: Set<string>, visibleDepth: n
     const isExpanded = expandedIds.has(node.task.id);
     const showChildren = isExpanded && depth < visibleDepth && node.children.length > 0;
 
+    // Estimate node height based on title length and content
+    const titleLen = node.task.title.length;
+    const charsPerLine = 28;
+    const titleLines = Math.ceil(titleLen / charsPerLine);
+    const baseH = 52; // padding + badges
+    const titleH = titleLines * 18; // ~18px per line
+    const progressH = node.children.length > 0 ? 20 : 0;
+    const collapseH = node.children.length > 0 && (!isExpanded || depth >= visibleDepth) ? 22 : 0;
+    const nodeH = Math.max(NODE_MIN_H, baseH + titleH + progressH + collapseH);
+
     if (!showChildren) {
       const y = currentY;
-      currentY += NODE_H + V_GAP;
-      return { node, x, y, children: [] };
+      currentY += nodeH + V_GAP;
+      return { node, x, y, children: [], height: nodeH };
     }
 
     const childPositions = node.children.map(c => measure(c, depth + 1));
@@ -99,7 +110,7 @@ function layoutTree(nodes: TreeNode[], expandedIds: Set<string>, visibleDepth: n
     const lastChildY = childPositions[childPositions.length - 1].y;
     const y = Math.round((firstChildY + lastChildY) / 2);
 
-    return { node, x, y, children: childPositions };
+    return { node, x, y, children: childPositions, height: nodeH };
   }
 
   const positioned: Positioned[] = [];
@@ -111,7 +122,7 @@ function layoutTree(nodes: TreeNode[], expandedIds: Set<string>, visibleDepth: n
   let maxX = 0, maxY = 0;
   function walk(p: Positioned) {
     if (p.x + NODE_W > maxX) maxX = p.x + NODE_W;
-    if (p.y + NODE_H > maxY) maxY = p.y + NODE_H;
+    if (p.y + p.height > maxY) maxY = p.y + p.height;
     p.children.forEach(walk);
   }
   positioned.forEach(walk);
@@ -122,9 +133,9 @@ function layoutTree(nodes: TreeNode[], expandedIds: Set<string>, visibleDepth: n
 /* ─── SVG connector (bezier curve) ─── */
 function Connector({ from, to }: { from: Positioned; to: Positioned }) {
   const x1 = from.x + NODE_W;
-  const y1 = from.y + NODE_H / 2;
+  const y1 = from.y + from.height / 2;
   const x2 = to.x;
-  const y2 = to.y + NODE_H / 2;
+  const y2 = to.y + to.height / 2;
   const midX = (x1 + x2) / 2;
 
   const statusColor = STATUS_COLORS[to.node.task.status] || 'hsl(var(--border))';
@@ -520,7 +531,7 @@ function NodeCard({ positioned, expandedIds, visibleDepth, toggleExpand, onSelec
         style={{
           borderLeftWidth: '3px',
           borderLeftColor: statusColor,
-          minHeight: NODE_H,
+          minHeight: NODE_MIN_H,
         }}
         onClick={(e) => { e.stopPropagation(); onSelectTask(task.id); }}
       >
@@ -542,7 +553,7 @@ function NodeCard({ positioned, expandedIds, visibleDepth, toggleExpand, onSelec
 
           <div className="flex-1 min-w-0">
             {/* Title */}
-            <p className={`text-sm font-medium text-foreground truncate leading-tight flex items-center gap-1 ${isRoot ? 'text-base font-bold' : ''}`}>
+            <p className={`text-sm font-medium text-foreground leading-tight flex items-center gap-1 ${isRoot ? 'text-base font-bold' : ''}`}>
               {task.title}
               {task.recurrence && <Repeat className="w-3 h-3 text-primary shrink-0" />}
             </p>

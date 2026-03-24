@@ -133,9 +133,9 @@ function layoutTree(nodes: TreeNode[], expandedIds: Set<string>, visibleDepth: n
 /* ─── SVG connector (bezier curve) ─── */
 function Connector({ from, to }: { from: Positioned; to: Positioned }) {
   const x1 = from.x + NODE_W;
-  const y1 = from.y + NODE_H / 2;
+  const y1 = from.y + from.height / 2;
   const x2 = to.x;
-  const y2 = to.y + NODE_H / 2;
+  const y2 = to.y + to.height / 2;
   const midX = (x1 + x2) / 2;
 
   const statusColor = STATUS_COLORS[to.node.task.status] || 'hsl(var(--border))';

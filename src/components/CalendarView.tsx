@@ -248,7 +248,15 @@ export default function CalendarView() {
   const [addingForDate, setAddingForDate] = useState<string | null>(null);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
-  const [mode, setMode] = useState<CalendarMode>('month');
+  const [mode, setMode] = useState<CalendarMode>(() => {
+    const saved = localStorage.getItem('euthymia_calendar_mode');
+    return (saved === 'day' || saved === 'week' || saved === 'month') ? saved : 'month';
+  });
+
+  const handleModeChange = (m: CalendarMode) => {
+    setMode(m);
+    localStorage.setItem('euthymia_calendar_mode', m);
+  };
   const isMobile = useIsMobile();
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));

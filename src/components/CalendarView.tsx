@@ -75,7 +75,7 @@ const STATUS_LABELS: Record<string, string> = {
 
 // ─── Desktop components ───
 
-function DraggableTask({ task, onClick, members }: { task: Task; onClick: () => void; members: { id: string; name: string; avatarColor: string }[] }) {
+function DraggableTask({ task, onClick, members, allTasks }: { task: Task; onClick: () => void; members: { id: string; name: string; avatarColor: string }[]; allTasks: Task[] }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: task.id });
   const assignees = members.filter(m => task.assigneeIds.includes(m.id));
 

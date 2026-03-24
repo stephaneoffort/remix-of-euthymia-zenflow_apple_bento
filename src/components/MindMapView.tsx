@@ -122,7 +122,7 @@ function layoutTree(nodes: TreeNode[], expandedIds: Set<string>, visibleDepth: n
   let maxX = 0, maxY = 0;
   function walk(p: Positioned) {
     if (p.x + NODE_W > maxX) maxX = p.x + NODE_W;
-    if (p.y + NODE_H > maxY) maxY = p.y + NODE_H;
+    if (p.y + p.height > maxY) maxY = p.y + p.height;
     p.children.forEach(walk);
   }
   positioned.forEach(walk);

@@ -229,7 +229,7 @@ function toDateStr(d: Date): string {
 // ─── Main component ───
 
 export default function CalendarView() {
-  const { getFilteredTasks, setSelectedTaskId, addTask, updateTask, selectedProjectId, getListsForProject, teamMembers } = useApp();
+  const { getFilteredTasks, setSelectedTaskId, addTask, updateTask, selectedProjectId, getListsForProject, teamMembers, tasks: allTasks } = useApp();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState(new Date());
   const [addingForDate, setAddingForDate] = useState<string | null>(null);

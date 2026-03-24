@@ -466,7 +466,7 @@ export default function CalendarView() {
             <EmptyState variant="calendar" />
           ) : (
             selectedDayTasks.map(t => (
-              <MobileTaskCard key={t.id} task={t} onClick={() => setSelectedTaskId(t.id)} members={teamMembers} />
+              <MobileTaskCard key={t.id} task={t} onClick={() => setSelectedTaskId(t.id)} members={teamMembers} allTasks={allTasks} />
             ))
           )}
 

@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import EmptyState from '@/components/EmptyState';
 import { useApp } from '@/context/AppContext';
-import { ChevronLeft, ChevronRight, Plus, Download, Calendar as CalendarIcon, Repeat } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Download, Calendar as CalendarIcon, Repeat, CornerDownRight } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
@@ -87,8 +87,13 @@ function DraggableTask({ task, onClick, members }: { task: Task; onClick: () => 
           {...listeners}
           {...attributes}
           onClick={(e) => { e.stopPropagation(); onClick(); }}
-          className={`text-[11px] px-1.5 py-0.5 rounded bg-primary/10 text-primary truncate cursor-grab hover:bg-primary/20 transition-colors flex items-center gap-1 ${isDragging ? 'opacity-30' : ''}`}
+          className={`text-[11px] px-1.5 py-0.5 rounded truncate cursor-grab transition-colors flex items-center gap-1 ${
+            task.parentTaskId
+              ? 'ml-2 bg-accent/60 text-accent-foreground hover:bg-accent/80'
+              : 'bg-primary/10 text-primary hover:bg-primary/20'
+          } ${isDragging ? 'opacity-30' : ''}`}
         >
+          {task.parentTaskId && <CornerDownRight className="w-3 h-3 shrink-0 opacity-60" />}
           {task.recurrence && <Repeat className="w-3 h-3 shrink-0" />}
           <span className="truncate">{task.title}</span>
         </div>
@@ -174,10 +179,17 @@ function MobileTaskCard({ task, onClick, members }: { task: Task; onClick: () =>
   return (
     <button
       onClick={onClick}
-      className="w-full text-left p-3 rounded-lg bg-card border border-border hover:border-primary/30 hover:bg-accent/30 transition-colors"
+      className={`w-full text-left p-3 rounded-lg border transition-colors ${
+        task.parentTaskId
+          ? 'ml-3 bg-accent/30 border-accent/50 hover:border-accent hover:bg-accent/40'
+          : 'bg-card border-border hover:border-primary/30 hover:bg-accent/30'
+      }`}
     >
       <div className="flex items-start justify-between gap-2">
-        <p className="text-sm font-medium text-foreground leading-tight flex-1">{task.title}</p>
+        <p className="text-sm font-medium text-foreground leading-tight flex-1 flex items-center gap-1.5">
+          {task.parentTaskId && <CornerDownRight className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />}
+          {task.title}
+        </p>
         <span className={`shrink-0 px-1.5 py-0.5 rounded text-label font-medium ${PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.normal}`}>
           {PRIORITY_LABELS[task.priority] || task.priority}
         </span>

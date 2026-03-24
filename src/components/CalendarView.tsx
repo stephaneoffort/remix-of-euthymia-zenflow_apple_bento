@@ -554,7 +554,7 @@ export default function CalendarView() {
             return (
               <DroppableDay key={i} dateStr={dateStr} isCurrentMonth={day.isCurrentMonth} isToday={isToday} dayNum={day.date.getDate()} onAddClick={() => setAddingForDate(dateStr)}>
                 {dayTasks.slice(0, 3).map(t => (
-                  <DraggableTask key={t.id} task={t} onClick={() => setSelectedTaskId(t.id)} members={teamMembers} />
+                  <DraggableTask key={t.id} task={t} onClick={() => setSelectedTaskId(t.id)} members={teamMembers} allTasks={allTasks} />
                 ))}
                 {dayTasks.length > 3 && (
                   <span className="text-label text-muted-foreground px-1">+{dayTasks.length - 3}</span>

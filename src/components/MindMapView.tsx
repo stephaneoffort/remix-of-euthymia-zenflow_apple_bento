@@ -110,7 +110,7 @@ function layoutTree(nodes: TreeNode[], expandedIds: Set<string>, visibleDepth: n
     const lastChildY = childPositions[childPositions.length - 1].y;
     const y = Math.round((firstChildY + lastChildY) / 2);
 
-    return { node, x, y, children: childPositions };
+    return { node, x, y, children: childPositions, height: nodeH };
   }
 
   const positioned: Positioned[] = [];

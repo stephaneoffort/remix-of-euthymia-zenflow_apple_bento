@@ -88,10 +88,20 @@ function layoutTree(nodes: TreeNode[], expandedIds: Set<string>, visibleDepth: n
     const isExpanded = expandedIds.has(node.task.id);
     const showChildren = isExpanded && depth < visibleDepth && node.children.length > 0;
 
+    // Estimate node height based on title length and content
+    const titleLen = node.task.title.length;
+    const charsPerLine = 28;
+    const titleLines = Math.ceil(titleLen / charsPerLine);
+    const baseH = 52; // padding + badges
+    const titleH = titleLines * 18; // ~18px per line
+    const progressH = node.children.length > 0 ? 20 : 0;
+    const collapseH = node.children.length > 0 && (!isExpanded || depth >= visibleDepth) ? 22 : 0;
+    const nodeH = Math.max(NODE_MIN_H, baseH + titleH + progressH + collapseH);
+
     if (!showChildren) {
       const y = currentY;
-      currentY += NODE_H + V_GAP;
-      return { node, x, y, children: [] };
+      currentY += nodeH + V_GAP;
+      return { node, x, y, children: [], height: nodeH };
     }
 
     const childPositions = node.children.map(c => measure(c, depth + 1));

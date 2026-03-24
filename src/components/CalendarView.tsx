@@ -276,7 +276,7 @@ export default function CalendarView() {
   const filteredParents = getFilteredTasks();
   const tasks = useMemo(() => {
     const parentIds = new Set(filteredParents.map(t => t.id));
-    const subtasks = allTasks.filter(t => t.parentTaskId && !parentIds.has(t.id));
+    const subtasks = allTasks.filter(t => t.parentTaskId && !parentIds.has(t.id) && t.status !== 'done');
     return [...filteredParents, ...subtasks];
   }, [allTasks, filteredParents]);
 

@@ -291,8 +291,12 @@ export default function CalendarView() {
     return days;
   }, [year, month]);
 
-  // Week days for week view
+  // Week days for week view (desktop)
   const weekDays = useMemo(() => getWeekDays(currentDate), [currentDate]);
+  // Week days for mobile
+  const mobileWeekDays = useMemo(() => getWeekDays(selectedDay), [selectedDay]);
+  const selectedDateStr = toDateStr(selectedDay);
+  const selectedDayTasks = tasksByDate.get(selectedDateStr) || [];
 
   const handleAddTask = (dateStr: string) => {
     if (!newTaskTitle.trim()) return;

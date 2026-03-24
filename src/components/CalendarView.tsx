@@ -243,7 +243,13 @@ export default function CalendarView() {
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
-  const tasks = getFilteredTasks();
+  const filteredParents = getFilteredTasks();
+  const filteredIds = new Set(filteredParents.map(t => t.id));
+  // Include subtasks (tasks with parentTaskId) that belong to filtered parents or match scope
+  const tasks = useMemo(() => {
+    const subtasks = allTasks.filter(t => t.parentTaskId && !filteredIds.has(t.id));
+    return [...filteredParents, ...subtasks];
+  }, [allTasks, filteredParents, filteredIds]);
 
   const calendarDays = useMemo(() => {
     const firstDay = new Date(year, month, 1);

@@ -93,7 +93,16 @@ function DraggableTask({ task, onClick, members, allTasks }: { task: Task; onCli
               : 'bg-primary/10 text-primary hover:bg-primary/20'
           } ${isDragging ? 'opacity-30' : ''}`}
         >
-          {task.parentTaskId && <CornerDownRight className="w-3 h-3 shrink-0 opacity-60" />}
+          {task.parentTaskId && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <CornerDownRight className="w-3 h-3 shrink-0 opacity-60" />
+              </TooltipTrigger>
+              <TooltipContent side="top" className="text-xs">
+                Sous-tâche de : {allTasks.find(t => t.id === task.parentTaskId)?.title ?? 'Tâche parente'}
+              </TooltipContent>
+            </Tooltip>
+          )}
           {task.recurrence && <Repeat className="w-3 h-3 shrink-0" />}
           <span className="truncate">{task.title}</span>
         </div>

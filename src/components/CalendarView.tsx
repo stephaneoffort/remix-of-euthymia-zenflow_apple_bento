@@ -179,10 +179,17 @@ function MobileTaskCard({ task, onClick, members }: { task: Task; onClick: () =>
   return (
     <button
       onClick={onClick}
-      className="w-full text-left p-3 rounded-lg bg-card border border-border hover:border-primary/30 hover:bg-accent/30 transition-colors"
+      className={`w-full text-left p-3 rounded-lg border transition-colors ${
+        task.parentTaskId
+          ? 'ml-3 bg-accent/30 border-accent/50 hover:border-accent hover:bg-accent/40'
+          : 'bg-card border-border hover:border-primary/30 hover:bg-accent/30'
+      }`}
     >
       <div className="flex items-start justify-between gap-2">
-        <p className="text-sm font-medium text-foreground leading-tight flex-1">{task.title}</p>
+        <p className="text-sm font-medium text-foreground leading-tight flex-1 flex items-center gap-1.5">
+          {task.parentTaskId && <CornerDownRight className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />}
+          {task.title}
+        </p>
         <span className={`shrink-0 px-1.5 py-0.5 rounded text-label font-medium ${PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.normal}`}>
           {PRIORITY_LABELS[task.priority] || task.priority}
         </span>

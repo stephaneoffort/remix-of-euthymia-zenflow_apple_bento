@@ -99,6 +99,7 @@ export default function AppSidebar() {
   const [deleteConfirm, setDeleteConfirm] = useState<{ type: 'space' | 'project'; id: string; name: string } | null>(null);
   const [filtersExpanded, setFiltersExpanded] = useState(() => !window.matchMedia('(max-width: 767px)').matches);
   const [accessDialogSpace, setAccessDialogSpace] = useState<{ id: string; name: string; isPrivate: boolean } | null>(null);
+  const [membersDialogProject, setMembersDialogProject] = useState<{ id: string; name: string } | null>(null);
 
   // Drag & drop state for cross-space project moves and task-to-project drops
   const [dragOverSpaceId, setDragOverSpaceId] = useState<string | null>(null);

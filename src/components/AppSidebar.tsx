@@ -20,6 +20,7 @@ import { QuickFilter } from '@/types';
 import { useChatNotifications } from '@/hooks/useChatNotifications';
 import { usePresence } from '@/hooks/usePresence';
 import SpaceAccessDialog from '@/components/SpaceAccessDialog';
+import ProjectMembersDialog from '@/components/ProjectMembersDialog';
 import { useThemeMode } from '@/context/ThemeContext';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -98,6 +99,7 @@ export default function AppSidebar() {
   const [deleteConfirm, setDeleteConfirm] = useState<{ type: 'space' | 'project'; id: string; name: string } | null>(null);
   const [filtersExpanded, setFiltersExpanded] = useState(() => !window.matchMedia('(max-width: 767px)').matches);
   const [accessDialogSpace, setAccessDialogSpace] = useState<{ id: string; name: string; isPrivate: boolean } | null>(null);
+  const [membersDialogProject, setMembersDialogProject] = useState<{ id: string; name: string } | null>(null);
 
   // Drag & drop state for cross-space project moves and task-to-project drops
   const [dragOverSpaceId, setDragOverSpaceId] = useState<string | null>(null);
@@ -834,6 +836,10 @@ export default function AppSidebar() {
                                   </button>
                                 </ContextMenuTrigger>
                                 <ContextMenuContent className="w-44">
+                                  <ContextMenuItem onClick={() => setMembersDialogProject({ id: project.id, name: project.name })}>
+                                    <Users className="w-4 h-4 mr-2" />
+                                    Responsables
+                                  </ContextMenuItem>
                                   <ContextMenuItem onClick={() => {
                                     setEditingProjectId(project.id);
                                     setEditingProjectName(project.name);
@@ -889,6 +895,10 @@ export default function AppSidebar() {
                                   </button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="w-44">
+                                  <DropdownMenuItem onClick={() => setMembersDialogProject({ id: project.id, name: project.name })}>
+                                    <Users className="w-4 h-4 mr-2" />
+                                    Responsables
+                                  </DropdownMenuItem>
                                   <DropdownMenuItem onClick={() => {
                                     setEditingProjectId(project.id);
                                     setEditingProjectName(project.name);
@@ -1171,6 +1181,16 @@ export default function AppSidebar() {
           spaceName={accessDialogSpace.name}
           isPrivate={accessDialogSpace.isPrivate}
           onUpdate={refreshSpaceAccess}
+        />
+      )}
+
+      {/* Project members dialog */}
+      {membersDialogProject && (
+        <ProjectMembersDialog
+          open={!!membersDialogProject}
+          onOpenChange={(open) => { if (!open) setMembersDialogProject(null); }}
+          projectId={membersDialogProject.id}
+          projectName={membersDialogProject.name}
         />
       )}
     </div>

@@ -256,6 +256,40 @@ export default function Index() {
                 <h2 className="font-bold text-foreground text-sm sm:text-lg truncate min-w-0">{title}</h2>
               )}
 
+              {/* Project responsibles */}
+              {selectedProjectId && projectResponsibles.length > 0 && (
+                <div className="flex items-center gap-0.5 ml-2 shrink-0">
+                  <div className="flex -space-x-1.5">
+                    {projectResponsibles.slice(0, 5).map((m) => (
+                      <Tooltip key={m.id}>
+                        <TooltipTrigger asChild>
+                          {m.avatarUrl ? (
+                            <img
+                              src={m.avatarUrl}
+                              alt={m.name}
+                              className="w-6 h-6 rounded-full border-2 border-card object-cover"
+                            />
+                          ) : (
+                            <div
+                              className="w-6 h-6 rounded-full border-2 border-card flex items-center justify-center text-[10px] font-bold text-white"
+                              style={{ backgroundColor: m.avatarColor }}
+                            >
+                              {m.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                            </div>
+                          )}
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="text-xs">{m.name}</TooltipContent>
+                      </Tooltip>
+                    ))}
+                    {projectResponsibles.length > 5 && (
+                      <div className="w-6 h-6 rounded-full border-2 border-card bg-muted flex items-center justify-center text-[10px] font-medium text-muted-foreground">
+                        +{projectResponsibles.length - 5}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* View selector — desktop inline */}
               {!isMobile && (
                 <div className="flex items-center gap-0.5 ml-2 bg-muted/50 rounded-lg p-0.5 shrink-0">

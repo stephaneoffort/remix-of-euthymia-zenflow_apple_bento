@@ -1183,6 +1183,16 @@ export default function AppSidebar() {
           onUpdate={refreshSpaceAccess}
         />
       )}
+
+      {/* Project members dialog */}
+      {membersDialogProject && (
+        <ProjectMembersDialog
+          open={!!membersDialogProject}
+          onOpenChange={(open) => { if (!open) setMembersDialogProject(null); }}
+          projectId={membersDialogProject.id}
+          projectName={membersDialogProject.name}
+        />
+      )}
     </div>
     </>
   );

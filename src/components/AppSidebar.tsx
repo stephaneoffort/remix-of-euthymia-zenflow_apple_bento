@@ -836,6 +836,10 @@ export default function AppSidebar() {
                                   </button>
                                 </ContextMenuTrigger>
                                 <ContextMenuContent className="w-44">
+                                  <ContextMenuItem onClick={() => setMembersDialogProject({ id: project.id, name: project.name })}>
+                                    <Users className="w-4 h-4 mr-2" />
+                                    Responsables
+                                  </ContextMenuItem>
                                   <ContextMenuItem onClick={() => {
                                     setEditingProjectId(project.id);
                                     setEditingProjectName(project.name);

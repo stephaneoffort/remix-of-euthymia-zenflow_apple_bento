@@ -20,6 +20,7 @@ import { QuickFilter } from '@/types';
 import { useChatNotifications } from '@/hooks/useChatNotifications';
 import { usePresence } from '@/hooks/usePresence';
 import SpaceAccessDialog from '@/components/SpaceAccessDialog';
+import ProjectMembersDialog from '@/components/ProjectMembersDialog';
 import { useThemeMode } from '@/context/ThemeContext';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,

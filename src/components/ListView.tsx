@@ -224,7 +224,7 @@ export default function ListView() {
           </td>
           <td className="py-2.5 px-3">
             {task.dueDate ? (
-              <span className={`text-sm ${isOverdue ? 'text-priority-urgent font-medium' : 'text-foreground/60'}`}>
+              <span className={`text-sm ${isOverdue ? 'text-priority-urgent font-medium' : 'text-foreground'}`}>
                 {new Date(task.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
               </span>
             ) : <span className="text-foreground/40 text-sm">—</span>}

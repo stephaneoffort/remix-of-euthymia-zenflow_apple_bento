@@ -895,6 +895,10 @@ export default function AppSidebar() {
                                   </button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="w-44">
+                                  <DropdownMenuItem onClick={() => setMembersDialogProject({ id: project.id, name: project.name })}>
+                                    <Users className="w-4 h-4 mr-2" />
+                                    Responsables
+                                  </DropdownMenuItem>
                                   <DropdownMenuItem onClick={() => {
                                     setEditingProjectId(project.id);
                                     setEditingProjectName(project.name);

@@ -185,9 +185,10 @@ export default function AppSidebar() {
 
   const handleAddProject = (spaceId: string) => {
     if (!newProjectName.trim()) return;
-    addProject(newProjectName.trim(), spaceId, newProjectColor);
+    addProject(newProjectName.trim(), spaceId, newProjectColor, newProjectMemberIds.length > 0 ? newProjectMemberIds : undefined);
     setNewProjectName('');
     setNewProjectColor(PROJECT_COLORS[0]);
+    setNewProjectMemberIds([]);
     setAddingProjectForSpace(null);
   };
 

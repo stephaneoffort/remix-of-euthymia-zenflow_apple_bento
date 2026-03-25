@@ -487,8 +487,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     addSpaceMutation.mutate({ name, icon, isPrivate });
   }, [addSpaceMutation]);
 
-  const addProject = useCallback((name: string, spaceId: string, color: string) => {
-    addProjectMutation.mutate({ name, spaceId, color });
+  const addProject = useCallback((name: string, spaceId: string, color: string, memberIds?: string[]) => {
+    addProjectMutation.mutate({ name, spaceId, color, memberIds });
   }, [addProjectMutation]);
 
   // Duplicate space mutation

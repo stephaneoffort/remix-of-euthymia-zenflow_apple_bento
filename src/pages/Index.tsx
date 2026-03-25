@@ -90,6 +90,22 @@ export default function Index() {
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [quickAddTitle, setQuickAddTitle] = useState("");
   const [voiceAddOpen, setVoiceAddOpen] = useState(false);
+  const [projectMemberIds, setProjectMemberIds] = useState<string[]>([]);
+
+  // Fetch project members when a project is selected
+  useEffect(() => {
+    if (!selectedProjectId) { setProjectMemberIds([]); return; }
+    supabase
+      .from('project_members')
+      .select('member_id')
+      .eq('project_id', selectedProjectId)
+      .then(({ data }) => setProjectMemberIds((data || []).map((r) => r.member_id)));
+  }, [selectedProjectId]);
+
+  const projectResponsibles = useMemo(
+    () => teamMembers.filter((m) => projectMemberIds.includes(m.id)),
+    [teamMembers, projectMemberIds]
+  );
 
   // Keyboard shortcuts
   useKeyboardShortcuts({

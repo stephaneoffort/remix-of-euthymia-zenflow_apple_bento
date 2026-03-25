@@ -51,7 +51,7 @@ interface AppContextType extends AppState {
   deleteAttachment: (attachmentId: string) => void;
   moveTask: (taskId: string, newStatus: string) => void;
   addSpace: (name: string, icon: string, isPrivate?: boolean) => void;
-  addProject: (name: string, spaceId: string, color: string) => void;
+  addProject: (name: string, spaceId: string, color: string, memberIds?: string[]) => void;
   duplicateSpace: (spaceId: string) => void;
   duplicateProject: (projectId: string) => void;
   archiveSpace: (spaceId: string) => void;
@@ -448,7 +448,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   // Add project mutation
   const addProjectMutation = useMutation({
-    mutationFn: async ({ name, spaceId, color }: { name: string; spaceId: string; color: string }) => {
+    mutationFn: async ({ name, spaceId, color, memberIds }: { name: string; spaceId: string; color: string; memberIds?: string[] }) => {
       const projectId = `p_${Date.now()}`;
       const listId = `l_${Date.now()}`;
       // Create project
@@ -468,6 +468,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         sort_order: 0,
       });
       if (lErr) throw lErr;
+      // Add project members
+      if (memberIds && memberIds.length > 0) {
+        const { error: mErr } = await supabase.from('project_members').insert(
+          memberIds.map(mid => ({ project_id: projectId, member_id: mid }))
+        );
+        if (mErr) throw mErr;
+      }
       return projectId;
     },
     onSuccess: () => {
@@ -480,8 +487,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     addSpaceMutation.mutate({ name, icon, isPrivate });
   }, [addSpaceMutation]);
 
-  const addProject = useCallback((name: string, spaceId: string, color: string) => {
-    addProjectMutation.mutate({ name, spaceId, color });
+  const addProject = useCallback((name: string, spaceId: string, color: string, memberIds?: string[]) => {
+    addProjectMutation.mutate({ name, spaceId, color, memberIds });
   }, [addProjectMutation]);
 
   // Duplicate space mutation

@@ -90,6 +90,7 @@ export default function AppSidebar() {
   const [addingProjectForSpace, setAddingProjectForSpace] = useState<string | null>(null);
   const [newProjectName, setNewProjectName] = useState('');
   const [newProjectColor, setNewProjectColor] = useState(PROJECT_COLORS[0]);
+  const [newProjectMemberIds, setNewProjectMemberIds] = useState<string[]>([]);
   const [editingSpaceId, setEditingSpaceId] = useState<string | null>(null);
   const [editingSpaceName, setEditingSpaceName] = useState('');
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
@@ -184,9 +185,10 @@ export default function AppSidebar() {
 
   const handleAddProject = (spaceId: string) => {
     if (!newProjectName.trim()) return;
-    addProject(newProjectName.trim(), spaceId, newProjectColor);
+    addProject(newProjectName.trim(), spaceId, newProjectColor, newProjectMemberIds.length > 0 ? newProjectMemberIds : undefined);
     setNewProjectName('');
     setNewProjectColor(PROJECT_COLORS[0]);
+    setNewProjectMemberIds([]);
     setAddingProjectForSpace(null);
   };
 
@@ -947,7 +949,7 @@ export default function AppSidebar() {
                           onChange={e => setNewProjectName(e.target.value)}
                           onKeyDown={e => {
                             if (e.key === 'Enter') handleAddProject(space.id);
-                            if (e.key === 'Escape') { setAddingProjectForSpace(null); setNewProjectName(''); }
+                            if (e.key === 'Escape') { setAddingProjectForSpace(null); setNewProjectName(''); setNewProjectMemberIds([]); }
                           }}
                           placeholder="Nom du projet..."
                           className="w-full text-sm bg-sidebar-bg border border-sidebar-border-color rounded-md px-2 py-1 outline-none text-sidebar-fg-bright placeholder:text-sidebar-fg"
@@ -962,6 +964,37 @@ export default function AppSidebar() {
                             />
                           ))}
                         </div>
+                        {/* Responsables du projet */}
+                        <div className="space-y-1">
+                          <span className="text-xs text-sidebar-fg">Responsables :</span>
+                          <div className="flex gap-1 flex-wrap max-h-20 overflow-y-auto">
+                            {teamMembers.map(member => {
+                              const selected = newProjectMemberIds.includes(member.id);
+                              return (
+                                <button
+                                  key={member.id}
+                                  type="button"
+                                  onClick={() => setNewProjectMemberIds(prev =>
+                                    selected ? prev.filter(id => id !== member.id) : [...prev, member.id]
+                                  )}
+                                  className={`flex items-center gap-1 text-xs px-1.5 py-0.5 rounded-full transition-all border ${
+                                    selected
+                                      ? 'bg-primary/20 border-primary text-primary'
+                                      : 'bg-sidebar-bg border-sidebar-border-color text-sidebar-fg hover:border-primary/50'
+                                  }`}
+                                >
+                                  <span
+                                    className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold text-white shrink-0"
+                                    style={{ backgroundColor: member.avatarColor }}
+                                  >
+                                    {member.name.charAt(0).toUpperCase()}
+                                  </span>
+                                  <span className="truncate max-w-[80px]">{member.name.split(' ')[0]}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
                         <div className="flex gap-1">
                           <button
                             onClick={() => handleAddProject(space.id)}
@@ -971,7 +1004,7 @@ export default function AppSidebar() {
                             Créer
                           </button>
                           <button
-                            onClick={() => { setAddingProjectForSpace(null); setNewProjectName(''); }}
+                            onClick={() => { setAddingProjectForSpace(null); setNewProjectName(''); setNewProjectMemberIds([]); }}
                             className="flex-1 text-xs text-sidebar-fg rounded-md py-1 hover:bg-sidebar-bg"
                           >
                             Annuler

@@ -509,6 +509,36 @@ export type Database = {
           },
         ]
       }
+      project_members: {
+        Row: {
+          member_id: string
+          project_id: string
+        }
+        Insert: {
+          member_id: string
+          project_id: string
+        }
+        Update: {
+          member_id?: string
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_members_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_members_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       projects: {
         Row: {
           color: string

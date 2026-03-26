@@ -92,7 +92,7 @@ function DateTimeField({ value, onChange }: { value: string | null | undefined; 
             <Button
               variant="outline"
               className={cn(
-                "flex-1 justify-start text-left font-normal text-sm h-9 dark:bg-muted",
+                "flex-1 justify-start text-left font-normal text-sm h-9 dark:bg-muted dark:text-foreground",
                 !isValid && "text-muted-foreground"
               )}
             >
@@ -936,7 +936,7 @@ function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {
                 <PriorityBadge priority={st.priority} />
                 {st.dueDate && (
                   <span
-                    className={`text-xs px-1.5 py-0.5 rounded transition-colors cursor-default dark:bg-muted ${isOverdue ? 'text-priority-urgent font-medium' : 'subtask-date'}`}
+                    className={`text-xs px-1.5 py-0.5 rounded transition-colors cursor-default dark:bg-muted dark:text-foreground ${isOverdue ? 'text-priority-urgent font-medium' : 'subtask-date'}`}
                   >
                     {new Date(st.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                   </span>

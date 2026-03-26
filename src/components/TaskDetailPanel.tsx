@@ -92,7 +92,7 @@ function DateTimeField({ value, onChange }: { value: string | null | undefined; 
             <Button
               variant="outline"
               className={cn(
-                "flex-1 justify-start text-left font-normal text-sm h-9",
+                "flex-1 justify-start text-left font-normal text-sm h-9 dark:bg-muted",
                 !isValid && "text-muted-foreground"
               )}
             >

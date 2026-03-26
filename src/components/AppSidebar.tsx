@@ -501,6 +501,7 @@ export default function AppSidebar() {
       {!isMobile && (
         <div
           onMouseDown={handleResizeStart}
+          onDoubleClick={() => { setSidebarWidth(256); localStorage.setItem('euthymia:sidebarWidth', '256'); }}
           className="absolute top-0 -right-[3px] w-[6px] h-full cursor-col-resize z-30 group/resize"
         >
           <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-[2px] opacity-0 hover:opacity-100 group-hover/resize:opacity-100 bg-primary/40 transition-opacity" />

@@ -938,7 +938,7 @@
 }
 
 .subtask-date {
-  color: #777269;
+  color: hsl(var(--muted-foreground));
   transition: color 0.15s ease;
 }
 .subtask-date:hover,

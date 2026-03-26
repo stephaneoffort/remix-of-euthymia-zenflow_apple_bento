@@ -501,8 +501,10 @@ export default function AppSidebar() {
       {!isMobile && (
         <div
           onMouseDown={handleResizeStart}
-          className="absolute top-0 right-0 w-1 h-full cursor-col-resize z-30 hover:bg-primary/30 active:bg-primary/50 transition-colors"
-        />
+          className="absolute top-0 -right-[3px] w-[6px] h-full cursor-col-resize z-30 group/resize"
+        >
+          <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-[2px] opacity-0 hover:opacity-100 group-hover/resize:opacity-100 bg-primary/40 transition-opacity" />
+        </div>
       )}
       {/* Header */}
       <div className="px-4 py-4 flex items-center justify-between border-b border-sidebar-border-color">

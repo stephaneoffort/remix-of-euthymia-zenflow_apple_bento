@@ -1,6 +1,6 @@
 import DashboardView from "@/components/DashboardView";
 import VoiceTaskCreator from "@/components/VoiceTaskCreator";
-import React, { useState, useCallback, useEffect, useMemo } from "react";
+import React, { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -444,13 +444,8 @@ export default function Index() {
         </main>
       </div>
 
-      {/* Task detail panel */}
-      {selectedTaskId && (
-        <>
-          <div className="fixed inset-0 z-40" onClick={() => setSelectedTaskId(null)} />
-          <TaskDetailPanel />
-        </>
-      )}
+      {/* Task detail panel with slide animation */}
+      <TaskPanelAnimated taskId={selectedTaskId} onClose={() => setSelectedTaskId(null)} />
 
       {/* AI components */}
       <TaskSuggestions open={suggestionsOpen} onClose={() => setSuggestionsOpen(false)} />
@@ -520,5 +515,49 @@ export default function Index() {
       {/* Mobile bottom navigation */}
       {isMobile && !selectedTaskId && <MobileBottomNav onOpenVoice={() => setVoiceAddOpen(true)} />}
     </div>
+  );
+}
+
+function TaskPanelAnimated({ taskId, onClose }: { taskId: string | null; onClose: () => void }) {
+  const [visible, setVisible] = useState(false);
+  const [closing, setClosing] = useState(false);
+  const lastTaskId = useRef(taskId);
+
+  useEffect(() => {
+    if (taskId) {
+      lastTaskId.current = taskId;
+      setVisible(true);
+      setClosing(false);
+    } else if (visible) {
+      setClosing(true);
+      const timer = setTimeout(() => {
+        setVisible(false);
+        setClosing(false);
+      }, 280);
+      return () => clearTimeout(timer);
+    }
+  }, [taskId]);
+
+  const handleClose = useCallback(() => {
+    setClosing(true);
+    setTimeout(() => {
+      onClose();
+      setVisible(false);
+      setClosing(false);
+    }, 280);
+  }, [onClose]);
+
+  if (!visible) return null;
+
+  return (
+    <>
+      <div
+        className={`fixed inset-0 z-40 transition-opacity duration-300 ${closing ? 'opacity-0' : 'opacity-100'}`}
+        onClick={handleClose}
+      />
+      <div className={`fixed z-50 inset-0 sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[520px] ${closing ? 'animate-slide-out-right' : 'animate-slide-in-right'}`}>
+        <TaskDetailPanel />
+      </div>
+    </>
   );
 }

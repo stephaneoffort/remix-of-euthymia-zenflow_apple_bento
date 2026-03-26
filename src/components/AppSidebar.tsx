@@ -61,6 +61,46 @@ export default function AppSidebar() {
   const navigate = useNavigate();
   const { isOnline } = usePresence();
   const { user } = useAuth();
+
+  // Resizable sidebar
+  const [sidebarWidth, setSidebarWidth] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem('euthymia:sidebarWidth');
+      if (saved) return Math.max(200, Math.min(400, Number(saved)));
+    } catch {}
+    return 256;
+  });
+  const isResizing = React.useRef(false);
+
+  const handleResizeStart = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    isResizing.current = true;
+    const startX = e.clientX;
+    const startWidth = sidebarWidth;
+
+    const handleMouseMove = (ev: MouseEvent) => {
+      if (!isResizing.current) return;
+      const newWidth = Math.max(200, Math.min(400, startWidth + ev.clientX - startX));
+      setSidebarWidth(newWidth);
+    };
+
+    const handleMouseUp = () => {
+      isResizing.current = false;
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  }, [sidebarWidth]);
+
+  useEffect(() => {
+    localStorage.setItem('euthymia:sidebarWidth', String(sidebarWidth));
+  }, [sidebarWidth]);
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -452,10 +492,18 @@ export default function AppSidebar() {
         />
       )}
       <div
-        className={`${isMobile ? 'fixed inset-y-0 left-0 z-50' : ''} w-64 bg-sidebar-bg flex flex-col border-r border-sidebar-border-color shrink-0 h-screen`}
+        className={`${isMobile ? 'fixed inset-y-0 left-0 z-50' : 'relative'} bg-sidebar-bg flex flex-col border-r border-sidebar-border-color shrink-0 h-screen`}
+        style={{ width: isMobile ? 256 : sidebarWidth }}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
+      {/* Resize handle */}
+      {!isMobile && (
+        <div
+          onMouseDown={handleResizeStart}
+          className="absolute top-0 right-0 w-1 h-full cursor-col-resize z-30 hover:bg-primary/30 active:bg-primary/50 transition-colors"
+        />
+      )}
       {/* Header */}
       <div className="px-4 py-4 flex items-center justify-between border-b border-sidebar-border-color">
         <div className="flex items-center gap-2.5">

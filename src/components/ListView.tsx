@@ -126,7 +126,7 @@ export default function ListView() {
                 </div>
                 <div className="flex items-center justify-between mt-1.5">
                   {task.dueDate ? (
-                    <span className={`text-xs px-1.5 py-0.5 rounded dark:bg-muted ${isOverdue ? 'text-priority-urgent font-medium' : 'text-foreground'}`}>
+                    <span className={`text-xs px-1.5 py-0.5 rounded dark:bg-muted dark:text-foreground ${isOverdue ? 'text-priority-urgent font-medium' : 'text-foreground'}`}>
                       {new Date(task.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                     </span>
                   ) : <span />}

@@ -445,7 +445,12 @@ export default function Index() {
       </div>
 
       {/* Task detail panel */}
-      {selectedTaskId && <TaskDetailPanel />}
+      {selectedTaskId && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setSelectedTaskId(null)} />
+          <TaskDetailPanel />
+        </>
+      )}
 
       {/* AI components */}
       <TaskSuggestions open={suggestionsOpen} onClose={() => setSuggestionsOpen(false)} />

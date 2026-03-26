@@ -1489,16 +1489,15 @@ function InstallAppLink() {
         <TooltipTrigger asChild>
           <button
             onClick={() => navigate('/install')}
-            className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors md:w-full"
-            title="Installer l'app"
-          >
-            <ArrowDownToLine className="w-4 h-4" />
-            <span className="hidden md:inline">Installer l'app</span>
-          </button>
-        </TooltipTrigger>
-        <TooltipContent side="top" className="md:hidden">
-          Installer l'app
-        </TooltipContent>
+             className="flex items-center justify-center p-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors"
+             title="Installer l'app"
+           >
+             <ArrowDownToLine className="w-4 h-4" />
+           </button>
+         </TooltipTrigger>
+         <TooltipContent side="top">
+           Installer l'app
+         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );

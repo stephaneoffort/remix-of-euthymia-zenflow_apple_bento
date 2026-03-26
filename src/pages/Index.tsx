@@ -1,6 +1,6 @@
 import DashboardView from "@/components/DashboardView";
 import VoiceTaskCreator from "@/components/VoiceTaskCreator";
-import React, { useState, useCallback, useEffect, useMemo } from "react";
+import React, { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";

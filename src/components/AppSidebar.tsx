@@ -492,10 +492,18 @@ export default function AppSidebar() {
         />
       )}
       <div
-        className={`${isMobile ? 'fixed inset-y-0 left-0 z-50' : ''} w-64 bg-sidebar-bg flex flex-col border-r border-sidebar-border-color shrink-0 h-screen`}
+        className={`${isMobile ? 'fixed inset-y-0 left-0 z-50' : 'relative'} bg-sidebar-bg flex flex-col border-r border-sidebar-border-color shrink-0 h-screen`}
+        style={{ width: isMobile ? 256 : sidebarWidth }}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
+      {/* Resize handle */}
+      {!isMobile && (
+        <div
+          onMouseDown={handleResizeStart}
+          className="absolute top-0 right-0 w-1 h-full cursor-col-resize z-30 hover:bg-primary/30 active:bg-primary/50 transition-colors"
+        />
+      )}
       {/* Header */}
       <div className="px-4 py-4 flex items-center justify-between border-b border-sidebar-border-color">
         <div className="flex items-center gap-2.5">

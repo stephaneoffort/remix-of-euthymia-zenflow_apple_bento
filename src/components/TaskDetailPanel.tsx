@@ -936,7 +936,7 @@ function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {
                 <PriorityBadge priority={st.priority} />
                 {st.dueDate && (
                   <span
-                    className={`text-xs px-1.5 py-0.5 rounded transition-colors cursor-default dark:bg-muted dark:text-foreground ${isOverdue ? 'text-priority-urgent font-medium' : 'subtask-date'}`}
+                    className={`text-xs px-1.5 py-0.5 rounded transition-colors cursor-default dark:bg-muted dark:text-foreground dark:hover:bg-accent ${isOverdue ? 'text-priority-urgent font-medium' : 'subtask-date'}`}
                   >
                     {new Date(st.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                   </span>

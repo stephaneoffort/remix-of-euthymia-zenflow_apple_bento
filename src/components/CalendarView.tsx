@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import EmptyState from '@/components/EmptyState';
 import { useApp } from '@/context/AppContext';
 import { ChevronLeft, ChevronRight, Plus, Download, Calendar as CalendarIcon, Repeat, CornerDownRight, ArrowRight } from 'lucide-react';
@@ -19,6 +19,9 @@ import {
   type DragStartEvent,
   type DragEndEvent,
 } from '@dnd-kit/core';
+import { useCalendarSync, type CalendarEvent } from '@/hooks/useCalendarSync';
+import CalendarAccountsManager, { getProviderMeta } from '@/components/CalendarAccountsManager';
+import SyncTargetPicker from '@/components/SyncTargetPicker';
 
 type CalendarMode = 'day' | 'week' | 'month';
 

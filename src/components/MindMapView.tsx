@@ -195,7 +195,7 @@ export default function MindMapView() {
   const { roots, maxDepth } = useMemo(() => buildTree(tasksWithChildren), [tasksWithChildren]);
 
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
-  const [visibleDepth, setVisibleDepth] = useState(1);
+  const [visibleDepth, setVisibleDepth] = useState(0);
   const [zoom, setZoom] = useState(isMobile ? 0.7 : 0.85);
   const [pan, setPan] = useState({ x: 20, y: 20 });
   const [isPanning, setIsPanning] = useState(false);
@@ -229,11 +229,12 @@ export default function MindMapView() {
 
   // Expand a specific depth level
   const expandToDepth = useCallback((depth: number) => {
-    setVisibleDepth(depth);
+    const actualDepth = depth - 1;
+    setVisibleDepth(actualDepth);
     const ids = new Set<string>();
     function collect(nodes: TreeNode[], d: number) {
       nodes.forEach(n => {
-        if (d < depth && n.children.length > 0) {
+        if (d < actualDepth && n.children.length > 0) {
           ids.add(n.task.id);
           collect(n.children, d + 1);
         }
@@ -258,8 +259,8 @@ export default function MindMapView() {
 
   // Collapse all
   const collapseAll = useCallback(() => {
-    setExpandedIds(new Set(roots.map(r => r.task.id)));
-    setVisibleDepth(1);
+    setExpandedIds(new Set());
+    setVisibleDepth(0);
   }, [roots]);
 
   // Reset view
@@ -373,7 +374,7 @@ export default function MindMapView() {
             key={level}
             onClick={() => expandToDepth(level)}
             className={`w-7 h-7 rounded-md text-xs font-semibold transition-colors shrink-0 ${
-              visibleDepth === level
+              visibleDepth === level - 1
                 ? 'bg-primary text-primary-foreground'
                 : 'text-muted-foreground hover:bg-muted'
             }`}

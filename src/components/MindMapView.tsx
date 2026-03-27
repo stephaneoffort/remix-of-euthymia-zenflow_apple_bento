@@ -195,7 +195,7 @@ export default function MindMapView() {
   const { roots, maxDepth } = useMemo(() => buildTree(tasksWithChildren), [tasksWithChildren]);
 
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
-  const [visibleDepth, setVisibleDepth] = useState(1);
+  const [visibleDepth, setVisibleDepth] = useState(0);
   const [zoom, setZoom] = useState(isMobile ? 0.7 : 0.85);
   const [pan, setPan] = useState({ x: 20, y: 20 });
   const [isPanning, setIsPanning] = useState(false);

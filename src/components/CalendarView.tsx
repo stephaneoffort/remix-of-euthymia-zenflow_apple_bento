@@ -1,7 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import EmptyState from '@/components/EmptyState';
 import { useApp } from '@/context/AppContext';
-import { ChevronLeft, ChevronRight, Plus, Download, Calendar as CalendarIcon, Repeat, CornerDownRight, ArrowRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Download, Calendar as CalendarIcon, Repeat, CornerDownRight, ArrowRight, RefreshCw, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
@@ -338,6 +341,8 @@ export default function CalendarView() {
     return (saved === 'day' || saved === 'week' || saved === 'month') ? saved : 'month';
   });
 
+  const [searchParams, setSearchParams] = useSearchParams();
+
   // Auto-sync on mount
   useEffect(() => {
     if (calSync.accounts.length > 0) {
@@ -345,6 +350,39 @@ export default function CalendarView() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [calSync.accounts.length]);
+
+  // Handle ?connected=true after Google OAuth callback
+  useEffect(() => {
+    if (searchParams.get('connected') === 'true') {
+      (async () => {
+        try {
+          const { data: latestAccount } = await supabase
+            .from('calendar_accounts')
+            .select('*')
+            .eq('provider', 'google')
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
+          if (latestAccount) {
+            await supabase.functions.invoke('calendar-sync', {
+              body: { account_id: latestAccount.id, direction: 'pull' },
+            });
+            await calSync.fetchAccounts();
+            await calSync.fetchEvents();
+            toast.success('Google Calendar synchronisé ✅');
+          }
+        } catch (err: any) {
+          toast.error('Erreur de synchronisation : ' + (err.message || 'Inconnue'));
+        }
+        // Remove ?connected=true from URL
+        const newParams = new URLSearchParams(searchParams);
+        newParams.delete('connected');
+        setSearchParams(newParams, { replace: true });
+      })();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const handleModeChange = (m: CalendarMode) => {
     setMode(m);
@@ -552,11 +590,16 @@ export default function CalendarView() {
       const meta = getProviderMeta(ev.provider);
       const acc = ev.account_id ? accountMap.get(ev.account_id) : null;
       const timeStr = ev.is_all_day ? 'Journée' : new Date(ev.start_time).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      const isGoogle = ev.provider === 'google';
       return (
         <Tooltip key={ev.id}>
           <TooltipTrigger asChild>
             <div className="text-[11px] px-1.5 py-0.5 rounded bg-muted/60 text-muted-foreground hover:bg-muted transition-colors flex items-center gap-1 cursor-default">
-              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${meta.dot}`} />
+              {isGoogle ? (
+                <span className="w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center shrink-0">G</span>
+              ) : (
+                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${meta.dot}`} />
+              )}
               <span className="truncate">{ev.title}</span>
               <span className="text-[9px] shrink-0 opacity-70">{timeStr}</span>
             </div>
@@ -604,11 +647,16 @@ export default function CalendarView() {
           const meta = getProviderMeta(ev.provider);
           const acc = ev.account_id ? accountMap.get(ev.account_id) : null;
           const timeStr = ev.is_all_day ? '' : new Date(ev.start_time).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+          const isGoogle = ev.provider === 'google';
           return (
             <Tooltip key={ev.id}>
               <TooltipTrigger asChild>
                 <div className="text-[11px] px-1.5 py-0.5 rounded bg-muted/60 text-muted-foreground hover:bg-muted transition-colors flex items-center gap-1 cursor-default">
-                  <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${meta.dot}`} />
+                  {isGoogle ? (
+                    <span className="w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center shrink-0">G</span>
+                  ) : (
+                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${meta.dot}`} />
+                  )}
                   <span className="truncate">{ev.title}</span>
                   {timeStr && <span className="text-[9px] shrink-0 opacity-70">{timeStr}</span>}
                 </div>
@@ -835,6 +883,19 @@ export default function CalendarView() {
           <ModeSwitcher mode={mode} onChange={handleModeChange} />
         </div>
         <div className="flex items-center gap-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => calSync.syncAllAccounts()}
+                disabled={calSync.loading}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md hover:bg-muted transition-colors text-foreground disabled:opacity-50"
+              >
+                {calSync.loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+                Sync
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>Synchroniser tous les agendas connectés</TooltipContent>
+          </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
               <button onClick={exportToICS} className="p-2 hover:bg-muted rounded-md transition-colors"><Download className="w-4 h-4 text-foreground/70" /></button>

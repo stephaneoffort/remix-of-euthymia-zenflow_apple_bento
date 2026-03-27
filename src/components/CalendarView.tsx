@@ -789,6 +789,7 @@ export default function CalendarView() {
               <button onClick={() => navigateMobile(-1)} className="p-1.5 hover:bg-muted rounded-md transition-colors"><ChevronLeft className="w-4 h-4 text-foreground" /></button>
               <button onClick={() => setSelectedDay(new Date())} className="px-2 py-1 text-xs hover:bg-muted rounded-md transition-colors font-medium text-foreground">Auj.</button>
               <button onClick={() => navigateMobile(1)} className="p-1.5 hover:bg-muted rounded-md transition-colors"><ChevronRight className="w-4 h-4 text-foreground" /></button>
+            </div>
           </div>
           {mobileActionBar}
           <div className="grid grid-cols-7 gap-px bg-border mx-2 rounded-lg overflow-hidden">

@@ -147,8 +147,12 @@ function Connector({ from, to }: { from: Positioned; to: Positioned }) {
       stroke={statusColor}
       strokeWidth="2"
       strokeOpacity="0.35"
-      className="transition-all duration-300"
-    />
+      className="transition-all duration-500 ease-out"
+      strokeDasharray="1000"
+      strokeDashoffset="0"
+    >
+      <animate attributeName="stroke-dashoffset" from="1000" to="0" dur="0.6s" fill="freeze" />
+    </path>
   );
 }
 

@@ -147,8 +147,12 @@ function Connector({ from, to }: { from: Positioned; to: Positioned }) {
       stroke={statusColor}
       strokeWidth="2"
       strokeOpacity="0.35"
-      className="transition-all duration-300"
-    />
+      className="transition-all duration-500 ease-out"
+      strokeDasharray="1000"
+      strokeDashoffset="0"
+    >
+      <animate attributeName="stroke-dashoffset" from="1000" to="0" dur="0.6s" fill="freeze" />
+    </path>
   );
 }
 
@@ -511,14 +515,23 @@ function NodeCard({ positioned, expandedIds, visibleDepth, toggleExpand, onSelec
 
   const isRoot = depth === 0;
 
+  // Animate in on mount
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setVisible(true), depth * 60);
+    return () => clearTimeout(t);
+  }, [depth]);
+
   return (
     <div
       data-node
-      className="absolute transition-all duration-300 ease-out"
+      className="absolute transition-all duration-500 ease-out"
       style={{
         left: x,
         top: y,
         width: NODE_W,
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'scale(1)' : 'scale(0.85)',
       }}
     >
       {/* Main card */}

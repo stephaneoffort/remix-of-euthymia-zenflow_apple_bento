@@ -369,7 +369,7 @@ export default function MindMapView() {
 
         {/* Level-by-level controls */}
         <span className="text-xs text-muted-foreground shrink-0 mr-1">Niveau :</span>
-        {Array.from({ length: Math.min(maxDepth + 1, 6) }, (_, i) => i + 1).map(level => (
+        {Array.from({ length: Math.max(5, Math.min(maxDepth + 1, 8)) }, (_, i) => i + 1).map(level => (
           <button
             key={level}
             onClick={() => expandToDepth(level)}

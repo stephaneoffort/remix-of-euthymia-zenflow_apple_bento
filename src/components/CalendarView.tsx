@@ -885,6 +885,19 @@ export default function CalendarView() {
         <div className="flex items-center gap-2">
           <Tooltip>
             <TooltipTrigger asChild>
+              <button
+                onClick={() => calSync.syncAllAccounts()}
+                disabled={calSync.loading}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md hover:bg-muted transition-colors text-foreground disabled:opacity-50"
+              >
+                {calSync.loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+                Sync
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>Synchroniser tous les agendas connectés</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
               <button onClick={exportToICS} className="p-2 hover:bg-muted rounded-md transition-colors"><Download className="w-4 h-4 text-foreground/70" /></button>
             </TooltipTrigger>
             <TooltipContent>Exporter (.ics) – Google Agenda, Outlook, Apple…</TooltipContent>

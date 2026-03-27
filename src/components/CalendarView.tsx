@@ -326,7 +326,37 @@ function AgendaTaskList({ dateStr, tasks: dayTasks, allTasks, teamMembers, setSe
   );
 }
 
-// ─── Main component ───
+// ─── External Events for Agenda views ───
+
+function AgendaExternalEvents({ dateStr, externalEventsByDate, accountMap }: {
+  dateStr: string;
+  externalEventsByDate: Map<string, CalendarEvent[]>;
+  accountMap: Map<string, any>;
+}) {
+  const events = externalEventsByDate.get(dateStr) || [];
+  if (events.length === 0) return null;
+  return (
+    <div className="space-y-1 mb-3">
+      <p className="text-xs font-semibold text-muted-foreground mb-1">Événements synchronisés</p>
+      {events.map(ev => {
+        const meta = getProviderMeta(ev.provider);
+        const isGoogle = ev.provider === 'google';
+        const timeStr = ev.is_all_day ? 'Journée' : new Date(ev.start_time).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + ' – ' + new Date(ev.end_time).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        return (
+          <div key={ev.id} className="flex items-center gap-2 p-3 rounded-lg border border-border bg-muted/30">
+            {isGoogle ? (
+              <span className="w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center shrink-0">G</span>
+            ) : (
+              <span className={`w-2 h-2 rounded-full shrink-0 ${meta.dot}`} />
+            )}
+            <span className="text-sm font-medium text-foreground flex-1">{ev.title}</span>
+            <span className="text-xs text-muted-foreground shrink-0">{timeStr}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 export default function CalendarView() {
   const { getFilteredTasks, setSelectedTaskId, addTask, updateTask, selectedProjectId, getListsForProject, teamMembers, tasks: allTasks } = useApp();

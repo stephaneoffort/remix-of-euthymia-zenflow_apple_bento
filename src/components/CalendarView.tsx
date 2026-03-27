@@ -720,6 +720,30 @@ export default function CalendarView() {
 
   // ─── Mobile layouts ───
   if (isMobile) {
+    const handleConnectGoogle = () => {
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      window.open(`https://${projectId}.supabase.co/functions/v1/google-oauth/authorize`, '_blank');
+    };
+
+    const mobileActionBar = (
+      <div className="flex items-center gap-1.5 px-3 pb-2">
+        <button
+          onClick={handleConnectGoogle}
+          className="flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-md bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 transition-colors"
+        >
+          📅 Google
+        </button>
+        <button
+          onClick={() => calSync.syncAllAccounts()}
+          disabled={calSync.loading}
+          className="flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-md hover:bg-muted transition-colors text-foreground disabled:opacity-50"
+        >
+          {calSync.loading ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+          Sync
+        </button>
+      </div>
+    );
+
     const navigateMobile = (dir: number) => {
       const d = new Date(selectedDay);
       if (mode === 'day') d.setDate(d.getDate() + dir);

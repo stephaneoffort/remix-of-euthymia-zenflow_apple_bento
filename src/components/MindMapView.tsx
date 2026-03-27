@@ -259,8 +259,8 @@ export default function MindMapView() {
 
   // Collapse all
   const collapseAll = useCallback(() => {
-    setExpandedIds(new Set(roots.map(r => r.task.id)));
-    setVisibleDepth(1);
+    setExpandedIds(new Set());
+    setVisibleDepth(0);
   }, [roots]);
 
   // Reset view

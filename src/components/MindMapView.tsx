@@ -374,7 +374,7 @@ export default function MindMapView() {
             key={level}
             onClick={() => expandToDepth(level)}
             className={`w-7 h-7 rounded-md text-xs font-semibold transition-colors shrink-0 ${
-              visibleDepth === level
+              visibleDepth === level - 1
                 ? 'bg-primary text-primary-foreground'
                 : 'text-muted-foreground hover:bg-muted'
             }`}

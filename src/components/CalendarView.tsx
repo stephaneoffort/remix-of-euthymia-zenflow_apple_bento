@@ -700,9 +700,14 @@ export default function CalendarView() {
                 })}
                 {externalEvts.slice(extSlots).map(ev => {
                   const meta = getProviderMeta(ev.provider);
+                  const isGoogle = ev.provider === 'google';
                   return (
                     <div key={ev.id} className="flex items-center gap-2 px-2 py-1.5 rounded-md w-full">
-                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${meta.dot}`} />
+                      {isGoogle ? (
+                        <span className="w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center shrink-0">G</span>
+                      ) : (
+                        <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${meta.dot}`} />
+                      )}
                       <span className="text-xs text-muted-foreground truncate flex-1">{ev.title}</span>
                       <span className="shrink-0 text-[10px] text-muted-foreground">
                         {ev.is_all_day ? 'Journée' : new Date(ev.start_time).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}

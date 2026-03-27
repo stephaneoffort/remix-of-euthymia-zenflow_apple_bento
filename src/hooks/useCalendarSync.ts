@@ -87,12 +87,33 @@ export function useCalendarSync() {
   }, [fetchEvents, fetchAccounts]);
 
   const syncAllAccounts = useCallback(async () => {
-    setLoading(true);
-    for (const acc of accounts) {
-      await syncAccount(acc.id, 'pull');
+    // Re-fetch accounts to get the latest active ones
+    const { data: activeAccounts } = await supabase
+      .from('calendar_accounts')
+      .select('*')
+      .eq('is_active', true);
+
+    if (!activeAccounts || activeAccounts.length === 0) {
+      toast.error("Aucun agenda connecté. Connecte d'abord Google Calendar.");
+      return;
     }
-    setLoading(false);
-  }, [accounts, syncAccount]);
+
+    setLoading(true);
+    try {
+      for (const acc of activeAccounts) {
+        await supabase.functions.invoke('calendar-sync', {
+          body: { account_id: acc.id, direction: 'pull' },
+        });
+      }
+      await fetchEvents();
+      await fetchAccounts();
+      toast.success('Synchronisation terminée ✅');
+    } catch (err: any) {
+      toast.error('Erreur de synchronisation : ' + (err.message || 'Inconnue'));
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchEvents, fetchAccounts]);
 
   const addCalDavAccount = useCallback(async (label: string, caldavUrl: string, username: string, password: string, provider = 'caldav') => {
     const { data, error } = await supabase

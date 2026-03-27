@@ -862,6 +862,7 @@ export default function CalendarView() {
             <button onClick={() => navigateMobile(1)} className="p-1.5 hover:bg-muted rounded-md transition-colors"><ChevronRight className="w-4 h-4 text-foreground" /></button>
           </div>
         </div>
+        {mobileActionBar}
         <div className="grid grid-cols-7 gap-1 px-2 pb-2">
           {mobileWeekDays.map((d, i) => {
             const ds = toDateStr(d);

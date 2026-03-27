@@ -394,6 +394,25 @@ export default function CalendarView() {
     return map;
   }, [tasks]);
 
+  // External calendar events indexed by date
+  const externalEventsByDate = useMemo(() => {
+    const map = new Map<string, CalendarEvent[]>();
+    calSync.events.forEach(ev => {
+      if (!ev.start_time) return;
+      const dk = ev.start_time.slice(0, 10);
+      if (!map.has(dk)) map.set(dk, []);
+      map.get(dk)!.push(ev);
+    });
+    return map;
+  }, [calSync.events]);
+
+  // Account lookup for tooltips
+  const accountMap = useMemo(() => {
+    const m = new Map<string, typeof calSync.accounts[0]>();
+    calSync.accounts.forEach(a => m.set(a.id, a));
+    return m;
+  }, [calSync.accounts]);
+
   const today = toDateStr(new Date());
   const activeTask = activeTaskId ? tasks.find(t => t.id === activeTaskId) : null;
 

@@ -229,11 +229,12 @@ export default function MindMapView() {
 
   // Expand a specific depth level
   const expandToDepth = useCallback((depth: number) => {
-    setVisibleDepth(depth);
+    const actualDepth = depth - 1;
+    setVisibleDepth(actualDepth);
     const ids = new Set<string>();
     function collect(nodes: TreeNode[], d: number) {
       nodes.forEach(n => {
-        if (d < depth && n.children.length > 0) {
+        if (d < actualDepth && n.children.length > 0) {
           ids.add(n.task.id);
           collect(n.children, d + 1);
         }

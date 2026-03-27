@@ -647,11 +647,16 @@ export default function CalendarView() {
           const meta = getProviderMeta(ev.provider);
           const acc = ev.account_id ? accountMap.get(ev.account_id) : null;
           const timeStr = ev.is_all_day ? '' : new Date(ev.start_time).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+          const isGoogle = ev.provider === 'google';
           return (
             <Tooltip key={ev.id}>
               <TooltipTrigger asChild>
                 <div className="text-[11px] px-1.5 py-0.5 rounded bg-muted/60 text-muted-foreground hover:bg-muted transition-colors flex items-center gap-1 cursor-default">
-                  <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${meta.dot}`} />
+                  {isGoogle ? (
+                    <span className="w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center shrink-0">G</span>
+                  ) : (
+                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${meta.dot}`} />
+                  )}
                   <span className="truncate">{ev.title}</span>
                   {timeStr && <span className="text-[9px] shrink-0 opacity-70">{timeStr}</span>}
                 </div>

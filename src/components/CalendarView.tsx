@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import EmptyState from '@/components/EmptyState';
 import { useApp } from '@/context/AppContext';
 import { ChevronLeft, ChevronRight, Plus, Download, Calendar as CalendarIcon, Repeat, CornerDownRight, ArrowRight } from 'lucide-react';
@@ -19,6 +19,9 @@ import {
   type DragStartEvent,
   type DragEndEvent,
 } from '@dnd-kit/core';
+import { useCalendarSync, type CalendarEvent } from '@/hooks/useCalendarSync';
+import CalendarAccountsManager, { getProviderMeta } from '@/components/CalendarAccountsManager';
+import SyncTargetPicker from '@/components/SyncTargetPicker';
 
 type CalendarMode = 'day' | 'week' | 'month';
 
@@ -324,6 +327,7 @@ function AgendaTaskList({ dateStr, tasks: dayTasks, allTasks, teamMembers, setSe
 
 export default function CalendarView() {
   const { getFilteredTasks, setSelectedTaskId, addTask, updateTask, selectedProjectId, getListsForProject, teamMembers, tasks: allTasks } = useApp();
+  const calSync = useCalendarSync();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState(new Date());
   const [addingForDate, setAddingForDate] = useState<string | null>(null);
@@ -333,6 +337,14 @@ export default function CalendarView() {
     const saved = localStorage.getItem('euthymia_calendar_mode');
     return (saved === 'day' || saved === 'week' || saved === 'month') ? saved : 'month';
   });
+
+  // Auto-sync on mount
+  useEffect(() => {
+    if (calSync.accounts.length > 0) {
+      calSync.syncAllAccounts();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [calSync.accounts.length]);
 
   const handleModeChange = (m: CalendarMode) => {
     setMode(m);
@@ -381,6 +393,25 @@ export default function CalendarView() {
     });
     return map;
   }, [tasks]);
+
+  // External calendar events indexed by date
+  const externalEventsByDate = useMemo(() => {
+    const map = new Map<string, CalendarEvent[]>();
+    calSync.events.forEach(ev => {
+      if (!ev.start_time) return;
+      const dk = ev.start_time.slice(0, 10);
+      if (!map.has(dk)) map.set(dk, []);
+      map.get(dk)!.push(ev);
+    });
+    return map;
+  }, [calSync.events]);
+
+  // Account lookup for tooltips
+  const accountMap = useMemo(() => {
+    const m = new Map<string, typeof calSync.accounts[0]>();
+    calSync.accounts.forEach(a => m.set(a.id, a));
+    return m;
+  }, [calSync.accounts]);
 
   const today = toDateStr(new Date());
   const activeTask = activeTaskId ? tasks.find(t => t.id === activeTaskId) : null;
@@ -514,6 +545,35 @@ export default function CalendarView() {
   const currentDateStr = toDateStr(currentDate);
   const dayTasks = getAgendaTasks(currentDateStr);
 
+  // ─── Render external events for a given date ───
+  const renderExternalEvents = (dateStr: string) => {
+    const exts = externalEventsByDate.get(dateStr) || [];
+    return exts.map(ev => {
+      const meta = getProviderMeta(ev.provider);
+      const acc = ev.account_id ? accountMap.get(ev.account_id) : null;
+      const timeStr = ev.is_all_day ? 'Journée' : new Date(ev.start_time).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      return (
+        <Tooltip key={ev.id}>
+          <TooltipTrigger asChild>
+            <div className="text-[11px] px-1.5 py-0.5 rounded bg-muted/60 text-muted-foreground hover:bg-muted transition-colors flex items-center gap-1 cursor-default">
+              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${meta.dot}`} />
+              <span className="truncate">{ev.title}</span>
+              <span className="text-[9px] shrink-0 opacity-70">{timeStr}</span>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="right" className="text-xs max-w-[200px]">
+            <p className="font-medium">{ev.title}</p>
+            <p className="text-muted-foreground">
+              Synchronisé depuis {acc?.label || meta.label}
+              {ev.last_synced_at && ` · ${new Date(ev.last_synced_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}`}
+            </p>
+            {ev.location && <p className="text-muted-foreground">📍 {ev.location}</p>}
+          </TooltipContent>
+        </Tooltip>
+      );
+    });
+  };
+
   // ─── Render cell tasks for grid views ───
   const renderCellTasks = (dateStr: string, maxVisible = 4) => {
     const entries = tasksByDate.get(dateStr) || [];
@@ -521,12 +581,16 @@ export default function CalendarView() {
     const spanning = entries.filter(e => e.totalDays > 1);
     const single = entries.filter(e => e.totalDays === 1);
     const all = [...spanning, ...single];
-    const visible = all.slice(0, maxVisible);
-    const overflow = all.length - maxVisible;
+    const externalEvts = externalEventsByDate.get(dateStr) || [];
+    const totalItems = all.length + externalEvts.length;
+    const extSlots = Math.max(0, maxVisible - all.length);
+    const visibleTasks = all.slice(0, maxVisible);
+    const visibleExts = externalEvts.slice(0, extSlots);
+    const overflow = totalItems - visibleTasks.length - visibleExts.length;
 
     return (
       <>
-        {visible.map(entry => (
+        {visibleTasks.map(entry => (
           <DraggableTask
             key={`${entry.task.id}-${dateStr}`}
             task={entry.task}
@@ -536,6 +600,26 @@ export default function CalendarView() {
             spanInfo={entry.totalDays > 1 ? { isStart: entry.isStart, isEnd: entry.isEnd, totalDays: entry.totalDays } : undefined}
           />
         ))}
+        {visibleExts.map(ev => {
+          const meta = getProviderMeta(ev.provider);
+          const acc = ev.account_id ? accountMap.get(ev.account_id) : null;
+          const timeStr = ev.is_all_day ? '' : new Date(ev.start_time).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+          return (
+            <Tooltip key={ev.id}>
+              <TooltipTrigger asChild>
+                <div className="text-[11px] px-1.5 py-0.5 rounded bg-muted/60 text-muted-foreground hover:bg-muted transition-colors flex items-center gap-1 cursor-default">
+                  <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${meta.dot}`} />
+                  <span className="truncate">{ev.title}</span>
+                  {timeStr && <span className="text-[9px] shrink-0 opacity-70">{timeStr}</span>}
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="text-xs max-w-[200px]">
+                <p className="font-medium">{ev.title}</p>
+                <p className="text-muted-foreground">Synchronisé depuis {acc?.label || meta.label}</p>
+              </TooltipContent>
+            </Tooltip>
+          );
+        })}
         {overflow > 0 && (
           <Popover>
             <PopoverTrigger asChild>
@@ -544,7 +628,7 @@ export default function CalendarView() {
               </button>
             </PopoverTrigger>
             <PopoverContent className="w-72 max-h-64 overflow-y-auto p-2" side="bottom" align="start">
-              <p className="text-xs font-semibold text-muted-foreground mb-2 px-1">{overflow} tâche{overflow > 1 ? 's' : ''} supplémentaire{overflow > 1 ? 's' : ''}</p>
+              <p className="text-xs font-semibold text-muted-foreground mb-2 px-1">{overflow} élément{overflow > 1 ? 's' : ''} supplémentaire{overflow > 1 ? 's' : ''}</p>
               <div className="flex flex-col gap-1">
                 {all.slice(maxVisible).map(entry => {
                   const t = entry.task;
@@ -564,6 +648,18 @@ export default function CalendarView() {
                         <span className="shrink-0 text-[10px] text-muted-foreground">{dueStr}</span>
                       )}
                     </button>
+                  );
+                })}
+                {externalEvts.slice(extSlots).map(ev => {
+                  const meta = getProviderMeta(ev.provider);
+                  return (
+                    <div key={ev.id} className="flex items-center gap-2 px-2 py-1.5 rounded-md w-full">
+                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${meta.dot}`} />
+                      <span className="text-xs text-muted-foreground truncate flex-1">{ev.title}</span>
+                      <span className="shrink-0 text-[10px] text-muted-foreground">
+                        {ev.is_all_day ? 'Journée' : new Date(ev.start_time).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
                   );
                 })}
               </div>
@@ -725,31 +821,42 @@ export default function CalendarView() {
   // ═══════════════════════════════════════════
 
   const sharedHeader = (
-    <div className="flex items-center justify-between mb-4">
-      <div className="flex items-center gap-3">
-        <Popover>
-          <PopoverTrigger asChild>
-            <button className="text-lg font-bold text-foreground hover:text-primary transition-colors">{headerTitle}</button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <MonthYearPicker year={year} month={month} onSelect={(y, m) => setCurrentDate(new Date(y, m, 1))} />
-          </PopoverContent>
-        </Popover>
-        <ModeSwitcher mode={mode} onChange={handleModeChange} />
-      </div>
-      <div className="flex items-center gap-2">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button onClick={exportToICS} className="p-2 hover:bg-muted rounded-md transition-colors"><Download className="w-4 h-4 text-foreground/70" /></button>
-          </TooltipTrigger>
-          <TooltipContent>Exporter (.ics) – Google Agenda, Outlook, Apple…</TooltipContent>
-        </Tooltip>
-        <div className="flex gap-1">
-          <button onClick={navigatePrev} className="p-2 hover:bg-muted rounded-md transition-colors"><ChevronLeft className="w-4 h-4 text-foreground" /></button>
-          <button onClick={goToday} className="px-3 py-1.5 text-sm hover:bg-muted rounded-md transition-colors font-medium text-foreground">Aujourd'hui</button>
-          <button onClick={navigateNext} className="p-2 hover:bg-muted rounded-md transition-colors"><ChevronRight className="w-4 h-4 text-foreground" /></button>
+    <div className="space-y-3 mb-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="text-lg font-bold text-foreground hover:text-primary transition-colors">{headerTitle}</button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <MonthYearPicker year={year} month={month} onSelect={(y, m) => setCurrentDate(new Date(y, m, 1))} />
+            </PopoverContent>
+          </Popover>
+          <ModeSwitcher mode={mode} onChange={handleModeChange} />
+        </div>
+        <div className="flex items-center gap-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button onClick={exportToICS} className="p-2 hover:bg-muted rounded-md transition-colors"><Download className="w-4 h-4 text-foreground/70" /></button>
+            </TooltipTrigger>
+            <TooltipContent>Exporter (.ics) – Google Agenda, Outlook, Apple…</TooltipContent>
+          </Tooltip>
+          <div className="flex gap-1">
+            <button onClick={navigatePrev} className="p-2 hover:bg-muted rounded-md transition-colors"><ChevronLeft className="w-4 h-4 text-foreground" /></button>
+            <button onClick={goToday} className="px-3 py-1.5 text-sm hover:bg-muted rounded-md transition-colors font-medium text-foreground">Aujourd'hui</button>
+            <button onClick={navigateNext} className="p-2 hover:bg-muted rounded-md transition-colors"><ChevronRight className="w-4 h-4 text-foreground" /></button>
+          </div>
         </div>
       </div>
+      <CalendarAccountsManager
+        accounts={calSync.accounts}
+        syncing={calSync.syncing}
+        onSync={(id) => calSync.syncAccount(id, 'pull')}
+        onDelete={calSync.deleteAccount}
+        onAddCalDav={calSync.addCalDavAccount}
+        onAddIcs={calSync.addIcsAccount}
+        onTestConnection={(id) => calSync.syncAccount(id, 'test') as Promise<boolean>}
+      />
     </div>
   );
 

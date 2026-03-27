@@ -545,6 +545,35 @@ export default function CalendarView() {
   const currentDateStr = toDateStr(currentDate);
   const dayTasks = getAgendaTasks(currentDateStr);
 
+  // ─── Render external events for a given date ───
+  const renderExternalEvents = (dateStr: string) => {
+    const exts = externalEventsByDate.get(dateStr) || [];
+    return exts.map(ev => {
+      const meta = getProviderMeta(ev.provider);
+      const acc = ev.account_id ? accountMap.get(ev.account_id) : null;
+      const timeStr = ev.is_all_day ? 'Journée' : new Date(ev.start_time).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      return (
+        <Tooltip key={ev.id}>
+          <TooltipTrigger asChild>
+            <div className="text-[11px] px-1.5 py-0.5 rounded bg-muted/60 text-muted-foreground hover:bg-muted transition-colors flex items-center gap-1 cursor-default">
+              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${meta.dot}`} />
+              <span className="truncate">{ev.title}</span>
+              <span className="text-[9px] shrink-0 opacity-70">{timeStr}</span>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="right" className="text-xs max-w-[200px]">
+            <p className="font-medium">{ev.title}</p>
+            <p className="text-muted-foreground">
+              Synchronisé depuis {acc?.label || meta.label}
+              {ev.last_synced_at && ` · ${new Date(ev.last_synced_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}`}
+            </p>
+            {ev.location && <p className="text-muted-foreground">📍 {ev.location}</p>}
+          </TooltipContent>
+        </Tooltip>
+      );
+    });
+  };
+
   // ─── Render cell tasks for grid views ───
   const renderCellTasks = (dateStr: string, maxVisible = 4) => {
     const entries = tasksByDate.get(dateStr) || [];
@@ -552,12 +581,16 @@ export default function CalendarView() {
     const spanning = entries.filter(e => e.totalDays > 1);
     const single = entries.filter(e => e.totalDays === 1);
     const all = [...spanning, ...single];
-    const visible = all.slice(0, maxVisible);
-    const overflow = all.length - maxVisible;
+    const externalEvts = externalEventsByDate.get(dateStr) || [];
+    const totalItems = all.length + externalEvts.length;
+    const extSlots = Math.max(0, maxVisible - all.length);
+    const visibleTasks = all.slice(0, maxVisible);
+    const visibleExts = externalEvts.slice(0, extSlots);
+    const overflow = totalItems - visibleTasks.length - visibleExts.length;
 
     return (
       <>
-        {visible.map(entry => (
+        {visibleTasks.map(entry => (
           <DraggableTask
             key={`${entry.task.id}-${dateStr}`}
             task={entry.task}
@@ -567,6 +600,26 @@ export default function CalendarView() {
             spanInfo={entry.totalDays > 1 ? { isStart: entry.isStart, isEnd: entry.isEnd, totalDays: entry.totalDays } : undefined}
           />
         ))}
+        {visibleExts.map(ev => {
+          const meta = getProviderMeta(ev.provider);
+          const acc = ev.account_id ? accountMap.get(ev.account_id) : null;
+          const timeStr = ev.is_all_day ? '' : new Date(ev.start_time).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+          return (
+            <Tooltip key={ev.id}>
+              <TooltipTrigger asChild>
+                <div className="text-[11px] px-1.5 py-0.5 rounded bg-muted/60 text-muted-foreground hover:bg-muted transition-colors flex items-center gap-1 cursor-default">
+                  <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${meta.dot}`} />
+                  <span className="truncate">{ev.title}</span>
+                  {timeStr && <span className="text-[9px] shrink-0 opacity-70">{timeStr}</span>}
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="text-xs max-w-[200px]">
+                <p className="font-medium">{ev.title}</p>
+                <p className="text-muted-foreground">Synchronisé depuis {acc?.label || meta.label}</p>
+              </TooltipContent>
+            </Tooltip>
+          );
+        })}
         {overflow > 0 && (
           <Popover>
             <PopoverTrigger asChild>
@@ -575,7 +628,7 @@ export default function CalendarView() {
               </button>
             </PopoverTrigger>
             <PopoverContent className="w-72 max-h-64 overflow-y-auto p-2" side="bottom" align="start">
-              <p className="text-xs font-semibold text-muted-foreground mb-2 px-1">{overflow} tâche{overflow > 1 ? 's' : ''} supplémentaire{overflow > 1 ? 's' : ''}</p>
+              <p className="text-xs font-semibold text-muted-foreground mb-2 px-1">{overflow} élément{overflow > 1 ? 's' : ''} supplémentaire{overflow > 1 ? 's' : ''}</p>
               <div className="flex flex-col gap-1">
                 {all.slice(maxVisible).map(entry => {
                   const t = entry.task;
@@ -595,6 +648,18 @@ export default function CalendarView() {
                         <span className="shrink-0 text-[10px] text-muted-foreground">{dueStr}</span>
                       )}
                     </button>
+                  );
+                })}
+                {externalEvts.slice(extSlots).map(ev => {
+                  const meta = getProviderMeta(ev.provider);
+                  return (
+                    <div key={ev.id} className="flex items-center gap-2 px-2 py-1.5 rounded-md w-full">
+                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${meta.dot}`} />
+                      <span className="text-xs text-muted-foreground truncate flex-1">{ev.title}</span>
+                      <span className="shrink-0 text-[10px] text-muted-foreground">
+                        {ev.is_all_day ? 'Journée' : new Date(ev.start_time).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
                   );
                 })}
               </div>

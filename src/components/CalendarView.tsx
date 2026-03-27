@@ -585,9 +585,9 @@ export default function CalendarView() {
             <div className="flex items-center gap-1">
               <ModeSwitcher mode={mode} onChange={handleModeChange} compact />
               <button onClick={exportToICS} className="p-1.5 hover:bg-muted rounded-md transition-colors"><Download className="w-4 h-4 text-muted-foreground" /></button>
-              <button onClick={() => navigateMobile(-1)} className="p-1.5 hover:bg-muted rounded-md transition-colors"><ChevronLeft className="w-4 h-4" /></button>
-              <button onClick={() => setSelectedDay(new Date())} className="px-2 py-1 text-xs hover:bg-muted rounded-md transition-colors font-medium">Auj.</button>
-              <button onClick={() => navigateMobile(1)} className="p-1.5 hover:bg-muted rounded-md transition-colors"><ChevronRight className="w-4 h-4" /></button>
+              <button onClick={() => navigateMobile(-1)} className="p-1.5 hover:bg-muted rounded-md transition-colors"><ChevronLeft className="w-4 h-4 text-foreground" /></button>
+              <button onClick={() => setSelectedDay(new Date())} className="px-2 py-1 text-xs hover:bg-muted rounded-md transition-colors font-medium text-foreground">Auj.</button>
+              <button onClick={() => navigateMobile(1)} className="p-1.5 hover:bg-muted rounded-md transition-colors"><ChevronRight className="w-4 h-4 text-foreground" /></button>
             </div>
           </div>
           <div className="grid grid-cols-7 gap-px bg-border mx-2 rounded-lg overflow-hidden">

@@ -720,6 +720,30 @@ export default function CalendarView() {
 
   // ─── Mobile layouts ───
   if (isMobile) {
+    const handleConnectGoogle = () => {
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      window.open(`https://${projectId}.supabase.co/functions/v1/google-oauth/authorize`, '_blank');
+    };
+
+    const mobileActionBar = (
+      <div className="flex items-center gap-1.5 px-3 pb-2">
+        <button
+          onClick={handleConnectGoogle}
+          className="flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-md bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 transition-colors"
+        >
+          📅 Google
+        </button>
+        <button
+          onClick={() => calSync.syncAllAccounts()}
+          disabled={calSync.loading}
+          className="flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-md hover:bg-muted transition-colors text-foreground disabled:opacity-50"
+        >
+          {calSync.loading ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+          Sync
+        </button>
+      </div>
+    );
+
     const navigateMobile = (dir: number) => {
       const d = new Date(selectedDay);
       if (mode === 'day') d.setDate(d.getDate() + dir);
@@ -767,6 +791,7 @@ export default function CalendarView() {
               <button onClick={() => navigateMobile(1)} className="p-1.5 hover:bg-muted rounded-md transition-colors"><ChevronRight className="w-4 h-4 text-foreground" /></button>
             </div>
           </div>
+          {mobileActionBar}
           <div className="grid grid-cols-7 gap-px bg-border mx-2 rounded-lg overflow-hidden">
             {DAYS_FR_SHORT.map((d, i) => (
               <div key={i} className="py-1 text-center text-label font-semibold text-muted-foreground bg-muted/30">{d}</div>
@@ -808,6 +833,7 @@ export default function CalendarView() {
               <button onClick={() => navigateMobile(1)} className="p-1.5 hover:bg-muted rounded-md transition-colors"><ChevronRight className="w-4 h-4 text-foreground" /></button>
             </div>
           </div>
+          {mobileActionBar}
           <div className="flex-1 overflow-y-auto px-3 py-2">
             <AgendaTaskList dateStr={selectedDateStr} tasks={selectedDayTasks} allTasks={allTasks} teamMembers={teamMembers} setSelectedTaskId={setSelectedTaskId}
               addingForDate={addingForDate} setAddingForDate={setAddingForDate} newTaskTitle={newTaskTitle} setNewTaskTitle={setNewTaskTitle} handleAddTask={handleAddTask} isMobile />
@@ -836,6 +862,7 @@ export default function CalendarView() {
             <button onClick={() => navigateMobile(1)} className="p-1.5 hover:bg-muted rounded-md transition-colors"><ChevronRight className="w-4 h-4 text-foreground" /></button>
           </div>
         </div>
+        {mobileActionBar}
         <div className="grid grid-cols-7 gap-1 px-2 pb-2">
           {mobileWeekDays.map((d, i) => {
             const ds = toDateStr(d);

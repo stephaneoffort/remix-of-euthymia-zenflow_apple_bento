@@ -61,6 +61,125 @@ export type Database = {
           },
         ]
       }
+      calendar_accounts: {
+        Row: {
+          access_token: string | null
+          caldav_password: string | null
+          caldav_url: string | null
+          caldav_username: string | null
+          calendar_id: string | null
+          created_at: string | null
+          ics_url: string | null
+          id: string
+          is_active: boolean | null
+          label: string | null
+          last_synced_at: string | null
+          provider: string
+          refresh_token: string | null
+          token_expiry: string | null
+          user_id: string | null
+        }
+        Insert: {
+          access_token?: string | null
+          caldav_password?: string | null
+          caldav_url?: string | null
+          caldav_username?: string | null
+          calendar_id?: string | null
+          created_at?: string | null
+          ics_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          label?: string | null
+          last_synced_at?: string | null
+          provider?: string
+          refresh_token?: string | null
+          token_expiry?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          access_token?: string | null
+          caldav_password?: string | null
+          caldav_url?: string | null
+          caldav_username?: string | null
+          calendar_id?: string | null
+          created_at?: string | null
+          ics_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          label?: string | null
+          last_synced_at?: string | null
+          provider?: string
+          refresh_token?: string | null
+          token_expiry?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      calendar_events: {
+        Row: {
+          account_id: string | null
+          created_at: string | null
+          description: string | null
+          end_time: string
+          external_id: string | null
+          id: string
+          is_all_day: boolean | null
+          last_synced_at: string | null
+          location: string | null
+          provider: string
+          start_time: string
+          status: string | null
+          sync_status: string | null
+          title: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          account_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          end_time: string
+          external_id?: string | null
+          id?: string
+          is_all_day?: boolean | null
+          last_synced_at?: string | null
+          location?: string | null
+          provider?: string
+          start_time: string
+          status?: string | null
+          sync_status?: string | null
+          title: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          account_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          end_time?: string
+          external_id?: string | null
+          id?: string
+          is_all_day?: boolean | null
+          last_synced_at?: string | null
+          location?: string | null
+          provider?: string
+          start_time?: string
+          status?: string | null
+          sync_status?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calendar_events_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "calendar_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chat_categories: {
         Row: {
           created_at: string

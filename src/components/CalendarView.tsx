@@ -536,7 +536,30 @@ export default function CalendarView() {
             spanInfo={entry.totalDays > 1 ? { isStart: entry.isStart, isEnd: entry.isEnd, totalDays: entry.totalDays } : undefined}
           />
         ))}
-        {overflow > 0 && <span className="text-label text-muted-foreground px-1">+{overflow}</span>}
+        {overflow > 0 && (
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="text-label text-primary font-semibold px-1 py-0.5 rounded hover:bg-primary/10 transition-colors cursor-pointer">
+                +{overflow}
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-72 max-h-64 overflow-y-auto p-2" side="bottom" align="start">
+              <p className="text-xs font-semibold text-muted-foreground mb-2 px-1">{overflow} tâche{overflow > 1 ? 's' : ''} supplémentaire{overflow > 1 ? 's' : ''}</p>
+              <div className="flex flex-col gap-1">
+                {all.slice(maxVisible).map(entry => (
+                  <button
+                    key={entry.task.id}
+                    onClick={() => setSelectedTaskId(entry.task.id)}
+                    className="flex items-center gap-2 px-2 py-1.5 rounded-md text-left hover:bg-accent transition-colors w-full"
+                  >
+                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${STATUS_DOT_COLORS[entry.task.status] || 'bg-muted-foreground'}`} />
+                    <span className="text-xs text-foreground truncate">{entry.task.title}</span>
+                  </button>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
+        )}
       </>
     );
   };

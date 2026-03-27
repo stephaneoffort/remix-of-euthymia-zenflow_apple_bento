@@ -821,31 +821,42 @@ export default function CalendarView() {
   // ═══════════════════════════════════════════
 
   const sharedHeader = (
-    <div className="flex items-center justify-between mb-4">
-      <div className="flex items-center gap-3">
-        <Popover>
-          <PopoverTrigger asChild>
-            <button className="text-lg font-bold text-foreground hover:text-primary transition-colors">{headerTitle}</button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <MonthYearPicker year={year} month={month} onSelect={(y, m) => setCurrentDate(new Date(y, m, 1))} />
-          </PopoverContent>
-        </Popover>
-        <ModeSwitcher mode={mode} onChange={handleModeChange} />
-      </div>
-      <div className="flex items-center gap-2">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button onClick={exportToICS} className="p-2 hover:bg-muted rounded-md transition-colors"><Download className="w-4 h-4 text-foreground/70" /></button>
-          </TooltipTrigger>
-          <TooltipContent>Exporter (.ics) – Google Agenda, Outlook, Apple…</TooltipContent>
-        </Tooltip>
-        <div className="flex gap-1">
-          <button onClick={navigatePrev} className="p-2 hover:bg-muted rounded-md transition-colors"><ChevronLeft className="w-4 h-4 text-foreground" /></button>
-          <button onClick={goToday} className="px-3 py-1.5 text-sm hover:bg-muted rounded-md transition-colors font-medium text-foreground">Aujourd'hui</button>
-          <button onClick={navigateNext} className="p-2 hover:bg-muted rounded-md transition-colors"><ChevronRight className="w-4 h-4 text-foreground" /></button>
+    <div className="space-y-3 mb-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="text-lg font-bold text-foreground hover:text-primary transition-colors">{headerTitle}</button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <MonthYearPicker year={year} month={month} onSelect={(y, m) => setCurrentDate(new Date(y, m, 1))} />
+            </PopoverContent>
+          </Popover>
+          <ModeSwitcher mode={mode} onChange={handleModeChange} />
+        </div>
+        <div className="flex items-center gap-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button onClick={exportToICS} className="p-2 hover:bg-muted rounded-md transition-colors"><Download className="w-4 h-4 text-foreground/70" /></button>
+            </TooltipTrigger>
+            <TooltipContent>Exporter (.ics) – Google Agenda, Outlook, Apple…</TooltipContent>
+          </Tooltip>
+          <div className="flex gap-1">
+            <button onClick={navigatePrev} className="p-2 hover:bg-muted rounded-md transition-colors"><ChevronLeft className="w-4 h-4 text-foreground" /></button>
+            <button onClick={goToday} className="px-3 py-1.5 text-sm hover:bg-muted rounded-md transition-colors font-medium text-foreground">Aujourd'hui</button>
+            <button onClick={navigateNext} className="p-2 hover:bg-muted rounded-md transition-colors"><ChevronRight className="w-4 h-4 text-foreground" /></button>
+          </div>
         </div>
       </div>
+      <CalendarAccountsManager
+        accounts={calSync.accounts}
+        syncing={calSync.syncing}
+        onSync={(id) => calSync.syncAccount(id, 'pull')}
+        onDelete={calSync.deleteAccount}
+        onAddCalDav={calSync.addCalDavAccount}
+        onAddIcs={calSync.addIcsAccount}
+        onTestConnection={(id) => calSync.syncAccount(id, 'test') as Promise<boolean>}
+      />
     </div>
   );
 

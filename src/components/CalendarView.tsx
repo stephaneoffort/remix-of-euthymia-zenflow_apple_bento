@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import EmptyState from '@/components/EmptyState';
 import { useApp } from '@/context/AppContext';
-import { ChevronLeft, ChevronRight, Plus, Download, Calendar as CalendarIcon, Repeat, CornerDownRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Download, Calendar as CalendarIcon, Repeat, CornerDownRight, ArrowRight } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
@@ -42,8 +42,8 @@ const STATUS_LABELS: Record<string, string> = {
   done: 'Terminé',
 };
 
-const STATUS_BAR_COLORS: Record<string, string> = {
-  todo: 'bg-muted-foreground/60',
+const STATUS_DOT_COLORS: Record<string, string> = {
+  todo: 'bg-muted-foreground',
   in_progress: 'bg-primary',
   in_review: 'bg-amber-500',
   done: 'bg-green-500',
@@ -91,17 +91,6 @@ function getWeekDays(date: Date): Date[] {
 function getFrDayIndex(d: Date): number {
   const day = d.getDay();
   return day === 0 ? 6 : day - 1;
-}
-
-// ─── Spanning task helpers ───
-
-interface SpanSegment {
-  task: Task;
-  startCol: number;   // 0-based column in the week row
-  span: number;       // number of columns to span
-  isStart: boolean;   // first segment of this task
-  isEnd: boolean;     // last segment of this task
-  durationDays: number; // total task duration
 }
 
 function getTaskDateRange(task: Task): { start: string; end: string; duration: number } | null {
@@ -158,75 +147,6 @@ function ModeSwitcher({ mode, onChange, compact }: { mode: CalendarMode; onChang
   );
 }
 
-// ─── Desktop Draggable Task (single-day) ───
-
-function DraggableTask({ task, onClick, members, allTasks }: { task: Task; onClick: () => void; members: { id: string; name: string; avatarColor: string }[]; allTasks: Task[] }) {
-  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: task.id });
-  const assignees = members.filter(m => task.assigneeIds.includes(m.id));
-  return (
-    <HoverCard openDelay={300} closeDelay={100}>
-      <HoverCardTrigger asChild>
-        <div ref={setNodeRef} {...listeners} {...attributes} onClick={(e) => { e.stopPropagation(); onClick(); }}
-          className={`text-[11px] px-1.5 py-0.5 rounded truncate cursor-grab transition-colors flex items-center gap-1 ${
-            task.parentTaskId ? 'ml-2 bg-accent/60 text-accent-foreground hover:bg-accent/80' : 'bg-primary/10 text-primary hover:bg-primary/20'
-          } ${isDragging ? 'opacity-30' : ''}`}>
-          {task.parentTaskId && (
-            <Tooltip><TooltipTrigger asChild><CornerDownRight className="w-3 h-3 shrink-0 opacity-60" /></TooltipTrigger>
-              <TooltipContent side="top" className="text-xs">Sous-tâche de : {allTasks.find(t => t.id === task.parentTaskId)?.title ?? 'Tâche parente'}</TooltipContent></Tooltip>
-          )}
-          {task.recurrence && <Repeat className="w-3 h-3 shrink-0" />}
-          <span className="truncate">{task.title}</span>
-        </div>
-      </HoverCardTrigger>
-      <TaskHoverContent task={task} assignees={assignees} />
-    </HoverCard>
-  );
-}
-
-// ─── Spanning bar (multi-day task) ───
-
-function SpanningBar({ segment, onClick, members, allTasks }: { segment: SpanSegment; onClick: () => void; members: { id: string; name: string; avatarColor: string }[]; allTasks: Task[] }) {
-  const { task, startCol, span, isStart, isEnd, durationDays } = segment;
-  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: task.id });
-  const barColor = STATUS_BAR_COLORS[task.status] || 'bg-primary';
-
-  return (
-    <HoverCard openDelay={300} closeDelay={100}>
-      <HoverCardTrigger asChild>
-        <div
-          ref={setNodeRef}
-          {...listeners}
-          {...attributes}
-          onClick={(e) => { e.stopPropagation(); onClick(); }}
-          className={`
-            absolute h-5 cursor-grab flex items-center gap-1 text-[10px] font-medium text-white
-            transition-all duration-200 hover:brightness-110 hover:shadow-md z-10
-            ${barColor}
-            ${isStart ? 'rounded-l-md pl-1.5' : 'pl-0.5'}
-            ${isEnd ? 'rounded-r-md pr-1.5' : 'pr-0.5'}
-            ${isDragging ? 'opacity-30' : ''}
-          `}
-          style={{
-            left: `calc(${(startCol / 7) * 100}% + 2px)`,
-            width: `calc(${(span / 7) * 100}% - 4px)`,
-            top: 0,
-          }}
-          title={`${task.title} (${durationDays + 1}j)`}
-        >
-          {isStart && (
-            <>
-              {task.parentTaskId && <CornerDownRight className="w-2.5 h-2.5 shrink-0 opacity-80" />}
-              {task.recurrence && <Repeat className="w-2.5 h-2.5 shrink-0" />}
-              <span className="truncate">{task.title}</span>
-            </>
-          )}
-        </div>
-      </HoverCardTrigger>
-      <TaskHoverContent task={task} assignees={members.filter(m => task.assigneeIds.includes(m.id))} />
-    </HoverCard>
-  );
-}
-
 // ─── Shared hover content ───
 
 function TaskHoverContent({ task, assignees }: { task: Task; assignees: { id: string; name: string; avatarColor: string }[] }) {
@@ -261,10 +181,56 @@ function TaskHoverContent({ task, assignees }: { task: Task; assignees: { id: st
   );
 }
 
+// ─── Desktop Draggable Task ───
+
+function DraggableTask({ task, onClick, members, allTasks, spanInfo }: {
+  task: Task; onClick: () => void;
+  members: { id: string; name: string; avatarColor: string }[];
+  allTasks: Task[];
+  spanInfo?: { isStart: boolean; isEnd: boolean; totalDays: number };
+}) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: task.id });
+  const assignees = members.filter(m => task.assigneeIds.includes(m.id));
+  const isSpanning = !!spanInfo;
+  const dotColor = STATUS_DOT_COLORS[task.status] || 'bg-primary';
+
+  return (
+    <HoverCard openDelay={300} closeDelay={100}>
+      <HoverCardTrigger asChild>
+        <div ref={setNodeRef} {...listeners} {...attributes} onClick={(e) => { e.stopPropagation(); onClick(); }}
+          className={`text-[11px] px-1.5 py-0.5 cursor-grab transition-colors flex items-center gap-1
+            ${isDragging ? 'opacity-30' : ''}
+            ${isSpanning
+              ? `${spanInfo.isStart ? 'rounded-l' : ''} ${spanInfo.isEnd ? 'rounded-r' : ''} ${!spanInfo.isStart && !spanInfo.isEnd ? '' : ''} bg-primary/15 text-primary hover:bg-primary/25 border-y border-primary/20 ${spanInfo.isStart ? 'border-l' : 'border-l-0'} ${spanInfo.isEnd ? 'border-r' : 'border-r-0'} -mx-1.5`
+              : task.parentTaskId
+                ? 'rounded ml-2 bg-accent/60 text-accent-foreground hover:bg-accent/80'
+                : 'rounded bg-primary/10 text-primary hover:bg-primary/20'
+            }
+          `}
+        >
+          {task.parentTaskId && !isSpanning && (
+            <Tooltip><TooltipTrigger asChild><CornerDownRight className="w-3 h-3 shrink-0 opacity-60" /></TooltipTrigger>
+              <TooltipContent side="top" className="text-xs">Sous-tâche de : {allTasks.find(t => t.id === task.parentTaskId)?.title ?? 'Tâche parente'}</TooltipContent></Tooltip>
+          )}
+          {isSpanning && spanInfo.isStart && <span className={`w-1.5 h-1.5 rounded-full ${dotColor} shrink-0`} />}
+          {task.recurrence && <Repeat className="w-3 h-3 shrink-0" />}
+          {isSpanning && !spanInfo.isStart ? (
+            <span className="truncate opacity-50">{spanInfo.isEnd ? task.title : '—'}</span>
+          ) : (
+            <span className="truncate">{task.title}</span>
+          )}
+          {isSpanning && spanInfo.isStart && !spanInfo.isEnd && <ArrowRight className="w-2.5 h-2.5 shrink-0 opacity-50" />}
+        </div>
+      </HoverCardTrigger>
+      <TaskHoverContent task={task} assignees={assignees} />
+    </HoverCard>
+  );
+}
+
 // ─── Droppable Day Cell ───
 
-function DroppableDay({ dateStr, isCurrentMonth, isToday, dayNum, children, onAddClick, extraTopPadding }: {
-  dateStr: string; isCurrentMonth: boolean; isToday: boolean; dayNum: number; children: React.ReactNode; onAddClick: () => void; extraTopPadding?: number;
+function DroppableDay({ dateStr, isCurrentMonth, isToday, dayNum, children, onAddClick }: {
+  dateStr: string; isCurrentMonth: boolean; isToday: boolean; dayNum: number; children: React.ReactNode; onAddClick: () => void;
 }) {
   const { isOver, setNodeRef } = useDroppable({ id: dateStr });
   return (
@@ -275,8 +241,6 @@ function DroppableDay({ dateStr, isCurrentMonth, isToday, dayNum, children, onAd
           <button onClick={(e) => { e.stopPropagation(); onAddClick(); }} className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-muted transition-all" title="Ajouter une tâche"><Plus className="w-3 h-3 text-muted-foreground" /></button>
         )}
       </div>
-      {/* Reserve space for spanning bars */}
-      {extraTopPadding && extraTopPadding > 0 && <div style={{ height: extraTopPadding }} />}
       <div className="mt-1 space-y-0.5">{children}</div>
     </div>
   );
@@ -286,8 +250,7 @@ function DroppableDay({ dateStr, isCurrentMonth, isToday, dayNum, children, onAd
 
 function MobileTaskCard({ task, onClick, members, allTasks }: { task: Task; onClick: () => void; members: { id: string; name: string; avatarColor: string }[]; allTasks: Task[] }) {
   const assignees = members.filter(m => task.assigneeIds.includes(m.id));
-  const range = getTaskDateRange(task);
-  const isSpanning = range && range.duration > 0;
+  const multi = isMultiDay(task);
   return (
     <button onClick={onClick} className={`w-full text-left p-3 rounded-lg border transition-colors ${task.parentTaskId ? 'ml-3 bg-accent/30 border-accent/50 hover:border-accent hover:bg-accent/40' : 'bg-card border-border hover:border-primary/30 hover:bg-accent/30'}`}>
       <div className="flex items-start justify-between gap-2">
@@ -299,9 +262,9 @@ function MobileTaskCard({ task, onClick, members, allTasks }: { task: Task; onCl
       </div>
       <div className="flex items-center gap-2 mt-2">
         <span className="px-1.5 py-0.5 rounded text-label font-medium bg-muted text-muted-foreground">{STATUS_LABELS[task.status] || task.status}</span>
-        {isSpanning && (
+        {multi && task.startDate && (
           <span className="text-[10px] text-muted-foreground">
-            {new Date(task.startDate!).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })} → {new Date(task.dueDate!).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+            {new Date(task.startDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })} → {new Date(task.dueDate!).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
           </span>
         )}
         {assignees.length > 0 && (<div className="flex -space-x-1">{assignees.slice(0, 3).map(a => (<span key={a.id} className="w-5 h-5 rounded-full text-label font-bold text-white flex items-center justify-center border-2 border-card" style={{ backgroundColor: a.avatarColor }}>{a.name.charAt(0).toUpperCase()}</span>))}</div>)}
@@ -311,7 +274,7 @@ function MobileTaskCard({ task, onClick, members, allTasks }: { task: Task; onCl
   );
 }
 
-// ─── Agenda Task List (used in day & week views) ───
+// ─── Agenda Task List ───
 
 function AgendaTaskList({ dateStr, tasks: dayTasks, allTasks, teamMembers, setSelectedTaskId, addingForDate, setAddingForDate, newTaskTitle, setNewTaskTitle, handleAddTask, isMobile }: {
   dateStr: string; tasks: Task[]; allTasks: Task[]; teamMembers: any[]; setSelectedTaskId: (id: string) => void;
@@ -331,9 +294,9 @@ function AgendaTaskList({ dateStr, tasks: dayTasks, allTasks, teamMembers, setSe
                 {t.parentTaskId && <CornerDownRight className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />}
                 {t.recurrence && <Repeat className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />}
                 <span className="text-sm font-medium text-foreground flex-1 truncate">{t.title}</span>
-                {isMultiDay(t) && (
+                {isMultiDay(t) && t.startDate && (
                   <span className="text-[10px] text-muted-foreground shrink-0">
-                    {new Date(t.startDate!).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })} → {new Date(t.dueDate!).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                    {new Date(t.startDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })} → {new Date(t.dueDate!).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                   </span>
                 )}
                 <span className={`shrink-0 px-1.5 py-0.5 rounded text-label font-medium ${PRIORITY_COLORS[t.priority] || PRIORITY_COLORS.normal}`}>{PRIORITY_LABELS[t.priority] || t.priority}</span>
@@ -388,37 +351,32 @@ export default function CalendarView() {
     return [...filteredParents, ...subtasks];
   }, [allTasks, filteredParents]);
 
-  // Tasks indexed by their due date (single-day tasks only for cell rendering)
+  // All tasks indexed by every date they cover (for cell rendering)
   const tasksByDate = useMemo(() => {
-    const map = new Map<string, Task[]>();
-    tasks.forEach(t => {
-      if (!t.dueDate) return;
-      // For multi-day tasks, index by every day in range
-      if (isMultiDay(t)) return; // handled separately
-      const dateKey = t.dueDate.slice(0, 10);
-      if (!map.has(dateKey)) map.set(dateKey, []);
-      map.get(dateKey)!.push(t);
-    });
-    return map;
-  }, [tasks]);
-
-  // Multi-day tasks
-  const multiDayTasks = useMemo(() => tasks.filter(isMultiDay), [tasks]);
-
-  // All tasks by date (including multi-day) for mobile/agenda views
-  const allTasksByDate = useMemo(() => {
-    const map = new Map<string, Task[]>();
+    const map = new Map<string, { task: Task; isStart: boolean; isEnd: boolean; totalDays: number }[]>();
     tasks.forEach(t => {
       if (!t.dueDate) return;
       const range = getTaskDateRange(t);
       if (!range) return;
-      // Add task to each day it spans
-      const startD = dateStrToDate(range.start);
-      for (let i = 0; i <= range.duration; i++) {
-        const ds = toDateStr(addDays(startD, i));
-        if (!map.has(ds)) map.set(ds, []);
-        const list = map.get(ds)!;
-        if (!list.find(x => x.id === t.id)) list.push(t);
+
+      if (range.duration === 0) {
+        // Single-day task
+        const dk = range.end;
+        if (!map.has(dk)) map.set(dk, []);
+        map.get(dk)!.push({ task: t, isStart: true, isEnd: true, totalDays: 1 });
+      } else {
+        // Multi-day: add to each day
+        const startD = dateStrToDate(range.start);
+        for (let i = 0; i <= range.duration; i++) {
+          const dk = toDateStr(addDays(startD, i));
+          if (!map.has(dk)) map.set(dk, []);
+          map.get(dk)!.push({
+            task: t,
+            isStart: i === 0,
+            isEnd: i === range.duration,
+            totalDays: range.duration + 1,
+          });
+        }
       }
     });
     return map;
@@ -441,12 +399,22 @@ export default function CalendarView() {
     return days;
   }, [year, month]);
 
-  // Week days for week view (desktop)
   const weekDays = useMemo(() => getWeekDays(currentDate), [currentDate]);
-  // Week days for mobile
   const mobileWeekDays = useMemo(() => getWeekDays(selectedDay), [selectedDay]);
   const selectedDateStr = toDateStr(selectedDay);
-  const selectedDayTasks = allTasksByDate.get(selectedDateStr) || [];
+
+  // For agenda views, deduplicate tasks that appear on a given day
+  const getAgendaTasks = (dateStr: string): Task[] => {
+    const entries = tasksByDate.get(dateStr) || [];
+    const seen = new Set<string>();
+    return entries.filter(e => {
+      if (seen.has(e.task.id)) return false;
+      seen.add(e.task.id);
+      return true;
+    }).map(e => e.task);
+  };
+
+  const selectedDayTasks = getAgendaTasks(selectedDateStr);
 
   const handleAddTask = (dateStr: string) => {
     if (!newTaskTitle.trim()) return;
@@ -463,19 +431,19 @@ export default function CalendarView() {
   };
 
   const handleDragStart = (event: DragStartEvent) => setActiveTaskId(event.active.id as string);
-  
+
   const handleDragEnd = (event: DragEndEvent) => {
     setActiveTaskId(null);
     const { active, over } = event;
     if (!over) return;
     const task = tasks.find(t => t.id === active.id);
     if (!task) return;
-    
+
     const targetDateStr = over.id as string;
     const range = getTaskDateRange(task);
-    
+
     if (range && range.duration > 0) {
-      // Multi-day task: preserve duration, shift both dates
+      // Multi-day: preserve duration, drop target = new start date
       const newStart = new Date(targetDateStr + 'T00:00:00');
       const newEnd = addDays(newStart, range.duration);
       updateTask(active.id as string, {
@@ -483,7 +451,7 @@ export default function CalendarView() {
         dueDate: newEnd.toISOString(),
       });
     } else {
-      // Single-day task
+      // Single-day
       if (!task.dueDate || task.dueDate.slice(0, 10) !== targetDateStr) {
         updateTask(active.id as string, {
           dueDate: new Date(targetDateStr + 'T00:00:00').toISOString(),
@@ -498,8 +466,9 @@ export default function CalendarView() {
     const escapeICS = (str: string) => str.replace(/[\\;,\n]/g, (m) => m === '\n' ? '\\n' : `\\${m}`);
     const formatDate = (dateStr: string) => dateStr.replace(/-/g, '');
     const events = tasksWithDue.map(t => {
-      const dtStart = formatDate(t.startDate && t.startDate.slice(0, 10) !== t.dueDate!.slice(0, 10) ? t.startDate.slice(0, 10) : t.dueDate!.slice(0, 10));
-      const dtEnd = formatDate(t.dueDate!.slice(0, 10));
+      const range = getTaskDateRange(t);
+      const dtStart = formatDate(range?.start || t.dueDate!.slice(0, 10));
+      const dtEnd = formatDate(range?.end || t.dueDate!.slice(0, 10));
       return ['BEGIN:VEVENT', `UID:${t.id}@euthymia`, `DTSTART;VALUE=DATE:${dtStart}`, `DTEND;VALUE=DATE:${dtEnd}`,
         `SUMMARY:${escapeICS(t.title)}`, t.description ? `DESCRIPTION:${escapeICS(t.description)}` : '',
         `STATUS:${t.status === 'done' ? 'COMPLETED' : 'NEEDS-ACTION'}`,
@@ -526,7 +495,6 @@ export default function CalendarView() {
   };
   const goToday = () => { setCurrentDate(new Date()); setSelectedDay(new Date()); };
 
-  // Title for current view
   const headerTitle = useMemo(() => {
     if (mode === 'day') {
       return `${DAYS_FR_FULL[getFrDayIndex(currentDate)]} ${currentDate.getDate()} ${MONTHS_FR[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
@@ -544,138 +512,36 @@ export default function CalendarView() {
   }, [mode, currentDate, month, year]);
 
   const currentDateStr = toDateStr(currentDate);
-  const dayTasks = allTasksByDate.get(currentDateStr) || [];
+  const dayTasks = getAgendaTasks(currentDateStr);
 
-  // ─── Compute spanning segments for month view ───
-  const monthSpanRows = useMemo(() => {
-    if (mode !== 'month' || multiDayTasks.length === 0) return [];
+  // ─── Render cell tasks for grid views ───
+  const renderCellTasks = (dateStr: string, maxVisible = 4) => {
+    const entries = tasksByDate.get(dateStr) || [];
+    // Separate spanning (multi-day) tasks first, then single-day
+    const spanning = entries.filter(e => e.totalDays > 1);
+    const single = entries.filter(e => e.totalDays === 1);
+    const all = [...spanning, ...single];
+    const visible = all.slice(0, maxVisible);
+    const overflow = all.length - maxVisible;
 
-    const rows: SpanSegment[][] = []; // each row is a set of non-overlapping segments
+    return (
+      <>
+        {visible.map(entry => (
+          <DraggableTask
+            key={`${entry.task.id}-${dateStr}`}
+            task={entry.task}
+            onClick={() => setSelectedTaskId(entry.task.id)}
+            members={teamMembers}
+            allTasks={allTasks}
+            spanInfo={entry.totalDays > 1 ? { isStart: entry.isStart, isEnd: entry.isEnd, totalDays: entry.totalDays } : undefined}
+          />
+        ))}
+        {overflow > 0 && <span className="text-label text-muted-foreground px-1">+{overflow}</span>}
+      </>
+    );
+  };
 
-    multiDayTasks.forEach(task => {
-      const range = getTaskDateRange(task);
-      if (!range) return;
-
-      const taskStart = dateStrToDate(range.start);
-      const taskEnd = dateStrToDate(range.end);
-
-      // Generate segments for each week row in the calendar grid
-      for (let weekIdx = 0; weekIdx < 6; weekIdx++) {
-        const weekStart = calendarDays[weekIdx * 7].date;
-        const weekEnd = calendarDays[weekIdx * 7 + 6].date;
-
-        // Check if task overlaps this week
-        if (taskEnd < weekStart || taskStart > weekEnd) continue;
-
-        const segStart = taskStart < weekStart ? weekStart : taskStart;
-        const segEnd = taskEnd > weekEnd ? weekEnd : taskEnd;
-
-        const startCol = Math.max(0, diffDays(weekStart, segStart));
-        const endCol = Math.min(6, diffDays(weekStart, segEnd));
-        const span = endCol - startCol + 1;
-
-        const segment: SpanSegment = {
-          task,
-          startCol,
-          span,
-          isStart: segStart.getTime() === taskStart.getTime(),
-          isEnd: segEnd.getTime() === taskEnd.getTime(),
-          durationDays: range.duration,
-        };
-
-        // Find a row where this segment fits (no overlap)
-        let placed = false;
-        for (const row of rows) {
-          const conflicts = row.some(s => {
-            // Same week row?
-            const sWeekIdx = Math.floor(calendarDays.findIndex(cd => toDateStr(cd.date) === toDateStr(addDays(calendarDays[0].date, 0))) / 7);
-            // Simpler: check if segments overlap in column space within same week
-            return !(segment.startCol + segment.span <= s.startCol || s.startCol + s.span <= segment.startCol);
-          });
-          if (!conflicts) {
-            row.push({ ...segment, _weekIdx: weekIdx } as any);
-            placed = true;
-            break;
-          }
-        }
-        if (!placed) {
-          rows.push([{ ...segment, _weekIdx: weekIdx } as any]);
-        }
-      }
-    });
-
-    return rows;
-  }, [mode, multiDayTasks, calendarDays]);
-
-  // Better approach: group spanning segments by week row
-  const spanSegmentsByWeek = useMemo(() => {
-    if (mode !== 'month') return new Map<number, { segments: SpanSegment[]; rowCount: number }>();
-
-    const weekMap = new Map<number, SpanSegment[][]>(); // weekIdx -> rows of segments
-
-    multiDayTasks.forEach(task => {
-      const range = getTaskDateRange(task);
-      if (!range) return;
-
-      const taskStart = dateStrToDate(range.start);
-      const taskEnd = dateStrToDate(range.end);
-
-      for (let weekIdx = 0; weekIdx < 6; weekIdx++) {
-        const weekStart = calendarDays[weekIdx * 7].date;
-        const weekEnd = calendarDays[weekIdx * 7 + 6].date;
-
-        if (taskEnd < weekStart || taskStart > weekEnd) continue;
-
-        const segStart = taskStart < weekStart ? weekStart : taskStart;
-        const segEnd = taskEnd > weekEnd ? weekEnd : taskEnd;
-        const startCol = diffDays(weekStart, segStart);
-        const endCol = diffDays(weekStart, segEnd);
-        const span = endCol - startCol + 1;
-
-        const segment: SpanSegment = {
-          task,
-          startCol,
-          span,
-          isStart: segStart.getTime() === taskStart.getTime(),
-          isEnd: segEnd.getTime() === taskEnd.getTime(),
-          durationDays: range.duration,
-        };
-
-        if (!weekMap.has(weekIdx)) weekMap.set(weekIdx, []);
-        const rows = weekMap.get(weekIdx)!;
-
-        let placed = false;
-        for (const row of rows) {
-          const conflicts = row.some(s =>
-            !(segment.startCol + segment.span <= s.startCol || s.startCol + s.span <= segment.startCol)
-          );
-          if (!conflicts) {
-            row.push(segment);
-            placed = true;
-            break;
-          }
-        }
-        if (!placed) {
-          rows.push([segment]);
-        }
-      }
-    });
-
-    const result = new Map<number, { segments: SpanSegment[]; rowCount: number }>();
-    weekMap.forEach((rows, weekIdx) => {
-      const allSegments: SpanSegment[] = [];
-      rows.forEach((row, rowIdx) => {
-        row.forEach(seg => {
-          allSegments.push({ ...seg, _rowIdx: rowIdx } as any);
-        });
-      });
-      result.set(weekIdx, { segments: allSegments, rowCount: rows.length });
-    });
-
-    return result;
-  }, [mode, multiDayTasks, calendarDays]);
-
-  // ─── Mobile: uses selectedDay for navigation ───
+  // ─── Mobile layouts ───
   if (isMobile) {
     const navigateMobile = (dir: number) => {
       const d = new Date(selectedDay);
@@ -689,7 +555,6 @@ export default function CalendarView() {
       ? `${DAYS_FR_FULL[getFrDayIndex(selectedDay)]} ${selectedDay.getDate()} ${MONTHS_FR_SHORT[selectedDay.getMonth()]}`
       : `${MONTHS_FR_SHORT[selectedDay.getMonth()]} ${selectedDay.getFullYear()}`;
 
-    // Month view for mobile
     if (mode === 'month') {
       const mYear = selectedDay.getFullYear();
       const mMonth = selectedDay.getMonth();
@@ -733,7 +598,7 @@ export default function CalendarView() {
               const ds = toDateStr(day.date);
               const isSelected = ds === selectedDateStr;
               const isTodayCell = ds === today;
-              const hasTasks = allTasksByDate.has(ds);
+              const hasTasks = tasksByDate.has(ds);
               return (
                 <button key={i} onClick={() => setSelectedDay(new Date(day.date))}
                   className={`flex flex-col items-center py-1.5 transition-colors ${day.isCurrentMonth ? '' : 'opacity-30'} ${isSelected ? 'bg-primary/15' : isTodayCell ? 'bg-accent' : 'bg-card hover:bg-muted/50'}`}>
@@ -754,7 +619,6 @@ export default function CalendarView() {
       );
     }
 
-    // Day view mobile
     if (mode === 'day') {
       return (
         <div className="flex flex-col h-full">
@@ -800,7 +664,7 @@ export default function CalendarView() {
             const ds = toDateStr(d);
             const isSelected = ds === selectedDateStr;
             const isTodayCell = ds === today;
-            const hasTasks = allTasksByDate.has(ds);
+            const hasTasks = tasksByDate.has(ds);
             return (
               <button key={i} onClick={() => setSelectedDay(new Date(d))}
                 className={`flex flex-col items-center py-1.5 rounded-xl transition-all ${isSelected ? 'bg-primary text-primary-foreground shadow-sm' : isTodayCell ? 'bg-accent text-accent-foreground' : 'hover:bg-muted'}`}>
@@ -871,98 +735,36 @@ export default function CalendarView() {
 
   // ─── Week view (desktop) ───
   if (mode === 'week') {
-    // Compute spanning segments for this week
-    const weekSpanSegments = (() => {
-      const weekStart = weekDays[0];
-      const weekEnd = weekDays[6];
-      const rows: SpanSegment[][] = [];
-
-      multiDayTasks.forEach(task => {
-        const range = getTaskDateRange(task);
-        if (!range) return;
-        const taskStart = dateStrToDate(range.start);
-        const taskEnd = dateStrToDate(range.end);
-        if (taskEnd < weekStart || taskStart > weekEnd) return;
-
-        const segStart = taskStart < weekStart ? weekStart : taskStart;
-        const segEnd = taskEnd > weekEnd ? weekEnd : taskEnd;
-        const startCol = diffDays(weekStart, segStart);
-        const endCol = diffDays(weekStart, segEnd);
-        const span = endCol - startCol + 1;
-
-        const segment: SpanSegment = {
-          task, startCol, span,
-          isStart: segStart.getTime() === taskStart.getTime(),
-          isEnd: segEnd.getTime() === taskEnd.getTime(),
-          durationDays: range.duration,
-        };
-
-        let placed = false;
-        for (const row of rows) {
-          const conflicts = row.some(s =>
-            !(segment.startCol + segment.span <= s.startCol || s.startCol + s.span <= segment.startCol)
-          );
-          if (!conflicts) { row.push(segment); placed = true; break; }
-        }
-        if (!placed) rows.push([segment]);
-      });
-
-      return rows;
-    })();
-
     return (
       <div className="p-6 h-full flex flex-col">
         {sharedHeader}
         <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-          <div className="flex flex-col border border-border rounded-lg overflow-hidden flex-1">
-            {/* Header row */}
-            <div className="grid grid-cols-7">
-              {weekDays.map((d, i) => {
-                const ds = toDateStr(d);
-                const isTodayCell = ds === today;
-                return (
-                  <div key={i} className={`py-2 text-center border-b border-r border-border ${isTodayCell ? 'bg-primary/10' : 'bg-muted/30'}`}>
-                    <span className="text-xs font-semibold text-muted-foreground">{DAYS_FR[i]}</span>
-                    <span className={`ml-1.5 text-xs font-bold ${isTodayCell ? 'bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full' : 'text-foreground'}`}>{d.getDate()}</span>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Spanning bars area */}
-            {weekSpanSegments.length > 0 && (
-              <div className="relative border-b border-border bg-muted/10" style={{ height: weekSpanSegments.length * 24 + 4 }}>
-                {weekSpanSegments.map((row, rowIdx) =>
-                  row.map(seg => (
-                    <div key={`${seg.task.id}-${rowIdx}`} style={{ top: rowIdx * 24 + 2 }} className="absolute w-full h-0">
-                      <SpanningBar segment={seg} onClick={() => setSelectedTaskId(seg.task.id)} members={teamMembers} allTasks={allTasks} />
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
-
-            {/* Day cells */}
-            <div className="grid grid-cols-7 flex-1">
-              {weekDays.map((d, i) => {
-                const ds = toDateStr(d);
-                const wdTasks = tasksByDate.get(ds) || [];
-                const isTodayCell = ds === today;
-                return (
-                  <DroppableDay key={`body-${i}`} dateStr={ds} isCurrentMonth={true} isToday={isTodayCell} dayNum={d.getDate()} onAddClick={() => setAddingForDate(ds)}>
-                    {wdTasks.map(t => (
-                      <DraggableTask key={t.id} task={t} onClick={() => setSelectedTaskId(t.id)} members={teamMembers} allTasks={allTasks} />
-                    ))}
-                    {addingForDate === ds && (
-                      <input autoFocus value={newTaskTitle} onChange={e => setNewTaskTitle(e.target.value)}
-                        onKeyDown={e => { if (e.key === 'Enter') handleAddTask(ds); if (e.key === 'Escape') { setAddingForDate(null); setNewTaskTitle(''); } }}
-                        onBlur={() => { if (newTaskTitle.trim()) handleAddTask(ds); else { setAddingForDate(null); setNewTaskTitle(''); } }}
-                        placeholder="Tâche..." className="w-full text-[11px] px-1 py-0.5 rounded border border-primary/40 bg-background text-foreground placeholder:text-muted-foreground outline-none focus:ring-1 focus:ring-primary" />
-                    )}
-                  </DroppableDay>
-                );
-              })}
-            </div>
+          <div className="grid grid-cols-7 border border-border rounded-lg overflow-hidden flex-1">
+            {weekDays.map((d, i) => {
+              const ds = toDateStr(d);
+              const isTodayCell = ds === today;
+              return (
+                <div key={`hdr-${i}`} className={`py-2 text-center border-b border-r border-border ${isTodayCell ? 'bg-primary/10' : 'bg-muted/30'}`}>
+                  <span className="text-xs font-semibold text-muted-foreground">{DAYS_FR[i]}</span>
+                  <span className={`ml-1.5 text-xs font-bold ${isTodayCell ? 'bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full' : 'text-foreground'}`}>{d.getDate()}</span>
+                </div>
+              );
+            })}
+            {weekDays.map((d, i) => {
+              const ds = toDateStr(d);
+              const isTodayCell = ds === today;
+              return (
+                <DroppableDay key={`body-${i}`} dateStr={ds} isCurrentMonth={true} isToday={isTodayCell} dayNum={d.getDate()} onAddClick={() => setAddingForDate(ds)}>
+                  {renderCellTasks(ds)}
+                  {addingForDate === ds && (
+                    <input autoFocus value={newTaskTitle} onChange={e => setNewTaskTitle(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') handleAddTask(ds); if (e.key === 'Escape') { setAddingForDate(null); setNewTaskTitle(''); } }}
+                      onBlur={() => { if (newTaskTitle.trim()) handleAddTask(ds); else { setAddingForDate(null); setNewTaskTitle(''); } }}
+                      placeholder="Tâche..." className="w-full text-[11px] px-1 py-0.5 rounded border border-primary/40 bg-background text-foreground placeholder:text-muted-foreground outline-none focus:ring-1 focus:ring-primary" />
+                  )}
+                </DroppableDay>
+              );
+            })}
           </div>
           <DragOverlay>{activeTask ? <div className="text-[11px] px-1.5 py-0.5 rounded bg-primary/20 text-primary shadow-lg border border-primary/30 max-w-[150px] truncate">{activeTask.title}</div> : null}</DragOverlay>
         </DndContext>
@@ -975,69 +777,23 @@ export default function CalendarView() {
     <div className="p-6 h-full flex flex-col">
       {sharedHeader}
       <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-        <div className="grid grid-cols-7 border border-border rounded-lg overflow-hidden flex-1 auto-rows-fr">
-          {/* Day headers */}
+        <div className="grid grid-cols-7 border border-border rounded-lg overflow-hidden flex-1">
           {DAYS_FR.map((d, i) => (
             <div key={i} className="py-2 text-center text-xs font-semibold text-muted-foreground bg-muted/30 border-b border-border">{d}</div>
           ))}
-
-          {/* Calendar cells - render week by week */}
-          {Array.from({ length: 6 }, (_, weekIdx) => {
-            const weekCells = calendarDays.slice(weekIdx * 7, weekIdx * 7 + 7);
-            const spanData = spanSegmentsByWeek.get(weekIdx);
-            const spanRowCount = spanData?.rowCount || 0;
-            const spanHeight = spanRowCount * 24;
-
+          {calendarDays.map((day, i) => {
+            const dateStr = toDateStr(day.date);
+            const isTodayCell = dateStr === today;
             return (
-              <React.Fragment key={`week-${weekIdx}`}>
-                {weekCells.map((day, colIdx) => {
-                  const dateStr = toDateStr(day.date);
-                  const cdTasks = tasksByDate.get(dateStr) || [];
-                  const isTodayCell = dateStr === today;
-
-                  return (
-                    <DroppableDay
-                      key={`${weekIdx}-${colIdx}`}
-                      dateStr={dateStr}
-                      isCurrentMonth={day.isCurrentMonth}
-                      isToday={isTodayCell}
-                      dayNum={day.date.getDate()}
-                      onAddClick={() => setAddingForDate(dateStr)}
-                      extraTopPadding={spanHeight}
-                    >
-                      {/* Spanning bars overlay - only render in first column */}
-                      {colIdx === 0 && spanData && spanData.segments.map((seg, si) => {
-                        const rowIdx = (seg as any)._rowIdx || 0;
-                        return (
-                          <div
-                            key={`span-${seg.task.id}-${si}`}
-                            className="absolute left-0 right-0"
-                            style={{ top: 28 + rowIdx * 24 + 2 }}
-                          >
-                            <SpanningBar
-                              segment={seg}
-                              onClick={() => setSelectedTaskId(seg.task.id)}
-                              members={teamMembers}
-                              allTasks={allTasks}
-                            />
-                          </div>
-                        );
-                      })}
-
-                      {cdTasks.slice(0, 3).map(t => (
-                        <DraggableTask key={t.id} task={t} onClick={() => setSelectedTaskId(t.id)} members={teamMembers} allTasks={allTasks} />
-                      ))}
-                      {cdTasks.length > 3 && <span className="text-label text-muted-foreground px-1">+{cdTasks.length - 3}</span>}
-                      {addingForDate === dateStr && (
-                        <input autoFocus value={newTaskTitle} onChange={e => setNewTaskTitle(e.target.value)}
-                          onKeyDown={e => { if (e.key === 'Enter') handleAddTask(dateStr); if (e.key === 'Escape') { setAddingForDate(null); setNewTaskTitle(''); } }}
-                          onBlur={() => { if (newTaskTitle.trim()) handleAddTask(dateStr); else { setAddingForDate(null); setNewTaskTitle(''); } }}
-                          placeholder="Tâche..." className="w-full text-[11px] px-1 py-0.5 rounded border border-primary/40 bg-background text-foreground placeholder:text-muted-foreground outline-none focus:ring-1 focus:ring-primary" />
-                      )}
-                    </DroppableDay>
-                  );
-                })}
-              </React.Fragment>
+              <DroppableDay key={i} dateStr={dateStr} isCurrentMonth={day.isCurrentMonth} isToday={isTodayCell} dayNum={day.date.getDate()} onAddClick={() => setAddingForDate(dateStr)}>
+                {renderCellTasks(dateStr, 3)}
+                {addingForDate === dateStr && (
+                  <input autoFocus value={newTaskTitle} onChange={e => setNewTaskTitle(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') handleAddTask(dateStr); if (e.key === 'Escape') { setAddingForDate(null); setNewTaskTitle(''); } }}
+                    onBlur={() => { if (newTaskTitle.trim()) handleAddTask(dateStr); else { setAddingForDate(null); setNewTaskTitle(''); } }}
+                    placeholder="Tâche..." className="w-full text-[11px] px-1 py-0.5 rounded border border-primary/40 bg-background text-foreground placeholder:text-muted-foreground outline-none focus:ring-1 focus:ring-primary" />
+                )}
+              </DroppableDay>
             );
           })}
         </div>

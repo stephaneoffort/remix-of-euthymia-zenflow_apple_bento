@@ -546,16 +546,26 @@ export default function CalendarView() {
             <PopoverContent className="w-72 max-h-64 overflow-y-auto p-2" side="bottom" align="start">
               <p className="text-xs font-semibold text-muted-foreground mb-2 px-1">{overflow} tâche{overflow > 1 ? 's' : ''} supplémentaire{overflow > 1 ? 's' : ''}</p>
               <div className="flex flex-col gap-1">
-                {all.slice(maxVisible).map(entry => (
-                  <button
-                    key={entry.task.id}
-                    onClick={() => setSelectedTaskId(entry.task.id)}
-                    className="flex items-center gap-2 px-2 py-1.5 rounded-md text-left hover:bg-accent transition-colors w-full"
-                  >
-                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${STATUS_DOT_COLORS[entry.task.status] || 'bg-muted-foreground'}`} />
-                    <span className="text-xs text-foreground truncate">{entry.task.title}</span>
-                  </button>
-                ))}
+                {all.slice(maxVisible).map(entry => {
+                  const t = entry.task;
+                  const dueStr = t.dueDate ? new Date(t.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) : null;
+                  return (
+                    <button
+                      key={t.id}
+                      onClick={() => setSelectedTaskId(t.id)}
+                      className="flex items-center gap-2 px-2 py-1.5 rounded-md text-left hover:bg-accent transition-colors w-full"
+                    >
+                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${STATUS_DOT_COLORS[t.status] || 'bg-muted-foreground'}`} />
+                      <span className="text-xs text-foreground truncate flex-1">{t.title}</span>
+                      <span className={`shrink-0 px-1 py-0.5 rounded text-[10px] font-medium leading-none ${PRIORITY_COLORS[t.priority] || PRIORITY_COLORS.normal}`}>
+                        {PRIORITY_LABELS[t.priority] || t.priority}
+                      </span>
+                      {dueStr && (
+                        <span className="shrink-0 text-[10px] text-muted-foreground">{dueStr}</span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </PopoverContent>
           </Popover>

@@ -511,14 +511,23 @@ function NodeCard({ positioned, expandedIds, visibleDepth, toggleExpand, onSelec
 
   const isRoot = depth === 0;
 
+  // Animate in on mount
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setVisible(true), depth * 60);
+    return () => clearTimeout(t);
+  }, [depth]);
+
   return (
     <div
       data-node
-      className="absolute transition-all duration-300 ease-out"
+      className="absolute transition-all duration-500 ease-out"
       style={{
         left: x,
         top: y,
         width: NODE_W,
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'scale(1)' : 'scale(0.85)',
       }}
     >
       {/* Main card */}

@@ -707,7 +707,7 @@ export default function CalendarView() {
       <div className="flex items-center gap-2">
         <Tooltip>
           <TooltipTrigger asChild>
-            <button onClick={exportToICS} className="p-2 hover:bg-muted rounded-md transition-colors"><Download className="w-4 h-4 text-muted-foreground" /></button>
+            <button onClick={exportToICS} className="p-2 hover:bg-muted rounded-md transition-colors"><Download className="w-4 h-4 text-foreground/70" /></button>
           </TooltipTrigger>
           <TooltipContent>Exporter (.ics) – Google Agenda, Outlook, Apple…</TooltipContent>
         </Tooltip>

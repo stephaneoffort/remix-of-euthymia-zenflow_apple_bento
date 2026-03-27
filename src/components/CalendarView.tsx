@@ -871,6 +871,7 @@ export default function CalendarView() {
           </div>
           {mobileActionBar}
           <div className="flex-1 overflow-y-auto px-3 py-2">
+            <AgendaExternalEvents dateStr={selectedDateStr} externalEventsByDate={externalEventsByDate} accountMap={accountMap} />
             <AgendaTaskList dateStr={selectedDateStr} tasks={selectedDayTasks} allTasks={allTasks} teamMembers={teamMembers} setSelectedTaskId={setSelectedTaskId}
               addingForDate={addingForDate} setAddingForDate={setAddingForDate} newTaskTitle={newTaskTitle} setNewTaskTitle={setNewTaskTitle} handleAddTask={handleAddTask} isMobile />
           </div>

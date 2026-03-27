@@ -712,9 +712,9 @@ export default function CalendarView() {
           <TooltipContent>Exporter (.ics) – Google Agenda, Outlook, Apple…</TooltipContent>
         </Tooltip>
         <div className="flex gap-1">
-          <button onClick={navigatePrev} className="p-2 hover:bg-muted rounded-md transition-colors"><ChevronLeft className="w-4 h-4" /></button>
-          <button onClick={goToday} className="px-3 py-1.5 text-sm hover:bg-muted rounded-md transition-colors font-medium">Aujourd'hui</button>
-          <button onClick={navigateNext} className="p-2 hover:bg-muted rounded-md transition-colors"><ChevronRight className="w-4 h-4" /></button>
+          <button onClick={navigatePrev} className="p-2 hover:bg-muted rounded-md transition-colors"><ChevronLeft className="w-4 h-4 text-foreground" /></button>
+          <button onClick={goToday} className="px-3 py-1.5 text-sm hover:bg-muted rounded-md transition-colors font-medium text-foreground">Aujourd'hui</button>
+          <button onClick={navigateNext} className="p-2 hover:bg-muted rounded-md transition-colors"><ChevronRight className="w-4 h-4 text-foreground" /></button>
         </div>
       </div>
     </div>

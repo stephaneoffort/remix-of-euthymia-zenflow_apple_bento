@@ -327,6 +327,7 @@ function AgendaTaskList({ dateStr, tasks: dayTasks, allTasks, teamMembers, setSe
 
 export default function CalendarView() {
   const { getFilteredTasks, setSelectedTaskId, addTask, updateTask, selectedProjectId, getListsForProject, teamMembers, tasks: allTasks } = useApp();
+  const calSync = useCalendarSync();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState(new Date());
   const [addingForDate, setAddingForDate] = useState<string | null>(null);
@@ -336,6 +337,14 @@ export default function CalendarView() {
     const saved = localStorage.getItem('euthymia_calendar_mode');
     return (saved === 'day' || saved === 'week' || saved === 'month') ? saved : 'month';
   });
+
+  // Auto-sync on mount
+  useEffect(() => {
+    if (calSync.accounts.length > 0) {
+      calSync.syncAllAccounts();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [calSync.accounts.length]);
 
   const handleModeChange = (m: CalendarMode) => {
     setMode(m);

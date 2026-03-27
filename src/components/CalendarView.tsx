@@ -341,6 +341,8 @@ export default function CalendarView() {
     return (saved === 'day' || saved === 'week' || saved === 'month') ? saved : 'month';
   });
 
+  const [searchParams, setSearchParams] = useSearchParams();
+
   // Auto-sync on mount
   useEffect(() => {
     if (calSync.accounts.length > 0) {
@@ -348,6 +350,39 @@ export default function CalendarView() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [calSync.accounts.length]);
+
+  // Handle ?connected=true after Google OAuth callback
+  useEffect(() => {
+    if (searchParams.get('connected') === 'true') {
+      (async () => {
+        try {
+          const { data: latestAccount } = await supabase
+            .from('calendar_accounts')
+            .select('*')
+            .eq('provider', 'google')
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
+          if (latestAccount) {
+            await supabase.functions.invoke('calendar-sync', {
+              body: { account_id: latestAccount.id, direction: 'pull' },
+            });
+            await calSync.fetchAccounts();
+            await calSync.fetchEvents();
+            toast.success('Google Calendar synchronisé ✅');
+          }
+        } catch (err: any) {
+          toast.error('Erreur de synchronisation : ' + (err.message || 'Inconnue'));
+        }
+        // Remove ?connected=true from URL
+        const newParams = new URLSearchParams(searchParams);
+        newParams.delete('connected');
+        setSearchParams(newParams, { replace: true });
+      })();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const handleModeChange = (m: CalendarMode) => {
     setMode(m);

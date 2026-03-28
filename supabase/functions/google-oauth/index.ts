@@ -16,6 +16,8 @@ serve(async (req: Request) => {
   const path = url.pathname
 
   if (path.endsWith("/authorize")) {
+    // Accept user_id as query param to associate accounts with the user
+    const userId = url.searchParams.get("user_id") || ""
     const authUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth")
     authUrl.searchParams.set("client_id", Deno.env.get("GOOGLE_CLIENT_ID") ?? "")
     authUrl.searchParams.set("redirect_uri", Deno.env.get("GOOGLE_REDIRECT_URI") ?? "")
@@ -23,11 +25,13 @@ serve(async (req: Request) => {
     authUrl.searchParams.set("scope", "https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events")
     authUrl.searchParams.set("access_type", "offline")
     authUrl.searchParams.set("prompt", "consent")
+    authUrl.searchParams.set("state", userId)
     return Response.redirect(authUrl.toString(), 302)
   }
 
   if (path.endsWith("/callback")) {
     const code = url.searchParams.get("code")
+    const userId = url.searchParams.get("state") || null
     if (!code) {
       return new Response("Missing code", { status: 400, headers: corsHeaders })
     }
@@ -66,7 +70,7 @@ serve(async (req: Request) => {
     const calList = await calListRes.json()
     const calendars = calList.items ?? []
 
-    // Insérer un calendar_account par calendrier
+    // Insérer un calendar_account par calendrier avec user_id
     for (const cal of calendars) {
       await supabase.from("calendar_accounts").upsert({
         provider: "google",
@@ -77,6 +81,7 @@ serve(async (req: Request) => {
         refresh_token: tokens.refresh_token,
         token_expiry: expiry.toISOString(),
         is_active: true,
+        user_id: userId,
       }, { onConflict: "calendar_id" })
     }
 

@@ -67,8 +67,10 @@ export default function CalendarAccountsManager({ accounts, syncing, visibleAcco
     setTesting(false); setTestResult(null); setSubmitting(false);
   };
 
-  const handleConnectGoogle = () => {
-    window.location.href = 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/google-oauth/authorize';
+  const handleConnectGoogle = async () => {
+    const { data: { user } } = await (await import('@/integrations/supabase/client')).supabase.auth.getUser();
+    const userId = user?.id || '';
+    window.location.href = `https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/google-oauth/authorize?user_id=${userId}`;
   };
 
   const handleConnectOutlook = () => {

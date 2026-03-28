@@ -2,6 +2,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+async function getCurrentUserId(): Promise<string | null> {
+  const { data: { user } } = await supabase.auth.getUser();
+  return user?.id ?? null;
+}
+
 const CALENDAR_SYNC_URL = 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/calendar-sync';
 
 async function invokeCalendarSync(body: Record<string, unknown>) {

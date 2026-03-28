@@ -322,6 +322,15 @@ export function useCalendarSync() {
     await fetchEvents();
   }, [fetchEvents]);
 
+  const toggleAccount = useCallback(async (accountId: string, active: boolean) => {
+    await supabase
+      .from('calendar_accounts')
+      .update({ is_active: active } as any)
+      .eq('id', accountId);
+    await fetchAccounts();
+    toast.success(active ? 'Calendrier activé' : 'Calendrier désactivé');
+  }, [fetchAccounts]);
+
   useEffect(() => {
     fetchAccounts();
     fetchEvents();
@@ -343,5 +352,6 @@ export function useCalendarSync() {
     createCalendarEvent,
     updateCalendarEvent,
     deleteCalendarEvent,
+    toggleAccount,
   };
 }

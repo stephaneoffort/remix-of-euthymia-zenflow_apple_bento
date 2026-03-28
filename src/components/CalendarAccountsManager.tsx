@@ -123,8 +123,8 @@ export default function CalendarAccountsManager({ accounts, syncing, visibleAcco
             </button>
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <ScrollArea className="max-h-[240px] mt-1">
-              <div className="space-y-1 pr-2">
+            <div className="max-h-[240px] overflow-y-auto mt-1 scrollbar-thin">
+              <div className="space-y-1 pr-1">
                 {accounts.map(acc => {
                   const meta = getProviderMeta(acc.provider);
                   const isSyncing = syncing === acc.id;
@@ -160,7 +160,7 @@ export default function CalendarAccountsManager({ accounts, syncing, visibleAcco
                   );
                 })}
               </div>
-            </ScrollArea>
+            </div>
           </CollapsibleContent>
         </Collapsible>
       )}

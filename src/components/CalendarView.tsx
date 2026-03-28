@@ -372,6 +372,9 @@ export default function CalendarView() {
   const [addingForDate, setAddingForDate] = useState<string | null>(null);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
+  const [eventDialogOpen, setEventDialogOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
+  const [eventDialogDate, setEventDialogDate] = useState<string | undefined>(undefined);
   const [mode, setMode] = useState<CalendarMode>(() => {
     const saved = localStorage.getItem('euthymia_calendar_mode');
     return (saved === 'day' || saved === 'week' || saved === 'month') ? saved : 'month';

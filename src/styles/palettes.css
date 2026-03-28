@@ -2226,3 +2226,504 @@
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
 }
+
+/* ═══════════════════════════════════════════════════════
+   LIQUID GLASS VARIANTS — Color Overrides
+   Each variant inherits all glass effects from [data-palette^="liquidGlass"]
+   and only overrides color tokens + mesh gradient
+   ═══════════════════════════════════════════════════════ */
+
+/* ─── OCEAN — Bleu azur · reflets arctiques ─── */
+[data-palette="liquidGlassOcean"],
+[data-palette="liquidGlassOcean"].light {
+  --primary: 199 89% 48%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 199 89% 48%;
+  --accent: 199 70% 50%;
+  --accent-foreground: 0 0% 100%;
+  --sidebar-primary: 199 89% 52%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-ring: 199 89% 48%;
+}
+[data-palette="liquidGlassOcean"].light,
+[data-palette="liquidGlassOcean"]:not(.dark):not(.mixed) {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(56,189,248,0.4) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 80% 70%, rgba(99,102,241,0.3) 0%, transparent 70%),
+    linear-gradient(135deg, #e0f2fe 0%, #ede9fe 100%) !important;
+  background-size: 200% 200% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+[data-palette="liquidGlassOcean"].mixed {
+  --primary: 199 89% 48%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 199 89% 48%;
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(56,189,248,0.4) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 80% 70%, rgba(99,102,241,0.3) 0%, transparent 70%),
+    linear-gradient(135deg, #e0f2fe 0%, #ede9fe 100%) !important;
+  background-size: 200% 200% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+[data-palette="liquidGlassOcean"].dark {
+  --primary: 199 89% 52%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 199 89% 52%;
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(56,189,248,0.2) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 80% 70%, rgba(99,102,241,0.15) 0%, transparent 70%),
+    linear-gradient(135deg, #0c1929 0%, #0f172a 100%) !important;
+  background-size: 200% 200% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
+}
+[data-palette="liquidGlassOcean"] ::-webkit-scrollbar-thumb { background: rgba(14,165,233,0.2); }
+[data-palette="liquidGlassOcean"] ::-webkit-scrollbar-thumb:hover { background: rgba(14,165,233,0.4); }
+[data-palette="liquidGlassOcean"] ::selection { background: rgba(14,165,233,0.2); }
+[data-palette="liquidGlassOcean"] :focus-visible { outline-color: rgba(14,165,233,0.6); }
+[data-palette="liquidGlassOcean"].light button.bg-primary,
+[data-palette="liquidGlassOcean"].mixed button.bg-primary,
+[data-palette="liquidGlassOcean"]:not(.dark):not(.mixed) button.bg-primary {
+  background: rgba(14,165,233,0.75) !important;
+  border: 1px solid rgba(14,165,233,0.4) !important;
+  border-top-color: rgba(56,189,248,0.6) !important;
+  box-shadow: 0 4px 16px rgba(14,165,233,0.25), inset 0 1px 0 rgba(255,255,255,0.3) !important;
+}
+[data-palette="liquidGlassOcean"].light button.bg-primary:hover,
+[data-palette="liquidGlassOcean"].mixed button.bg-primary:hover {
+  background: rgba(14,165,233,0.9) !important;
+  box-shadow: 0 8px 24px rgba(14,165,233,0.35), inset 0 1px 0 rgba(255,255,255,0.4) !important;
+}
+
+/* ─── AURORA — Vert boréal · émeraude nordique ─── */
+[data-palette="liquidGlassAurora"],
+[data-palette="liquidGlassAurora"].light {
+  --primary: 160 84% 39%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 160 84% 39%;
+  --accent: 160 60% 45%;
+  --accent-foreground: 0 0% 100%;
+  --sidebar-primary: 160 84% 43%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-ring: 160 84% 39%;
+}
+[data-palette="liquidGlassAurora"].light,
+[data-palette="liquidGlassAurora"]:not(.dark):not(.mixed) {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(52,211,153,0.4) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 75% 70%, rgba(99,102,241,0.25) 0%, transparent 70%),
+    linear-gradient(135deg, #d1fae5 0%, #ede9fe 100%) !important;
+  background-size: 200% 200% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+[data-palette="liquidGlassAurora"].mixed {
+  --primary: 160 84% 39%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 160 84% 39%;
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(52,211,153,0.4) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 75% 70%, rgba(99,102,241,0.25) 0%, transparent 70%),
+    linear-gradient(135deg, #d1fae5 0%, #ede9fe 100%) !important;
+  background-size: 200% 200% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+[data-palette="liquidGlassAurora"].dark {
+  --primary: 160 84% 43%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 160 84% 43%;
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(52,211,153,0.2) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 75% 70%, rgba(99,102,241,0.12) 0%, transparent 70%),
+    linear-gradient(135deg, #062e1f 0%, #0f172a 100%) !important;
+  background-size: 200% 200% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
+}
+[data-palette="liquidGlassAurora"] ::-webkit-scrollbar-thumb { background: rgba(52,211,153,0.2); }
+[data-palette="liquidGlassAurora"] ::-webkit-scrollbar-thumb:hover { background: rgba(52,211,153,0.4); }
+[data-palette="liquidGlassAurora"] ::selection { background: rgba(52,211,153,0.2); }
+[data-palette="liquidGlassAurora"] :focus-visible { outline-color: rgba(52,211,153,0.6); }
+[data-palette="liquidGlassAurora"].light button.bg-primary,
+[data-palette="liquidGlassAurora"].mixed button.bg-primary,
+[data-palette="liquidGlassAurora"]:not(.dark):not(.mixed) button.bg-primary {
+  background: rgba(52,211,153,0.75) !important;
+  border: 1px solid rgba(52,211,153,0.4) !important;
+  border-top-color: rgba(110,231,183,0.6) !important;
+  box-shadow: 0 4px 16px rgba(52,211,153,0.25), inset 0 1px 0 rgba(255,255,255,0.3) !important;
+}
+
+/* ─── ROSE — Pétale nacré · quartz rose ─── */
+[data-palette="liquidGlassRose"],
+[data-palette="liquidGlassRose"].light {
+  --primary: 330 80% 50%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 330 80% 50%;
+  --accent: 330 60% 55%;
+  --accent-foreground: 0 0% 100%;
+  --sidebar-primary: 330 80% 54%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-ring: 330 80% 50%;
+}
+[data-palette="liquidGlassRose"].light,
+[data-palette="liquidGlassRose"]:not(.dark):not(.mixed) {
+  background:
+    radial-gradient(ellipse 80% 80% at 25% 25%, rgba(244,114,182,0.4) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 75% 75%, rgba(251,113,133,0.3) 0%, transparent 70%),
+    linear-gradient(135deg, #ffe4e6 0%, #fdf2f8 100%) !important;
+  background-size: 200% 200% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+[data-palette="liquidGlassRose"].mixed {
+  --primary: 330 80% 50%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 330 80% 50%;
+  background:
+    radial-gradient(ellipse 80% 80% at 25% 25%, rgba(244,114,182,0.4) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 75% 75%, rgba(251,113,133,0.3) 0%, transparent 70%),
+    linear-gradient(135deg, #ffe4e6 0%, #fdf2f8 100%) !important;
+  background-size: 200% 200% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+[data-palette="liquidGlassRose"].dark {
+  --primary: 330 80% 54%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 330 80% 54%;
+  background:
+    radial-gradient(ellipse 80% 80% at 25% 25%, rgba(244,114,182,0.2) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 75% 75%, rgba(251,113,133,0.15) 0%, transparent 70%),
+    linear-gradient(135deg, #2a0a15 0%, #1a0a1e 100%) !important;
+  background-size: 200% 200% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
+}
+[data-palette="liquidGlassRose"] ::-webkit-scrollbar-thumb { background: rgba(244,114,182,0.2); }
+[data-palette="liquidGlassRose"] ::-webkit-scrollbar-thumb:hover { background: rgba(244,114,182,0.4); }
+[data-palette="liquidGlassRose"] ::selection { background: rgba(244,114,182,0.2); }
+[data-palette="liquidGlassRose"] :focus-visible { outline-color: rgba(244,114,182,0.6); }
+[data-palette="liquidGlassRose"].light button.bg-primary,
+[data-palette="liquidGlassRose"].mixed button.bg-primary,
+[data-palette="liquidGlassRose"]:not(.dark):not(.mixed) button.bg-primary {
+  background: rgba(244,114,182,0.75) !important;
+  border: 1px solid rgba(244,114,182,0.4) !important;
+  border-top-color: rgba(253,205,220,0.6) !important;
+  box-shadow: 0 4px 16px rgba(244,114,182,0.25), inset 0 1px 0 rgba(255,255,255,0.3) !important;
+}
+
+/* ─── AMBER — Or liquide · miel solaire ─── */
+[data-palette="liquidGlassAmber"],
+[data-palette="liquidGlassAmber"].light {
+  --primary: 38 92% 50%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 38 92% 50%;
+  --accent: 38 70% 55%;
+  --accent-foreground: 0 0% 100%;
+  --sidebar-primary: 38 92% 54%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-ring: 38 92% 50%;
+}
+[data-palette="liquidGlassAmber"].light,
+[data-palette="liquidGlassAmber"]:not(.dark):not(.mixed) {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 20%, rgba(251,191,36,0.45) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 80% 70%, rgba(249,115,22,0.3) 0%, transparent 70%),
+    linear-gradient(135deg, #fef9c3 0%, #fff7ed 100%) !important;
+  background-size: 200% 200% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+[data-palette="liquidGlassAmber"].mixed {
+  --primary: 38 92% 50%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 38 92% 50%;
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 20%, rgba(251,191,36,0.45) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 80% 70%, rgba(249,115,22,0.3) 0%, transparent 70%),
+    linear-gradient(135deg, #fef9c3 0%, #fff7ed 100%) !important;
+  background-size: 200% 200% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+[data-palette="liquidGlassAmber"].dark {
+  --primary: 38 92% 54%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 38 92% 54%;
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 20%, rgba(251,191,36,0.2) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 80% 70%, rgba(249,115,22,0.12) 0%, transparent 70%),
+    linear-gradient(135deg, #1a1505 0%, #1a1208 100%) !important;
+  background-size: 200% 200% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
+}
+[data-palette="liquidGlassAmber"] ::-webkit-scrollbar-thumb { background: rgba(251,191,36,0.2); }
+[data-palette="liquidGlassAmber"] ::-webkit-scrollbar-thumb:hover { background: rgba(251,191,36,0.4); }
+[data-palette="liquidGlassAmber"] ::selection { background: rgba(251,191,36,0.2); }
+[data-palette="liquidGlassAmber"] :focus-visible { outline-color: rgba(251,191,36,0.6); }
+[data-palette="liquidGlassAmber"].light button.bg-primary,
+[data-palette="liquidGlassAmber"].mixed button.bg-primary,
+[data-palette="liquidGlassAmber"]:not(.dark):not(.mixed) button.bg-primary {
+  background: rgba(251,191,36,0.8) !important;
+  border: 1px solid rgba(251,191,36,0.5) !important;
+  border-top-color: rgba(253,230,138,0.7) !important;
+  box-shadow: 0 4px 16px rgba(251,191,36,0.25), inset 0 1px 0 rgba(255,255,255,0.3) !important;
+}
+
+/* ─── VIOLET — Améthyste · profondeur astrale ─── */
+[data-palette="liquidGlassViolet"],
+[data-palette="liquidGlassViolet"].light {
+  --primary: 263 70% 58%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 263 70% 58%;
+  --accent: 263 55% 62%;
+  --accent-foreground: 0 0% 100%;
+  --sidebar-primary: 263 70% 62%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-ring: 263 70% 58%;
+}
+[data-palette="liquidGlassViolet"].light,
+[data-palette="liquidGlassViolet"]:not(.dark):not(.mixed) {
+  background:
+    radial-gradient(ellipse 80% 80% at 30% 20%, rgba(167,139,250,0.45) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 75% 75%, rgba(139,92,246,0.3) 0%, transparent 70%),
+    linear-gradient(135deg, #ede9fe 0%, #f5f3ff 100%) !important;
+  background-size: 200% 200% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+[data-palette="liquidGlassViolet"].mixed {
+  --primary: 263 70% 58%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 263 70% 58%;
+  background:
+    radial-gradient(ellipse 80% 80% at 30% 20%, rgba(167,139,250,0.45) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 75% 75%, rgba(139,92,246,0.3) 0%, transparent 70%),
+    linear-gradient(135deg, #ede9fe 0%, #f5f3ff 100%) !important;
+  background-size: 200% 200% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+[data-palette="liquidGlassViolet"].dark {
+  --primary: 263 70% 62%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 263 70% 62%;
+  background:
+    radial-gradient(ellipse 80% 80% at 30% 20%, rgba(167,139,250,0.2) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 75% 75%, rgba(139,92,246,0.15) 0%, transparent 70%),
+    linear-gradient(135deg, #1a0e3a 0%, #0f0a2e 100%) !important;
+  background-size: 200% 200% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
+}
+[data-palette="liquidGlassViolet"] ::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.2); }
+[data-palette="liquidGlassViolet"] ::-webkit-scrollbar-thumb:hover { background: rgba(139,92,246,0.4); }
+[data-palette="liquidGlassViolet"] ::selection { background: rgba(139,92,246,0.2); }
+[data-palette="liquidGlassViolet"] :focus-visible { outline-color: rgba(139,92,246,0.6); }
+[data-palette="liquidGlassViolet"].light button.bg-primary,
+[data-palette="liquidGlassViolet"].mixed button.bg-primary,
+[data-palette="liquidGlassViolet"]:not(.dark):not(.mixed) button.bg-primary {
+  background: rgba(139,92,246,0.8) !important;
+  border: 1px solid rgba(139,92,246,0.5) !important;
+  border-top-color: rgba(196,181,253,0.7) !important;
+  box-shadow: 0 4px 16px rgba(139,92,246,0.25), inset 0 1px 0 rgba(255,255,255,0.3) !important;
+}
+
+/* ─── CORAL — Corail de mer · coucher de soleil ─── */
+[data-palette="liquidGlassCoral"],
+[data-palette="liquidGlassCoral"].light {
+  --primary: 0 84% 60%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 0 84% 60%;
+  --accent: 0 65% 62%;
+  --accent-foreground: 0 0% 100%;
+  --sidebar-primary: 0 84% 64%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-ring: 0 84% 60%;
+}
+[data-palette="liquidGlassCoral"].light,
+[data-palette="liquidGlassCoral"]:not(.dark):not(.mixed) {
+  background:
+    radial-gradient(ellipse 80% 80% at 25% 25%, rgba(251,113,133,0.4) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 75% 70%, rgba(249,115,22,0.3) 0%, transparent 70%),
+    linear-gradient(135deg, #ffe4e6 0%, #fff1f0 100%) !important;
+  background-size: 200% 200% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+[data-palette="liquidGlassCoral"].mixed {
+  --primary: 0 84% 60%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 0 84% 60%;
+  background:
+    radial-gradient(ellipse 80% 80% at 25% 25%, rgba(251,113,133,0.4) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 75% 70%, rgba(249,115,22,0.3) 0%, transparent 70%),
+    linear-gradient(135deg, #ffe4e6 0%, #fff1f0 100%) !important;
+  background-size: 200% 200% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+[data-palette="liquidGlassCoral"].dark {
+  --primary: 0 84% 64%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 0 84% 64%;
+  background:
+    radial-gradient(ellipse 80% 80% at 25% 25%, rgba(251,113,133,0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 75% 70%, rgba(249,115,22,0.12) 0%, transparent 70%),
+    linear-gradient(135deg, #2a0a0a 0%, #1a0c08 100%) !important;
+  background-size: 200% 200% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
+}
+[data-palette="liquidGlassCoral"] ::-webkit-scrollbar-thumb { background: rgba(251,113,133,0.2); }
+[data-palette="liquidGlassCoral"] ::-webkit-scrollbar-thumb:hover { background: rgba(251,113,133,0.4); }
+[data-palette="liquidGlassCoral"] ::selection { background: rgba(251,113,133,0.2); }
+[data-palette="liquidGlassCoral"] :focus-visible { outline-color: rgba(251,113,133,0.6); }
+[data-palette="liquidGlassCoral"].light button.bg-primary,
+[data-palette="liquidGlassCoral"].mixed button.bg-primary,
+[data-palette="liquidGlassCoral"]:not(.dark):not(.mixed) button.bg-primary {
+  background: rgba(251,113,133,0.8) !important;
+  border: 1px solid rgba(251,113,133,0.45) !important;
+  border-top-color: rgba(254,202,202,0.7) !important;
+  box-shadow: 0 4px 16px rgba(239,68,68,0.25), inset 0 1px 0 rgba(255,255,255,0.3) !important;
+}
+
+/* ─── SLATE — Ardoise polie · brume minérale ─── */
+[data-palette="liquidGlassSlate"],
+[data-palette="liquidGlassSlate"].light {
+  --primary: 215 16% 47%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 215 16% 47%;
+  --accent: 215 14% 50%;
+  --accent-foreground: 0 0% 100%;
+  --sidebar-primary: 215 16% 51%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-ring: 215 16% 47%;
+}
+[data-palette="liquidGlassSlate"].light,
+[data-palette="liquidGlassSlate"]:not(.dark):not(.mixed) {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(148,163,184,0.35) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 80% 70%, rgba(100,116,139,0.25) 0%, transparent 70%),
+    linear-gradient(135deg, #f1f5f9 0%, #f8fafc 100%) !important;
+  background-size: 200% 200% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+[data-palette="liquidGlassSlate"].mixed {
+  --primary: 215 16% 47%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 215 16% 47%;
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(148,163,184,0.35) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 80% 70%, rgba(100,116,139,0.25) 0%, transparent 70%),
+    linear-gradient(135deg, #f1f5f9 0%, #f8fafc 100%) !important;
+  background-size: 200% 200% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+[data-palette="liquidGlassSlate"].dark {
+  --primary: 215 16% 51%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 215 16% 51%;
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(148,163,184,0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 80% 70%, rgba(100,116,139,0.08) 0%, transparent 70%),
+    linear-gradient(135deg, #0f1218 0%, #1a1e26 100%) !important;
+  background-size: 200% 200% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
+}
+[data-palette="liquidGlassSlate"] ::-webkit-scrollbar-thumb { background: rgba(100,116,139,0.2); }
+[data-palette="liquidGlassSlate"] ::-webkit-scrollbar-thumb:hover { background: rgba(100,116,139,0.4); }
+[data-palette="liquidGlassSlate"] ::selection { background: rgba(100,116,139,0.2); }
+[data-palette="liquidGlassSlate"] :focus-visible { outline-color: rgba(100,116,139,0.6); }
+[data-palette="liquidGlassSlate"].light button.bg-primary,
+[data-palette="liquidGlassSlate"].mixed button.bg-primary,
+[data-palette="liquidGlassSlate"]:not(.dark):not(.mixed) button.bg-primary {
+  background: rgba(100,116,139,0.75) !important;
+  border: 1px solid rgba(100,116,139,0.4) !important;
+  border-top-color: rgba(203,213,225,0.6) !important;
+  box-shadow: 0 4px 16px rgba(100,116,139,0.25), inset 0 1px 0 rgba(255,255,255,0.3) !important;
+}
+
+/* ─── MIDNIGHT — Nuit profonde · indigo sombre ─── */
+[data-palette="liquidGlassMidnight"],
+[data-palette="liquidGlassMidnight"].light {
+  --primary: 239 84% 63%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 239 84% 63%;
+  --accent: 239 60% 65%;
+  --accent-foreground: 0 0% 100%;
+  --sidebar-primary: 239 84% 67%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-ring: 239 84% 63%;
+  --foreground: 226 70% 92%;
+  --card-foreground: 226 70% 92%;
+  --popover-foreground: 226 70% 92%;
+  --muted-foreground: 226 40% 65%;
+}
+[data-palette="liquidGlassMidnight"].light,
+[data-palette="liquidGlassMidnight"]:not(.dark):not(.mixed) {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 20%, rgba(99,102,241,0.5) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 80% 80%, rgba(139,92,246,0.4) 0%, transparent 70%),
+    linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%) !important;
+  background-size: 200% 200% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
+}
+[data-palette="liquidGlassMidnight"].mixed {
+  --primary: 239 84% 63%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 239 84% 63%;
+  --foreground: 226 70% 92%;
+  --card-foreground: 226 70% 92%;
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 20%, rgba(99,102,241,0.5) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 80% 80%, rgba(139,92,246,0.4) 0%, transparent 70%),
+    linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%) !important;
+  background-size: 200% 200% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
+}
+[data-palette="liquidGlassMidnight"].dark {
+  --primary: 239 84% 67%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 239 84% 67%;
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 20%, rgba(99,102,241,0.4) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 80% 80%, rgba(139,92,246,0.3) 0%, transparent 70%),
+    linear-gradient(135deg, #050714 0%, #0e0b2a 50%, #050714 100%) !important;
+  background-size: 200% 200% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
+}
+/* Midnight uses dark glass surfaces even in light mode */
+[data-palette="liquidGlassMidnight"] .bento-cell,
+[data-palette="liquidGlassMidnight"] .bg-card {
+  background: rgba(30,27,75,0.75) !important;
+  border-color: rgba(99,102,241,0.25) !important;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(165,180,252,0.2) !important;
+}
+[data-palette="liquidGlassMidnight"] .text-foreground,
+[data-palette="liquidGlassMidnight"] .text-card-foreground {
+  color: #e0e7ff !important;
+}
+[data-palette="liquidGlassMidnight"] .text-muted-foreground {
+  color: rgba(165,180,252,0.7) !important;
+}
+[data-palette="liquidGlassMidnight"] ::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.25); }
+[data-palette="liquidGlassMidnight"] ::-webkit-scrollbar-thumb:hover { background: rgba(99,102,241,0.45); }
+[data-palette="liquidGlassMidnight"] ::selection { background: rgba(99,102,241,0.3); }
+[data-palette="liquidGlassMidnight"] :focus-visible { outline-color: rgba(99,102,241,0.6); }
+[data-palette="liquidGlassMidnight"] button.bg-primary {
+  background: rgba(99,102,241,0.6) !important;
+  border: 1px solid rgba(99,102,241,0.4) !important;
+  border-top-color: rgba(165,180,252,0.5) !important;
+  box-shadow: 0 4px 16px rgba(99,102,241,0.3), inset 0 1px 0 rgba(255,255,255,0.2) !important;
+}

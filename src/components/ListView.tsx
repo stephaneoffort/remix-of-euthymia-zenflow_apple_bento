@@ -196,9 +196,14 @@ export default function ListView() {
 
     return (
       <React.Fragment key={task.id}>
-        <tr
+        <motion.tr
+          initial={{ opacity: 0, x: -8 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, transition: { duration: 0.12 } }}
+          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
           className="border-b border-border hover:bg-muted/50 transition-colors cursor-pointer group"
           onClick={() => setSelectedTaskId(task.id)}
+        >
         >
           <td className="py-2.5 px-3" style={{ paddingLeft: `${12 + depth * 24}px` }}>
             <div className="flex items-center gap-2">

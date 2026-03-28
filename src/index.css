@@ -796,7 +796,37 @@
   .dark [role="dialog"] *,
   .mixed [data-radix-popper-content-wrapper] > * *,
   .mixed [role="dialog"] * {
-    color: hsl(var(--popover-foreground));
+    color: hsl(var(--popover-foreground)) !important;
+  }
+  .dark [role="dialog"] svg,
+  .dark [data-radix-popper-content-wrapper] svg,
+  .mixed [role="dialog"] svg,
+  .mixed [data-radix-popper-content-wrapper] svg {
+    color: hsl(var(--popover-foreground)) !important;
+  }
+  .dark [role="dialog"] .text-muted-foreground,
+  .dark [data-radix-popper-content-wrapper] .text-muted-foreground,
+  .mixed [role="dialog"] .text-muted-foreground,
+  .mixed [data-radix-popper-content-wrapper] .text-muted-foreground {
+    color: hsl(var(--muted-foreground)) !important;
+  }
+  .dark [role="dialog"] .text-primary,
+  .dark [data-radix-popper-content-wrapper] .text-primary,
+  .mixed [role="dialog"] .text-primary,
+  .mixed [data-radix-popper-content-wrapper] .text-primary {
+    color: hsl(var(--primary)) !important;
+  }
+  .dark [role="dialog"] .text-destructive,
+  .dark [data-radix-popper-content-wrapper] .text-destructive,
+  .mixed [role="dialog"] .text-destructive,
+  .mixed [data-radix-popper-content-wrapper] .text-destructive {
+    color: hsl(var(--destructive)) !important;
+  }
+  .dark [role="dialog"] .text-primary-foreground,
+  .dark [data-radix-popper-content-wrapper] .text-primary-foreground,
+  .mixed [role="dialog"] .text-primary-foreground,
+  .mixed [data-radix-popper-content-wrapper] .text-primary-foreground {
+    color: hsl(var(--primary-foreground)) !important;
   }
   .dark [role="dialog"] label,
   .mixed [role="dialog"] label {

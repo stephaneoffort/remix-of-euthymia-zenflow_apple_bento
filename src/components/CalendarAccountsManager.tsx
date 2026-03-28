@@ -30,6 +30,7 @@ interface Props {
   syncing: string | null;
   visibleAccountIds: Set<string>;
   onToggleVisibility: (accountId: string) => void;
+  onSetAllVisible: (visible: boolean) => void;
   onSync: (accountId: string) => void;
   onDelete: (accountId: string) => void;
   onAddCalDav: (label: string, url: string, user: string, pass: string, provider: string) => Promise<any>;

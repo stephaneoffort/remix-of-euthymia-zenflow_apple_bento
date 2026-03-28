@@ -38,8 +38,15 @@ function getChartColors() {
 
 export default function WorkloadView() {
   const { getFilteredTasks, teamMembers, setSelectedTaskId } = useApp();
+  const { palette, theme } = useThemeMode();
   const tasks = getFilteredTasks();
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
+
+  const { STATUS_COLORS, PRIORITY_COLORS } = useMemo(() => {
+    const colors = getChartColors();
+    return { STATUS_COLORS: colors.status, PRIORITY_COLORS: colors.priority };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [palette, theme]);
 
   const memberData = useMemo(() => {
     return teamMembers.map(member => {

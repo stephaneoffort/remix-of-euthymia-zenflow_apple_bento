@@ -2712,10 +2712,10 @@
 }
 [data-palette="liquidGlassMidnight"] .text-foreground,
 [data-palette="liquidGlassMidnight"] .text-card-foreground {
-  color: #e0e7ff !important;
+  color: rgba(200, 210, 240, 0.85) !important;
 }
 [data-palette="liquidGlassMidnight"] .text-muted-foreground {
-  color: rgba(165,180,252,0.7) !important;
+  color: rgba(165,180,252,0.6) !important;
 }
 [data-palette="liquidGlassMidnight"] ::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.25); }
 [data-palette="liquidGlassMidnight"] ::-webkit-scrollbar-thumb:hover { background: rgba(99,102,241,0.45); }

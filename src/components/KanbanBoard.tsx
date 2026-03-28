@@ -246,6 +246,7 @@ export default function KanbanBoard() {
 
         {/* Cards */}
         <div className="flex-1 space-y-2 overflow-y-auto scrollbar-thin">
+          <AnimatePresence mode="popLayout">
           {(tasksByStatus[status] || []).map(task => {
             const subtasks = tasks.filter(t => t.parentTaskId === task.id);
             const doneSubtasks = subtasks.filter(t => t.status === 'done');

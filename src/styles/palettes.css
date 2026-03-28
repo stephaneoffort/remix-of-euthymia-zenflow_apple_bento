@@ -1556,17 +1556,17 @@
 [data-palette^="liquidGlass"],
 [data-palette^="liquidGlass"].light {
   --background: 220 60% 96%;
-  --foreground: 230 40% 15%;
+  --foreground: 230 20% 30%;
   --card: 220 40% 98%;
-  --card-foreground: 230 40% 15%;
+  --card-foreground: 230 20% 30%;
   --popover: 220 30% 99%;
-  --popover-foreground: 230 40% 15%;
+  --popover-foreground: 230 20% 30%;
   --primary: 239 84% 63%;
   --primary-foreground: 0 0% 100%;
   --secondary: 220 20% 93%;
-  --secondary-foreground: 230 25% 35%;
+  --secondary-foreground: 230 15% 42%;
   --muted: 220 15% 95%;
-  --muted-foreground: 230 10% 45%;
+  --muted-foreground: 230 10% 50%;
   --accent: 239 60% 65%;
   --accent-foreground: 0 0% 100%;
   --destructive: 0 68% 52%;
@@ -1601,17 +1601,17 @@
 /* ─── Dark mode ─── */
 [data-palette^="liquidGlass"].dark {
   --background: 235 30% 6%;
-  --foreground: 220 20% 90%;
+  --foreground: 220 15% 80%;
   --card: 235 25% 9%;
-  --card-foreground: 220 20% 90%;
+  --card-foreground: 220 15% 80%;
   --popover: 235 28% 8%;
-  --popover-foreground: 220 20% 92%;
+  --popover-foreground: 220 15% 82%;
   --primary: 239 84% 67%;
   --primary-foreground: 0 0% 100%;
   --secondary: 235 20% 14%;
-  --secondary-foreground: 220 14% 70%;
+  --secondary-foreground: 220 12% 62%;
   --muted: 235 18% 12%;
-  --muted-foreground: 220 10% 58%;
+  --muted-foreground: 220 10% 52%;
   --accent: 239 50% 22%;
   --accent-foreground: 239 80% 78%;
   --destructive: 0 68% 52%;
@@ -1620,11 +1620,11 @@
   --input: 235 18% 14%;
   --ring: 239 84% 67%;
   --sidebar-background: 235 35% 5%;
-  --sidebar-foreground: 220 10% 75%;
+  --sidebar-foreground: 220 10% 68%;
   --sidebar-primary: 239 84% 67%;
   --sidebar-primary-foreground: 0 0% 100%;
   --sidebar-accent: 235 28% 10%;
-  --sidebar-accent-foreground: 220 18% 90%;
+  --sidebar-accent-foreground: 220 18% 82%;
   --sidebar-ring: 239 84% 67%;
   --sidebar-border: 235 22% 14%;
   --bento-bg: rgba(20, 20, 35, 0.55);
@@ -1646,17 +1646,17 @@
 /* ─── Mixed mode ─── */
 [data-palette^="liquidGlass"].mixed {
   --background: 220 60% 96%;
-  --foreground: 230 40% 15%;
+  --foreground: 230 20% 30%;
   --card: 220 40% 98%;
-  --card-foreground: 230 40% 15%;
+  --card-foreground: 230 20% 30%;
   --popover: 220 30% 99%;
-  --popover-foreground: 230 40% 15%;
+  --popover-foreground: 230 20% 30%;
   --primary: 239 84% 63%;
   --primary-foreground: 0 0% 100%;
   --secondary: 220 20% 93%;
-  --secondary-foreground: 230 25% 35%;
+  --secondary-foreground: 230 15% 42%;
   --muted: 220 15% 95%;
-  --muted-foreground: 230 10% 45%;
+  --muted-foreground: 230 10% 50%;
   --accent: 239 60% 65%;
   --accent-foreground: 0 0% 100%;
   --destructive: 0 68% 52%;
@@ -2063,7 +2063,7 @@
   border-top-color: rgba(255, 255, 255, 0.7) !important;
   border-radius: 14px !important;
   box-shadow: 0 2px 8px rgba(31, 38, 135, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
-  color: rgba(30, 30, 60, 0.85) !important;
+  color: rgba(35, 35, 65, 0.72) !important;
   transition: all 0.2s ease !important;
 }
 [data-palette^="liquidGlass"].light button[data-variant="outline"]:hover,
@@ -2082,7 +2082,7 @@
 /* ─── Liquid Glass: Label text color ─── */
 [data-palette^="liquidGlass"].light label,
 [data-palette^="liquidGlass"].mixed label {
-  color: rgba(20, 20, 40, 0.75) !important;
+  color: rgba(30, 30, 50, 0.65) !important;
   font-weight: 500 !important;
   letter-spacing: 0.01em !important;
 }
@@ -2090,7 +2090,7 @@
 /* ─── Liquid Glass: Muted-foreground in glass context ─── */
 [data-palette^="liquidGlass"].light .text-muted-foreground,
 [data-palette^="liquidGlass"].mixed .text-muted-foreground {
-  color: rgba(30, 30, 55, 0.5) !important;
+  color: rgba(40, 40, 65, 0.55) !important;
 }
 
 /* ─── Liquid Glass: Card foreground text ─── */
@@ -2098,7 +2098,7 @@
 [data-palette^="liquidGlass"].mixed .text-foreground,
 [data-palette^="liquidGlass"].light .text-card-foreground,
 [data-palette^="liquidGlass"].mixed .text-card-foreground {
-  color: rgba(20, 20, 40, 0.9) !important;
+  color: rgba(30, 30, 50, 0.78) !important;
 }
 
 /* ─── Liquid Glass: glass reveal animation on cards ─── */
@@ -2125,7 +2125,7 @@
   -webkit-backdrop-filter: blur(8px) !important;
   border: 1px solid rgba(255, 255, 255, 0.5) !important;
   border-top-color: rgba(255, 255, 255, 0.7) !important;
-  color: rgba(20, 20, 40, 0.9) !important;
+  color: rgba(30, 30, 50, 0.78) !important;
   border-radius: 14px !important;
   box-shadow: inset 0 1px 3px rgba(31, 38, 135, 0.05) !important;
 }
@@ -2153,13 +2153,13 @@
 [data-palette^="liquidGlass"].light [role="dialog"] *,
 [data-palette^="liquidGlass"].mixed [role="dialog"] *,
 [data-palette^="liquidGlass"]:not(.dark):not(.mixed) [role="dialog"] * {
-  color: rgba(30, 30, 55, 0.8) !important;
+  color: rgba(35, 35, 60, 0.72) !important;
 }
 [data-palette^="liquidGlass"].light [role="dialog"] h2,
 [data-palette^="liquidGlass"].light [role="dialog"] h3,
 [data-palette^="liquidGlass"].mixed [role="dialog"] h2,
 [data-palette^="liquidGlass"].mixed [role="dialog"] h3 {
-  color: rgba(20, 20, 40, 0.9) !important;
+  color: rgba(30, 30, 50, 0.82) !important;
 }
 [data-palette^="liquidGlass"].light [role="dialog"] button.bg-primary,
 [data-palette^="liquidGlass"].light [role="dialog"] button.bg-primary *,
@@ -2662,10 +2662,10 @@
   --sidebar-primary: 239 84% 67%;
   --sidebar-primary-foreground: 0 0% 100%;
   --sidebar-ring: 239 84% 63%;
-  --foreground: 226 70% 92%;
-  --card-foreground: 226 70% 92%;
-  --popover-foreground: 226 70% 92%;
-  --muted-foreground: 226 40% 65%;
+  --foreground: 226 50% 82%;
+  --card-foreground: 226 50% 82%;
+  --popover-foreground: 226 50% 82%;
+  --muted-foreground: 226 30% 58%;
 }
 [data-palette="liquidGlassMidnight"].light,
 [data-palette="liquidGlassMidnight"]:not(.dark):not(.mixed) {
@@ -2681,8 +2681,8 @@
   --primary: 239 84% 63%;
   --primary-foreground: 0 0% 100%;
   --ring: 239 84% 63%;
-  --foreground: 226 70% 92%;
-  --card-foreground: 226 70% 92%;
+  --foreground: 226 50% 82%;
+  --card-foreground: 226 50% 82%;
   background:
     radial-gradient(ellipse 80% 80% at 20% 20%, rgba(99,102,241,0.5) 0%, transparent 70%),
     radial-gradient(ellipse 80% 80% at 80% 80%, rgba(139,92,246,0.4) 0%, transparent 70%),
@@ -2712,10 +2712,10 @@
 }
 [data-palette="liquidGlassMidnight"] .text-foreground,
 [data-palette="liquidGlassMidnight"] .text-card-foreground {
-  color: #e0e7ff !important;
+  color: rgba(200, 210, 240, 0.85) !important;
 }
 [data-palette="liquidGlassMidnight"] .text-muted-foreground {
-  color: rgba(165,180,252,0.7) !important;
+  color: rgba(165,180,252,0.6) !important;
 }
 [data-palette="liquidGlassMidnight"] ::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.25); }
 [data-palette="liquidGlassMidnight"] ::-webkit-scrollbar-thumb:hover { background: rgba(99,102,241,0.45); }

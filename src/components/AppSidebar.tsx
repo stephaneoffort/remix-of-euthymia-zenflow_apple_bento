@@ -1399,7 +1399,7 @@ function ThemeSwitcher() {
           </button>
         ))}
       </div>
-      <div className="flex items-center gap-1 px-1 py-1 rounded-md bg-sidebar-hover/50">
+      <div className="flex flex-wrap items-center gap-1 px-1 py-1 rounded-md bg-sidebar-hover/50">
         {palettes.map(p => (
           <Tooltip key={p.key}>
             <TooltipTrigger asChild>

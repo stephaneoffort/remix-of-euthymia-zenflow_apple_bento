@@ -344,7 +344,7 @@ export default function KanbanBoard() {
                   className="h-full rounded-full transition-all duration-500"
                   style={{ width: `${pct}%`, backgroundColor: project.color }}
                 />
-              </div>
+      </motion.div>
               <span className="text-xs font-semibold tabular-nums text-foreground">{pct}%</span>
               <span className="text-label text-muted-foreground">{doneTasks}/{projectTasks.length}</span>
             </div>

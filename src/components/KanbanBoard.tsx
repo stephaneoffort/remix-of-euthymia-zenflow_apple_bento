@@ -256,6 +256,21 @@ export default function KanbanBoard() {
           </button>
         </div>
 
+        {/* Drop zone indicator */}
+        <AnimatePresence>
+          {isTaskDropTarget && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 40 }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              className="mx-1 mb-2 rounded-lg border-2 border-dashed border-primary/50 bg-primary/5 flex items-center justify-center"
+            >
+              <span className="text-xs text-primary/70 font-medium">Déposer ici</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Cards */}
         <div className="flex-1 space-y-2 overflow-y-auto scrollbar-thin">
           <AnimatePresence mode="popLayout">

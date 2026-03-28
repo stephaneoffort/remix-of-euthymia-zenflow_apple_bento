@@ -800,8 +800,7 @@ export default function CalendarView() {
   // ─── Mobile layouts ───
   if (isMobile) {
     const handleConnectGoogle = () => {
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      window.open(`https://${projectId}.supabase.co/functions/v1/google-oauth/authorize`, '_blank');
+      window.open('https://zfktrlupipngsegsiwyq.supabase.co/functions/v1/google-oauth/authorize', '_blank');
     };
 
     const mobileActionBar = (

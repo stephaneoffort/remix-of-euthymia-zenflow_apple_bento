@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { AlertCircle, Mail } from 'lucide-react';
 
-export default function SelectTeamMember() {
+const SelectTeamMember = React.forwardRef<HTMLDivElement>(function SelectTeamMember(_, ref) {
   const { user, teamMemberId, loading, signOut } = useAuth();
 
   if (loading) {

@@ -1,0 +1,1 @@
+ALTER TABLE calendar_accounts ADD COLUMN IF NOT EXISTS color text DEFAULT NULL;

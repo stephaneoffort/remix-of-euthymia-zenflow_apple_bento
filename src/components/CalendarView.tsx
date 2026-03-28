@@ -538,6 +538,30 @@ export default function CalendarView() {
     setAddingForDate(null);
   };
 
+  const handleOpenNewEvent = (dateStr?: string) => {
+    setEditingEvent(null);
+    setEventDialogDate(dateStr);
+    setEventDialogOpen(true);
+  };
+
+  const handleEditEvent = (event: CalendarEvent) => {
+    setEditingEvent(event);
+    setEventDialogDate(undefined);
+    setEventDialogOpen(true);
+  };
+
+  const handleDeleteEvent = async (event: CalendarEvent) => {
+    await calSync.deleteCalendarEvent(event.id);
+  };
+
+  const handleSaveEvent = async (data: { title: string; description: string; start_time: string; end_time: string; is_all_day: boolean; location: string }) => {
+    if (editingEvent) {
+      await calSync.updateCalendarEvent(editingEvent.id, data);
+    } else {
+      await calSync.createCalendarEvent(data);
+    }
+  };
+
   const handleDragStart = (event: DragStartEvent) => setActiveTaskId(event.active.id as string);
 
   const handleDragEnd = (event: DragEndEvent) => {

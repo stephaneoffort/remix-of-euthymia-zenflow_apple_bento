@@ -68,6 +68,7 @@ export type Database = {
           caldav_url: string | null
           caldav_username: string | null
           calendar_id: string | null
+          color: string | null
           created_at: string | null
           ics_url: string | null
           id: string
@@ -85,6 +86,7 @@ export type Database = {
           caldav_url?: string | null
           caldav_username?: string | null
           calendar_id?: string | null
+          color?: string | null
           created_at?: string | null
           ics_url?: string | null
           id?: string
@@ -102,6 +104,7 @@ export type Database = {
           caldav_url?: string | null
           caldav_username?: string | null
           calendar_id?: string | null
+          color?: string | null
           created_at?: string | null
           ics_url?: string | null
           id?: string

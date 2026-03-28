@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useApp } from '@/context/AppContext';
+import { useThemeMode } from '@/context/ThemeContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { STATUS_LABELS, PRIORITY_LABELS, Priority } from '@/types';

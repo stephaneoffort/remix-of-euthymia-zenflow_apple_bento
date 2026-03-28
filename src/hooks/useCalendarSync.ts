@@ -214,6 +214,8 @@ export function useCalendarSync() {
 
     const account = activeAccounts?.[0];
 
+    const userId = await getCurrentUserId();
+
     // Insert event locally
     const { data: newEvent, error } = await supabase
       .from('calendar_events')
@@ -227,6 +229,7 @@ export function useCalendarSync() {
         provider: account?.provider || 'google',
         account_id: account?.id || null,
         sync_status: account ? 'pending' : 'local',
+        user_id: userId,
       } as any)
       .select()
       .single();

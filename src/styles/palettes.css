@@ -1950,3 +1950,174 @@
   outline: 2px solid rgba(99, 102, 241, 0.6);
   outline-offset: 3px;
 }
+
+/* ─── Hide App.css ambient orbs for liquidGlass ─── */
+[data-palette="liquidGlass"] body::before,
+[data-palette="liquidGlass"] body::after {
+  display: none !important;
+}
+
+/* ─── Liquid Glass: Sidebar glass effect ─── */
+[data-palette="liquidGlass"] [data-sidebar="sidebar"] {
+  background: rgba(15, 15, 25, 0.6) !important;
+  backdrop-filter: blur(32px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(150%) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* ─── Liquid Glass: Top header/bar glass ─── */
+[data-palette="liquidGlass"].light header,
+[data-palette="liquidGlass"].mixed header,
+[data-palette="liquidGlass"]:not(.dark):not(.mixed) header {
+  background: rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+/* ─── Liquid Glass: Main content area transparent ─── */
+[data-palette="liquidGlass"].light main,
+[data-palette="liquidGlass"].mixed main,
+[data-palette="liquidGlass"]:not(.dark):not(.mixed) main,
+[data-palette="liquidGlass"].light [role="main"],
+[data-palette="liquidGlass"].mixed [role="main"],
+[data-palette="liquidGlass"]:not(.dark):not(.mixed) [role="main"] {
+  background: transparent !important;
+}
+
+/* ─── Liquid Glass: Kanban columns ─── */
+[data-palette="liquidGlass"].light .flex.flex-col.min-w-\\[280px\\],
+[data-palette="liquidGlass"].mixed .flex.flex-col.min-w-\\[280px\\],
+[data-palette="liquidGlass"]:not(.dark):not(.mixed) .flex.flex-col.min-w-\\[280px\\] {
+  background: rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  border-radius: 20px !important;
+}
+
+/* ─── Liquid Glass: All shadcn cards & bordered containers ─── */
+[data-palette="liquidGlass"].light .bg-card,
+[data-palette="liquidGlass"].mixed .bg-card,
+[data-palette="liquidGlass"]:not(.dark):not(.mixed) .bg-card,
+[data-palette="liquidGlass"].light .bg-background,
+[data-palette="liquidGlass"].mixed .bg-background,
+[data-palette="liquidGlass"]:not(.dark):not(.mixed) .bg-background {
+  background: rgba(255, 255, 255, 0.18) !important;
+  backdrop-filter: blur(24px) saturate(180%) brightness(1.05) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.05) !important;
+}
+
+/* ─── Liquid Glass: Inputs override (light/mixed) ─── */
+[data-palette="liquidGlass"].light input,
+[data-palette="liquidGlass"].light textarea,
+[data-palette="liquidGlass"].light select,
+[data-palette="liquidGlass"].mixed input,
+[data-palette="liquidGlass"].mixed textarea,
+[data-palette="liquidGlass"].mixed select {
+  background: rgba(255, 255, 255, 0.3) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  border-top-color: rgba(255, 255, 255, 0.7) !important;
+  color: rgba(20, 20, 40, 0.9) !important;
+  border-radius: 14px !important;
+  box-shadow: inset 0 1px 3px rgba(31, 38, 135, 0.05) !important;
+}
+[data-palette="liquidGlass"].light input:focus,
+[data-palette="liquidGlass"].light textarea:focus,
+[data-palette="liquidGlass"].mixed input:focus,
+[data-palette="liquidGlass"].mixed textarea:focus {
+  background: rgba(255, 255, 255, 0.5) !important;
+  border-color: rgba(99, 102, 241, 0.5) !important;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12), inset 0 1px 3px rgba(31, 38, 135, 0.05) !important;
+}
+
+/* ─── Liquid Glass: Dialogs & modals ─── */
+[data-palette="liquidGlass"].light [role="dialog"],
+[data-palette="liquidGlass"].mixed [role="dialog"],
+[data-palette="liquidGlass"]:not(.dark):not(.mixed) [role="dialog"] {
+  background: rgba(255, 255, 255, 0.65) !important;
+  backdrop-filter: blur(40px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.7) !important;
+  border-top-color: rgba(255, 255, 255, 0.9) !important;
+  border-radius: 28px !important;
+  box-shadow: 0 32px 80px rgba(31, 38, 135, 0.2), 0 8px 24px rgba(31, 38, 135, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+[data-palette="liquidGlass"].light [role="dialog"] *,
+[data-palette="liquidGlass"].mixed [role="dialog"] *,
+[data-palette="liquidGlass"]:not(.dark):not(.mixed) [role="dialog"] * {
+  color: rgba(30, 30, 55, 0.8) !important;
+}
+[data-palette="liquidGlass"].light [role="dialog"] h2,
+[data-palette="liquidGlass"].light [role="dialog"] h3,
+[data-palette="liquidGlass"].mixed [role="dialog"] h2,
+[data-palette="liquidGlass"].mixed [role="dialog"] h3 {
+  color: rgba(20, 20, 40, 0.9) !important;
+}
+[data-palette="liquidGlass"].light [role="dialog"] button.bg-primary,
+[data-palette="liquidGlass"].light [role="dialog"] button.bg-primary *,
+[data-palette="liquidGlass"].mixed [role="dialog"] button.bg-primary,
+[data-palette="liquidGlass"].mixed [role="dialog"] button.bg-primary * {
+  color: white !important;
+}
+
+/* ─── Liquid Glass: Popovers ─── */
+[data-palette="liquidGlass"].light [data-radix-popper-content-wrapper] > *,
+[data-palette="liquidGlass"].mixed [data-radix-popper-content-wrapper] > *,
+[data-palette="liquidGlass"]:not(.dark):not(.mixed) [data-radix-popper-content-wrapper] > * {
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(32px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 16px 48px rgba(31, 38, 135, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+/* ─── Liquid Glass: Tabs ─── */
+[data-palette="liquidGlass"].light [role="tablist"],
+[data-palette="liquidGlass"].mixed [role="tablist"],
+[data-palette="liquidGlass"]:not(.dark):not(.mixed) [role="tablist"] {
+  background: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  border-radius: 16px !important;
+  padding: 4px !important;
+}
+[data-palette="liquidGlass"].light [role="tab"][data-state="active"],
+[data-palette="liquidGlass"].mixed [role="tab"][data-state="active"],
+[data-palette="liquidGlass"]:not(.dark):not(.mixed) [role="tab"][data-state="active"] {
+  background: rgba(255, 255, 255, 0.5) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(31, 38, 135, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+/* ─── Liquid Glass: Badges ─── */
+[data-palette="liquidGlass"].light .inline-flex.items-center.rounded-full,
+[data-palette="liquidGlass"].mixed .inline-flex.items-center.rounded-full {
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+/* ─── Liquid Glass: Primary button glass effect ─── */
+[data-palette="liquidGlass"].light button.bg-primary,
+[data-palette="liquidGlass"].mixed button.bg-primary,
+[data-palette="liquidGlass"]:not(.dark):not(.mixed) button.bg-primary {
+  background: rgba(99, 102, 241, 0.75) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(99, 102, 241, 0.4) !important;
+  border-top-color: rgba(160, 162, 255, 0.6) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+[data-palette="liquidGlass"].light button.bg-primary:hover,
+[data-palette="liquidGlass"].mixed button.bg-primary:hover {
+  background: rgba(99, 102, 241, 0.9) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+}

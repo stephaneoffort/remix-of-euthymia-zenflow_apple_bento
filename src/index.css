@@ -16,8 +16,11 @@
 @layer base {
   html,
   body {
-    background: hsl(var(--background));
     min-height: 100vh;
+  }
+  html:not([data-palette="liquidGlass"]),
+  html:not([data-palette="liquidGlass"]) body {
+    background: hsl(var(--background));
   }
 }
 

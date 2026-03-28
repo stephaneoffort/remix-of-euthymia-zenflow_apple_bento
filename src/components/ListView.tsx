@@ -92,10 +92,19 @@ export default function ListView() {
 
       return (
         <React.Fragment key={task.id}>
-          <div
-            className={`bg-card rounded-lg border p-3 ${isOverdue ? 'border-l-2 border-l-priority-urgent' : ''}`}
+          <motion.div
+            layout
+            initial={{ opacity: 0, y: 10, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.15 } }}
+            whileHover={{ y: -2, scale: 1.01, transition: { duration: 0.2 } }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+            className={`relative overflow-hidden bg-card rounded-lg border p-3 cursor-pointer hover:shadow-md group ${isOverdue ? 'border-l-2 border-l-priority-urgent' : ''}`}
             style={{ marginLeft: `${depth * 12}px` }}
             onClick={() => setSelectedTaskId(task.id)}
+          >
+            <div className="pointer-events-none absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-white/10 via-transparent to-white/5" />
           >
             <div className="flex items-start gap-2">
               {hasChildren && (

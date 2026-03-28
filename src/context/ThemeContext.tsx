@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export type ThemeMode = 'light' | 'dark' | 'mixed';
-export type ThemePalette = 'clubroom' | 'neutrals' | 'sapphire' | 'cinematic' | 'teal';
+export type ThemePalette = 'clubroom' | 'neutrals' | 'sapphire' | 'cinematic' | 'teal' | 'bento2026';
 
 interface ThemeContextType {
   theme: ThemeMode;

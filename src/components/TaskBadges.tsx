@@ -16,7 +16,7 @@ export function PriorityBadge({ priority }: { priority: Priority }) {
   );
 }
 
-export function StatusBadge({ status }: { status: string }) {
+export const StatusBadge = React.forwardRef<HTMLSpanElement, { status: string }>(({ status }, ref) => {
   const config: Record<string, { label: string; className: string; icon: React.ReactNode }> = {
     todo: { label: 'À faire', className: 'bg-status-todo/15 text-status-todo', icon: <Circle className="w-3 h-3" /> },
     in_progress: { label: 'En cours', className: 'bg-status-progress/15 text-status-progress', icon: <Loader className="w-3 h-3" /> },

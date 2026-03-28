@@ -1,3 +1,4 @@
+import React from 'react';
 import { Priority } from '@/types';
 import { AlertCircle, ArrowUp, Minus, ArrowDown, Circle, Loader, Eye, CheckCircle, Ban } from 'lucide-react';
 

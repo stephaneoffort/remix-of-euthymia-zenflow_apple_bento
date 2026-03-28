@@ -1,0 +1,1 @@
+ALTER TABLE public.calendar_accounts ADD CONSTRAINT calendar_accounts_calendar_id_key UNIQUE (calendar_id);

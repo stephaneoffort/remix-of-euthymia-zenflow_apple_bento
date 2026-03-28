@@ -431,6 +431,37 @@ export default function CalendarView() {
   };
   const isMobile = useIsMobile();
 
+  // Visibility toggle for calendar accounts
+  const [visibleAccountIds, setVisibleAccountIds] = useState<Set<string>>(() => new Set(calSync.accounts.map(a => a.id)));
+
+  // Keep all new accounts visible by default
+  React.useEffect(() => {
+    setVisibleAccountIds(prev => {
+      const next = new Set(prev);
+      let changed = false;
+      calSync.accounts.forEach(a => {
+        if (!next.has(a.id) && !prev.has('__init__')) {
+          next.add(a.id);
+          changed = true;
+        }
+      });
+      if (prev.size === 0 && calSync.accounts.length > 0) {
+        calSync.accounts.forEach(a => next.add(a.id));
+        changed = true;
+      }
+      return changed ? next : prev;
+    });
+  }, [calSync.accounts]);
+
+  const handleToggleAccountVisibility = (accountId: string) => {
+    setVisibleAccountIds(prev => {
+      const next = new Set(prev);
+      if (next.has(accountId)) next.delete(accountId);
+      else next.add(accountId);
+      return next;
+    });
+  };
+
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
   const year = currentDate.getFullYear();
@@ -473,17 +504,18 @@ export default function CalendarView() {
     return map;
   }, [tasks]);
 
-  // External calendar events indexed by date
+  // External calendar events indexed by date (filtered by visibility)
   const externalEventsByDate = useMemo(() => {
     const map = new Map<string, CalendarEvent[]>();
     calSync.events.forEach(ev => {
       if (!ev.start_time) return;
+      if (ev.account_id && !visibleAccountIds.has(ev.account_id)) return;
       const dk = ev.start_time.slice(0, 10);
       if (!map.has(dk)) map.set(dk, []);
       map.get(dk)!.push(ev);
     });
     return map;
-  }, [calSync.events]);
+  }, [calSync.events, visibleAccountIds]);
 
   // Account lookup for tooltips
   const accountMap = useMemo(() => {
@@ -1046,6 +1078,8 @@ export default function CalendarView() {
       <CalendarAccountsManager
         accounts={calSync.accounts}
         syncing={calSync.syncing}
+        visibleAccountIds={visibleAccountIds}
+        onToggleVisibility={handleToggleAccountVisibility}
         onSync={(id) => calSync.syncAccount(id, 'pull')}
         onDelete={calSync.deleteAccount}
         onAddCalDav={calSync.addCalDavAccount}

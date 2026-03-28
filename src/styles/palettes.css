@@ -2090,7 +2090,7 @@
 /* ─── Liquid Glass: Muted-foreground in glass context ─── */
 [data-palette^="liquidGlass"].light .text-muted-foreground,
 [data-palette^="liquidGlass"].mixed .text-muted-foreground {
-  color: rgba(30, 30, 55, 0.5) !important;
+  color: rgba(40, 40, 65, 0.55) !important;
 }
 
 /* ─── Liquid Glass: Card foreground text ─── */

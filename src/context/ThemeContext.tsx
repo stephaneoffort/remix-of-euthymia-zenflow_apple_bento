@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export type ThemeMode = 'light' | 'dark' | 'mixed';
-export type ThemePalette = 'clubroom' | 'neutrals' | 'sapphire' | 'cinematic' | 'teal';
+export type ThemePalette = 'clubroom' | 'neutrals' | 'sapphire' | 'cinematic' | 'teal' | 'bento2026';
 
 interface ThemeContextType {
   theme: ThemeMode;
@@ -37,6 +37,11 @@ export const PALETTE_META: Record<ThemePalette, { label: string; description: st
     label: 'Ocean Teal',
     description: 'Bleu-vert organique — Wellness & mindfulness',
     colors: ['#0A1518', '#0F1C20', '#14B8A6', '#E8FAF5'],
+  },
+  bento2026: {
+    label: 'Bento 2026',
+    description: 'Off-white chaud + Vert forêt — Tendance organique 2026',
+    colors: ['#f5f0e8', '#ede8df', '#2d3a2e', '#a8d5b5'],
   },
 };
 

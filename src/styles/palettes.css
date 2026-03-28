@@ -2017,16 +2017,100 @@
   border-radius: 20px !important;
 }
 
-/* ─── Liquid Glass: All shadcn cards & bordered containers ─── */
+/* ─── Liquid Glass: shadcn cards ─── */
 [data-palette="liquidGlass"].light .bg-card,
 [data-palette="liquidGlass"].mixed .bg-card,
-[data-palette="liquidGlass"]:not(.dark):not(.mixed) .bg-card,
-[data-palette="liquidGlass"].light .bg-background,
-[data-palette="liquidGlass"].mixed .bg-background,
-[data-palette="liquidGlass"]:not(.dark):not(.mixed) .bg-background {
+[data-palette="liquidGlass"]:not(.dark):not(.mixed) .bg-card {
   background: rgba(255, 255, 255, 0.18) !important;
   backdrop-filter: blur(24px) saturate(180%) brightness(1.05) !important;
   -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  border-top-color: rgba(255, 255, 255, 0.7) !important;
+  border-left-color: rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.08), 0 2px 8px rgba(31, 38, 135, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(255, 255, 255, 0.1) !important;
+  border-radius: 24px !important;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ─── Liquid Glass: shimmer on card hover ─── */
+[data-palette="liquidGlass"].light .bg-card:hover,
+[data-palette="liquidGlass"].mixed .bg-card:hover,
+[data-palette="liquidGlass"]:not(.dark):not(.mixed) .bg-card:hover {
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.28) !important;
+  box-shadow: 0 20px 60px rgba(31, 38, 135, 0.15), 0 8px 24px rgba(31, 38, 135, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* ─── Liquid Glass: bg-background → transparent (page wrappers) ─── */
+[data-palette="liquidGlass"].light .bg-background,
+[data-palette="liquidGlass"].mixed .bg-background,
+[data-palette="liquidGlass"]:not(.dark):not(.mixed) .bg-background {
+  background: transparent !important;
+}
+
+/* ─── Liquid Glass: Outline/secondary buttons ─── */
+[data-palette="liquidGlass"].light button[data-variant="outline"],
+[data-palette="liquidGlass"].mixed button[data-variant="outline"],
+[data-palette="liquidGlass"]:not(.dark):not(.mixed) button[data-variant="outline"],
+[data-palette="liquidGlass"].light .border.bg-background,
+[data-palette="liquidGlass"].mixed .border.bg-background {
+  background: rgba(255, 255, 255, 0.25) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  border-top-color: rgba(255, 255, 255, 0.7) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 2px 8px rgba(31, 38, 135, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  color: rgba(30, 30, 60, 0.85) !important;
+  transition: all 0.2s ease !important;
+}
+[data-palette="liquidGlass"].light button[data-variant="outline"]:hover,
+[data-palette="liquidGlass"].mixed button[data-variant="outline"]:hover {
+  background: rgba(255, 255, 255, 0.4) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(31, 255, 135, 0.12) !important;
+}
+
+/* ─── Liquid Glass: Separator ─── */
+[data-palette="liquidGlass"].light [data-orientation="horizontal"],
+[data-palette="liquidGlass"].mixed [data-orientation="horizontal"] {
+  background: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* ─── Liquid Glass: Label text color ─── */
+[data-palette="liquidGlass"].light label,
+[data-palette="liquidGlass"].mixed label {
+  color: rgba(20, 20, 40, 0.75) !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em !important;
+}
+
+/* ─── Liquid Glass: Muted-foreground in glass context ─── */
+[data-palette="liquidGlass"].light .text-muted-foreground,
+[data-palette="liquidGlass"].mixed .text-muted-foreground {
+  color: rgba(30, 30, 55, 0.5) !important;
+}
+
+/* ─── Liquid Glass: Card foreground text ─── */
+[data-palette="liquidGlass"].light .text-foreground,
+[data-palette="liquidGlass"].mixed .text-foreground,
+[data-palette="liquidGlass"].light .text-card-foreground,
+[data-palette="liquidGlass"].mixed .text-card-foreground {
+  color: rgba(20, 20, 40, 0.9) !important;
+}
+
+/* ─── Liquid Glass: glass reveal animation on cards ─── */
+[data-palette="liquidGlass"].light .bg-card,
+[data-palette="liquidGlass"].mixed .bg-card {
+  animation: liquidGlassReveal 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* ─── Liquid Glass: primary button active ─── */
+[data-palette="liquidGlass"].light button.bg-primary:active,
+[data-palette="liquidGlass"].mixed button.bg-primary:active {
+  transform: scale(0.97) translateY(0) !important;
 }
 
 /* ─── Liquid Glass: Inputs override (light/mixed) ─── */

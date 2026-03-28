@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import EmptyState from '@/components/EmptyState';
 import { useApp } from '@/context/AppContext';
-import { ChevronLeft, ChevronRight, Plus, Download, Calendar as CalendarIcon, Repeat, CornerDownRight, ArrowRight, RefreshCw, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Download, Calendar as CalendarIcon, Repeat, CornerDownRight, ArrowRight, RefreshCw, Loader2, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -25,6 +25,7 @@ import {
 import { useCalendarSync, type CalendarEvent } from '@/hooks/useCalendarSync';
 import CalendarAccountsManager, { getProviderMeta } from '@/components/CalendarAccountsManager';
 import SyncTargetPicker from '@/components/SyncTargetPicker';
+import CalendarEventDialog from '@/components/CalendarEventDialog';
 
 type CalendarMode = 'day' | 'week' | 'month';
 

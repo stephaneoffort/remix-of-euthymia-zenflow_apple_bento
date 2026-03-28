@@ -1,119 +1,88 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+}
 
-// @ts-ignore
-Deno.serve({ verify: false }, async (req) => {
+serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response("ok", { headers: corsHeaders })
   }
 
-  const url = new URL(req.url);
-  const path = url.pathname;
+  const url = new URL(req.url)
+  const path = url.pathname
 
-  // ── Route 1: /google-oauth/authorize ──
   if (path.endsWith("/authorize")) {
-    const clientId = Deno.env.get("GOOGLE_CLIENT_ID");
-    const redirectUri = Deno.env.get("GOOGLE_REDIRECT_URI");
-
-    if (!clientId || !redirectUri) {
-      return new Response(
-        JSON.stringify({ error: "Missing GOOGLE_CLIENT_ID or GOOGLE_REDIRECT_URI" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
-    }
-
-    const params = new URLSearchParams({
-      client_id: clientId,
-      redirect_uri: redirectUri,
-      response_type: "code",
-      scope:
-        "https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events",
-      access_type: "offline",
-      prompt: "consent",
-    });
-
-    return new Response(null, {
-      status: 302,
-      headers: {
-        ...corsHeaders,
-        Location: `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`,
-      },
-    });
+    const authUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth")
+    authUrl.searchParams.set("client_id", Deno.env.get("GOOGLE_CLIENT_ID") ?? "")
+    authUrl.searchParams.set("redirect_uri", Deno.env.get("GOOGLE_REDIRECT_URI") ?? "")
+    authUrl.searchParams.set("response_type", "code")
+    authUrl.searchParams.set("scope", "https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events")
+    authUrl.searchParams.set("access_type", "offline")
+    authUrl.searchParams.set("prompt", "consent")
+    return Response.redirect(authUrl.toString(), 302)
   }
 
-  // ── Route 2: /google-oauth/callback ──
   if (path.endsWith("/callback")) {
-    const code = url.searchParams.get("code");
+    const code = url.searchParams.get("code")
     if (!code) {
-      return new Response(
-        JSON.stringify({ error: "Missing code parameter" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
+      return new Response("Missing code", { status: 400, headers: corsHeaders })
     }
 
-    const clientId = Deno.env.get("GOOGLE_CLIENT_ID")!;
-    const clientSecret = Deno.env.get("GOOGLE_CLIENT_SECRET")!;
-    const redirectUri = Deno.env.get("GOOGLE_REDIRECT_URI")!;
-
-    // Exchange code for tokens
     const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({
         code,
-        client_id: clientId,
-        client_secret: clientSecret,
-        redirect_uri: redirectUri,
+        client_id: Deno.env.get("GOOGLE_CLIENT_ID") ?? "",
+        client_secret: Deno.env.get("GOOGLE_CLIENT_SECRET") ?? "",
+        redirect_uri: Deno.env.get("GOOGLE_REDIRECT_URI") ?? "",
         grant_type: "authorization_code",
       }),
-    });
+    })
 
-    const tokenData = await tokenRes.json();
-
-    if (!tokenRes.ok) {
-      return new Response(
-        JSON.stringify({ error: "Token exchange failed", details: tokenData }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
+    const tokens = await tokenRes.json()
+    if (tokens.error) {
+      return new Response(`OAuth error: ${tokens.error}`, {
+        status: 400, headers: corsHeaders
+      })
     }
 
-    const { access_token, refresh_token, expires_in } = tokenData;
-    const tokenExpiry = new Date(Date.now() + expires_in * 1000).toISOString();
-
-    // Save to calendar_accounts
     const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-    );
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+    )
 
-    const { error: dbError } = await supabase.from("calendar_accounts").insert({
-      provider: "google",
-      access_token,
-      refresh_token,
-      token_expiry: tokenExpiry,
-    });
+    const expiry = new Date(Date.now() + tokens.expires_in * 1000)
 
-    if (dbError) {
-      return new Response(
-        JSON.stringify({ error: "Failed to save account", details: dbError.message }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
+    // Récupérer la liste de tous les calendriers
+    const calListRes = await fetch(
+      "https://www.googleapis.com/calendar/v3/users/me/calendarList",
+      { headers: { Authorization: `Bearer ${tokens.access_token}` } }
+    )
+    const calList = await calListRes.json()
+    const calendars = calList.items ?? []
+
+    // Insérer un calendar_account par calendrier
+    for (const cal of calendars) {
+      await supabase.from("calendar_accounts").upsert({
+        provider: "google",
+        label: cal.summary,
+        calendar_id: cal.id,
+        color: cal.backgroundColor ?? "#4285f4",
+        access_token: tokens.access_token,
+        refresh_token: tokens.refresh_token,
+        token_expiry: expiry.toISOString(),
+        is_active: true,
+      }, { onConflict: "calendar_id" })
     }
 
-    const appUrl = Deno.env.get("APP_URL") || "https://euthymia-zenflow-bento.lovable.app";
-    return new Response(null, {
-      status: 302,
-      headers: { ...corsHeaders, Location: `${appUrl}/calendar?connected=true` },
-    });
+    const appUrl = Deno.env.get("APP_URL") ?? ""
+    return Response.redirect(appUrl + "?connected=true", 302)
   }
 
-  return new Response(
-    JSON.stringify({ error: "Not found" }),
-    { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-  );
-});
+  return new Response("Not found", { status: 404, headers: corsHeaders })
+})

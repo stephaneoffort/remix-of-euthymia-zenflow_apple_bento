@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export type ThemeMode = 'light' | 'dark' | 'mixed';
-export type ThemePalette = 'clubroom' | 'neutrals' | 'sapphire' | 'cinematic' | 'teal' | 'bento2026' | 'bentoOcean' | 'bentoRose' | 'bentoAmber' | 'liquidGlass';
+export type ThemePalette = 'clubroom' | 'neutrals' | 'sapphire' | 'cinematic' | 'teal' | 'bento2026' | 'bentoOcean' | 'bentoRose' | 'bentoAmber' | 'liquidGlass' | 'liquidGlassOcean' | 'liquidGlassAurora' | 'liquidGlassRose' | 'liquidGlassAmber' | 'liquidGlassViolet' | 'liquidGlassCoral' | 'liquidGlassSlate' | 'liquidGlassMidnight';
 
 interface ThemeContextType {
   theme: ThemeMode;
@@ -62,6 +62,46 @@ export const PALETTE_META: Record<ThemePalette, { label: string; description: st
     label: 'Liquid Glass',
     description: 'Apple iOS 26 — Verre translucide + fond vivant',
     colors: ['#e8f4ff', '#f0e8ff', '#6366f1', '#ffffff'],
+  },
+  liquidGlassOcean: {
+    label: 'Liquid Glass Ocean',
+    description: 'Bleu azur · reflets arctiques',
+    colors: ['#e0f2fe', '#38bdf8', '#0284c7', '#6366f1'],
+  },
+  liquidGlassAurora: {
+    label: 'Liquid Glass Aurora',
+    description: 'Vert boréal · émeraude nordique',
+    colors: ['#d1fae5', '#34d399', '#059669', '#6366f1'],
+  },
+  liquidGlassRose: {
+    label: 'Liquid Glass Rose',
+    description: 'Pétale nacré · quartz rose',
+    colors: ['#ffe4e6', '#f472b6', '#be185d', '#fb7185'],
+  },
+  liquidGlassAmber: {
+    label: 'Liquid Glass Amber',
+    description: 'Or liquide · miel solaire',
+    colors: ['#fef9c3', '#fbbf24', '#d97706', '#f97316'],
+  },
+  liquidGlassViolet: {
+    label: 'Liquid Glass Violet',
+    description: 'Améthyste · profondeur astrale',
+    colors: ['#ede9fe', '#a78bfa', '#7c3aed', '#8b5cf6'],
+  },
+  liquidGlassCoral: {
+    label: 'Liquid Glass Coral',
+    description: 'Corail de mer · coucher de soleil',
+    colors: ['#ffe4e6', '#fb7185', '#dc2626', '#f97316'],
+  },
+  liquidGlassSlate: {
+    label: 'Liquid Glass Slate',
+    description: 'Ardoise polie · brume minérale',
+    colors: ['#f1f5f9', '#94a3b8', '#475569', '#64748b'],
+  },
+  liquidGlassMidnight: {
+    label: 'Liquid Glass Midnight',
+    description: 'Nuit profonde · indigo sombre',
+    colors: ['#1e1b4b', '#6366f1', '#818cf8', '#0f172a'],
   },
 };
 

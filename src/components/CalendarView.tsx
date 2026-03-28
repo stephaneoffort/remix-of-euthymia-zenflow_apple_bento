@@ -404,7 +404,7 @@ export default function CalendarView() {
             .single();
 
           if (latestAccount) {
-            await fetch('https://zfktrlupipngsegsiwyq.supabase.co/functions/v1/calendar-sync', {
+            await fetch('https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/calendar-sync', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ account_id: latestAccount.id, direction: 'pull' }),

@@ -882,7 +882,7 @@ export default function CalendarView() {
             <p className="text-xs font-semibold text-foreground">{DAYS_FR_FULL[getFrDayIndex(selectedDay)]} {selectedDay.getDate()} {MONTHS_FR[selectedDay.getMonth()]}</p>
           </div>
           <div className="flex-1 overflow-y-auto px-3 py-2">
-            <AgendaExternalEvents dateStr={selectedDateStr} externalEventsByDate={externalEventsByDate} accountMap={accountMap} />
+            <AgendaExternalEvents dateStr={selectedDateStr} externalEventsByDate={externalEventsByDate} accountMap={accountMap} onEditEvent={handleEditEvent} onDeleteEvent={handleDeleteEvent} />
             <AgendaTaskList dateStr={selectedDateStr} tasks={selectedDayTasks} allTasks={allTasks} teamMembers={teamMembers} setSelectedTaskId={setSelectedTaskId}
               addingForDate={addingForDate} setAddingForDate={setAddingForDate} newTaskTitle={newTaskTitle} setNewTaskTitle={setNewTaskTitle} handleAddTask={handleAddTask} isMobile />
           </div>
@@ -904,7 +904,7 @@ export default function CalendarView() {
           </div>
           {mobileActionBar}
           <div className="flex-1 overflow-y-auto px-3 py-2">
-            <AgendaExternalEvents dateStr={selectedDateStr} externalEventsByDate={externalEventsByDate} accountMap={accountMap} />
+            <AgendaExternalEvents dateStr={selectedDateStr} externalEventsByDate={externalEventsByDate} accountMap={accountMap} onEditEvent={handleEditEvent} onDeleteEvent={handleDeleteEvent} />
             <AgendaTaskList dateStr={selectedDateStr} tasks={selectedDayTasks} allTasks={allTasks} teamMembers={teamMembers} setSelectedTaskId={setSelectedTaskId}
               addingForDate={addingForDate} setAddingForDate={setAddingForDate} newTaskTitle={newTaskTitle} setNewTaskTitle={setNewTaskTitle} handleAddTask={handleAddTask} isMobile />
           </div>
@@ -954,7 +954,7 @@ export default function CalendarView() {
           <p className="text-xs font-semibold text-foreground">{DAYS_FR_FULL[getFrDayIndex(selectedDay)]} {selectedDay.getDate()} {MONTHS_FR[selectedDay.getMonth()]}</p>
         </div>
         <div className="flex-1 overflow-y-auto px-3 py-2">
-          <AgendaExternalEvents dateStr={selectedDateStr} externalEventsByDate={externalEventsByDate} accountMap={accountMap} />
+          <AgendaExternalEvents dateStr={selectedDateStr} externalEventsByDate={externalEventsByDate} accountMap={accountMap} onEditEvent={handleEditEvent} onDeleteEvent={handleDeleteEvent} />
           <AgendaTaskList dateStr={selectedDateStr} tasks={selectedDayTasks} allTasks={allTasks} teamMembers={teamMembers} setSelectedTaskId={setSelectedTaskId}
             addingForDate={addingForDate} setAddingForDate={setAddingForDate} newTaskTitle={newTaskTitle} setNewTaskTitle={setNewTaskTitle} handleAddTask={handleAddTask} isMobile />
         </div>
@@ -1025,7 +1025,7 @@ export default function CalendarView() {
       <div className="p-6 h-full flex flex-col">
         {sharedHeader}
         <div className="flex-1 overflow-y-auto max-w-2xl">
-          <AgendaExternalEvents dateStr={currentDateStr} externalEventsByDate={externalEventsByDate} accountMap={accountMap} />
+          <AgendaExternalEvents dateStr={currentDateStr} externalEventsByDate={externalEventsByDate} accountMap={accountMap} onEditEvent={handleEditEvent} onDeleteEvent={handleDeleteEvent} />
           <AgendaTaskList dateStr={currentDateStr} tasks={dayTasks} allTasks={allTasks} teamMembers={teamMembers} setSelectedTaskId={setSelectedTaskId}
             addingForDate={addingForDate} setAddingForDate={setAddingForDate} newTaskTitle={newTaskTitle} setNewTaskTitle={setNewTaskTitle} handleAddTask={handleAddTask} isMobile={false} />
         </div>

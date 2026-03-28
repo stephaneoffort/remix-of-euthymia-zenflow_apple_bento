@@ -431,6 +431,37 @@ export default function CalendarView() {
   };
   const isMobile = useIsMobile();
 
+  // Visibility toggle for calendar accounts
+  const [visibleAccountIds, setVisibleAccountIds] = useState<Set<string>>(() => new Set(calSync.accounts.map(a => a.id)));
+
+  // Keep all new accounts visible by default
+  React.useEffect(() => {
+    setVisibleAccountIds(prev => {
+      const next = new Set(prev);
+      let changed = false;
+      calSync.accounts.forEach(a => {
+        if (!next.has(a.id) && !prev.has('__init__')) {
+          next.add(a.id);
+          changed = true;
+        }
+      });
+      if (prev.size === 0 && calSync.accounts.length > 0) {
+        calSync.accounts.forEach(a => next.add(a.id));
+        changed = true;
+      }
+      return changed ? next : prev;
+    });
+  }, [calSync.accounts]);
+
+  const handleToggleAccountVisibility = (accountId: string) => {
+    setVisibleAccountIds(prev => {
+      const next = new Set(prev);
+      if (next.has(accountId)) next.delete(accountId);
+      else next.add(accountId);
+      return next;
+    });
+  };
+
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
   const year = currentDate.getFullYear();

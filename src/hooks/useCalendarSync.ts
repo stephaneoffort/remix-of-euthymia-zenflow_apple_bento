@@ -230,10 +230,7 @@ export function useCalendarSync() {
     // Push to external calendar if account exists
     if (account && newEvent) {
       try {
-        const { error: pushErr } = await supabase.functions.invoke('calendar-sync', {
-          body: { account_id: account.id, direction: 'push', event_id: (newEvent as any).id, action: 'create' },
-        });
-        if (pushErr) throw pushErr;
+        await invokeCalendarSync({ account_id: account.id, direction: 'push', event_id: (newEvent as any).id, action: 'create' });
         toast.success('Événement ajouté à Google Calendar ✅');
       } catch (err: any) {
         toast.error('Erreur push : ' + (err.message || 'Inconnue'));

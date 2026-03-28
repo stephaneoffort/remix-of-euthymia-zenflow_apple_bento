@@ -326,13 +326,7 @@ export default function BentoDashboard() {
                 </div>
                 <div style={{ textAlign: "right", flexShrink: 0 }}>
                   <span className="bento-project-pct">{p.pct}%</span>
-                  <p
-                    style={{
-                      fontSize: "10px",
-                      color: "rgba(255,255,255,0.2)",
-                      margin: "1px 0 0",
-                    }}
-                  >
+                  <p className="text-[10px] text-muted-foreground mt-px">
                     {p.done}/{p.total}
                   </p>
                 </div>

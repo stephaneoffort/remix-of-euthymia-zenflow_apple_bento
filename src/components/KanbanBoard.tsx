@@ -34,6 +34,7 @@ export default function KanbanBoard() {
   const [draggedColumn, setDraggedColumn] = useState<string | null>(null);
   const [columnOrder, setColumnOrder] = useState<string[]>(allStatuses);
   const [dropTargetColumn, setDropTargetColumn] = useState<string | null>(null);
+  const [dropTargetTask, setDropTargetTask] = useState<string | null>(null);
   const [newTaskStatus, setNewTaskStatus] = useState<string | null>(null);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [collapsedColumns, setCollapsedColumns] = useState<Set<string>>(new Set());
@@ -78,6 +79,7 @@ export default function KanbanBoard() {
       moveTask(draggedTaskId, status);
       setDraggedTaskId(null);
     }
+    setDropTargetTask(null);
   };
 
   // Column drag handlers
@@ -195,9 +197,12 @@ export default function KanbanBoard() {
 
   const renderExpandedColumn = (status: string) => {
     const count = tasksByStatus[status]?.length || 0;
+    const isTaskDropTarget = dropTargetTask === status && draggedTaskId && !draggedColumn;
     return (
-      <div
+      <motion.div
         key={status}
+        layout
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         className={`flex flex-col w-[85vw] sm:w-72 shrink-0 rounded-lg snap-center sm:snap-align-none transition-all duration-200 ${
           draggedColumn === status ? 'opacity-40 scale-[0.97]' : ''
         } ${dropTargetColumn === status && draggedColumn ? 'ring-2 ring-primary/40 ring-offset-2 ring-offset-background' : ''}`}
@@ -205,6 +210,8 @@ export default function KanbanBoard() {
           e.preventDefault();
           if (draggedColumn) {
             handleColumnDragOver(e, status);
+          } else if (draggedTaskId) {
+            setDropTargetTask(status);
           }
         }}
         onDrop={e => {
@@ -214,8 +221,13 @@ export default function KanbanBoard() {
             handleTaskDrop(e, status);
           }
         }}
-        onDragLeave={() => {
+        onDragLeave={e => {
           if (dropTargetColumn === status) setDropTargetColumn(null);
+          // Only clear if leaving the column entirely
+          const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+          if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) {
+            setDropTargetTask(null);
+          }
         }}
       >
         {/* Column header */}
@@ -243,6 +255,21 @@ export default function KanbanBoard() {
             <Plus className="w-4 h-4" />
           </button>
         </div>
+
+        {/* Drop zone indicator */}
+        <AnimatePresence>
+          {isTaskDropTarget && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 40 }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              className="mx-1 mb-2 rounded-lg border-2 border-dashed border-primary/50 bg-primary/5 flex items-center justify-center"
+            >
+              <span className="text-xs text-primary/70 font-medium">Déposer ici</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Cards */}
         <div className="flex-1 space-y-2 overflow-y-auto scrollbar-thin">
@@ -294,7 +321,7 @@ export default function KanbanBoard() {
             </div>
           )}
         </div>
-      </div>
+      </motion.div>
     );
   };
 

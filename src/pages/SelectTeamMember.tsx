@@ -50,4 +50,6 @@ const SelectTeamMember = React.forwardRef<HTMLDivElement>(function SelectTeamMem
       </Card>
     </div>
   );
-}
+});
+
+export default SelectTeamMember;

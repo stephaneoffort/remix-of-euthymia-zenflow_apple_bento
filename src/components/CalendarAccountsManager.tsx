@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Plus, RefreshCw, Trash2, ExternalLink, CheckCircle2, Loader2, Calendar as CalIcon } from 'lucide-react';
+import { Plus, RefreshCw, Trash2, ExternalLink, CheckCircle2, Loader2, Calendar as CalIcon, ChevronDown } from 'lucide-react';
 import type { CalendarAccount } from '@/hooks/useCalendarSync';
 
 const PROVIDER_META: Record<string, { label: string; icon: string; color: string; dot: string }> = {

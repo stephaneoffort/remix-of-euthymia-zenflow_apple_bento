@@ -585,3 +585,249 @@
   --bento-border-h: rgba(20,184,166,0.12);
   --bento-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 0 0 0.5px rgba(20,184,166,0.03), 0 4px 16px rgba(0,0,0,0.025);
 }
+
+/* ─── BENTO 2026 — Off-white chaud + Vert forêt ─── */
+/* This palette is LIGHT-FIRST: the base selector IS the light mode.
+   Dark mode inverts to deep forest tones. */
+
+/* Dark mode (default data-palette selector) */
+[data-palette="bento2026"] {
+  --background: 140 14% 8%;
+  --foreground: 37 38% 90%;
+  --card: 140 12% 11%;
+  --card-foreground: 37 38% 90%;
+  --popover: 140 14% 9%;
+  --popover-foreground: 37 38% 90%;
+  --primary: 138 33% 52%;
+  --primary-foreground: 140 14% 8%;
+  --secondary: 140 10% 16%;
+  --secondary-foreground: 37 20% 68%;
+  --muted: 140 8% 14%;
+  --muted-foreground: 37 10% 58%;
+  --accent: 30 40% 22%;
+  --accent-foreground: 30 57% 77%;
+  --destructive: 0 68% 52%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 140 10% 18%;
+  --input: 140 10% 15%;
+  --ring: 138 33% 52%;
+  --sidebar-bg: 140 16% 6%;
+  --sidebar-fg: 37 10% 55%;
+  --sidebar-fg-bright: 37 38% 90%;
+  --sidebar-hover: 140 12% 12%;
+  --sidebar-active: 138 33% 52%;
+  --sidebar-border: 140 10% 14%;
+  --sidebar-background: 140 16% 6%;
+  --sidebar-foreground: 37 10% 75%;
+  --sidebar-primary: 138 33% 52%;
+  --sidebar-primary-foreground: 140 14% 8%;
+  --sidebar-accent: 140 12% 12%;
+  --sidebar-accent-foreground: 37 38% 90%;
+  --sidebar-ring: 138 33% 52%;
+  --bento-bg: #141e16;
+  --bento-bg-hover: #1a2a1d;
+  --bento-border: rgba(168,213,181,0.07);
+  --bento-border-h: rgba(168,213,181,0.16);
+  --bento-shadow: 0 1px 0 rgba(168,213,181,0.02) inset, 0 0 0 0.5px rgba(168,213,181,0.04), 0 4px 24px rgba(0,0,0,0.5);
+}
+
+/* Light mode */
+[data-palette="bento2026"].light {
+  --background: 37 38% 93%;
+  --foreground: 0 0% 10%;
+  --card: 36 28% 95%;
+  --card-foreground: 0 0% 10%;
+  --popover: 37 32% 94%;
+  --popover-foreground: 0 0% 10%;
+  --primary: 125 13% 20%;
+  --primary-foreground: 37 38% 93%;
+  --secondary: 36 22% 88%;
+  --secondary-foreground: 27 5% 32%;
+  --muted: 36 18% 90%;
+  --muted-foreground: 27 5% 40%;
+  --accent: 30 40% 85%;
+  --accent-foreground: 30 35% 28%;
+  --destructive: 0 68% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 36 18% 82%;
+  --input: 36 20% 86%;
+  --ring: 125 13% 24%;
+  --sidebar-bg: 36 28% 91%;
+  --sidebar-fg: 27 5% 38%;
+  --sidebar-fg-bright: 0 0% 10%;
+  --sidebar-hover: 36 22% 87%;
+  --sidebar-active: 125 13% 24%;
+  --sidebar-border: 36 18% 82%;
+  --sidebar-background: 36 28% 91%;
+  --sidebar-foreground: 27 5% 38%;
+  --sidebar-primary: 125 13% 20%;
+  --sidebar-primary-foreground: 37 38% 93%;
+  --sidebar-accent: 36 22% 87%;
+  --sidebar-accent-foreground: 0 0% 10%;
+  --sidebar-ring: 125 13% 24%;
+  --bento-bg: hsl(36,28%,95%);
+  --bento-bg-hover: hsl(36,24%,92%);
+  --bento-border: rgba(45,58,46,0.08);
+  --bento-border-h: rgba(45,58,46,0.15);
+  --bento-shadow: 0 2px 20px rgba(45,58,46,0.08);
+}
+
+/* Mixed mode (light content + dark sidebar) */
+[data-palette="bento2026"].mixed {
+  --background: 37 38% 93%;
+  --foreground: 0 0% 10%;
+  --card: 36 28% 95%;
+  --card-foreground: 0 0% 10%;
+  --popover: 37 32% 94%;
+  --popover-foreground: 0 0% 10%;
+  --primary: 125 13% 20%;
+  --primary-foreground: 37 38% 93%;
+  --secondary: 36 22% 88%;
+  --secondary-foreground: 27 5% 32%;
+  --muted: 36 18% 90%;
+  --muted-foreground: 27 5% 40%;
+  --accent: 30 40% 85%;
+  --accent-foreground: 30 35% 28%;
+  --destructive: 0 68% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 36 18% 82%;
+  --input: 36 20% 86%;
+  --ring: 125 13% 24%;
+  --sidebar-bg: 140 16% 6%;
+  --sidebar-fg: 37 10% 48%;
+  --sidebar-fg-bright: 37 38% 90%;
+  --sidebar-hover: 140 12% 12%;
+  --sidebar-active: 138 33% 52%;
+  --sidebar-border: 140 10% 14%;
+  --sidebar-background: 140 16% 6%;
+  --sidebar-foreground: 37 10% 65%;
+  --sidebar-primary: 138 33% 52%;
+  --sidebar-primary-foreground: 140 14% 8%;
+  --sidebar-accent: 140 12% 12%;
+  --sidebar-accent-foreground: 37 38% 90%;
+  --sidebar-ring: 138 33% 52%;
+  --bento-bg: hsl(36,28%,95%);
+  --bento-bg-hover: hsl(36,24%,92%);
+  --bento-border: rgba(45,58,46,0.08);
+  --bento-border-h: rgba(45,58,46,0.15);
+  --bento-shadow: 0 2px 20px rgba(45,58,46,0.08);
+}
+
+/* ─── BENTO 2026 Scoped Overrides ─── */
+
+/* Typography */
+[data-palette="bento2026"] {
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --radius: 0.625rem; /* 10px for buttons */
+}
+
+[data-palette="bento2026"] body,
+[data-palette="bento2026"] input,
+[data-palette="bento2026"] textarea,
+[data-palette="bento2026"] button,
+[data-palette="bento2026"] select {
+  font-family: var(--font-body);
+  font-size: clamp(14px, 1.5vw, 16px);
+}
+
+[data-palette="bento2026"] h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(24px, 4vw, 40px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+[data-palette="bento2026"] h2 {
+  font-family: var(--font-heading);
+  font-size: clamp(18px, 3vw, 28px);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+
+/* Cards & surfaces — light/mixed modes */
+[data-palette="bento2026"].light .bento-cell,
+[data-palette="bento2026"].mixed .bento-cell {
+  border-radius: 16px;
+  border: 1px solid rgba(45, 58, 46, 0.1);
+  box-shadow: 0 2px 20px rgba(45, 58, 46, 0.08);
+  backdrop-filter: blur(8px);
+  background: rgba(245, 240, 232, 0.85);
+}
+
+[data-palette="bento2026"] .bento-cell {
+  border-radius: 16px;
+}
+
+[data-palette="bento2026"] .bento-cell-inner {
+  padding: 24px;
+  gap: 18px;
+}
+
+/* Spacing */
+[data-palette="bento2026"] .bento-container {
+  gap: 20px;
+}
+@media (min-width: 640px) {
+  [data-palette="bento2026"] .bento-container {
+    gap: 24px;
+    padding: 24px;
+  }
+}
+@media (min-width: 1024px) {
+  [data-palette="bento2026"] .bento-container {
+    gap: 32px;
+    padding: 32px;
+  }
+}
+
+/* Interactive animations */
+[data-palette="bento2026"] button,
+[data-palette="bento2026"] a,
+[data-palette="bento2026"] .bento-cell,
+[data-palette="bento2026"] .bento-project-item,
+[data-palette="bento2026"] .bento-task-item {
+  transition: all 0.2s ease;
+}
+
+[data-palette="bento2026"] .bento-cell:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 28px rgba(45, 58, 46, 0.12);
+}
+
+[data-palette="bento2026"] button:hover {
+  filter: brightness(1.08);
+}
+
+[data-palette="bento2026"] .bento-project-item:hover {
+  transform: translateY(-1px);
+}
+
+[data-palette="bento2026"] .bento-task-item:hover {
+  transform: translateY(-1px);
+}
+
+/* Hero gradient override for light/mixed */
+[data-palette="bento2026"].light .bento-hero,
+[data-palette="bento2026"].mixed .bento-hero {
+  background: linear-gradient(135deg, rgba(45,58,46,0.06) 0%, rgba(245,240,232,0.95) 60%);
+}
+
+[data-palette="bento2026"].light .bento-hero-glow,
+[data-palette="bento2026"].mixed .bento-hero-glow {
+  background: radial-gradient(ellipse 60% 80% at 0% 100%, rgba(168,213,181,0.2) 0%, transparent 70%);
+}
+
+/* Cards in Tailwind context (shadcn) */
+[data-palette="bento2026"].light [data-slot="card"],
+[data-palette="bento2026"].mixed [data-slot="card"],
+[data-palette="bento2026"].light .rounded-lg.border,
+[data-palette="bento2026"].mixed .rounded-lg.border {
+  border-radius: 16px;
+}
+
+/* Button border-radius */
+[data-palette="bento2026"] button.rounded-md,
+[data-palette="bento2026"] button.rounded-lg {
+  border-radius: 10px;
+}

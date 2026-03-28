@@ -50,7 +50,6 @@ export function useCalendarSync() {
     const { data } = await supabase
       .from('calendar_accounts')
       .select('*')
-      .eq('is_active', true)
       .order('created_at', { ascending: true });
     if (data) setAccounts(data as unknown as CalendarAccount[]);
   }, []);

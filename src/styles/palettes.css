@@ -1553,8 +1553,8 @@
    ═══════════════════════════════════════════════════════ */
 
 /* ─── Light mode (default for Liquid Glass) ─── */
-[data-palette="liquidGlass"],
-[data-palette="liquidGlass"].light {
+[data-palette^="liquidGlass"],
+[data-palette^="liquidGlass"].light {
   --background: 220 60% 96%;
   --foreground: 230 40% 15%;
   --card: 220 40% 98%;
@@ -1599,7 +1599,7 @@
 }
 
 /* ─── Dark mode ─── */
-[data-palette="liquidGlass"].dark {
+[data-palette^="liquidGlass"].dark {
   --background: 235 30% 6%;
   --foreground: 220 20% 90%;
   --card: 235 25% 9%;
@@ -1644,7 +1644,7 @@
 }
 
 /* ─── Mixed mode ─── */
-[data-palette="liquidGlass"].mixed {
+[data-palette^="liquidGlass"].mixed {
   --background: 220 60% 96%;
   --foreground: 230 40% 15%;
   --card: 220 40% 98%;
@@ -1689,32 +1689,32 @@
 }
 
 /* ─── Typography ─── */
-[data-palette="liquidGlass"] {
+[data-palette^="liquidGlass"] {
   --font-heading: -apple-system, 'SF Pro Display', 'Inter', 'Helvetica Neue', sans-serif;
   --font-body: -apple-system, 'SF Pro Text', 'Inter', 'Helvetica Neue', sans-serif;
 }
-[data-palette="liquidGlass"] body,
-[data-palette="liquidGlass"] input,
-[data-palette="liquidGlass"] textarea,
-[data-palette="liquidGlass"] button,
-[data-palette="liquidGlass"] select {
+[data-palette^="liquidGlass"] body,
+[data-palette^="liquidGlass"] input,
+[data-palette^="liquidGlass"] textarea,
+[data-palette^="liquidGlass"] button,
+[data-palette^="liquidGlass"] select {
   font-family: var(--font-body);
   font-size: clamp(14px, 1.5vw, 16px);
   line-height: 1.6;
 }
-[data-palette="liquidGlass"] h1 {
+[data-palette^="liquidGlass"] h1 {
   font-family: var(--font-heading);
   font-size: clamp(28px, 4vw, 44px);
   font-weight: 700;
   letter-spacing: -0.03em;
 }
-[data-palette="liquidGlass"] h2 {
+[data-palette^="liquidGlass"] h2 {
   font-family: var(--font-heading);
   font-size: clamp(22px, 3vw, 32px);
   font-weight: 600;
   letter-spacing: -0.02em;
 }
-[data-palette="liquidGlass"] h3 {
+[data-palette^="liquidGlass"] h3 {
   font-family: var(--font-heading);
   font-size: clamp(17px, 2vw, 22px);
   font-weight: 600;
@@ -1730,8 +1730,8 @@
   100% { background-position: 0% 0%, 100% 0%, 60% 80%, 10% 70%, 0% 0%; }
 }
 
-[data-palette="liquidGlass"].light,
-[data-palette="liquidGlass"]:not(.dark):not(.mixed) {
+[data-palette^="liquidGlass"].light,
+[data-palette^="liquidGlass"]:not(.dark):not(.mixed) {
   background:
     radial-gradient(ellipse 80% 80%, rgba(120, 180, 255, 0.35) 0%, transparent 70%),
     radial-gradient(ellipse 70% 70%, rgba(180, 120, 255, 0.3) 0%, transparent 70%),
@@ -1742,7 +1742,7 @@
   background-attachment: fixed !important;
   animation: liquidMeshMove 25s ease-in-out infinite !important;
 }
-[data-palette="liquidGlass"].mixed {
+[data-palette^="liquidGlass"].mixed {
   background:
     radial-gradient(ellipse 80% 80%, rgba(120, 180, 255, 0.35) 0%, transparent 70%),
     radial-gradient(ellipse 70% 70%, rgba(180, 120, 255, 0.3) 0%, transparent 70%),
@@ -1753,7 +1753,7 @@
   background-attachment: fixed !important;
   animation: liquidMeshMove 25s ease-in-out infinite !important;
 }
-[data-palette="liquidGlass"].dark {
+[data-palette^="liquidGlass"].dark {
   background:
     radial-gradient(ellipse 80% 80%, rgba(60, 100, 200, 0.2) 0%, transparent 70%),
     radial-gradient(ellipse 70% 70%, rgba(120, 60, 200, 0.18) 0%, transparent 70%),
@@ -1767,13 +1767,13 @@
 
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  [data-palette="liquidGlass"] {
+  [data-palette^="liquidGlass"] {
     animation: none !important;
   }
 }
 
 /* ─── Grain overlay ─── */
-[data-palette="liquidGlass"]::before {
+[data-palette^="liquidGlass"]::before {
   content: '';
   position: fixed;
   inset: 0;
@@ -1783,9 +1783,9 @@
 }
 
 /* ─── Liquid Glass material on cards & cells ─── */
-[data-palette="liquidGlass"].light .bento-cell,
-[data-palette="liquidGlass"]:not(.dark):not(.mixed) .bento-cell,
-[data-palette="liquidGlass"].mixed .bento-cell {
+[data-palette^="liquidGlass"].light .bento-cell,
+[data-palette^="liquidGlass"]:not(.dark):not(.mixed) .bento-cell,
+[data-palette^="liquidGlass"].mixed .bento-cell {
   background: rgba(255, 255, 255, 0.18) !important;
   backdrop-filter: blur(24px) saturate(180%) brightness(1.05);
   -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.05);
@@ -1802,7 +1802,7 @@
   overflow: hidden;
 }
 
-[data-palette="liquidGlass"].dark .bento-cell {
+[data-palette^="liquidGlass"].dark .bento-cell {
   background: rgba(20, 20, 35, 0.55) !important;
   backdrop-filter: blur(28px) saturate(160%);
   -webkit-backdrop-filter: blur(28px) saturate(160%);
@@ -1816,10 +1816,10 @@
   overflow: hidden;
 }
 
-[data-palette="liquidGlass"] .bento-cell-inner { padding: 24px; gap: 18px; }
+[data-palette^="liquidGlass"] .bento-cell-inner { padding: 24px; gap: 18px; }
 
 /* ─── Shimmer effect on hover ─── */
-[data-palette="liquidGlass"] .bento-cell::after {
+[data-palette^="liquidGlass"] .bento-cell::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -1835,23 +1835,23 @@
   pointer-events: none;
   z-index: 1;
 }
-[data-palette="liquidGlass"] .bento-cell:hover::after { opacity: 1; }
+[data-palette^="liquidGlass"] .bento-cell:hover::after { opacity: 1; }
 
 /* ─── Spacing ─── */
-[data-palette="liquidGlass"] .bento-container { gap: 20px; }
-@media (min-width: 640px) { [data-palette="liquidGlass"] .bento-container { gap: 24px; padding: 24px; } }
-@media (min-width: 1024px) { [data-palette="liquidGlass"] .bento-container { gap: 32px; padding: 32px; } }
+[data-palette^="liquidGlass"] .bento-container { gap: 20px; }
+@media (min-width: 640px) { [data-palette^="liquidGlass"] .bento-container { gap: 24px; padding: 24px; } }
+@media (min-width: 1024px) { [data-palette^="liquidGlass"] .bento-container { gap: 32px; padding: 32px; } }
 
 /* ─── Interactive animations ─── */
-[data-palette="liquidGlass"] button,
-[data-palette="liquidGlass"] a,
-[data-palette="liquidGlass"] .bento-cell,
-[data-palette="liquidGlass"] .bento-project-item,
-[data-palette="liquidGlass"] .bento-task-item {
+[data-palette^="liquidGlass"] button,
+[data-palette^="liquidGlass"] a,
+[data-palette^="liquidGlass"] .bento-cell,
+[data-palette^="liquidGlass"] .bento-project-item,
+[data-palette^="liquidGlass"] .bento-task-item {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-[data-palette="liquidGlass"] .bento-cell:hover {
+[data-palette^="liquidGlass"] .bento-cell:hover {
   transform: translateY(-4px);
   box-shadow:
     0 20px 60px rgba(31, 38, 135, 0.15),
@@ -1859,7 +1859,7 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
   background: rgba(255, 255, 255, 0.28) !important;
 }
-[data-palette="liquidGlass"].dark .bento-cell:hover {
+[data-palette^="liquidGlass"].dark .bento-cell:hover {
   background: rgba(30, 30, 50, 0.65) !important;
   box-shadow:
     0 20px 60px rgba(0, 0, 0, 0.3),
@@ -1867,9 +1867,9 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
-[data-palette="liquidGlass"] button:hover { filter: brightness(1.06); }
-[data-palette="liquidGlass"] .bento-project-item:hover,
-[data-palette="liquidGlass"] .bento-task-item:hover { transform: translateY(-2px); }
+[data-palette^="liquidGlass"] button:hover { filter: brightness(1.06); }
+[data-palette^="liquidGlass"] .bento-project-item:hover,
+[data-palette^="liquidGlass"] .bento-task-item:hover { transform: translateY(-2px); }
 
 /* ─── Glass reveal animation ─── */
 @keyframes liquidGlassReveal {
@@ -1884,39 +1884,39 @@
     backdrop-filter: blur(24px);
   }
 }
-[data-palette="liquidGlass"] .bento-cell {
+[data-palette^="liquidGlass"] .bento-cell {
   animation: liquidGlassReveal 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
-[data-palette="liquidGlass"] .bento-cell:nth-child(1) { animation-delay: 0.05s; }
-[data-palette="liquidGlass"] .bento-cell:nth-child(2) { animation-delay: 0.10s; }
-[data-palette="liquidGlass"] .bento-cell:nth-child(3) { animation-delay: 0.15s; }
-[data-palette="liquidGlass"] .bento-cell:nth-child(4) { animation-delay: 0.20s; }
-[data-palette="liquidGlass"] .bento-cell:nth-child(5) { animation-delay: 0.25s; }
-[data-palette="liquidGlass"] .bento-cell:nth-child(6) { animation-delay: 0.30s; }
+[data-palette^="liquidGlass"] .bento-cell:nth-child(1) { animation-delay: 0.05s; }
+[data-palette^="liquidGlass"] .bento-cell:nth-child(2) { animation-delay: 0.10s; }
+[data-palette^="liquidGlass"] .bento-cell:nth-child(3) { animation-delay: 0.15s; }
+[data-palette^="liquidGlass"] .bento-cell:nth-child(4) { animation-delay: 0.20s; }
+[data-palette^="liquidGlass"] .bento-cell:nth-child(5) { animation-delay: 0.25s; }
+[data-palette^="liquidGlass"] .bento-cell:nth-child(6) { animation-delay: 0.30s; }
 
 /* ─── Hero gradient ─── */
-[data-palette="liquidGlass"].light .bento-hero,
-[data-palette="liquidGlass"].mixed .bento-hero,
-[data-palette="liquidGlass"]:not(.dark):not(.mixed) .bento-hero {
+[data-palette^="liquidGlass"].light .bento-hero,
+[data-palette^="liquidGlass"].mixed .bento-hero,
+[data-palette^="liquidGlass"]:not(.dark):not(.mixed) .bento-hero {
   background: rgba(255, 255, 255, 0.12) !important;
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-bottom: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4), 0 4px 16px rgba(31, 38, 135, 0.05);
 }
-[data-palette="liquidGlass"].light .bento-hero-glow,
-[data-palette="liquidGlass"].mixed .bento-hero-glow,
-[data-palette="liquidGlass"]:not(.dark):not(.mixed) .bento-hero-glow {
+[data-palette^="liquidGlass"].light .bento-hero-glow,
+[data-palette^="liquidGlass"].mixed .bento-hero-glow,
+[data-palette^="liquidGlass"]:not(.dark):not(.mixed) .bento-hero-glow {
   background: radial-gradient(ellipse 60% 80% at 0% 100%, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
 }
 
 /* ─── Cards in Tailwind context (shadcn) ─── */
-[data-palette="liquidGlass"].light [data-slot="card"],
-[data-palette="liquidGlass"].mixed [data-slot="card"],
-[data-palette="liquidGlass"]:not(.dark):not(.mixed) [data-slot="card"],
-[data-palette="liquidGlass"].light .rounded-lg.border,
-[data-palette="liquidGlass"].mixed .rounded-lg.border,
-[data-palette="liquidGlass"]:not(.dark):not(.mixed) .rounded-lg.border {
+[data-palette^="liquidGlass"].light [data-slot="card"],
+[data-palette^="liquidGlass"].mixed [data-slot="card"],
+[data-palette^="liquidGlass"]:not(.dark):not(.mixed) [data-slot="card"],
+[data-palette^="liquidGlass"].light .rounded-lg.border,
+[data-palette^="liquidGlass"].mixed .rounded-lg.border,
+[data-palette^="liquidGlass"]:not(.dark):not(.mixed) .rounded-lg.border {
   border-radius: 24px;
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
@@ -1924,8 +1924,8 @@
   border: 1px solid rgba(255, 255, 255, 0.45);
   box-shadow: 0 8px 32px rgba(31, 38, 135, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
-[data-palette="liquidGlass"].dark [data-slot="card"],
-[data-palette="liquidGlass"].dark .rounded-lg.border {
+[data-palette^="liquidGlass"].dark [data-slot="card"],
+[data-palette^="liquidGlass"].dark .rounded-lg.border {
   border-radius: 24px;
   backdrop-filter: blur(24px) saturate(160%);
   -webkit-backdrop-filter: blur(24px) saturate(160%);
@@ -1935,51 +1935,51 @@
 }
 
 /* ─── Buttons ─── */
-[data-palette="liquidGlass"] button.rounded-md,
-[data-palette="liquidGlass"] button.rounded-lg {
+[data-palette^="liquidGlass"] button.rounded-md,
+[data-palette^="liquidGlass"] button.rounded-lg {
   border-radius: 14px;
 }
 
 /* ─── Inputs ─── */
-[data-palette="liquidGlass"] input,
-[data-palette="liquidGlass"] textarea,
-[data-palette="liquidGlass"] select {
+[data-palette^="liquidGlass"] input,
+[data-palette^="liquidGlass"] textarea,
+[data-palette^="liquidGlass"] select {
   border-radius: 14px;
 }
 
 /* ─── Scrollbar Apple-style ─── */
-[data-palette="liquidGlass"] ::-webkit-scrollbar { width: 8px; }
-[data-palette="liquidGlass"] ::-webkit-scrollbar-track { background: transparent; }
-[data-palette="liquidGlass"] ::-webkit-scrollbar-thumb {
+[data-palette^="liquidGlass"] ::-webkit-scrollbar { width: 8px; }
+[data-palette^="liquidGlass"] ::-webkit-scrollbar-track { background: transparent; }
+[data-palette^="liquidGlass"] ::-webkit-scrollbar-thumb {
   background: rgba(99, 102, 241, 0.2);
   border-radius: 4px;
   border: 2px solid transparent;
   background-clip: padding-box;
 }
-[data-palette="liquidGlass"] ::-webkit-scrollbar-thumb:hover {
+[data-palette^="liquidGlass"] ::-webkit-scrollbar-thumb:hover {
   background: rgba(99, 102, 241, 0.4);
 }
 
 /* ─── Selection ─── */
-[data-palette="liquidGlass"] ::selection {
+[data-palette^="liquidGlass"] ::selection {
   background: rgba(99, 102, 241, 0.2);
   color: rgba(20, 20, 60, 0.95);
 }
 
 /* ─── Focus visible ─── */
-[data-palette="liquidGlass"] :focus-visible {
+[data-palette^="liquidGlass"] :focus-visible {
   outline: 2px solid rgba(99, 102, 241, 0.6);
   outline-offset: 3px;
 }
 
 /* ─── Hide App.css ambient orbs for liquidGlass ─── */
-[data-palette="liquidGlass"] body::before,
-[data-palette="liquidGlass"] body::after {
+[data-palette^="liquidGlass"] body::before,
+[data-palette^="liquidGlass"] body::after {
   display: none !important;
 }
 
 /* ─── Liquid Glass: Sidebar glass effect ─── */
-[data-palette="liquidGlass"] [data-sidebar="sidebar"] {
+[data-palette^="liquidGlass"] [data-sidebar="sidebar"] {
   background: rgba(15, 15, 25, 0.6) !important;
   backdrop-filter: blur(32px) saturate(150%) !important;
   -webkit-backdrop-filter: blur(32px) saturate(150%) !important;
@@ -1987,9 +1987,9 @@
 }
 
 /* ─── Liquid Glass: Top header/bar glass ─── */
-[data-palette="liquidGlass"].light header,
-[data-palette="liquidGlass"].mixed header,
-[data-palette="liquidGlass"]:not(.dark):not(.mixed) header {
+[data-palette^="liquidGlass"].light header,
+[data-palette^="liquidGlass"].mixed header,
+[data-palette^="liquidGlass"]:not(.dark):not(.mixed) header {
   background: rgba(255, 255, 255, 0.12) !important;
   backdrop-filter: blur(20px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
@@ -1997,19 +1997,19 @@
 }
 
 /* ─── Liquid Glass: Main content area transparent ─── */
-[data-palette="liquidGlass"].light main,
-[data-palette="liquidGlass"].mixed main,
-[data-palette="liquidGlass"]:not(.dark):not(.mixed) main,
-[data-palette="liquidGlass"].light [role="main"],
-[data-palette="liquidGlass"].mixed [role="main"],
-[data-palette="liquidGlass"]:not(.dark):not(.mixed) [role="main"] {
+[data-palette^="liquidGlass"].light main,
+[data-palette^="liquidGlass"].mixed main,
+[data-palette^="liquidGlass"]:not(.dark):not(.mixed) main,
+[data-palette^="liquidGlass"].light [role="main"],
+[data-palette^="liquidGlass"].mixed [role="main"],
+[data-palette^="liquidGlass"]:not(.dark):not(.mixed) [role="main"] {
   background: transparent !important;
 }
 
 /* ─── Liquid Glass: Kanban columns ─── */
-[data-palette="liquidGlass"].light .flex.flex-col.min-w-\\[280px\\],
-[data-palette="liquidGlass"].mixed .flex.flex-col.min-w-\\[280px\\],
-[data-palette="liquidGlass"]:not(.dark):not(.mixed) .flex.flex-col.min-w-\\[280px\\] {
+[data-palette^="liquidGlass"].light .flex.flex-col.min-w-\\[280px\\],
+[data-palette^="liquidGlass"].mixed .flex.flex-col.min-w-\\[280px\\],
+[data-palette^="liquidGlass"]:not(.dark):not(.mixed) .flex.flex-col.min-w-\\[280px\\] {
   background: rgba(255, 255, 255, 0.12) !important;
   backdrop-filter: blur(20px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
@@ -2018,9 +2018,9 @@
 }
 
 /* ─── Liquid Glass: shadcn cards ─── */
-[data-palette="liquidGlass"].light .bg-card,
-[data-palette="liquidGlass"].mixed .bg-card,
-[data-palette="liquidGlass"]:not(.dark):not(.mixed) .bg-card {
+[data-palette^="liquidGlass"].light .bg-card,
+[data-palette^="liquidGlass"].mixed .bg-card,
+[data-palette^="liquidGlass"]:not(.dark):not(.mixed) .bg-card {
   background: rgba(255, 255, 255, 0.18) !important;
   backdrop-filter: blur(24px) saturate(180%) brightness(1.05) !important;
   -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.05) !important;
@@ -2034,9 +2034,9 @@
 }
 
 /* ─── Liquid Glass: shimmer on card hover ─── */
-[data-palette="liquidGlass"].light .bg-card:hover,
-[data-palette="liquidGlass"].mixed .bg-card:hover,
-[data-palette="liquidGlass"]:not(.dark):not(.mixed) .bg-card:hover {
+[data-palette^="liquidGlass"].light .bg-card:hover,
+[data-palette^="liquidGlass"].mixed .bg-card:hover,
+[data-palette^="liquidGlass"]:not(.dark):not(.mixed) .bg-card:hover {
   transform: translateY(-4px);
   background: rgba(255, 255, 255, 0.28) !important;
   box-shadow: 0 20px 60px rgba(31, 38, 135, 0.15), 0 8px 24px rgba(31, 38, 135, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
@@ -2044,18 +2044,18 @@
 }
 
 /* ─── Liquid Glass: bg-background → transparent (page wrappers) ─── */
-[data-palette="liquidGlass"].light .bg-background,
-[data-palette="liquidGlass"].mixed .bg-background,
-[data-palette="liquidGlass"]:not(.dark):not(.mixed) .bg-background {
+[data-palette^="liquidGlass"].light .bg-background,
+[data-palette^="liquidGlass"].mixed .bg-background,
+[data-palette^="liquidGlass"]:not(.dark):not(.mixed) .bg-background {
   background: transparent !important;
 }
 
 /* ─── Liquid Glass: Outline/secondary buttons ─── */
-[data-palette="liquidGlass"].light button[data-variant="outline"],
-[data-palette="liquidGlass"].mixed button[data-variant="outline"],
-[data-palette="liquidGlass"]:not(.dark):not(.mixed) button[data-variant="outline"],
-[data-palette="liquidGlass"].light .border.bg-background,
-[data-palette="liquidGlass"].mixed .border.bg-background {
+[data-palette^="liquidGlass"].light button[data-variant="outline"],
+[data-palette^="liquidGlass"].mixed button[data-variant="outline"],
+[data-palette^="liquidGlass"]:not(.dark):not(.mixed) button[data-variant="outline"],
+[data-palette^="liquidGlass"].light .border.bg-background,
+[data-palette^="liquidGlass"].mixed .border.bg-background {
   background: rgba(255, 255, 255, 0.25) !important;
   backdrop-filter: blur(12px) !important;
   -webkit-backdrop-filter: blur(12px) !important;
@@ -2066,60 +2066,60 @@
   color: rgba(30, 30, 60, 0.85) !important;
   transition: all 0.2s ease !important;
 }
-[data-palette="liquidGlass"].light button[data-variant="outline"]:hover,
-[data-palette="liquidGlass"].mixed button[data-variant="outline"]:hover {
+[data-palette^="liquidGlass"].light button[data-variant="outline"]:hover,
+[data-palette^="liquidGlass"].mixed button[data-variant="outline"]:hover {
   background: rgba(255, 255, 255, 0.4) !important;
   transform: translateY(-1px);
   box-shadow: 0 4px 16px rgba(31, 255, 135, 0.12) !important;
 }
 
 /* ─── Liquid Glass: Separator ─── */
-[data-palette="liquidGlass"].light [data-orientation="horizontal"],
-[data-palette="liquidGlass"].mixed [data-orientation="horizontal"] {
+[data-palette^="liquidGlass"].light [data-orientation="horizontal"],
+[data-palette^="liquidGlass"].mixed [data-orientation="horizontal"] {
   background: rgba(255, 255, 255, 0.3) !important;
 }
 
 /* ─── Liquid Glass: Label text color ─── */
-[data-palette="liquidGlass"].light label,
-[data-palette="liquidGlass"].mixed label {
+[data-palette^="liquidGlass"].light label,
+[data-palette^="liquidGlass"].mixed label {
   color: rgba(20, 20, 40, 0.75) !important;
   font-weight: 500 !important;
   letter-spacing: 0.01em !important;
 }
 
 /* ─── Liquid Glass: Muted-foreground in glass context ─── */
-[data-palette="liquidGlass"].light .text-muted-foreground,
-[data-palette="liquidGlass"].mixed .text-muted-foreground {
+[data-palette^="liquidGlass"].light .text-muted-foreground,
+[data-palette^="liquidGlass"].mixed .text-muted-foreground {
   color: rgba(30, 30, 55, 0.5) !important;
 }
 
 /* ─── Liquid Glass: Card foreground text ─── */
-[data-palette="liquidGlass"].light .text-foreground,
-[data-palette="liquidGlass"].mixed .text-foreground,
-[data-palette="liquidGlass"].light .text-card-foreground,
-[data-palette="liquidGlass"].mixed .text-card-foreground {
+[data-palette^="liquidGlass"].light .text-foreground,
+[data-palette^="liquidGlass"].mixed .text-foreground,
+[data-palette^="liquidGlass"].light .text-card-foreground,
+[data-palette^="liquidGlass"].mixed .text-card-foreground {
   color: rgba(20, 20, 40, 0.9) !important;
 }
 
 /* ─── Liquid Glass: glass reveal animation on cards ─── */
-[data-palette="liquidGlass"].light .bg-card,
-[data-palette="liquidGlass"].mixed .bg-card {
+[data-palette^="liquidGlass"].light .bg-card,
+[data-palette^="liquidGlass"].mixed .bg-card {
   animation: liquidGlassReveal 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 /* ─── Liquid Glass: primary button active ─── */
-[data-palette="liquidGlass"].light button.bg-primary:active,
-[data-palette="liquidGlass"].mixed button.bg-primary:active {
+[data-palette^="liquidGlass"].light button.bg-primary:active,
+[data-palette^="liquidGlass"].mixed button.bg-primary:active {
   transform: scale(0.97) translateY(0) !important;
 }
 
 /* ─── Liquid Glass: Inputs override (light/mixed) ─── */
-[data-palette="liquidGlass"].light input,
-[data-palette="liquidGlass"].light textarea,
-[data-palette="liquidGlass"].light select,
-[data-palette="liquidGlass"].mixed input,
-[data-palette="liquidGlass"].mixed textarea,
-[data-palette="liquidGlass"].mixed select {
+[data-palette^="liquidGlass"].light input,
+[data-palette^="liquidGlass"].light textarea,
+[data-palette^="liquidGlass"].light select,
+[data-palette^="liquidGlass"].mixed input,
+[data-palette^="liquidGlass"].mixed textarea,
+[data-palette^="liquidGlass"].mixed select {
   background: rgba(255, 255, 255, 0.3) !important;
   backdrop-filter: blur(8px) !important;
   -webkit-backdrop-filter: blur(8px) !important;
@@ -2129,19 +2129,19 @@
   border-radius: 14px !important;
   box-shadow: inset 0 1px 3px rgba(31, 38, 135, 0.05) !important;
 }
-[data-palette="liquidGlass"].light input:focus,
-[data-palette="liquidGlass"].light textarea:focus,
-[data-palette="liquidGlass"].mixed input:focus,
-[data-palette="liquidGlass"].mixed textarea:focus {
+[data-palette^="liquidGlass"].light input:focus,
+[data-palette^="liquidGlass"].light textarea:focus,
+[data-palette^="liquidGlass"].mixed input:focus,
+[data-palette^="liquidGlass"].mixed textarea:focus {
   background: rgba(255, 255, 255, 0.5) !important;
   border-color: rgba(99, 102, 241, 0.5) !important;
   box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12), inset 0 1px 3px rgba(31, 38, 135, 0.05) !important;
 }
 
 /* ─── Liquid Glass: Dialogs & modals ─── */
-[data-palette="liquidGlass"].light [role="dialog"],
-[data-palette="liquidGlass"].mixed [role="dialog"],
-[data-palette="liquidGlass"]:not(.dark):not(.mixed) [role="dialog"] {
+[data-palette^="liquidGlass"].light [role="dialog"],
+[data-palette^="liquidGlass"].mixed [role="dialog"],
+[data-palette^="liquidGlass"]:not(.dark):not(.mixed) [role="dialog"] {
   background: rgba(255, 255, 255, 0.65) !important;
   backdrop-filter: blur(40px) saturate(200%) !important;
   -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
@@ -2150,28 +2150,28 @@
   border-radius: 28px !important;
   box-shadow: 0 32px 80px rgba(31, 38, 135, 0.2), 0 8px 24px rgba(31, 38, 135, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
 }
-[data-palette="liquidGlass"].light [role="dialog"] *,
-[data-palette="liquidGlass"].mixed [role="dialog"] *,
-[data-palette="liquidGlass"]:not(.dark):not(.mixed) [role="dialog"] * {
+[data-palette^="liquidGlass"].light [role="dialog"] *,
+[data-palette^="liquidGlass"].mixed [role="dialog"] *,
+[data-palette^="liquidGlass"]:not(.dark):not(.mixed) [role="dialog"] * {
   color: rgba(30, 30, 55, 0.8) !important;
 }
-[data-palette="liquidGlass"].light [role="dialog"] h2,
-[data-palette="liquidGlass"].light [role="dialog"] h3,
-[data-palette="liquidGlass"].mixed [role="dialog"] h2,
-[data-palette="liquidGlass"].mixed [role="dialog"] h3 {
+[data-palette^="liquidGlass"].light [role="dialog"] h2,
+[data-palette^="liquidGlass"].light [role="dialog"] h3,
+[data-palette^="liquidGlass"].mixed [role="dialog"] h2,
+[data-palette^="liquidGlass"].mixed [role="dialog"] h3 {
   color: rgba(20, 20, 40, 0.9) !important;
 }
-[data-palette="liquidGlass"].light [role="dialog"] button.bg-primary,
-[data-palette="liquidGlass"].light [role="dialog"] button.bg-primary *,
-[data-palette="liquidGlass"].mixed [role="dialog"] button.bg-primary,
-[data-palette="liquidGlass"].mixed [role="dialog"] button.bg-primary * {
+[data-palette^="liquidGlass"].light [role="dialog"] button.bg-primary,
+[data-palette^="liquidGlass"].light [role="dialog"] button.bg-primary *,
+[data-palette^="liquidGlass"].mixed [role="dialog"] button.bg-primary,
+[data-palette^="liquidGlass"].mixed [role="dialog"] button.bg-primary * {
   color: white !important;
 }
 
 /* ─── Liquid Glass: Popovers ─── */
-[data-palette="liquidGlass"].light [data-radix-popper-content-wrapper] > *,
-[data-palette="liquidGlass"].mixed [data-radix-popper-content-wrapper] > *,
-[data-palette="liquidGlass"]:not(.dark):not(.mixed) [data-radix-popper-content-wrapper] > * {
+[data-palette^="liquidGlass"].light [data-radix-popper-content-wrapper] > *,
+[data-palette^="liquidGlass"].mixed [data-radix-popper-content-wrapper] > *,
+[data-palette^="liquidGlass"]:not(.dark):not(.mixed) [data-radix-popper-content-wrapper] > * {
   background: rgba(255, 255, 255, 0.7) !important;
   backdrop-filter: blur(32px) saturate(200%) !important;
   -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
@@ -2181,9 +2181,9 @@
 }
 
 /* ─── Liquid Glass: Tabs ─── */
-[data-palette="liquidGlass"].light [role="tablist"],
-[data-palette="liquidGlass"].mixed [role="tablist"],
-[data-palette="liquidGlass"]:not(.dark):not(.mixed) [role="tablist"] {
+[data-palette^="liquidGlass"].light [role="tablist"],
+[data-palette^="liquidGlass"].mixed [role="tablist"],
+[data-palette^="liquidGlass"]:not(.dark):not(.mixed) [role="tablist"] {
   background: rgba(255, 255, 255, 0.2) !important;
   backdrop-filter: blur(12px) !important;
   -webkit-backdrop-filter: blur(12px) !important;
@@ -2191,26 +2191,26 @@
   border-radius: 16px !important;
   padding: 4px !important;
 }
-[data-palette="liquidGlass"].light [role="tab"][data-state="active"],
-[data-palette="liquidGlass"].mixed [role="tab"][data-state="active"],
-[data-palette="liquidGlass"]:not(.dark):not(.mixed) [role="tab"][data-state="active"] {
+[data-palette^="liquidGlass"].light [role="tab"][data-state="active"],
+[data-palette^="liquidGlass"].mixed [role="tab"][data-state="active"],
+[data-palette^="liquidGlass"]:not(.dark):not(.mixed) [role="tab"][data-state="active"] {
   background: rgba(255, 255, 255, 0.5) !important;
   border-radius: 12px !important;
   box-shadow: 0 2px 8px rgba(31, 38, 135, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
 }
 
 /* ─── Liquid Glass: Badges ─── */
-[data-palette="liquidGlass"].light .inline-flex.items-center.rounded-full,
-[data-palette="liquidGlass"].mixed .inline-flex.items-center.rounded-full {
+[data-palette^="liquidGlass"].light .inline-flex.items-center.rounded-full,
+[data-palette^="liquidGlass"].mixed .inline-flex.items-center.rounded-full {
   backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 /* ─── Liquid Glass: Primary button glass effect ─── */
-[data-palette="liquidGlass"].light button.bg-primary,
-[data-palette="liquidGlass"].mixed button.bg-primary,
-[data-palette="liquidGlass"]:not(.dark):not(.mixed) button.bg-primary {
+[data-palette^="liquidGlass"].light button.bg-primary,
+[data-palette^="liquidGlass"].mixed button.bg-primary,
+[data-palette^="liquidGlass"]:not(.dark):not(.mixed) button.bg-primary {
   background: rgba(99, 102, 241, 0.75) !important;
   backdrop-filter: blur(12px) !important;
   -webkit-backdrop-filter: blur(12px) !important;
@@ -2220,8 +2220,8 @@
   box-shadow: 0 4px 16px rgba(99, 102, 241, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
-[data-palette="liquidGlass"].light button.bg-primary:hover,
-[data-palette="liquidGlass"].mixed button.bg-primary:hover {
+[data-palette^="liquidGlass"].light button.bg-primary:hover,
+[data-palette^="liquidGlass"].mixed button.bg-primary:hover {
   background: rgba(99, 102, 241, 0.9) !important;
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;

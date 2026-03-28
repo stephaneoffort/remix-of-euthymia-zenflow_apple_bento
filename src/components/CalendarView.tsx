@@ -329,10 +329,12 @@ function AgendaTaskList({ dateStr, tasks: dayTasks, allTasks, teamMembers, setSe
 
 // ─── External Events for Agenda views ───
 
-function AgendaExternalEvents({ dateStr, externalEventsByDate, accountMap }: {
+function AgendaExternalEvents({ dateStr, externalEventsByDate, accountMap, onEditEvent, onDeleteEvent }: {
   dateStr: string;
   externalEventsByDate: Map<string, CalendarEvent[]>;
   accountMap: Map<string, any>;
+  onEditEvent: (event: CalendarEvent) => void;
+  onDeleteEvent: (event: CalendarEvent) => void;
 }) {
   const events = externalEventsByDate.get(dateStr) || [];
   if (events.length === 0) return null;
@@ -344,14 +346,17 @@ function AgendaExternalEvents({ dateStr, externalEventsByDate, accountMap }: {
         const isGoogle = ev.provider === 'google';
         const timeStr = ev.is_all_day ? 'Journée' : new Date(ev.start_time).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + ' – ' + new Date(ev.end_time).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
         return (
-          <div key={ev.id} className="flex items-center gap-2 p-3 rounded-lg border border-border bg-muted/30">
+          <div key={ev.id} className="group flex items-center gap-2 p-3 rounded-lg border border-border bg-muted/30 hover:border-primary/30 transition-colors cursor-pointer" onClick={() => onEditEvent(ev)}>
             {isGoogle ? (
               <span className="w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center shrink-0">G</span>
             ) : (
               <span className={`w-2 h-2 rounded-full shrink-0 ${meta.dot}`} />
             )}
-            <span className="text-sm font-medium text-foreground flex-1">{ev.title}</span>
+            <span className="text-sm font-medium text-foreground flex-1 truncate">{ev.title}</span>
             <span className="text-xs text-muted-foreground shrink-0">{timeStr}</span>
+            <button onClick={(e) => { e.stopPropagation(); onDeleteEvent(ev); }} className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-destructive/10 transition-all">
+              <Trash2 className="w-3.5 h-3.5 text-destructive" />
+            </button>
           </div>
         );
       })}

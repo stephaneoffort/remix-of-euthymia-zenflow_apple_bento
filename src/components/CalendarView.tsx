@@ -1007,6 +1007,18 @@ export default function CalendarView() {
           <Tooltip>
             <TooltipTrigger asChild>
               <button
+                onClick={() => handleOpenNewEvent(toDateStr(currentDate))}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                Événement
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>Créer un événement</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
                 onClick={() => calSync.syncAllAccounts()}
                 disabled={calSync.loading}
                 className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md hover:bg-muted transition-colors text-foreground disabled:opacity-50"

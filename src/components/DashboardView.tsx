@@ -119,7 +119,14 @@ function MyTasksCard({ tasks, onTaskClick }: { tasks: ReturnType<typeof Array<an
 export default function DashboardView() {
   const { tasks, teamMembers, spaces, projects, setSelectedTaskId } = useApp();
   const { teamMemberId } = useAuth();
+  const { palette, theme } = useThemeMode();
 
+  // Compute chart colors reactively based on current palette
+  const { STATUS_COLORS, PRIORITY_COLORS } = useMemo(() => {
+    const colors = getChartColors();
+    return { STATUS_COLORS: colors.status, PRIORITY_COLORS: colors.priority };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [palette, theme]);
   // ─── Current member name ───
   const currentMember = useMemo(
     () => teamMembers.find(m => m.id === teamMemberId),

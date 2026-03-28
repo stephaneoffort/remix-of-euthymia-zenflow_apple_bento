@@ -18,8 +18,8 @@
   body {
     min-height: 100vh;
   }
-  html:not([data-palette="liquidGlass"]),
-  html:not([data-palette="liquidGlass"]) body {
+  html:not([data-palette^="liquidGlass"]),
+  html:not([data-palette^="liquidGlass"]) body {
     background: hsl(var(--background));
   }
 }

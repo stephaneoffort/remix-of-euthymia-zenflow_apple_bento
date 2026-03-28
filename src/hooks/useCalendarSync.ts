@@ -16,6 +16,7 @@ export interface CalendarAccount {
   caldav_password: string | null;
   ics_url: string | null;
   is_active: boolean;
+  color: string | null;
   last_synced_at: string | null;
   created_at: string;
 }

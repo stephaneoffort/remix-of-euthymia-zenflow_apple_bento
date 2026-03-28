@@ -2098,7 +2098,7 @@
 [data-palette^="liquidGlass"].mixed .text-foreground,
 [data-palette^="liquidGlass"].light .text-card-foreground,
 [data-palette^="liquidGlass"].mixed .text-card-foreground {
-  color: rgba(20, 20, 40, 0.9) !important;
+  color: rgba(30, 30, 50, 0.78) !important;
 }
 
 /* ─── Liquid Glass: glass reveal animation on cards ─── */

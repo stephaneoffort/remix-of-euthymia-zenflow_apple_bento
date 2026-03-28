@@ -434,8 +434,23 @@ export default function CalendarView() {
   };
   const isMobile = useIsMobile();
 
+  const STORAGE_KEY = 'euthymia:visibleCalendarAccounts';
+
   // Visibility toggle for calendar accounts
-  const [visibleAccountIds, setVisibleAccountIds] = useState<Set<string>>(() => new Set(calSync.accounts.map(a => a.id)));
+  const [visibleAccountIds, setVisibleAccountIds] = useState<Set<string>>(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) return new Set(JSON.parse(stored) as string[]);
+    } catch {}
+    return new Set(calSync.accounts.map(a => a.id));
+  });
+
+  // Persist to localStorage on change
+  React.useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([...visibleAccountIds]));
+    } catch {}
+  }, [visibleAccountIds]);
 
   // Keep all new accounts visible by default
   React.useEffect(() => {

@@ -144,7 +144,7 @@ export default function ListView() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
           {isExpanded && subtasks.map(st => renderCard(st, depth + 1))}
         </React.Fragment>
       );

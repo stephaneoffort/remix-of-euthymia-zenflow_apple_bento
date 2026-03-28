@@ -267,12 +267,7 @@ export default function BentoDashboard() {
                   <p className="bento-member-role">{m.role}</p>
                 </div>
                 <span
-                  style={{
-                    fontSize: "11px",
-                    color: isOnline(m.id) ? "#34d399" : "rgba(255,255,255,0.2)",
-                    marginLeft: "auto",
-                    fontWeight: 600,
-                  }}
+                  className={`text-[11px] font-semibold ml-auto ${isOnline(m.id) ? 'text-green-400' : 'text-muted-foreground'}`}
                 >
                   {isOnline(m.id) ? "● En ligne" : "○ Absent"}
                 </span>

@@ -69,7 +69,7 @@ export default function CalendarAccountsManager({ accounts, syncing, onSync, onD
   const handleConnectOutlook = () => {
     // Placeholder — same pattern as Google
     window.open(
-      'https://zfktrlupipngsegsiwyq.supabase.co/functions/v1/google-oauth/authorize',
+      'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/google-oauth/authorize',
       '_blank'
     );
     setOpen(false);

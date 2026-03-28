@@ -276,7 +276,9 @@ export default function ListView() {
             </tr>
           </thead>
           <tbody>
+            <AnimatePresence mode="popLayout">
             {sorted.map(task => renderRow(task))}
+            </AnimatePresence>
             {sorted.length === 0 && !isAdding && (
               <tr><td colSpan={5}><EmptyState variant="list" onAction={() => setIsAdding(true)} /></td></tr>
             )}

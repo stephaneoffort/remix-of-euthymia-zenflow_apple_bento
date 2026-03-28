@@ -398,24 +398,26 @@ export default function CalendarView() {
     if (searchParams.get('connected') === 'true') {
       (async () => {
         try {
-          const { data: latestAccount } = await supabase
+          await calSync.fetchAccounts();
+          await calSync.fetchEvents();
+
+          // Sync all accounts after Google OAuth
+          const { data: activeAccounts } = await supabase
             .from('calendar_accounts')
             .select('*')
-            .eq('provider', 'google')
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .single();
+            .eq('is_active', true);
 
-          if (latestAccount) {
-            await fetch('https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/calendar-sync', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ account_id: latestAccount.id, direction: 'pull' }),
-            });
-            await calSync.fetchAccounts();
+          if (activeAccounts && activeAccounts.length > 0) {
+            for (const acc of activeAccounts) {
+              await fetch('https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/calendar-sync', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ account_id: acc.id, direction: 'pull' }),
+              });
+            }
             await calSync.fetchEvents();
-            toast.success('Google Calendar synchronisé ✅');
           }
+          toast.success('Google Calendar synchronisé ✅');
         } catch (err: any) {
           toast.error('Erreur de synchronisation : ' + (err.message || 'Inconnue'));
         }

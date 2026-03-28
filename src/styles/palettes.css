@@ -2662,10 +2662,10 @@
   --sidebar-primary: 239 84% 67%;
   --sidebar-primary-foreground: 0 0% 100%;
   --sidebar-ring: 239 84% 63%;
-  --foreground: 226 70% 92%;
-  --card-foreground: 226 70% 92%;
-  --popover-foreground: 226 70% 92%;
-  --muted-foreground: 226 40% 65%;
+  --foreground: 226 50% 82%;
+  --card-foreground: 226 50% 82%;
+  --popover-foreground: 226 50% 82%;
+  --muted-foreground: 226 30% 58%;
 }
 [data-palette="liquidGlassMidnight"].light,
 [data-palette="liquidGlassMidnight"]:not(.dark):not(.mixed) {

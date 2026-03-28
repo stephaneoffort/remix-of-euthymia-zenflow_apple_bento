@@ -61,15 +61,13 @@ export default function CalendarAccountsManager({ accounts, syncing, onSync, onD
   };
 
   const handleConnectGoogle = () => {
-    const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-    window.location.href = `https://${projectId}.supabase.co/functions/v1/google-oauth/authorize`;
+    window.location.href = 'https://zfktrlupipngsegsiwyq.supabase.co/functions/v1/google-oauth/authorize';
   };
 
   const handleConnectOutlook = () => {
     // Placeholder — same pattern as Google
-    const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
     window.open(
-      `https://${projectId}.supabase.co/functions/v1/google-oauth/authorize`,
+      'https://zfktrlupipngsegsiwyq.supabase.co/functions/v1/google-oauth/authorize',
       '_blank'
     );
     setOpen(false);

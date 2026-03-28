@@ -2,6 +2,21 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+const CALENDAR_SYNC_URL = 'https://zfktrlupipngsegsiwyq.supabase.co/functions/v1/calendar-sync';
+
+async function invokeCalendarSync(body: Record<string, unknown>) {
+  const res = await fetch(CALENDAR_SYNC_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
 export interface CalendarAccount {
   id: string;
   user_id: string | null;
@@ -65,10 +80,7 @@ export function useCalendarSync() {
   const syncAccount = useCallback(async (accountId: string, direction: 'pull' | 'push' | 'test' = 'pull') => {
     setSyncing(accountId);
     try {
-      const { data, error } = await supabase.functions.invoke('calendar-sync', {
-        body: { account_id: accountId, direction },
-      });
-      if (error) throw error;
+      const data = await invokeCalendarSync({ account_id: accountId, direction });
       if (direction === 'pull') {
         await fetchEvents();
         await fetchAccounts();
@@ -101,9 +113,7 @@ export function useCalendarSync() {
     setLoading(true);
     try {
       for (const acc of activeAccounts) {
-        await supabase.functions.invoke('calendar-sync', {
-          body: { account_id: acc.id, direction: 'pull' },
-        });
+        await invokeCalendarSync({ account_id: acc.id, direction: 'pull' });
       }
       await fetchEvents();
       await fetchAccounts();
@@ -167,10 +177,7 @@ export function useCalendarSync() {
 
   const pushEvent = useCallback(async (accountId: string, eventId: string, action: 'create' | 'update' | 'delete') => {
     try {
-      const { error } = await supabase.functions.invoke('calendar-sync', {
-        body: { account_id: accountId, direction: 'push', event_id: eventId, action },
-      });
-      if (error) throw error;
+      await invokeCalendarSync({ account_id: accountId, direction: 'push', event_id: eventId, action });
       await fetchEvents();
       return true;
     } catch (err: any) {
@@ -223,10 +230,7 @@ export function useCalendarSync() {
     // Push to external calendar if account exists
     if (account && newEvent) {
       try {
-        const { error: pushErr } = await supabase.functions.invoke('calendar-sync', {
-          body: { account_id: account.id, direction: 'push', event_id: (newEvent as any).id, action: 'create' },
-        });
-        if (pushErr) throw pushErr;
+        await invokeCalendarSync({ account_id: account.id, direction: 'push', event_id: (newEvent as any).id, action: 'create' });
         toast.success('Événement ajouté à Google Calendar ✅');
       } catch (err: any) {
         toast.error('Erreur push : ' + (err.message || 'Inconnue'));
@@ -274,10 +278,7 @@ export function useCalendarSync() {
 
     if (ev?.account_id && ev?.external_id) {
       try {
-        const { error: pushErr } = await supabase.functions.invoke('calendar-sync', {
-          body: { account_id: ev.account_id, direction: 'push', event_id: eventId, action: 'update' },
-        });
-        if (pushErr) throw pushErr;
+        await invokeCalendarSync({ account_id: ev.account_id, direction: 'push', event_id: eventId, action: 'update' });
         toast.success('Événement mis à jour ✅');
       } catch (err: any) {
         toast.error('Erreur push : ' + (err.message || 'Inconnue'));
@@ -301,10 +302,7 @@ export function useCalendarSync() {
     // Push delete to external calendar if applicable
     if (ev?.account_id && ev?.external_id) {
       try {
-        const { error: pushErr } = await supabase.functions.invoke('calendar-sync', {
-          body: { account_id: ev.account_id, direction: 'push', event_id: eventId, action: 'delete' },
-        });
-        if (pushErr) throw pushErr;
+        await invokeCalendarSync({ account_id: ev.account_id, direction: 'push', event_id: eventId, action: 'delete' });
         toast.success('Événement supprimé ✅');
       } catch (err: any) {
         // Delete locally anyway

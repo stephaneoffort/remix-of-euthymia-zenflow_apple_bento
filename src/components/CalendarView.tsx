@@ -404,8 +404,10 @@ export default function CalendarView() {
             .single();
 
           if (latestAccount) {
-            await supabase.functions.invoke('calendar-sync', {
-              body: { account_id: latestAccount.id, direction: 'pull' },
+            await fetch('https://zfktrlupipngsegsiwyq.supabase.co/functions/v1/calendar-sync', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ account_id: latestAccount.id, direction: 'pull' }),
             });
             await calSync.fetchAccounts();
             await calSync.fetchEvents();
@@ -800,8 +802,7 @@ export default function CalendarView() {
   // ─── Mobile layouts ───
   if (isMobile) {
     const handleConnectGoogle = () => {
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      window.open(`https://${projectId}.supabase.co/functions/v1/google-oauth/authorize`, '_blank');
+      window.open('https://zfktrlupipngsegsiwyq.supabase.co/functions/v1/google-oauth/authorize', '_blank');
     };
 
     const mobileActionBar = (

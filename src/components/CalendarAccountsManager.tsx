@@ -28,6 +28,8 @@ export function getProviderMeta(provider: string) {
 interface Props {
   accounts: CalendarAccount[];
   syncing: string | null;
+  visibleAccountIds: Set<string>;
+  onToggleVisibility: (accountId: string) => void;
   onSync: (accountId: string) => void;
   onDelete: (accountId: string) => void;
   onAddCalDav: (label: string, url: string, user: string, pass: string, provider: string) => Promise<any>;

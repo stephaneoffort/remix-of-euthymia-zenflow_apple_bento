@@ -204,7 +204,6 @@ export default function ListView() {
           className="border-b border-border hover:bg-muted/50 transition-colors cursor-pointer group"
           onClick={() => setSelectedTaskId(task.id)}
         >
-        >
           <td className="py-2.5 px-3" style={{ paddingLeft: `${12 + depth * 24}px` }}>
             <div className="flex items-center gap-2">
               {hasChildren ? (

@@ -34,6 +34,7 @@ export default function KanbanBoard() {
   const [draggedColumn, setDraggedColumn] = useState<string | null>(null);
   const [columnOrder, setColumnOrder] = useState<string[]>(allStatuses);
   const [dropTargetColumn, setDropTargetColumn] = useState<string | null>(null);
+  const [dropTargetTask, setDropTargetTask] = useState<string | null>(null);
   const [newTaskStatus, setNewTaskStatus] = useState<string | null>(null);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [collapsedColumns, setCollapsedColumns] = useState<Set<string>>(new Set());

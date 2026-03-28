@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import EmptyState from '@/components/EmptyState';
 import { useApp } from '@/context/AppContext';
-import { ChevronLeft, ChevronRight, Plus, Download, Calendar as CalendarIcon, Repeat, CornerDownRight, ArrowRight, RefreshCw, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Download, Calendar as CalendarIcon, Repeat, CornerDownRight, ArrowRight, RefreshCw, Loader2, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -25,6 +25,7 @@ import {
 import { useCalendarSync, type CalendarEvent } from '@/hooks/useCalendarSync';
 import CalendarAccountsManager, { getProviderMeta } from '@/components/CalendarAccountsManager';
 import SyncTargetPicker from '@/components/SyncTargetPicker';
+import CalendarEventDialog from '@/components/CalendarEventDialog';
 
 type CalendarMode = 'day' | 'week' | 'month';
 
@@ -328,10 +329,12 @@ function AgendaTaskList({ dateStr, tasks: dayTasks, allTasks, teamMembers, setSe
 
 // ─── External Events for Agenda views ───
 
-function AgendaExternalEvents({ dateStr, externalEventsByDate, accountMap }: {
+function AgendaExternalEvents({ dateStr, externalEventsByDate, accountMap, onEditEvent, onDeleteEvent }: {
   dateStr: string;
   externalEventsByDate: Map<string, CalendarEvent[]>;
   accountMap: Map<string, any>;
+  onEditEvent: (event: CalendarEvent) => void;
+  onDeleteEvent: (event: CalendarEvent) => void;
 }) {
   const events = externalEventsByDate.get(dateStr) || [];
   if (events.length === 0) return null;
@@ -343,14 +346,17 @@ function AgendaExternalEvents({ dateStr, externalEventsByDate, accountMap }: {
         const isGoogle = ev.provider === 'google';
         const timeStr = ev.is_all_day ? 'Journée' : new Date(ev.start_time).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + ' – ' + new Date(ev.end_time).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
         return (
-          <div key={ev.id} className="flex items-center gap-2 p-3 rounded-lg border border-border bg-muted/30">
+          <div key={ev.id} className="group flex items-center gap-2 p-3 rounded-lg border border-border bg-muted/30 hover:border-primary/30 transition-colors cursor-pointer" onClick={() => onEditEvent(ev)}>
             {isGoogle ? (
               <span className="w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center shrink-0">G</span>
             ) : (
               <span className={`w-2 h-2 rounded-full shrink-0 ${meta.dot}`} />
             )}
-            <span className="text-sm font-medium text-foreground flex-1">{ev.title}</span>
+            <span className="text-sm font-medium text-foreground flex-1 truncate">{ev.title}</span>
             <span className="text-xs text-muted-foreground shrink-0">{timeStr}</span>
+            <button onClick={(e) => { e.stopPropagation(); onDeleteEvent(ev); }} className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-destructive/10 transition-all">
+              <Trash2 className="w-3.5 h-3.5 text-destructive" />
+            </button>
           </div>
         );
       })}
@@ -366,6 +372,9 @@ export default function CalendarView() {
   const [addingForDate, setAddingForDate] = useState<string | null>(null);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
+  const [eventDialogOpen, setEventDialogOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
+  const [eventDialogDate, setEventDialogDate] = useState<string | undefined>(undefined);
   const [mode, setMode] = useState<CalendarMode>(() => {
     const saved = localStorage.getItem('euthymia_calendar_mode');
     return (saved === 'day' || saved === 'week' || saved === 'month') ? saved : 'month';
@@ -527,6 +536,30 @@ export default function CalendarView() {
     });
     setNewTaskTitle('');
     setAddingForDate(null);
+  };
+
+  const handleOpenNewEvent = (dateStr?: string) => {
+    setEditingEvent(null);
+    setEventDialogDate(dateStr);
+    setEventDialogOpen(true);
+  };
+
+  const handleEditEvent = (event: CalendarEvent) => {
+    setEditingEvent(event);
+    setEventDialogDate(undefined);
+    setEventDialogOpen(true);
+  };
+
+  const handleDeleteEvent = async (event: CalendarEvent) => {
+    await calSync.deleteCalendarEvent(event.id);
+  };
+
+  const handleSaveEvent = async (data: { title: string; description: string; start_time: string; end_time: string; is_all_day: boolean; location: string }) => {
+    if (editingEvent) {
+      await calSync.updateCalendarEvent(editingEvent.id, data);
+    } else {
+      await calSync.createCalendarEvent(data);
+    }
   };
 
   const handleDragStart = (event: DragStartEvent) => setActiveTaskId(event.active.id as string);
@@ -753,6 +786,17 @@ export default function CalendarView() {
     );
   };
 
+  const eventDialogElement = (
+    <CalendarEventDialog
+      open={eventDialogOpen}
+      onClose={() => { setEventDialogOpen(false); setEditingEvent(null); }}
+      onSave={handleSaveEvent}
+      onDelete={editingEvent ? () => handleDeleteEvent(editingEvent) : undefined}
+      event={editingEvent}
+      defaultDate={eventDialogDate}
+    />
+  );
+
   // ─── Mobile layouts ───
   if (isMobile) {
     const handleConnectGoogle = () => {
@@ -849,10 +893,14 @@ export default function CalendarView() {
             <p className="text-xs font-semibold text-foreground">{DAYS_FR_FULL[getFrDayIndex(selectedDay)]} {selectedDay.getDate()} {MONTHS_FR[selectedDay.getMonth()]}</p>
           </div>
           <div className="flex-1 overflow-y-auto px-3 py-2">
-            <AgendaExternalEvents dateStr={selectedDateStr} externalEventsByDate={externalEventsByDate} accountMap={accountMap} />
+            <AgendaExternalEvents dateStr={selectedDateStr} externalEventsByDate={externalEventsByDate} accountMap={accountMap} onEditEvent={handleEditEvent} onDeleteEvent={handleDeleteEvent} />
             <AgendaTaskList dateStr={selectedDateStr} tasks={selectedDayTasks} allTasks={allTasks} teamMembers={teamMembers} setSelectedTaskId={setSelectedTaskId}
               addingForDate={addingForDate} setAddingForDate={setAddingForDate} newTaskTitle={newTaskTitle} setNewTaskTitle={setNewTaskTitle} handleAddTask={handleAddTask} isMobile />
+            <button onClick={() => handleOpenNewEvent(selectedDateStr)} className="w-full flex items-center gap-2 px-3 py-2 mt-1 rounded-lg border border-dashed border-border text-muted-foreground hover:border-primary/30 hover:text-primary transition-colors text-sm">
+              <CalendarIcon className="w-4 h-4" /> Ajouter un événement
+            </button>
           </div>
+          {eventDialogElement}
         </div>
       );
     }
@@ -871,10 +919,14 @@ export default function CalendarView() {
           </div>
           {mobileActionBar}
           <div className="flex-1 overflow-y-auto px-3 py-2">
-            <AgendaExternalEvents dateStr={selectedDateStr} externalEventsByDate={externalEventsByDate} accountMap={accountMap} />
+            <AgendaExternalEvents dateStr={selectedDateStr} externalEventsByDate={externalEventsByDate} accountMap={accountMap} onEditEvent={handleEditEvent} onDeleteEvent={handleDeleteEvent} />
             <AgendaTaskList dateStr={selectedDateStr} tasks={selectedDayTasks} allTasks={allTasks} teamMembers={teamMembers} setSelectedTaskId={setSelectedTaskId}
               addingForDate={addingForDate} setAddingForDate={setAddingForDate} newTaskTitle={newTaskTitle} setNewTaskTitle={setNewTaskTitle} handleAddTask={handleAddTask} isMobile />
+            <button onClick={() => handleOpenNewEvent(selectedDateStr)} className="w-full flex items-center gap-2 px-3 py-2 mt-1 rounded-lg border border-dashed border-border text-muted-foreground hover:border-primary/30 hover:text-primary transition-colors text-sm">
+              <CalendarIcon className="w-4 h-4" /> Ajouter un événement
+            </button>
           </div>
+          {eventDialogElement}
         </div>
       );
     }
@@ -921,10 +973,14 @@ export default function CalendarView() {
           <p className="text-xs font-semibold text-foreground">{DAYS_FR_FULL[getFrDayIndex(selectedDay)]} {selectedDay.getDate()} {MONTHS_FR[selectedDay.getMonth()]}</p>
         </div>
         <div className="flex-1 overflow-y-auto px-3 py-2">
-          <AgendaExternalEvents dateStr={selectedDateStr} externalEventsByDate={externalEventsByDate} accountMap={accountMap} />
+          <AgendaExternalEvents dateStr={selectedDateStr} externalEventsByDate={externalEventsByDate} accountMap={accountMap} onEditEvent={handleEditEvent} onDeleteEvent={handleDeleteEvent} />
           <AgendaTaskList dateStr={selectedDateStr} tasks={selectedDayTasks} allTasks={allTasks} teamMembers={teamMembers} setSelectedTaskId={setSelectedTaskId}
             addingForDate={addingForDate} setAddingForDate={setAddingForDate} newTaskTitle={newTaskTitle} setNewTaskTitle={setNewTaskTitle} handleAddTask={handleAddTask} isMobile />
+            <button onClick={() => handleOpenNewEvent(selectedDateStr)} className="w-full flex items-center gap-2 px-3 py-2 mt-1 rounded-lg border border-dashed border-border text-muted-foreground hover:border-primary/30 hover:text-primary transition-colors text-sm">
+              <CalendarIcon className="w-4 h-4" /> Ajouter un événement
+            </button>
         </div>
+        {eventDialogElement}
       </div>
     );
   }
@@ -948,6 +1004,18 @@ export default function CalendarView() {
           <ModeSwitcher mode={mode} onChange={handleModeChange} />
         </div>
         <div className="flex items-center gap-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => handleOpenNewEvent(toDateStr(currentDate))}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                Événement
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>Créer un événement</TooltipContent>
+          </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
               <button
@@ -992,10 +1060,14 @@ export default function CalendarView() {
       <div className="p-6 h-full flex flex-col">
         {sharedHeader}
         <div className="flex-1 overflow-y-auto max-w-2xl">
-          <AgendaExternalEvents dateStr={currentDateStr} externalEventsByDate={externalEventsByDate} accountMap={accountMap} />
+          <AgendaExternalEvents dateStr={currentDateStr} externalEventsByDate={externalEventsByDate} accountMap={accountMap} onEditEvent={handleEditEvent} onDeleteEvent={handleDeleteEvent} />
           <AgendaTaskList dateStr={currentDateStr} tasks={dayTasks} allTasks={allTasks} teamMembers={teamMembers} setSelectedTaskId={setSelectedTaskId}
             addingForDate={addingForDate} setAddingForDate={setAddingForDate} newTaskTitle={newTaskTitle} setNewTaskTitle={setNewTaskTitle} handleAddTask={handleAddTask} isMobile={false} />
+          <button onClick={() => handleOpenNewEvent(currentDateStr)} className="w-full flex items-center gap-2 px-3 py-2 mt-2 rounded-lg border border-dashed border-border text-muted-foreground hover:border-primary/30 hover:text-primary transition-colors text-sm">
+            <CalendarIcon className="w-4 h-4" /> Ajouter un événement
+          </button>
         </div>
+        {eventDialogElement}
       </div>
     );
   }
@@ -1066,6 +1138,7 @@ export default function CalendarView() {
         </div>
         <DragOverlay>{activeTask ? <div className="text-[11px] px-1.5 py-0.5 rounded bg-primary/20 text-primary shadow-lg border border-primary/30 max-w-[150px] truncate">{activeTask.title}</div> : null}</DragOverlay>
       </DndContext>
+      {eventDialogElement}
     </div>
   );
 }

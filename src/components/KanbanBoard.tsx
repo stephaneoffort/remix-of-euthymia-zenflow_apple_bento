@@ -412,19 +412,29 @@ function KanbanCard({
   }, [task.id, setSelectedTaskId]);
 
   return (
-    <div
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 12, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.15 } }}
+      whileHover={{ y: -3, scale: 1.015, transition: { duration: 0.2 } }}
+      whileTap={{ scale: 0.97 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 28 }}
       draggable={!isMobile}
-      onDragStart={e => !isMobile && handleTaskDragStart(e, task.id)}
+      onDragStart={e => !isMobile && handleTaskDragStart(e as unknown as React.DragEvent, task.id)}
       onDragEnd={() => setDraggedTaskId(null)}
       onClick={handleClick}
       onTouchStart={isMobile ? handleTouchStart : undefined}
       onTouchEnd={isMobile ? handleTouchEnd : undefined}
       onTouchMove={isMobile ? handleTouchMove : undefined}
       onContextMenu={isMobile ? e => e.preventDefault() : undefined}
-      className={`bg-card rounded-lg border p-2.5 sm:p-3 cursor-pointer hover:shadow-md group transition-all duration-200 ${
+      className={`relative overflow-hidden bg-card rounded-lg border p-2.5 sm:p-3 cursor-pointer group transition-shadow duration-200 hover:shadow-lg hover:shadow-primary/5 ${
         draggedTaskId === task.id ? 'opacity-50' : ''
-      } ${isOverdue ? 'border-l-2 border-l-priority-urgent' : ''} ${moveOpen ? 'ring-2 ring-primary/40' : ''} ${pressing ? 'scale-[0.97] shadow-lg ring-2 ring-primary/30' : ''}`}
+      } ${isOverdue ? 'border-l-2 border-l-priority-urgent' : ''} ${moveOpen ? 'ring-2 ring-primary/40' : ''} ${pressing ? 'shadow-lg ring-2 ring-primary/30' : ''}`}
+      style={{ willChange: 'transform' }}
     >
+      {/* Liquid Glass shimmer overlay */}
+      <div className="pointer-events-none absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-white/10 via-transparent to-white/5" />
       <div className="flex items-start gap-1.5">
         <GripVertical className="w-4 h-4 text-muted-foreground/40 opacity-0 group-hover:opacity-100 mt-0.5 shrink-0 cursor-grab hidden sm:block" />
         <div className="flex-1 min-w-0">

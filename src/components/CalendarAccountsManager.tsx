@@ -136,7 +136,7 @@ export default function CalendarAccountsManager({ accounts, syncing, visibleAcco
                         onCheckedChange={() => onToggleVisibility(acc.id)}
                         className="shrink-0"
                       />
-                      <span className={`w-2 h-2 rounded-full shrink-0 ${meta.dot}`} style={acc.color ? { backgroundColor: acc.color } : undefined} />
+                      <span className={`w-2 h-2 rounded-full shrink-0 ${meta.dot}`} />
                       <span className="text-sm font-medium text-foreground flex-1 truncate">
                         {acc.label || meta.label}
                       </span>

@@ -2681,8 +2681,8 @@
   --primary: 239 84% 63%;
   --primary-foreground: 0 0% 100%;
   --ring: 239 84% 63%;
-  --foreground: 226 70% 92%;
-  --card-foreground: 226 70% 92%;
+  --foreground: 226 50% 82%;
+  --card-foreground: 226 50% 82%;
   background:
     radial-gradient(ellipse 80% 80% at 20% 20%, rgba(99,102,241,0.5) 0%, transparent 70%),
     radial-gradient(ellipse 80% 80% at 80% 80%, rgba(139,92,246,0.4) 0%, transparent 70%),

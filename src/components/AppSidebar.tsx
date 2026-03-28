@@ -1366,6 +1366,9 @@ function ThemeSwitcher() {
     { key: 'cinematic', label: 'Cinematic Glow', colors: ['#0E0A1C', '#7C5CED'] },
     { key: 'teal', label: 'Ocean Teal', colors: ['#0A1518', '#14B8A6'] },
     { key: 'bento2026', label: 'Bento 2026', colors: ['#f5f0e8', '#2d3a2e'] },
+    { key: 'bentoOcean', label: 'Bento Ocean', colors: ['#eef3f8', '#1e3a5f'] },
+    { key: 'bentoRose', label: 'Bento Rose', colors: ['#f8f0f0', '#5c2434'] },
+    { key: 'bentoAmber', label: 'Bento Amber', colors: ['#f5efe5', '#d4a04a'] },
   ];
 
   return (

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export type ThemeMode = 'light' | 'dark' | 'mixed';
-export type ThemePalette = 'clubroom' | 'neutrals' | 'sapphire' | 'cinematic' | 'teal' | 'bento2026';
+export type ThemePalette = 'clubroom' | 'neutrals' | 'sapphire' | 'cinematic' | 'teal' | 'bento2026' | 'bentoOcean' | 'bentoRose' | 'bentoAmber';
 
 interface ThemeContextType {
   theme: ThemeMode;
@@ -42,6 +42,21 @@ export const PALETTE_META: Record<ThemePalette, { label: string; description: st
     label: 'Bento 2026',
     description: 'Off-white chaud + Vert forêt — Tendance organique 2026',
     colors: ['#f5f0e8', '#ede8df', '#2d3a2e', '#a8d5b5'],
+  },
+  bentoOcean: {
+    label: 'Bento Ocean',
+    description: 'Bleu profond + Corail — Fraîcheur marine 2026',
+    colors: ['#eef3f8', '#e4ecf4', '#1e3a5f', '#f0846a'],
+  },
+  bentoRose: {
+    label: 'Bento Rose',
+    description: 'Blush rosé + Bordeaux — Élégance douce 2026',
+    colors: ['#f8f0f0', '#f0e6e6', '#5c2434', '#e8a0b0'],
+  },
+  bentoAmber: {
+    label: 'Bento Amber',
+    description: 'Ambre chaud + Charbon — Chaleur minérale 2026',
+    colors: ['#f5efe5', '#ede6da', '#2e2a26', '#d4a04a'],
   },
 };
 

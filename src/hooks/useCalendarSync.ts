@@ -302,10 +302,7 @@ export function useCalendarSync() {
     // Push delete to external calendar if applicable
     if (ev?.account_id && ev?.external_id) {
       try {
-        const { error: pushErr } = await supabase.functions.invoke('calendar-sync', {
-          body: { account_id: ev.account_id, direction: 'push', event_id: eventId, action: 'delete' },
-        });
-        if (pushErr) throw pushErr;
+        await invokeCalendarSync({ account_id: ev.account_id, direction: 'push', event_id: eventId, action: 'delete' });
         toast.success('Événement supprimé ✅');
       } catch (err: any) {
         // Delete locally anyway

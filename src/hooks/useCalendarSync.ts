@@ -16,7 +16,6 @@ export interface CalendarAccount {
   caldav_password: string | null;
   ics_url: string | null;
   is_active: boolean;
-  color: string | null;
   last_synced_at: string | null;
   created_at: string;
 }
@@ -50,6 +49,7 @@ export function useCalendarSync() {
     const { data } = await supabase
       .from('calendar_accounts')
       .select('*')
+      .eq('is_active', true)
       .order('created_at', { ascending: true });
     if (data) setAccounts(data as unknown as CalendarAccount[]);
   }, []);
@@ -322,15 +322,6 @@ export function useCalendarSync() {
     await fetchEvents();
   }, [fetchEvents]);
 
-  const toggleAccount = useCallback(async (accountId: string, active: boolean) => {
-    await supabase
-      .from('calendar_accounts')
-      .update({ is_active: active } as any)
-      .eq('id', accountId);
-    await fetchAccounts();
-    toast.success(active ? 'Calendrier activé' : 'Calendrier désactivé');
-  }, [fetchAccounts]);
-
   useEffect(() => {
     fetchAccounts();
     fetchEvents();
@@ -352,6 +343,5 @@ export function useCalendarSync() {
     createCalendarEvent,
     updateCalendarEvent,
     deleteCalendarEvent,
-    toggleAccount,
   };
 }

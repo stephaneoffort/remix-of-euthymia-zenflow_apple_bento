@@ -3,9 +3,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Plus, RefreshCw, Trash2, CheckCircle2, Loader2 } from 'lucide-react';
+import { Plus, RefreshCw, Trash2, ExternalLink, CheckCircle2, Loader2, Calendar as CalIcon } from 'lucide-react';
 import type { CalendarAccount } from '@/hooks/useCalendarSync';
 
 const PROVIDER_META: Record<string, { label: string; icon: string; color: string; dot: string }> = {
@@ -31,12 +30,11 @@ interface Props {
   onAddCalDav: (label: string, url: string, user: string, pass: string, provider: string) => Promise<any>;
   onAddIcs: (label: string, url: string) => Promise<any>;
   onTestConnection: (accountId: string) => Promise<boolean>;
-  onToggleAccount?: (accountId: string, active: boolean) => void;
 }
 
 type ModalStep = 'picker' | 'caldav' | 'ics';
 
-export default function CalendarAccountsManager({ accounts, syncing, onSync, onDelete, onAddCalDav, onAddIcs, onTestConnection, onToggleAccount }: Props) {
+export default function CalendarAccountsManager({ accounts, syncing, onSync, onDelete, onAddCalDav, onAddIcs, onTestConnection }: Props) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<ModalStep>('picker');
 
@@ -68,6 +66,7 @@ export default function CalendarAccountsManager({ accounts, syncing, onSync, onD
   };
 
   const handleConnectOutlook = () => {
+    // Placeholder — same pattern as Google
     const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
     window.open(
       `https://${projectId}.supabase.co/functions/v1/google-oauth/authorize`,
@@ -79,11 +78,15 @@ export default function CalendarAccountsManager({ accounts, syncing, onSync, onD
 
   const handleTestCalDav = async () => {
     setTesting(true); setTestResult(null);
+    // Save temp account then test
     const acc = await onAddCalDav(caldavLabel || caldavProvider, caldavUrl, caldavUser, caldavPass, caldavProvider);
     if (acc) {
       const ok = await onTestConnection(acc.id);
       setTestResult(ok);
-      if (!ok) onDelete(acc.id);
+      if (!ok) {
+        // Remove failed account
+        onDelete(acc.id);
+      }
     }
     setTesting(false);
   };
@@ -91,6 +94,7 @@ export default function CalendarAccountsManager({ accounts, syncing, onSync, onD
   const handleSubmitCalDav = async () => {
     setSubmitting(true);
     if (!testResult) {
+      // If not yet tested, add directly
       await onAddCalDav(caldavLabel || caldavProvider, caldavUrl, caldavUser, caldavPass, caldavProvider);
     }
     setOpen(false); resetForms();
@@ -102,66 +106,14 @@ export default function CalendarAccountsManager({ accounts, syncing, onSync, onD
     setOpen(false); resetForms();
   };
 
-  // Group accounts by provider for a cleaner display
-  const googleAccounts = accounts.filter(a => a.provider === 'google');
-  const otherAccounts = accounts.filter(a => a.provider !== 'google');
-
   return (
     <div className="space-y-3">
-      {/* Google calendars grouped */}
-      {googleAccounts.length > 0 && (
-        <div className="space-y-1">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-1">Google Calendar</p>
-          <div className="space-y-1">
-            {googleAccounts.map(acc => (
-              <div key={acc.id} className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-muted/40 border border-border">
-                <span
-                  className="w-3 h-3 rounded shrink-0"
-                  style={{ backgroundColor: acc.color || '#4285F4' }}
-                />
-                <span className={`text-sm font-medium flex-1 truncate ${acc.is_active ? 'text-foreground' : 'text-muted-foreground line-through'}`}>
-                  {acc.label || 'Google Calendar'}
-                </span>
-                {acc.calendar_id && acc.calendar_id !== 'primary' && (
-                  <span className="text-[10px] text-muted-foreground hidden sm:block truncate max-w-[120px]">
-                    {acc.calendar_id}
-                  </span>
-                )}
-                {onToggleAccount && (
-                  <Switch
-                    checked={acc.is_active}
-                    onCheckedChange={(checked) => onToggleAccount(acc.id, checked)}
-                    className="scale-75"
-                  />
-                )}
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onSync(acc.id)} disabled={syncing === acc.id || !acc.is_active}>
-                      {syncing === acc.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Synchroniser</TooltipContent>
-                </Tooltip>
-              </div>
-            ))}
-            {/* Single delete for all Google accounts */}
-            <div className="flex justify-end px-1">
-              <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive text-xs gap-1 h-7" onClick={() => googleAccounts.forEach(a => onDelete(a.id))}>
-                <Trash2 className="w-3 h-3" /> Déconnecter Google
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Other accounts */}
-      {otherAccounts.length > 0 && (
-        <div className="space-y-1">
-          {googleAccounts.length > 0 && (
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-1 mt-2">Autres agendas</p>
-          )}
-          {otherAccounts.map(acc => {
+      {/* Connected accounts list */}
+      {accounts.length > 0 && (
+        <div className="space-y-1.5">
+          {accounts.map(acc => {
             const meta = getProviderMeta(acc.provider);
+            const isSyncing = syncing === acc.id;
             return (
               <div key={acc.id} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/40 border border-border">
                 <span className={`w-2 h-2 rounded-full shrink-0 ${meta.dot}`} />
@@ -173,17 +125,10 @@ export default function CalendarAccountsManager({ accounts, syncing, onSync, onD
                     Sync : {new Date(acc.last_synced_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                   </span>
                 )}
-                {onToggleAccount && (
-                  <Switch
-                    checked={acc.is_active}
-                    onCheckedChange={(checked) => onToggleAccount(acc.id, checked)}
-                    className="scale-75"
-                  />
-                )}
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onSync(acc.id)} disabled={syncing === acc.id || !acc.is_active}>
-                      {syncing === acc.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
+                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onSync(acc.id)} disabled={isSyncing}>
+                      {isSyncing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>Synchroniser</TooltipContent>
@@ -217,24 +162,31 @@ export default function CalendarAccountsManager({ accounts, syncing, onSync, onD
 
           {step === 'picker' && (
             <div className="grid grid-cols-2 gap-3 mt-2">
+              {/* Google */}
               <button onClick={handleConnectGoogle}
                 className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-border hover:border-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all text-center">
                 <span className="text-3xl">📅</span>
                 <span className="text-sm font-semibold text-foreground">Google Calendar</span>
                 <span className="text-[11px] text-muted-foreground">OAuth sécurisé</span>
               </button>
+
+              {/* Outlook */}
               <button onClick={handleConnectOutlook}
                 className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-border hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-all text-center">
                 <span className="text-3xl">📧</span>
                 <span className="text-sm font-semibold text-foreground">Microsoft Outlook</span>
                 <span className="text-[11px] text-muted-foreground">OAuth sécurisé</span>
               </button>
+
+              {/* CalDAV */}
               <button onClick={() => setStep('caldav')}
                 className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-border hover:border-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/20 transition-all text-center">
                 <span className="text-3xl">🔗</span>
                 <span className="text-sm font-semibold text-foreground">CalDAV</span>
                 <span className="text-[11px] text-muted-foreground">iCloud · Nextcloud · Proton · Fastmail</span>
               </button>
+
+              {/* ICS */}
               <button onClick={() => setStep('ics')}
                 className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-border hover:border-foreground/40 hover:bg-muted transition-all text-center">
                 <span className="text-3xl">📄</span>

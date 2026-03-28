@@ -85,73 +85,24 @@ Deno.serve({ verify: false }, async (req) => {
     const { access_token, refresh_token, expires_in } = tokenData;
     const tokenExpiry = new Date(Date.now() + expires_in * 1000).toISOString();
 
+    // Save to calendar_accounts
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    // Fetch all calendars from the user's Google account
-    let calendars: any[] = [];
-    try {
-      const calListRes = await fetch(
-        "https://www.googleapis.com/calendar/v3/users/me/calendarList",
-        { headers: { Authorization: `Bearer ${access_token}` } },
-      );
-      const calListData = await calListRes.json();
-      calendars = calListData.items || [];
-    } catch {
-      // Fallback to primary only
-      calendars = [{ id: "primary", summary: "Google Calendar", backgroundColor: "#4285F4" }];
-    }
-
-    if (calendars.length === 0) {
-      calendars = [{ id: "primary", summary: "Google Calendar", backgroundColor: "#4285F4" }];
-    }
-
-    // Delete existing google accounts to avoid duplicates on re-auth
-    await supabase.from("calendar_accounts").delete().eq("provider", "google");
-
-    // Insert one row per calendar
-    const rows = calendars.map((cal: any) => ({
+    const { error: dbError } = await supabase.from("calendar_accounts").insert({
       provider: "google",
       access_token,
       refresh_token,
       token_expiry: tokenExpiry,
-      calendar_id: cal.id,
-      label: cal.summary || cal.id,
-      color: cal.backgroundColor || null,
-      is_active: true,
-    }));
-
-    const { error: dbError } = await supabase.from("calendar_accounts").insert(rows);
+    });
 
     if (dbError) {
       return new Response(
-        JSON.stringify({ error: "Failed to save accounts", details: dbError.message }),
+        JSON.stringify({ error: "Failed to save account", details: dbError.message }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
-    }
-
-    // Trigger a pull for each calendar
-    const { data: savedAccounts } = await supabase
-      .from("calendar_accounts")
-      .select("id")
-      .eq("provider", "google")
-      .eq("is_active", true);
-
-    if (savedAccounts) {
-      for (const acc of savedAccounts) {
-        try {
-          await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/calendar-sync`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
-            },
-            body: JSON.stringify({ account_id: acc.id, direction: "pull" }),
-          });
-        } catch { /* ignore individual sync errors */ }
-      }
     }
 
     const appUrl = Deno.env.get("APP_URL") || "https://euthymia-zenflow-bento.lovable.app";

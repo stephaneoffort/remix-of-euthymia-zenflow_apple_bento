@@ -1050,7 +1050,6 @@ export default function CalendarView() {
         onAddCalDav={calSync.addCalDavAccount}
         onAddIcs={calSync.addIcsAccount}
         onTestConnection={(id) => calSync.syncAccount(id, 'test') as Promise<boolean>}
-        onToggleAccount={calSync.toggleAccount}
       />
     </div>
   );

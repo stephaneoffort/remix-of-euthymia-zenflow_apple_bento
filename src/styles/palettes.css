@@ -2153,13 +2153,13 @@
 [data-palette^="liquidGlass"].light [role="dialog"] *,
 [data-palette^="liquidGlass"].mixed [role="dialog"] *,
 [data-palette^="liquidGlass"]:not(.dark):not(.mixed) [role="dialog"] * {
-  color: rgba(30, 30, 55, 0.8) !important;
+  color: rgba(35, 35, 60, 0.72) !important;
 }
 [data-palette^="liquidGlass"].light [role="dialog"] h2,
 [data-palette^="liquidGlass"].light [role="dialog"] h3,
 [data-palette^="liquidGlass"].mixed [role="dialog"] h2,
 [data-palette^="liquidGlass"].mixed [role="dialog"] h3 {
-  color: rgba(20, 20, 40, 0.9) !important;
+  color: rgba(30, 30, 50, 0.82) !important;
 }
 [data-palette^="liquidGlass"].light [role="dialog"] button.bg-primary,
 [data-palette^="liquidGlass"].light [role="dialog"] button.bg-primary *,

@@ -152,7 +152,9 @@ export default function ListView() {
 
     return (
       <div className="p-3 overflow-auto h-full space-y-2">
+        <AnimatePresence mode="popLayout">
         {sorted.map(task => renderCard(task))}
+        </AnimatePresence>
         {sorted.length === 0 && !isAdding && (
           <EmptyState variant="list" onAction={() => setIsAdding(true)} />
         )}

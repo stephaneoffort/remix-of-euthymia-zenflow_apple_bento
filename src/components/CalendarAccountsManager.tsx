@@ -30,6 +30,7 @@ interface Props {
   syncing: string | null;
   visibleAccountIds: Set<string>;
   onToggleVisibility: (accountId: string) => void;
+  onSetAllVisible: (visible: boolean) => void;
   onSync: (accountId: string) => void;
   onDelete: (accountId: string) => void;
   onAddCalDav: (label: string, url: string, user: string, pass: string, provider: string) => Promise<any>;
@@ -39,7 +40,7 @@ interface Props {
 
 type ModalStep = 'picker' | 'caldav' | 'ics';
 
-export default function CalendarAccountsManager({ accounts, syncing, visibleAccountIds, onToggleVisibility, onSync, onDelete, onAddCalDav, onAddIcs, onTestConnection }: Props) {
+export default function CalendarAccountsManager({ accounts, syncing, visibleAccountIds, onToggleVisibility, onSetAllVisible, onSync, onDelete, onAddCalDav, onAddIcs, onTestConnection }: Props) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<ModalStep>('picker');
   const [accountsOpen, setAccountsOpen] = useState(true);
@@ -123,7 +124,15 @@ export default function CalendarAccountsManager({ accounts, syncing, visibleAcco
             </button>
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <div className="max-h-[240px] overflow-y-auto mt-1 scrollbar-thin">
+            <div className="flex justify-end mb-1 mt-1">
+              <button
+                onClick={() => onSetAllVisible(visibleAccountIds.size < accounts.length)}
+                className="text-[11px] text-muted-foreground hover:text-primary transition-colors px-1"
+              >
+                {visibleAccountIds.size === accounts.length ? 'Tout désélectionner' : 'Tout sélectionner'}
+              </button>
+            </div>
+            <div className="max-h-[240px] overflow-y-auto scrollbar-thin">
               <div className="space-y-1 pr-1">
                 {accounts.map(acc => {
                   const meta = getProviderMeta(acc.provider);

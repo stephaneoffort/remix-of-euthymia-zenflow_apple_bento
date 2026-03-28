@@ -462,6 +462,14 @@ export default function CalendarView() {
     });
   };
 
+  const handleSetAllVisible = (visible: boolean) => {
+    if (visible) {
+      setVisibleAccountIds(new Set(calSync.accounts.map(a => a.id)));
+    } else {
+      setVisibleAccountIds(new Set());
+    }
+  };
+
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
   const year = currentDate.getFullYear();
@@ -1080,6 +1088,7 @@ export default function CalendarView() {
         syncing={calSync.syncing}
         visibleAccountIds={visibleAccountIds}
         onToggleVisibility={handleToggleAccountVisibility}
+        onSetAllVisible={handleSetAllVisible}
         onSync={(id) => calSync.syncAccount(id, 'pull')}
         onDelete={calSync.deleteAccount}
         onAddCalDav={calSync.addCalDavAccount}

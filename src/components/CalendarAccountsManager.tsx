@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Plus, RefreshCw, Trash2, ExternalLink, CheckCircle2, Loader2, Calendar as CalIcon } from 'lucide-react';
+import { Plus, RefreshCw, Trash2, ExternalLink, CheckCircle2, Loader2, Calendar as CalIcon, ChevronDown } from 'lucide-react';
 import type { CalendarAccount } from '@/hooks/useCalendarSync';
 
 const PROVIDER_META: Record<string, { label: string; icon: string; color: string; dot: string }> = {
@@ -37,6 +38,7 @@ type ModalStep = 'picker' | 'caldav' | 'ics';
 export default function CalendarAccountsManager({ accounts, syncing, onSync, onDelete, onAddCalDav, onAddIcs, onTestConnection }: Props) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<ModalStep>('picker');
+  const [accountsOpen, setAccountsOpen] = useState(true);
 
   // CalDAV form
   const [caldavProvider, setCaldavProvider] = useState('caldav');
@@ -108,41 +110,52 @@ export default function CalendarAccountsManager({ accounts, syncing, onSync, onD
     <div className="space-y-3">
       {/* Connected accounts list */}
       {accounts.length > 0 && (
-        <div className="space-y-1.5">
-          {accounts.map(acc => {
-            const meta = getProviderMeta(acc.provider);
-            const isSyncing = syncing === acc.id;
-            return (
-              <div key={acc.id} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/40 border border-border">
-                <span className={`w-2 h-2 rounded-full shrink-0 ${meta.dot}`} />
-                <span className="text-sm font-medium text-foreground flex-1 truncate">
-                  {acc.label || meta.label}
-                </span>
-                {acc.last_synced_at && (
-                  <span className="text-[10px] text-muted-foreground shrink-0 hidden sm:block">
-                    Sync : {new Date(acc.last_synced_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                  </span>
-                )}
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onSync(acc.id)} disabled={isSyncing}>
-                      {isSyncing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Synchroniser</TooltipContent>
-                </Tooltip>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => onDelete(acc.id)}>
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Déconnecter</TooltipContent>
-                </Tooltip>
-              </div>
-            );
-          })}
-        </div>
+        <Collapsible open={accountsOpen} onOpenChange={setAccountsOpen}>
+          <CollapsibleTrigger asChild>
+            <button className="flex items-center gap-2 w-full px-1 py-1.5 text-sm font-medium text-foreground hover:text-primary transition-colors">
+              <ChevronDown className={`w-4 h-4 transition-transform ${accountsOpen ? '' : '-rotate-90'}`} />
+              Agendas connectés
+              <span className="text-xs text-muted-foreground">({accounts.length})</span>
+            </button>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="space-y-1.5 mt-1">
+              {accounts.map(acc => {
+                const meta = getProviderMeta(acc.provider);
+                const isSyncing = syncing === acc.id;
+                return (
+                  <div key={acc.id} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/40 border border-border">
+                    <span className={`w-2 h-2 rounded-full shrink-0 ${meta.dot}`} />
+                    <span className="text-sm font-medium text-foreground flex-1 truncate">
+                      {acc.label || meta.label}
+                    </span>
+                    {acc.last_synced_at && (
+                      <span className="text-[10px] text-muted-foreground shrink-0 hidden sm:block">
+                        Sync : {new Date(acc.last_synced_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    )}
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onSync(acc.id)} disabled={isSyncing}>
+                          {isSyncing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Synchroniser</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => onDelete(acc.id)}>
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Déconnecter</TooltipContent>
+                    </Tooltip>
+                  </div>
+                );
+              })}
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
       )}
 
       {/* Add button + modal */}

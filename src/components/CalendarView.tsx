@@ -504,17 +504,18 @@ export default function CalendarView() {
     return map;
   }, [tasks]);
 
-  // External calendar events indexed by date
+  // External calendar events indexed by date (filtered by visibility)
   const externalEventsByDate = useMemo(() => {
     const map = new Map<string, CalendarEvent[]>();
     calSync.events.forEach(ev => {
       if (!ev.start_time) return;
+      if (ev.account_id && !visibleAccountIds.has(ev.account_id)) return;
       const dk = ev.start_time.slice(0, 10);
       if (!map.has(dk)) map.set(dk, []);
       map.get(dk)!.push(ev);
     });
     return map;
-  }, [calSync.events]);
+  }, [calSync.events, visibleAccountIds]);
 
   // Account lookup for tooltips
   const accountMap = useMemo(() => {

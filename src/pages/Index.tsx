@@ -317,7 +317,14 @@ export default function Index() {
                               : "text-muted-foreground hover:text-foreground"
                           }`}
                         >
-                          {v.icon}
+                          <span className="relative">
+                            {v.icon}
+                            {v.key === 'calendar' && todayEventCount > 0 && (
+                              <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-bold leading-none">
+                                {todayEventCount > 99 ? '99+' : todayEventCount}
+                              </span>
+                            )}
+                          </span>
                           <span className="hidden lg:inline">{v.label}</span>
                         </button>
                       </TooltipTrigger>

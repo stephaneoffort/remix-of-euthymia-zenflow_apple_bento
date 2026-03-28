@@ -1122,22 +1122,15 @@ export default function CalendarView() {
       <div className="p-6 h-full flex flex-col">
         {sharedHeader}
         <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-          <div className="grid grid-cols-7 border border-border rounded-lg overflow-hidden flex-1">
-            {weekDays.map((d, i) => {
-              const ds = toDateStr(d);
-              const isTodayCell = ds === today;
-              return (
-                <div key={`hdr-${i}`} className={`py-2 text-center border-b border-r border-border ${isTodayCell ? 'bg-primary/10' : 'bg-muted/30'}`}>
-                  <span className="text-xs font-semibold text-muted-foreground">{DAYS_FR[i]}</span>
-                  <span className={`ml-1.5 text-xs font-bold ${isTodayCell ? 'bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full' : 'text-foreground'}`}>{d.getDate()}</span>
-                </div>
-              );
-            })}
+          <div className="grid grid-cols-7 border border-border rounded-lg overflow-hidden flex-1 auto-rows-fr">
             {weekDays.map((d, i) => {
               const ds = toDateStr(d);
               const isTodayCell = ds === today;
               return (
                 <DroppableDay key={`body-${i}`} dateStr={ds} isCurrentMonth={true} isToday={isTodayCell} dayNum={d.getDate()} onAddClick={() => setAddingForDate(ds)}>
+                  <div className="flex items-center gap-1 mb-1">
+                    <span className="text-[10px] font-semibold text-muted-foreground uppercase">{DAYS_FR[i]}</span>
+                  </div>
                   {renderCellTasks(ds)}
                   {addingForDate === ds && (
                     <input autoFocus value={newTaskTitle} onChange={e => setNewTaskTitle(e.target.value)}

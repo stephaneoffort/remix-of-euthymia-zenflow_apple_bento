@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import EmptyState from '@/components/EmptyState';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';

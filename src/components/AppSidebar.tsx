@@ -1365,6 +1365,7 @@ function ThemeSwitcher() {
     { key: 'sapphire', label: 'Sapphire Depth', colors: ['#0C1018', '#2DD4BF'] },
     { key: 'cinematic', label: 'Cinematic Glow', colors: ['#0E0A1C', '#7C5CED'] },
     { key: 'teal', label: 'Ocean Teal', colors: ['#0A1518', '#14B8A6'] },
+    { key: 'bento2026', label: 'Bento 2026', colors: ['#f5f0e8', '#2d3a2e'] },
   ];
 
   return (

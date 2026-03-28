@@ -38,6 +38,11 @@ export const PALETTE_META: Record<ThemePalette, { label: string; description: st
     description: 'Bleu-vert organique — Wellness & mindfulness',
     colors: ['#0A1518', '#0F1C20', '#14B8A6', '#E8FAF5'],
   },
+  bento2026: {
+    label: 'Bento 2026',
+    description: 'Off-white chaud + Vert forêt — Tendance organique 2026',
+    colors: ['#f5f0e8', '#ede8df', '#2d3a2e', '#a8d5b5'],
+  },
 };
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {

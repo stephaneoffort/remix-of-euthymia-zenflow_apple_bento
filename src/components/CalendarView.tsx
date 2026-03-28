@@ -786,6 +786,17 @@ export default function CalendarView() {
     );
   };
 
+  const eventDialogElement = (
+    <CalendarEventDialog
+      open={eventDialogOpen}
+      onClose={() => { setEventDialogOpen(false); setEditingEvent(null); }}
+      onSave={handleSaveEvent}
+      onDelete={editingEvent ? () => handleDeleteEvent(editingEvent) : undefined}
+      event={editingEvent}
+      defaultDate={eventDialogDate}
+    />
+  );
+
   // ─── Mobile layouts ───
   if (isMobile) {
     const handleConnectGoogle = () => {

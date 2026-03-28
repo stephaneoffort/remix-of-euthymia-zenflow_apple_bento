@@ -91,6 +91,19 @@ export default function Index() {
   const [quickAddTitle, setQuickAddTitle] = useState("");
   const [voiceAddOpen, setVoiceAddOpen] = useState(false);
   const [projectMemberIds, setProjectMemberIds] = useState<string[]>([]);
+  const [todayEventCount, setTodayEventCount] = useState(0);
+
+  // Fetch today's upcoming calendar events count
+  useEffect(() => {
+    const now = new Date();
+    const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+    supabase
+      .from('calendar_events')
+      .select('id', { count: 'exact', head: true })
+      .gte('start_time', now.toISOString())
+      .lte('start_time', endOfDay.toISOString())
+      .then(({ count }) => setTodayEventCount(count || 0));
+  }, []);
 
   // Fetch project members when a project is selected
   useEffect(() => {
@@ -304,7 +317,14 @@ export default function Index() {
                               : "text-muted-foreground hover:text-foreground"
                           }`}
                         >
-                          {v.icon}
+                          <span className="relative">
+                            {v.icon}
+                            {v.key === 'calendar' && todayEventCount > 0 && (
+                              <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-bold leading-none">
+                                {todayEventCount > 99 ? '99+' : todayEventCount}
+                              </span>
+                            )}
+                          </span>
                           <span className="hidden lg:inline">{v.label}</span>
                         </button>
                       </TooltipTrigger>
@@ -414,7 +434,14 @@ export default function Index() {
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  {v.icon}
+                  <span className="relative">
+                    {v.icon}
+                    {v.key === 'calendar' && todayEventCount > 0 && (
+                      <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-bold leading-none">
+                        {todayEventCount > 99 ? '99+' : todayEventCount}
+                      </span>
+                    )}
+                  </span>
                   {v.label}
                 </button>
               ))}

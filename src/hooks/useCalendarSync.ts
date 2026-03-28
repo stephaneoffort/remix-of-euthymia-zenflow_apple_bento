@@ -179,6 +179,149 @@ export function useCalendarSync() {
     }
   }, [fetchEvents]);
 
+  const createCalendarEvent = useCallback(async (data: {
+    title: string;
+    description?: string;
+    start_time: string;
+    end_time: string;
+    is_all_day?: boolean;
+    location?: string;
+  }) => {
+    // Find first active writable account
+    const { data: activeAccounts } = await supabase
+      .from('calendar_accounts')
+      .select('*')
+      .eq('is_active', true)
+      .neq('provider', 'ics')
+      .order('created_at', { ascending: true })
+      .limit(1);
+
+    const account = activeAccounts?.[0];
+
+    // Insert event locally
+    const { data: newEvent, error } = await supabase
+      .from('calendar_events')
+      .insert({
+        title: data.title,
+        description: data.description || null,
+        start_time: data.start_time,
+        end_time: data.end_time,
+        is_all_day: data.is_all_day ?? false,
+        location: data.location || null,
+        provider: account?.provider || 'google',
+        account_id: account?.id || null,
+        sync_status: account ? 'pending' : 'local',
+      } as any)
+      .select()
+      .single();
+
+    if (error) {
+      toast.error('Erreur : ' + error.message);
+      return null;
+    }
+
+    // Push to external calendar if account exists
+    if (account && newEvent) {
+      try {
+        const { error: pushErr } = await supabase.functions.invoke('calendar-sync', {
+          body: { account_id: account.id, direction: 'push', event_id: (newEvent as any).id, action: 'create' },
+        });
+        if (pushErr) throw pushErr;
+        toast.success('Événement ajouté à Google Calendar ✅');
+      } catch (err: any) {
+        toast.error('Erreur push : ' + (err.message || 'Inconnue'));
+      }
+    } else {
+      toast.success('Événement créé');
+    }
+
+    await fetchEvents();
+    return newEvent;
+  }, [fetchEvents]);
+
+  const updateCalendarEvent = useCallback(async (eventId: string, data: {
+    title: string;
+    description?: string;
+    start_time: string;
+    end_time: string;
+    is_all_day?: boolean;
+    location?: string;
+  }) => {
+    const { error } = await supabase
+      .from('calendar_events')
+      .update({
+        title: data.title,
+        description: data.description || null,
+        start_time: data.start_time,
+        end_time: data.end_time,
+        is_all_day: data.is_all_day ?? false,
+        location: data.location || null,
+        sync_status: 'pending',
+      } as any)
+      .eq('id', eventId);
+
+    if (error) {
+      toast.error('Erreur : ' + error.message);
+      return false;
+    }
+
+    // Find the event's account for push
+    const { data: ev } = await supabase
+      .from('calendar_events')
+      .select('account_id, external_id')
+      .eq('id', eventId)
+      .single();
+
+    if (ev?.account_id && ev?.external_id) {
+      try {
+        const { error: pushErr } = await supabase.functions.invoke('calendar-sync', {
+          body: { account_id: ev.account_id, direction: 'push', event_id: eventId, action: 'update' },
+        });
+        if (pushErr) throw pushErr;
+        toast.success('Événement mis à jour ✅');
+      } catch (err: any) {
+        toast.error('Erreur push : ' + (err.message || 'Inconnue'));
+      }
+    } else {
+      toast.success('Événement mis à jour');
+    }
+
+    await fetchEvents();
+    return true;
+  }, [fetchEvents]);
+
+  const deleteCalendarEvent = useCallback(async (eventId: string) => {
+    // Get event info before deleting
+    const { data: ev } = await supabase
+      .from('calendar_events')
+      .select('account_id, external_id')
+      .eq('id', eventId)
+      .single();
+
+    // Push delete to external calendar if applicable
+    if (ev?.account_id && ev?.external_id) {
+      try {
+        const { error: pushErr } = await supabase.functions.invoke('calendar-sync', {
+          body: { account_id: ev.account_id, direction: 'push', event_id: eventId, action: 'delete' },
+        });
+        if (pushErr) throw pushErr;
+        toast.success('Événement supprimé ✅');
+      } catch (err: any) {
+        // Delete locally anyway
+        await supabase.from('calendar_events').delete().eq('id', eventId);
+        toast.error('Erreur push : ' + (err.message || 'Inconnue'));
+        await fetchEvents();
+        return;
+      }
+    } else {
+      // No external sync, just delete locally
+      await supabase.from('calendar_events').delete().eq('id', eventId);
+      toast.success('Événement supprimé');
+    }
+
+    await fetchEvents();
+  }, [fetchEvents]);
+
   useEffect(() => {
     fetchAccounts();
     fetchEvents();
@@ -197,5 +340,8 @@ export function useCalendarSync() {
     pushEvent,
     fetchAccounts,
     fetchEvents,
+    createCalendarEvent,
+    updateCalendarEvent,
+    deleteCalendarEvent,
   };
 }

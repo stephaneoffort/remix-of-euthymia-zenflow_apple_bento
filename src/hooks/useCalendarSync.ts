@@ -278,10 +278,7 @@ export function useCalendarSync() {
 
     if (ev?.account_id && ev?.external_id) {
       try {
-        const { error: pushErr } = await supabase.functions.invoke('calendar-sync', {
-          body: { account_id: ev.account_id, direction: 'push', event_id: eventId, action: 'update' },
-        });
-        if (pushErr) throw pushErr;
+        await invokeCalendarSync({ account_id: ev.account_id, direction: 'push', event_id: eventId, action: 'update' });
         toast.success('Événement mis à jour ✅');
       } catch (err: any) {
         toast.error('Erreur push : ' + (err.message || 'Inconnue'));

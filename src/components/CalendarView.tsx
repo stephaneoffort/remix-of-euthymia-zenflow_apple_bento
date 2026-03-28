@@ -1078,6 +1078,8 @@ export default function CalendarView() {
       <CalendarAccountsManager
         accounts={calSync.accounts}
         syncing={calSync.syncing}
+        visibleAccountIds={visibleAccountIds}
+        onToggleVisibility={handleToggleAccountVisibility}
         onSync={(id) => calSync.syncAccount(id, 'pull')}
         onDelete={calSync.deleteAccount}
         onAddCalDav={calSync.addCalDavAccount}

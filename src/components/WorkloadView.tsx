@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useApp } from '@/context/AppContext';
+import { useThemeMode } from '@/context/ThemeContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { STATUS_LABELS, PRIORITY_LABELS, Priority } from '@/types';
@@ -12,25 +13,40 @@ import {
   PieChart, Pie, Cell, Legend,
 } from 'recharts';
 
-const STATUS_COLORS: Record<string, string> = {
-  todo: 'hsl(var(--muted-foreground))',
-  in_progress: 'hsl(var(--primary))',
-  in_review: 'hsl(38, 92%, 50%)',
-  done: 'hsl(142, 71%, 45%)',
-  blocked: 'hsl(0, 84%, 60%)',
-};
-
-const PRIORITY_COLORS: Record<string, string> = {
-  urgent: 'hsl(0, 84%, 60%)',
-  high: 'hsl(25, 95%, 53%)',
-  normal: 'hsl(var(--primary))',
-  low: 'hsl(var(--muted-foreground))',
-};
+function getChartColors() {
+  const root = getComputedStyle(document.documentElement);
+  const hsl = (v: string, fallback: string) => {
+    const val = root.getPropertyValue(v).trim();
+    return val ? `hsl(${val})` : fallback;
+  };
+  return {
+    status: {
+      todo: hsl('--status-todo', 'hsl(var(--muted-foreground))'),
+      in_progress: hsl('--status-progress', 'hsl(var(--primary))'),
+      in_review: hsl('--status-review', 'hsl(38, 92%, 50%)'),
+      done: hsl('--status-done', 'hsl(142, 71%, 45%)'),
+      blocked: hsl('--status-blocked', 'hsl(0, 84%, 60%)'),
+    } as Record<string, string>,
+    priority: {
+      urgent: hsl('--priority-urgent', 'hsl(0, 84%, 60%)'),
+      high: hsl('--priority-high', 'hsl(25, 95%, 53%)'),
+      normal: hsl('--priority-normal', 'hsl(var(--primary))'),
+      low: hsl('--priority-low', 'hsl(var(--muted-foreground))'),
+    } as Record<string, string>,
+  };
+}
 
 export default function WorkloadView() {
   const { getFilteredTasks, teamMembers, setSelectedTaskId } = useApp();
+  const { palette, theme } = useThemeMode();
   const tasks = getFilteredTasks();
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
+
+  const { STATUS_COLORS, PRIORITY_COLORS } = useMemo(() => {
+    const colors = getChartColors();
+    return { STATUS_COLORS: colors.status, PRIORITY_COLORS: colors.priority };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [palette, theme]);
 
   const memberData = useMemo(() => {
     return teamMembers.map(member => {

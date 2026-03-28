@@ -177,10 +177,7 @@ export function useCalendarSync() {
 
   const pushEvent = useCallback(async (accountId: string, eventId: string, action: 'create' | 'update' | 'delete') => {
     try {
-      const { error } = await supabase.functions.invoke('calendar-sync', {
-        body: { account_id: accountId, direction: 'push', event_id: eventId, action },
-      });
-      if (error) throw error;
+      await invokeCalendarSync({ account_id: accountId, direction: 'push', event_id: eventId, action });
       await fetchEvents();
       return true;
     } catch (err: any) {

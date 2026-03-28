@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export type ThemeMode = 'light' | 'dark' | 'mixed';
-export type ThemePalette = 'clubroom' | 'neutrals' | 'sapphire' | 'cinematic' | 'teal' | 'bento2026' | 'bentoOcean' | 'bentoRose' | 'bentoAmber';
+export type ThemePalette = 'clubroom' | 'neutrals' | 'sapphire' | 'cinematic' | 'teal' | 'bento2026' | 'bentoOcean' | 'bentoRose' | 'bentoAmber' | 'liquidGlass';
 
 interface ThemeContextType {
   theme: ThemeMode;
@@ -57,6 +57,11 @@ export const PALETTE_META: Record<ThemePalette, { label: string; description: st
     label: 'Bento Amber',
     description: 'Ambre chaud + Charbon — Chaleur minérale 2026',
     colors: ['#f5efe5', '#ede6da', '#2e2a26', '#d4a04a'],
+  },
+  liquidGlass: {
+    label: 'Liquid Glass',
+    description: 'Apple iOS 26 — Verre translucide + fond vivant',
+    colors: ['#e8f4ff', '#f0e8ff', '#6366f1', '#ffffff'],
   },
 };
 

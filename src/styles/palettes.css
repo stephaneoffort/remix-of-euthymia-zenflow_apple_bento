@@ -889,3 +889,659 @@
   --status-done: 152 34% 36%;
   --status-blocked: 4 42% 42%;
 }
+
+/* ═══════════════════════════════════════════════════════
+   BENTO OCEAN — Deep Blue + Coral  (#eef3f8 / #1e3a5f / #f0846a)
+   ═══════════════════════════════════════════════════════ */
+
+/* Dark mode */
+[data-palette="bentoOcean"] {
+  --background: 210 30% 8%;
+  --foreground: 210 20% 90%;
+  --card: 210 28% 11%;
+  --card-foreground: 210 20% 90%;
+  --popover: 210 30% 9%;
+  --popover-foreground: 210 20% 92%;
+  --primary: 12 80% 62%;
+  --primary-foreground: 210 30% 8%;
+  --secondary: 210 22% 15%;
+  --secondary-foreground: 210 14% 68%;
+  --muted: 210 20% 13%;
+  --muted-foreground: 210 10% 58%;
+  --accent: 210 30% 18%;
+  --accent-foreground: 12 70% 72%;
+  --destructive: 0 68% 52%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 210 18% 18%;
+  --input: 210 20% 15%;
+  --ring: 12 80% 62%;
+  --sidebar-background: 210 32% 6%;
+  --sidebar-foreground: 210 10% 75%;
+  --sidebar-primary: 12 80% 62%;
+  --sidebar-primary-foreground: 210 30% 8%;
+  --sidebar-accent: 210 25% 12%;
+  --sidebar-accent-foreground: 210 18% 90%;
+  --sidebar-ring: 12 80% 62%;
+  --sidebar-border: 210 20% 14%;
+  --bento-bg: #0f1a28;
+  --bento-bg-hover: #162236;
+  --bento-border: rgba(240,132,106,0.08);
+  --bento-accent: rgba(240,132,106,0.12);
+  --priority-urgent: 0 60% 52%;
+  --priority-high: 20 58% 52%;
+  --priority-normal: 200 35% 48%;
+  --priority-low: 210 18% 52%;
+  --status-todo: 210 18% 52%;
+  --status-progress: 200 40% 48%;
+  --status-review: 30 50% 52%;
+  --status-done: 170 42% 42%;
+  --status-blocked: 0 50% 48%;
+}
+
+/* Light mode */
+[data-palette="bentoOcean"].light {
+  --background: 210 30% 96%;
+  --foreground: 210 30% 10%;
+  --card: 210 25% 97%;
+  --card-foreground: 210 30% 10%;
+  --popover: 210 20% 98%;
+  --popover-foreground: 210 30% 10%;
+  --primary: 210 55% 30%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 210 18% 92%;
+  --secondary-foreground: 210 20% 38%;
+  --muted: 210 14% 94%;
+  --muted-foreground: 210 10% 42%;
+  --accent: 12 70% 55%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 68% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 210 18% 88%;
+  --input: 210 14% 92%;
+  --ring: 210 55% 30%;
+  --sidebar-background: 210 25% 97%;
+  --sidebar-foreground: 210 15% 30%;
+  --sidebar-primary: 210 55% 30%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 210 20% 93%;
+  --sidebar-accent-foreground: 210 20% 25%;
+  --sidebar-ring: 210 55% 30%;
+  --sidebar-border: 210 16% 90%;
+  --bento-bg: #eef3f8;
+  --bento-bg-hover: #e4ecf4;
+  --bento-border: rgba(30,58,95,0.1);
+  --bento-accent: rgba(240,132,106,0.12);
+  --priority-urgent: 0 55% 46%;
+  --priority-high: 20 52% 46%;
+  --priority-normal: 200 30% 40%;
+  --priority-low: 210 14% 46%;
+  --status-todo: 210 14% 46%;
+  --status-progress: 200 36% 40%;
+  --status-review: 30 45% 44%;
+  --status-done: 170 38% 36%;
+  --status-blocked: 0 45% 42%;
+}
+
+/* Mixed mode */
+[data-palette="bentoOcean"].mixed {
+  --background: 210 30% 96%;
+  --foreground: 210 30% 10%;
+  --card: 210 25% 97%;
+  --card-foreground: 210 30% 10%;
+  --popover: 210 20% 98%;
+  --popover-foreground: 210 30% 10%;
+  --primary: 210 55% 30%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 210 18% 92%;
+  --secondary-foreground: 210 20% 38%;
+  --muted: 210 14% 94%;
+  --muted-foreground: 210 10% 42%;
+  --accent: 12 70% 55%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 68% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 210 18% 88%;
+  --input: 210 14% 92%;
+  --ring: 210 55% 30%;
+  --sidebar-background: 210 32% 6%;
+  --sidebar-foreground: 210 10% 75%;
+  --sidebar-primary: 12 80% 62%;
+  --sidebar-primary-foreground: 210 30% 8%;
+  --sidebar-accent: 210 25% 12%;
+  --sidebar-accent-foreground: 210 18% 90%;
+  --sidebar-ring: 12 80% 62%;
+  --sidebar-border: 210 20% 14%;
+  --bento-bg: #eef3f8;
+  --bento-bg-hover: #e4ecf4;
+  --bento-border: rgba(30,58,95,0.1);
+  --bento-accent: rgba(240,132,106,0.12);
+  --priority-urgent: 0 55% 46%;
+  --priority-high: 20 52% 46%;
+  --priority-normal: 200 30% 40%;
+  --priority-low: 210 14% 46%;
+  --status-todo: 210 14% 46%;
+  --status-progress: 200 36% 40%;
+  --status-review: 30 45% 44%;
+  --status-done: 170 38% 36%;
+  --status-blocked: 0 45% 42%;
+}
+
+/* Typography & surfaces for Bento Ocean */
+[data-palette="bentoOcean"] {
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+}
+[data-palette="bentoOcean"] body,
+[data-palette="bentoOcean"] input,
+[data-palette="bentoOcean"] textarea,
+[data-palette="bentoOcean"] button,
+[data-palette="bentoOcean"] select {
+  font-family: var(--font-body);
+  font-size: clamp(14px, 1.5vw, 16px);
+}
+[data-palette="bentoOcean"] h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(24px, 4vw, 40px);
+  font-weight: 700;
+}
+[data-palette="bentoOcean"] h2 {
+  font-family: var(--font-heading);
+  font-size: clamp(18px, 3vw, 28px);
+  font-weight: 600;
+}
+
+[data-palette="bentoOcean"].light .bento-cell,
+[data-palette="bentoOcean"].mixed .bento-cell {
+  border-radius: 20px;
+  border: 1px solid rgba(30, 58, 95, 0.08);
+  box-shadow: 0 4px 30px rgba(30, 58, 95, 0.10), 0 1px 3px rgba(30, 58, 95, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  background: rgba(238, 243, 248, 0.65);
+}
+[data-palette="bentoOcean"] .bento-cell {
+  border-radius: 20px;
+  border: 1px solid rgba(240, 132, 106, 0.08);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  background: rgba(30, 58, 95, 0.35);
+}
+[data-palette="bentoOcean"] .bento-cell-inner { padding: 24px; gap: 18px; }
+[data-palette="bentoOcean"] .bento-container { gap: 20px; }
+@media (min-width: 640px) { [data-palette="bentoOcean"] .bento-container { gap: 24px; padding: 24px; } }
+@media (min-width: 1024px) { [data-palette="bentoOcean"] .bento-container { gap: 32px; padding: 32px; } }
+
+[data-palette="bentoOcean"] button,
+[data-palette="bentoOcean"] a,
+[data-palette="bentoOcean"] .bento-cell,
+[data-palette="bentoOcean"] .bento-project-item,
+[data-palette="bentoOcean"] .bento-task-item {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+[data-palette="bentoOcean"] .bento-cell:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 40px rgba(30, 58, 95, 0.16), 0 2px 6px rgba(30, 58, 95, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+[data-palette="bentoOcean"] button:hover { filter: brightness(1.08); }
+[data-palette="bentoOcean"] .bento-project-item:hover,
+[data-palette="bentoOcean"] .bento-task-item:hover { transform: translateY(-1px); }
+
+[data-palette="bentoOcean"].light .bento-hero,
+[data-palette="bentoOcean"].mixed .bento-hero {
+  background: linear-gradient(135deg, rgba(30,58,95,0.04) 0%, rgba(238,243,248,0.90) 60%);
+  backdrop-filter: blur(20px) saturate(1.5);
+}
+[data-palette="bentoOcean"].light .bento-hero-glow,
+[data-palette="bentoOcean"].mixed .bento-hero-glow {
+  background: radial-gradient(ellipse 60% 80% at 0% 100%, rgba(240,132,106,0.2) 0%, transparent 70%);
+}
+[data-palette="bentoOcean"].light [data-slot="card"],
+[data-palette="bentoOcean"].mixed [data-slot="card"],
+[data-palette="bentoOcean"].light .rounded-lg.border,
+[data-palette="bentoOcean"].mixed .rounded-lg.border {
+  border-radius: 20px;
+  backdrop-filter: blur(12px) saturate(1.3);
+  background: rgba(238, 243, 248, 0.7);
+  box-shadow: 0 4px 24px rgba(30, 58, 95, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+[data-palette="bentoOcean"] button.rounded-md,
+[data-palette="bentoOcean"] button.rounded-lg { border-radius: 12px; }
+
+
+/* ═══════════════════════════════════════════════════════
+   BENTO ROSE — Blush Pink + Burgundy  (#f8f0f0 / #5c2434 / #e8a0b0)
+   ═══════════════════════════════════════════════════════ */
+
+/* Dark mode */
+[data-palette="bentoRose"] {
+  --background: 350 20% 8%;
+  --foreground: 350 18% 90%;
+  --card: 350 18% 11%;
+  --card-foreground: 350 18% 90%;
+  --popover: 350 20% 9%;
+  --popover-foreground: 350 18% 92%;
+  --primary: 345 50% 55%;
+  --primary-foreground: 350 20% 8%;
+  --secondary: 350 14% 15%;
+  --secondary-foreground: 350 12% 68%;
+  --muted: 350 12% 13%;
+  --muted-foreground: 350 8% 58%;
+  --accent: 350 22% 18%;
+  --accent-foreground: 345 45% 72%;
+  --destructive: 0 68% 52%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 350 14% 18%;
+  --input: 350 14% 15%;
+  --ring: 345 50% 55%;
+  --sidebar-background: 350 22% 6%;
+  --sidebar-foreground: 350 8% 75%;
+  --sidebar-primary: 345 50% 55%;
+  --sidebar-primary-foreground: 350 20% 8%;
+  --sidebar-accent: 350 18% 12%;
+  --sidebar-accent-foreground: 350 14% 90%;
+  --sidebar-ring: 345 50% 55%;
+  --sidebar-border: 350 14% 14%;
+  --bento-bg: #1e1218;
+  --bento-bg-hover: #2a1a22;
+  --bento-border: rgba(232,160,176,0.08);
+  --bento-accent: rgba(232,160,176,0.12);
+  --priority-urgent: 0 55% 52%;
+  --priority-high: 15 50% 52%;
+  --priority-normal: 330 25% 48%;
+  --priority-low: 350 14% 52%;
+  --status-todo: 350 14% 52%;
+  --status-progress: 330 30% 48%;
+  --status-review: 25 45% 52%;
+  --status-done: 160 35% 42%;
+  --status-blocked: 0 48% 48%;
+}
+
+/* Light mode */
+[data-palette="bentoRose"].light {
+  --background: 350 30% 96%;
+  --foreground: 350 35% 12%;
+  --card: 350 25% 97%;
+  --card-foreground: 350 35% 12%;
+  --popover: 350 20% 98%;
+  --popover-foreground: 350 35% 12%;
+  --primary: 345 45% 28%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 350 16% 92%;
+  --secondary-foreground: 350 18% 38%;
+  --muted: 350 12% 94%;
+  --muted-foreground: 350 8% 42%;
+  --accent: 345 50% 55%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 68% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 350 16% 88%;
+  --input: 350 12% 92%;
+  --ring: 345 45% 28%;
+  --sidebar-background: 350 25% 97%;
+  --sidebar-foreground: 350 14% 30%;
+  --sidebar-primary: 345 45% 28%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 350 18% 93%;
+  --sidebar-accent-foreground: 350 18% 25%;
+  --sidebar-ring: 345 45% 28%;
+  --sidebar-border: 350 14% 90%;
+  --bento-bg: #f8f0f0;
+  --bento-bg-hover: #f0e6e6;
+  --bento-border: rgba(92,36,52,0.1);
+  --bento-accent: rgba(232,160,176,0.15);
+  --priority-urgent: 0 50% 46%;
+  --priority-high: 15 45% 46%;
+  --priority-normal: 330 22% 40%;
+  --priority-low: 350 10% 46%;
+  --status-todo: 350 10% 46%;
+  --status-progress: 330 26% 40%;
+  --status-review: 25 40% 44%;
+  --status-done: 160 32% 36%;
+  --status-blocked: 0 42% 42%;
+}
+
+/* Mixed mode */
+[data-palette="bentoRose"].mixed {
+  --background: 350 30% 96%;
+  --foreground: 350 35% 12%;
+  --card: 350 25% 97%;
+  --card-foreground: 350 35% 12%;
+  --popover: 350 20% 98%;
+  --popover-foreground: 350 35% 12%;
+  --primary: 345 45% 28%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 350 16% 92%;
+  --secondary-foreground: 350 18% 38%;
+  --muted: 350 12% 94%;
+  --muted-foreground: 350 8% 42%;
+  --accent: 345 50% 55%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 68% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 350 16% 88%;
+  --input: 350 12% 92%;
+  --ring: 345 45% 28%;
+  --sidebar-background: 350 22% 6%;
+  --sidebar-foreground: 350 8% 75%;
+  --sidebar-primary: 345 50% 55%;
+  --sidebar-primary-foreground: 350 20% 8%;
+  --sidebar-accent: 350 18% 12%;
+  --sidebar-accent-foreground: 350 14% 90%;
+  --sidebar-ring: 345 50% 55%;
+  --sidebar-border: 350 14% 14%;
+  --bento-bg: #f8f0f0;
+  --bento-bg-hover: #f0e6e6;
+  --bento-border: rgba(92,36,52,0.1);
+  --bento-accent: rgba(232,160,176,0.15);
+  --priority-urgent: 0 50% 46%;
+  --priority-high: 15 45% 46%;
+  --priority-normal: 330 22% 40%;
+  --priority-low: 350 10% 46%;
+  --status-todo: 350 10% 46%;
+  --status-progress: 330 26% 40%;
+  --status-review: 25 40% 44%;
+  --status-done: 160 32% 36%;
+  --status-blocked: 0 42% 42%;
+}
+
+/* Typography & surfaces for Bento Rose */
+[data-palette="bentoRose"] {
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+}
+[data-palette="bentoRose"] body,
+[data-palette="bentoRose"] input,
+[data-palette="bentoRose"] textarea,
+[data-palette="bentoRose"] button,
+[data-palette="bentoRose"] select {
+  font-family: var(--font-body);
+  font-size: clamp(14px, 1.5vw, 16px);
+}
+[data-palette="bentoRose"] h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(24px, 4vw, 40px);
+  font-weight: 700;
+}
+[data-palette="bentoRose"] h2 {
+  font-family: var(--font-heading);
+  font-size: clamp(18px, 3vw, 28px);
+  font-weight: 600;
+}
+
+[data-palette="bentoRose"].light .bento-cell,
+[data-palette="bentoRose"].mixed .bento-cell {
+  border-radius: 20px;
+  border: 1px solid rgba(92, 36, 52, 0.08);
+  box-shadow: 0 4px 30px rgba(92, 36, 52, 0.08), 0 1px 3px rgba(92, 36, 52, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  background: rgba(248, 240, 240, 0.65);
+}
+[data-palette="bentoRose"] .bento-cell {
+  border-radius: 20px;
+  border: 1px solid rgba(232, 160, 176, 0.08);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  background: rgba(92, 36, 52, 0.3);
+}
+[data-palette="bentoRose"] .bento-cell-inner { padding: 24px; gap: 18px; }
+[data-palette="bentoRose"] .bento-container { gap: 20px; }
+@media (min-width: 640px) { [data-palette="bentoRose"] .bento-container { gap: 24px; padding: 24px; } }
+@media (min-width: 1024px) { [data-palette="bentoRose"] .bento-container { gap: 32px; padding: 32px; } }
+
+[data-palette="bentoRose"] button,
+[data-palette="bentoRose"] a,
+[data-palette="bentoRose"] .bento-cell,
+[data-palette="bentoRose"] .bento-project-item,
+[data-palette="bentoRose"] .bento-task-item {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+[data-palette="bentoRose"] .bento-cell:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 40px rgba(92, 36, 52, 0.14), 0 2px 6px rgba(92, 36, 52, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+[data-palette="bentoRose"] button:hover { filter: brightness(1.08); }
+[data-palette="bentoRose"] .bento-project-item:hover,
+[data-palette="bentoRose"] .bento-task-item:hover { transform: translateY(-1px); }
+
+[data-palette="bentoRose"].light .bento-hero,
+[data-palette="bentoRose"].mixed .bento-hero {
+  background: linear-gradient(135deg, rgba(92,36,52,0.04) 0%, rgba(248,240,240,0.90) 60%);
+  backdrop-filter: blur(20px) saturate(1.5);
+}
+[data-palette="bentoRose"].light .bento-hero-glow,
+[data-palette="bentoRose"].mixed .bento-hero-glow {
+  background: radial-gradient(ellipse 60% 80% at 0% 100%, rgba(232,160,176,0.2) 0%, transparent 70%);
+}
+[data-palette="bentoRose"].light [data-slot="card"],
+[data-palette="bentoRose"].mixed [data-slot="card"],
+[data-palette="bentoRose"].light .rounded-lg.border,
+[data-palette="bentoRose"].mixed .rounded-lg.border {
+  border-radius: 20px;
+  backdrop-filter: blur(12px) saturate(1.3);
+  background: rgba(248, 240, 240, 0.7);
+  box-shadow: 0 4px 24px rgba(92, 36, 52, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+[data-palette="bentoRose"] button.rounded-md,
+[data-palette="bentoRose"] button.rounded-lg { border-radius: 12px; }
+
+
+/* ═══════════════════════════════════════════════════════
+   BENTO AMBER — Warm Amber + Charcoal  (#f5efe5 / #2e2a26 / #d4a04a)
+   ═══════════════════════════════════════════════════════ */
+
+/* Dark mode */
+[data-palette="bentoAmber"] {
+  --background: 30 14% 8%;
+  --foreground: 35 22% 90%;
+  --card: 30 12% 11%;
+  --card-foreground: 35 22% 90%;
+  --popover: 30 14% 9%;
+  --popover-foreground: 35 22% 92%;
+  --primary: 38 65% 52%;
+  --primary-foreground: 30 14% 8%;
+  --secondary: 30 10% 15%;
+  --secondary-foreground: 35 12% 68%;
+  --muted: 30 8% 13%;
+  --muted-foreground: 35 6% 58%;
+  --accent: 38 25% 18%;
+  --accent-foreground: 38 55% 68%;
+  --destructive: 0 68% 52%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 30 10% 18%;
+  --input: 30 10% 15%;
+  --ring: 38 65% 52%;
+  --sidebar-background: 30 16% 6%;
+  --sidebar-foreground: 35 6% 75%;
+  --sidebar-primary: 38 65% 52%;
+  --sidebar-primary-foreground: 30 14% 8%;
+  --sidebar-accent: 30 12% 12%;
+  --sidebar-accent-foreground: 35 14% 90%;
+  --sidebar-ring: 38 65% 52%;
+  --sidebar-border: 30 10% 14%;
+  --bento-bg: #1c1a17;
+  --bento-bg-hover: #252220;
+  --bento-border: rgba(212,160,74,0.08);
+  --bento-accent: rgba(212,160,74,0.12);
+  --priority-urgent: 4 55% 52%;
+  --priority-high: 25 52% 52%;
+  --priority-normal: 38 30% 48%;
+  --priority-low: 30 14% 52%;
+  --status-todo: 30 14% 52%;
+  --status-progress: 38 35% 48%;
+  --status-review: 20 48% 52%;
+  --status-done: 145 35% 42%;
+  --status-blocked: 4 48% 48%;
+}
+
+/* Light mode */
+[data-palette="bentoAmber"].light {
+  --background: 35 30% 95%;
+  --foreground: 30 20% 12%;
+  --card: 35 25% 96%;
+  --card-foreground: 30 20% 12%;
+  --popover: 35 20% 98%;
+  --popover-foreground: 30 20% 12%;
+  --primary: 30 30% 22%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 35 16% 92%;
+  --secondary-foreground: 30 16% 38%;
+  --muted: 35 12% 93%;
+  --muted-foreground: 30 8% 42%;
+  --accent: 38 65% 52%;
+  --accent-foreground: 30 14% 8%;
+  --destructive: 0 68% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 35 16% 87%;
+  --input: 35 12% 91%;
+  --ring: 30 30% 22%;
+  --sidebar-background: 35 25% 96%;
+  --sidebar-foreground: 30 12% 30%;
+  --sidebar-primary: 30 30% 22%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 35 18% 92%;
+  --sidebar-accent-foreground: 30 16% 25%;
+  --sidebar-ring: 30 30% 22%;
+  --sidebar-border: 35 14% 89%;
+  --bento-bg: #f5efe5;
+  --bento-bg-hover: #ede6da;
+  --bento-border: rgba(46,42,38,0.1);
+  --bento-accent: rgba(212,160,74,0.15);
+  --priority-urgent: 4 50% 46%;
+  --priority-high: 25 48% 46%;
+  --priority-normal: 38 25% 40%;
+  --priority-low: 30 10% 46%;
+  --status-todo: 30 10% 46%;
+  --status-progress: 38 30% 40%;
+  --status-review: 20 42% 44%;
+  --status-done: 145 32% 36%;
+  --status-blocked: 4 42% 42%;
+}
+
+/* Mixed mode */
+[data-palette="bentoAmber"].mixed {
+  --background: 35 30% 95%;
+  --foreground: 30 20% 12%;
+  --card: 35 25% 96%;
+  --card-foreground: 30 20% 12%;
+  --popover: 35 20% 98%;
+  --popover-foreground: 30 20% 12%;
+  --primary: 30 30% 22%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 35 16% 92%;
+  --secondary-foreground: 30 16% 38%;
+  --muted: 35 12% 93%;
+  --muted-foreground: 30 8% 42%;
+  --accent: 38 65% 52%;
+  --accent-foreground: 30 14% 8%;
+  --destructive: 0 68% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 35 16% 87%;
+  --input: 35 12% 91%;
+  --ring: 30 30% 22%;
+  --sidebar-background: 30 16% 6%;
+  --sidebar-foreground: 35 6% 75%;
+  --sidebar-primary: 38 65% 52%;
+  --sidebar-primary-foreground: 30 14% 8%;
+  --sidebar-accent: 30 12% 12%;
+  --sidebar-accent-foreground: 35 14% 90%;
+  --sidebar-ring: 38 65% 52%;
+  --sidebar-border: 30 10% 14%;
+  --bento-bg: #f5efe5;
+  --bento-bg-hover: #ede6da;
+  --bento-border: rgba(46,42,38,0.1);
+  --bento-accent: rgba(212,160,74,0.15);
+  --priority-urgent: 4 50% 46%;
+  --priority-high: 25 48% 46%;
+  --priority-normal: 38 25% 40%;
+  --priority-low: 30 10% 46%;
+  --status-todo: 30 10% 46%;
+  --status-progress: 38 30% 40%;
+  --status-review: 20 42% 44%;
+  --status-done: 145 32% 36%;
+  --status-blocked: 4 42% 42%;
+}
+
+/* Typography & surfaces for Bento Amber */
+[data-palette="bentoAmber"] {
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+}
+[data-palette="bentoAmber"] body,
+[data-palette="bentoAmber"] input,
+[data-palette="bentoAmber"] textarea,
+[data-palette="bentoAmber"] button,
+[data-palette="bentoAmber"] select {
+  font-family: var(--font-body);
+  font-size: clamp(14px, 1.5vw, 16px);
+}
+[data-palette="bentoAmber"] h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(24px, 4vw, 40px);
+  font-weight: 700;
+}
+[data-palette="bentoAmber"] h2 {
+  font-family: var(--font-heading);
+  font-size: clamp(18px, 3vw, 28px);
+  font-weight: 600;
+}
+
+[data-palette="bentoAmber"].light .bento-cell,
+[data-palette="bentoAmber"].mixed .bento-cell {
+  border-radius: 20px;
+  border: 1px solid rgba(46, 42, 38, 0.08);
+  box-shadow: 0 4px 30px rgba(46, 42, 38, 0.08), 0 1px 3px rgba(46, 42, 38, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  background: rgba(245, 239, 229, 0.65);
+}
+[data-palette="bentoAmber"] .bento-cell {
+  border-radius: 20px;
+  border: 1px solid rgba(212, 160, 74, 0.08);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  background: rgba(46, 42, 38, 0.35);
+}
+[data-palette="bentoAmber"] .bento-cell-inner { padding: 24px; gap: 18px; }
+[data-palette="bentoAmber"] .bento-container { gap: 20px; }
+@media (min-width: 640px) { [data-palette="bentoAmber"] .bento-container { gap: 24px; padding: 24px; } }
+@media (min-width: 1024px) { [data-palette="bentoAmber"] .bento-container { gap: 32px; padding: 32px; } }
+
+[data-palette="bentoAmber"] button,
+[data-palette="bentoAmber"] a,
+[data-palette="bentoAmber"] .bento-cell,
+[data-palette="bentoAmber"] .bento-project-item,
+[data-palette="bentoAmber"] .bento-task-item {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+[data-palette="bentoAmber"] .bento-cell:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 40px rgba(46, 42, 38, 0.14), 0 2px 6px rgba(46, 42, 38, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+[data-palette="bentoAmber"] button:hover { filter: brightness(1.08); }
+[data-palette="bentoAmber"] .bento-project-item:hover,
+[data-palette="bentoAmber"] .bento-task-item:hover { transform: translateY(-1px); }
+
+[data-palette="bentoAmber"].light .bento-hero,
+[data-palette="bentoAmber"].mixed .bento-hero {
+  background: linear-gradient(135deg, rgba(46,42,38,0.04) 0%, rgba(245,239,229,0.90) 60%);
+  backdrop-filter: blur(20px) saturate(1.5);
+}
+[data-palette="bentoAmber"].light .bento-hero-glow,
+[data-palette="bentoAmber"].mixed .bento-hero-glow {
+  background: radial-gradient(ellipse 60% 80% at 0% 100%, rgba(212,160,74,0.2) 0%, transparent 70%);
+}
+[data-palette="bentoAmber"].light [data-slot="card"],
+[data-palette="bentoAmber"].mixed [data-slot="card"],
+[data-palette="bentoAmber"].light .rounded-lg.border,
+[data-palette="bentoAmber"].mixed .rounded-lg.border {
+  border-radius: 20px;
+  backdrop-filter: blur(12px) saturate(1.3);
+  background: rgba(245, 239, 229, 0.7);
+  box-shadow: 0 4px 24px rgba(46, 42, 38, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+[data-palette="bentoAmber"] button.rounded-md,
+[data-palette="bentoAmber"] button.rounded-lg { border-radius: 12px; }

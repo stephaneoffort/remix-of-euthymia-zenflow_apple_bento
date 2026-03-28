@@ -896,7 +896,11 @@ export default function CalendarView() {
             <AgendaExternalEvents dateStr={selectedDateStr} externalEventsByDate={externalEventsByDate} accountMap={accountMap} onEditEvent={handleEditEvent} onDeleteEvent={handleDeleteEvent} />
             <AgendaTaskList dateStr={selectedDateStr} tasks={selectedDayTasks} allTasks={allTasks} teamMembers={teamMembers} setSelectedTaskId={setSelectedTaskId}
               addingForDate={addingForDate} setAddingForDate={setAddingForDate} newTaskTitle={newTaskTitle} setNewTaskTitle={setNewTaskTitle} handleAddTask={handleAddTask} isMobile />
+            <button onClick={() => handleOpenNewEvent(selectedDateStr)} className="w-full flex items-center gap-2 px-3 py-2 mt-1 rounded-lg border border-dashed border-border text-muted-foreground hover:border-primary/30 hover:text-primary transition-colors text-sm">
+              <CalendarIcon className="w-4 h-4" /> Ajouter un événement
+            </button>
           </div>
+          {eventDialogElement}
         </div>
       );
     }
@@ -918,7 +922,11 @@ export default function CalendarView() {
             <AgendaExternalEvents dateStr={selectedDateStr} externalEventsByDate={externalEventsByDate} accountMap={accountMap} onEditEvent={handleEditEvent} onDeleteEvent={handleDeleteEvent} />
             <AgendaTaskList dateStr={selectedDateStr} tasks={selectedDayTasks} allTasks={allTasks} teamMembers={teamMembers} setSelectedTaskId={setSelectedTaskId}
               addingForDate={addingForDate} setAddingForDate={setAddingForDate} newTaskTitle={newTaskTitle} setNewTaskTitle={setNewTaskTitle} handleAddTask={handleAddTask} isMobile />
+            <button onClick={() => handleOpenNewEvent(selectedDateStr)} className="w-full flex items-center gap-2 px-3 py-2 mt-1 rounded-lg border border-dashed border-border text-muted-foreground hover:border-primary/30 hover:text-primary transition-colors text-sm">
+              <CalendarIcon className="w-4 h-4" /> Ajouter un événement
+            </button>
           </div>
+          {eventDialogElement}
         </div>
       );
     }
@@ -1039,7 +1047,11 @@ export default function CalendarView() {
           <AgendaExternalEvents dateStr={currentDateStr} externalEventsByDate={externalEventsByDate} accountMap={accountMap} onEditEvent={handleEditEvent} onDeleteEvent={handleDeleteEvent} />
           <AgendaTaskList dateStr={currentDateStr} tasks={dayTasks} allTasks={allTasks} teamMembers={teamMembers} setSelectedTaskId={setSelectedTaskId}
             addingForDate={addingForDate} setAddingForDate={setAddingForDate} newTaskTitle={newTaskTitle} setNewTaskTitle={setNewTaskTitle} handleAddTask={handleAddTask} isMobile={false} />
+          <button onClick={() => handleOpenNewEvent(currentDateStr)} className="w-full flex items-center gap-2 px-3 py-2 mt-2 rounded-lg border border-dashed border-border text-muted-foreground hover:border-primary/30 hover:text-primary transition-colors text-sm">
+            <CalendarIcon className="w-4 h-4" /> Ajouter un événement
+          </button>
         </div>
+        {eventDialogElement}
       </div>
     );
   }
@@ -1110,14 +1122,7 @@ export default function CalendarView() {
         </div>
         <DragOverlay>{activeTask ? <div className="text-[11px] px-1.5 py-0.5 rounded bg-primary/20 text-primary shadow-lg border border-primary/30 max-w-[150px] truncate">{activeTask.title}</div> : null}</DragOverlay>
       </DndContext>
-      <CalendarEventDialog
-        open={eventDialogOpen}
-        onClose={() => { setEventDialogOpen(false); setEditingEvent(null); }}
-        onSave={handleSaveEvent}
-        onDelete={editingEvent ? () => handleDeleteEvent(editingEvent) : undefined}
-        event={editingEvent}
-        defaultDate={eventDialogDate}
-      />
+      {eventDialogElement}
     </div>
   );
 }

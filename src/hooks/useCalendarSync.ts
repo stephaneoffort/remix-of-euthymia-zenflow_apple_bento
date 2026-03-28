@@ -131,6 +131,7 @@ export function useCalendarSync() {
   }, [fetchEvents, fetchAccounts]);
 
   const addCalDavAccount = useCallback(async (label: string, caldavUrl: string, username: string, password: string, provider = 'caldav') => {
+    const userId = await getCurrentUserId();
     const { data, error } = await supabase
       .from('calendar_accounts')
       .insert({
@@ -140,6 +141,7 @@ export function useCalendarSync() {
         caldav_username: username,
         caldav_password: password,
         is_active: true,
+        user_id: userId,
       } as any)
       .select()
       .single();

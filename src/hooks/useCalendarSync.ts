@@ -80,10 +80,7 @@ export function useCalendarSync() {
   const syncAccount = useCallback(async (accountId: string, direction: 'pull' | 'push' | 'test' = 'pull') => {
     setSyncing(accountId);
     try {
-      const { data, error } = await supabase.functions.invoke('calendar-sync', {
-        body: { account_id: accountId, direction },
-      });
-      if (error) throw error;
+      const data = await invokeCalendarSync({ account_id: accountId, direction });
       if (direction === 'pull') {
         await fetchEvents();
         await fetchAccounts();

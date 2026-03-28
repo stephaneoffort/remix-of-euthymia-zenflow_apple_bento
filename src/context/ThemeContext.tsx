@@ -69,13 +69,19 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   });
 
   const setTheme = (t: ThemeMode) => {
+    const root = document.documentElement;
+    root.classList.add('palette-transitioning');
     setThemeState(t);
     localStorage.setItem('euthymia-theme', t);
+    setTimeout(() => root.classList.remove('palette-transitioning'), 500);
   };
 
   const setPalette = (p: ThemePalette) => {
+    const root = document.documentElement;
+    root.classList.add('palette-transitioning');
     setPaletteState(p);
     localStorage.setItem('euthymia-palette', p);
+    setTimeout(() => root.classList.remove('palette-transitioning'), 500);
   };
 
   useEffect(() => {

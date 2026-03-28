@@ -1721,34 +1721,55 @@
   letter-spacing: -0.01em;
 }
 
-/* ─── Living mesh gradient background ─── */
+/* ─── Living mesh gradient background (animated) ─── */
+@keyframes liquidMeshMove {
+  0%   { background-position: 0% 0%, 100% 0%, 60% 80%, 10% 70%, 0% 0%; }
+  25%  { background-position: 30% 10%, 70% 25%, 40% 60%, 25% 85%, 0% 0%; }
+  50%  { background-position: 50% 30%, 50% 50%, 20% 40%, 60% 60%, 0% 0%; }
+  75%  { background-position: 20% 50%, 80% 30%, 70% 70%, 40% 40%, 0% 0%; }
+  100% { background-position: 0% 0%, 100% 0%, 60% 80%, 10% 70%, 0% 0%; }
+}
+
 [data-palette="liquidGlass"].light,
 [data-palette="liquidGlass"]:not(.dark):not(.mixed) {
   background:
-    radial-gradient(ellipse at 20% 20%, rgba(120, 180, 255, 0.35) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 10%, rgba(180, 120, 255, 0.3) 0%, transparent 50%),
-    radial-gradient(ellipse at 60% 80%, rgba(100, 220, 180, 0.3) 0%, transparent 50%),
-    radial-gradient(ellipse at 10% 70%, rgba(255, 180, 120, 0.25) 0%, transparent 50%),
+    radial-gradient(ellipse 80% 80%, rgba(120, 180, 255, 0.35) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70%, rgba(180, 120, 255, 0.3) 0%, transparent 70%),
+    radial-gradient(ellipse 75% 75%, rgba(100, 220, 180, 0.3) 0%, transparent 70%),
+    radial-gradient(ellipse 65% 65%, rgba(255, 180, 120, 0.25) 0%, transparent 70%),
     linear-gradient(135deg, #e8f4ff 0%, #f0e8ff 50%, #e8fff5 100%) !important;
+  background-size: 200% 200%, 200% 200%, 200% 200%, 200% 200%, 100% 100% !important;
   background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
 }
 [data-palette="liquidGlass"].mixed {
   background:
-    radial-gradient(ellipse at 20% 20%, rgba(120, 180, 255, 0.35) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 10%, rgba(180, 120, 255, 0.3) 0%, transparent 50%),
-    radial-gradient(ellipse at 60% 80%, rgba(100, 220, 180, 0.3) 0%, transparent 50%),
-    radial-gradient(ellipse at 10% 70%, rgba(255, 180, 120, 0.25) 0%, transparent 50%),
+    radial-gradient(ellipse 80% 80%, rgba(120, 180, 255, 0.35) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70%, rgba(180, 120, 255, 0.3) 0%, transparent 70%),
+    radial-gradient(ellipse 75% 75%, rgba(100, 220, 180, 0.3) 0%, transparent 70%),
+    radial-gradient(ellipse 65% 65%, rgba(255, 180, 120, 0.25) 0%, transparent 70%),
     linear-gradient(135deg, #e8f4ff 0%, #f0e8ff 50%, #e8fff5 100%) !important;
+  background-size: 200% 200%, 200% 200%, 200% 200%, 200% 200%, 100% 100% !important;
   background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
 }
 [data-palette="liquidGlass"].dark {
   background:
-    radial-gradient(ellipse at 20% 20%, rgba(60, 100, 200, 0.2) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 10%, rgba(120, 60, 200, 0.18) 0%, transparent 50%),
-    radial-gradient(ellipse at 60% 80%, rgba(50, 150, 120, 0.18) 0%, transparent 50%),
-    radial-gradient(ellipse at 10% 70%, rgba(180, 100, 60, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse 80% 80%, rgba(60, 100, 200, 0.2) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70%, rgba(120, 60, 200, 0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 75% 75%, rgba(50, 150, 120, 0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 65% 65%, rgba(180, 100, 60, 0.15) 0%, transparent 70%),
     linear-gradient(135deg, #0c0e1a 0%, #12101e 50%, #0e1a16 100%) !important;
+  background-size: 200% 200%, 200% 200%, 200% 200%, 200% 200%, 100% 100% !important;
   background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  [data-palette="liquidGlass"] {
+    animation: none !important;
+  }
 }
 
 /* ─── Grain overlay ─── */

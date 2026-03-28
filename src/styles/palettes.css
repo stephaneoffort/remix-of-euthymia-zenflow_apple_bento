@@ -831,3 +831,37 @@
 [data-palette="bento2026"] button.rounded-lg {
   border-radius: 10px;
 }
+
+/* ─── BENTO 2026 — Priority & Status color overrides ─── */
+/* Earthy, muted tones harmonizing with forest green + neo-mint + terre */
+
+/* Dark mode */
+[data-palette="bento2026"] {
+  /* Priorities — warm earth tones */
+  --priority-urgent: 4 58% 52%;       /* terracotta rouge doux */
+  --priority-high: 28 55% 52%;        /* ambre terreux */
+  --priority-normal: 138 28% 48%;     /* vert sauge */
+  --priority-low: 37 18% 52%;         /* sable neutre */
+
+  /* Statuses — nature-inspired */
+  --status-todo: 37 18% 52%;          /* sable neutre */
+  --status-progress: 138 33% 48%;     /* neo-mint profond */
+  --status-review: 35 48% 52%;        /* miel ambré */
+  --status-done: 152 38% 42%;         /* vert forêt lumineux */
+  --status-blocked: 4 48% 48%;        /* terracotta */
+}
+
+/* Light & Mixed modes — slightly more saturated for contrast on light bg */
+[data-palette="bento2026"].light,
+[data-palette="bento2026"].mixed {
+  --priority-urgent: 4 52% 46%;
+  --priority-high: 28 50% 46%;
+  --priority-normal: 138 24% 38%;
+  --priority-low: 37 14% 46%;
+
+  --status-todo: 37 14% 46%;
+  --status-progress: 138 30% 38%;
+  --status-review: 35 44% 44%;
+  --status-done: 152 34% 36%;
+  --status-blocked: 4 42% 42%;
+}

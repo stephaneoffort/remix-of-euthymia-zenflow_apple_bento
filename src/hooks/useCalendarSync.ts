@@ -113,9 +113,7 @@ export function useCalendarSync() {
     setLoading(true);
     try {
       for (const acc of activeAccounts) {
-        await supabase.functions.invoke('calendar-sync', {
-          body: { account_id: acc.id, direction: 'pull' },
-        });
+        await invokeCalendarSync({ account_id: acc.id, direction: 'pull' });
       }
       await fetchEvents();
       await fetchAccounts();

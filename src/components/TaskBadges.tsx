@@ -2,7 +2,7 @@ import React from 'react';
 import { Priority } from '@/types';
 import { AlertCircle, ArrowUp, Minus, ArrowDown, Circle, Loader, Eye, CheckCircle, Ban } from 'lucide-react';
 
-export function PriorityBadge({ priority }: { priority: Priority }) {
+export const PriorityBadge = React.forwardRef<HTMLSpanElement, { priority: Priority }>(({ priority }, ref) => {
   const config: Record<Priority, { label: string; className: string; icon: React.ReactNode }> = {
     urgent: { label: 'Urgente', className: 'bg-priority-urgent/15 text-priority-urgent', icon: <AlertCircle className="w-3 h-3" /> },
     high: { label: 'Haute', className: 'bg-priority-high/15 text-priority-high', icon: <ArrowUp className="w-3 h-3" /> },
@@ -11,11 +11,12 @@ export function PriorityBadge({ priority }: { priority: Priority }) {
   };
   const c = config[priority];
   return (
-    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${c.className}`}>
+    <span ref={ref} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${c.className}`}>
       {c.icon}{c.label}
     </span>
   );
-}
+});
+PriorityBadge.displayName = 'PriorityBadge';
 
 export const StatusBadge = React.forwardRef<HTMLSpanElement, { status: string }>(({ status }, ref) => {
   const config: Record<string, { label: string; className: string; icon: React.ReactNode }> = {

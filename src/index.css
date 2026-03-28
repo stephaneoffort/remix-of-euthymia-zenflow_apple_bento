@@ -798,11 +798,44 @@
   .mixed [role="dialog"] * {
     color: hsl(var(--popover-foreground)) !important;
   }
+  /* Preserve button text colors on colored backgrounds */
+  .dark [role="dialog"] button.bg-primary,
+  .dark [role="dialog"] button.bg-primary *,
+  .dark [data-radix-popper-content-wrapper] button.bg-primary,
+  .dark [data-radix-popper-content-wrapper] button.bg-primary *,
+  .mixed [role="dialog"] button.bg-primary,
+  .mixed [role="dialog"] button.bg-primary *,
+  .mixed [data-radix-popper-content-wrapper] button.bg-primary,
+  .mixed [data-radix-popper-content-wrapper] button.bg-primary * {
+    color: hsl(var(--primary-foreground)) !important;
+  }
+  .dark [role="dialog"] button.bg-destructive,
+  .dark [role="dialog"] button.bg-destructive *,
+  .dark [data-radix-popper-content-wrapper] button.bg-destructive,
+  .dark [data-radix-popper-content-wrapper] button.bg-destructive *,
+  .mixed [role="dialog"] button.bg-destructive,
+  .mixed [role="dialog"] button.bg-destructive *,
+  .mixed [data-radix-popper-content-wrapper] button.bg-destructive,
+  .mixed [data-radix-popper-content-wrapper] button.bg-destructive * {
+    color: hsl(var(--destructive-foreground)) !important;
+  }
+  /* Preserve switch thumb styling */
+  .dark [role="dialog"] [data-state] > span[data-state],
+  .mixed [role="dialog"] [data-state] > span[data-state] {
+    color: inherit !important;
+  }
   .dark [role="dialog"] svg,
   .dark [data-radix-popper-content-wrapper] svg,
   .mixed [role="dialog"] svg,
   .mixed [data-radix-popper-content-wrapper] svg {
     color: hsl(var(--popover-foreground)) !important;
+  }
+  /* SVGs inside colored buttons should inherit button color */
+  .dark [role="dialog"] button.bg-primary svg,
+  .dark [role="dialog"] button.bg-destructive svg,
+  .mixed [role="dialog"] button.bg-primary svg,
+  .mixed [role="dialog"] button.bg-destructive svg {
+    color: inherit !important;
   }
   .dark [role="dialog"] .text-muted-foreground,
   .dark [data-radix-popper-content-wrapper] .text-muted-foreground,

@@ -11,14 +11,20 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import InstallPrompt from "@/components/InstallPrompt";
 
-const Index = lazy(() => import("./pages/Index.tsx"));
-const Auth = lazy(() => import("./pages/Auth.tsx"));
-const SelectTeamMember = lazy(() => import("./pages/SelectTeamMember.tsx"));
-const Settings = lazy(() => import("./pages/Settings.tsx"));
-const Chat = lazy(() => import("./pages/Chat.tsx"));
-const NotFound = lazy(() => import("./pages/NotFound.tsx"));
-const Install = lazy(() => import("./pages/Install.tsx"));
-const ResetPassword = lazy(() => import("./pages/ResetPassword.tsx"));
+const lazyRetry = (fn: () => Promise<any>) =>
+  lazy(() => fn().catch(() => {
+    window.location.reload();
+    return new Promise(() => {});
+  }));
+
+const Index = lazyRetry(() => import("./pages/Index.tsx"));
+const Auth = lazyRetry(() => import("./pages/Auth.tsx"));
+const SelectTeamMember = lazyRetry(() => import("./pages/SelectTeamMember.tsx"));
+const Settings = lazyRetry(() => import("./pages/Settings.tsx"));
+const Chat = lazyRetry(() => import("./pages/Chat.tsx"));
+const NotFound = lazyRetry(() => import("./pages/NotFound.tsx"));
+const Install = lazyRetry(() => import("./pages/Install.tsx"));
+const ResetPassword = lazyRetry(() => import("./pages/ResetPassword.tsx"));
 
 const PageLoader = () => (
   <div className="flex h-screen bg-background">

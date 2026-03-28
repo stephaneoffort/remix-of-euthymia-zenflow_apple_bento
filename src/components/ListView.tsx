@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import EmptyState from '@/components/EmptyState';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
@@ -91,11 +92,19 @@ export default function ListView() {
 
       return (
         <React.Fragment key={task.id}>
-          <div
-            className={`bg-card rounded-lg border p-3 ${isOverdue ? 'border-l-2 border-l-priority-urgent' : ''}`}
+          <motion.div
+            layout
+            initial={{ opacity: 0, y: 10, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.15 } }}
+            whileHover={{ y: -2, scale: 1.01, transition: { duration: 0.2 } }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+            className={`relative overflow-hidden bg-card rounded-lg border p-3 cursor-pointer hover:shadow-md group ${isOverdue ? 'border-l-2 border-l-priority-urgent' : ''}`}
             style={{ marginLeft: `${depth * 12}px` }}
             onClick={() => setSelectedTaskId(task.id)}
           >
+            <div className="pointer-events-none absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-white/10 via-transparent to-white/5" />
             <div className="flex items-start gap-2">
               {hasChildren && (
                 <button
@@ -134,7 +143,7 @@ export default function ListView() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
           {isExpanded && subtasks.map(st => renderCard(st, depth + 1))}
         </React.Fragment>
       );
@@ -142,7 +151,9 @@ export default function ListView() {
 
     return (
       <div className="p-3 overflow-auto h-full space-y-2">
+        <AnimatePresence mode="popLayout">
         {sorted.map(task => renderCard(task))}
+        </AnimatePresence>
         {sorted.length === 0 && !isAdding && (
           <EmptyState variant="list" onAction={() => setIsAdding(true)} />
         )}
@@ -185,7 +196,11 @@ export default function ListView() {
 
     return (
       <React.Fragment key={task.id}>
-        <tr
+        <motion.tr
+          initial={{ opacity: 0, x: -8 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, transition: { duration: 0.12 } }}
+          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
           className="border-b border-border hover:bg-muted/50 transition-colors cursor-pointer group"
           onClick={() => setSelectedTaskId(task.id)}
         >
@@ -229,7 +244,7 @@ export default function ListView() {
               </span>
             ) : <span className="text-foreground/40 text-sm">—</span>}
           </td>
-        </tr>
+        </motion.tr>
         {isExpanded && subtasks.map(st => renderRow(st, depth + 1))}
       </React.Fragment>
     );
@@ -261,7 +276,9 @@ export default function ListView() {
             </tr>
           </thead>
           <tbody>
+            <AnimatePresence mode="popLayout">
             {sorted.map(task => renderRow(task))}
+            </AnimatePresence>
             {sorted.length === 0 && !isAdding && (
               <tr><td colSpan={5}><EmptyState variant="list" onAction={() => setIsAdding(true)} /></td></tr>
             )}

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-const CALENDAR_SYNC_URL = 'https://zfktrlupipngsegsiwyq.supabase.co/functions/v1/calendar-sync';
+const CALENDAR_SYNC_URL = 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/calendar-sync';
 
 async function invokeCalendarSync(body: Record<string, unknown>) {
   const res = await fetch(CALENDAR_SYNC_URL, {

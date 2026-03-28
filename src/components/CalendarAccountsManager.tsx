@@ -63,13 +63,13 @@ export default function CalendarAccountsManager({ accounts, syncing, onSync, onD
   };
 
   const handleConnectGoogle = () => {
-    window.location.href = 'https://zfktrlupipngsegsiwyq.supabase.co/functions/v1/google-oauth/authorize';
+    window.location.href = 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/google-oauth/authorize';
   };
 
   const handleConnectOutlook = () => {
     // Placeholder — same pattern as Google
     window.open(
-      'https://zfktrlupipngsegsiwyq.supabase.co/functions/v1/google-oauth/authorize',
+      'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/google-oauth/authorize',
       '_blank'
     );
     setOpen(false);

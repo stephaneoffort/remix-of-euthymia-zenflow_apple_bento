@@ -27,11 +27,12 @@ export const StatusBadge = React.forwardRef<HTMLSpanElement, { status: string }>
   };
   const c = config[status] || { label: status, className: 'bg-primary/15 text-primary', icon: <Circle className="w-3 h-3" /> };
   return (
-    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${c.className}`}>
+    <span ref={ref} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${c.className}`}>
       {c.icon}{c.label}
     </span>
   );
-}
+});
+StatusBadge.displayName = 'StatusBadge';
 
 const STATUS_CIRCLE_CLASSES: Record<string, string> = {
   todo: 'text-status-todo',

@@ -976,7 +976,11 @@ export default function CalendarView() {
           <AgendaExternalEvents dateStr={selectedDateStr} externalEventsByDate={externalEventsByDate} accountMap={accountMap} onEditEvent={handleEditEvent} onDeleteEvent={handleDeleteEvent} />
           <AgendaTaskList dateStr={selectedDateStr} tasks={selectedDayTasks} allTasks={allTasks} teamMembers={teamMembers} setSelectedTaskId={setSelectedTaskId}
             addingForDate={addingForDate} setAddingForDate={setAddingForDate} newTaskTitle={newTaskTitle} setNewTaskTitle={setNewTaskTitle} handleAddTask={handleAddTask} isMobile />
+            <button onClick={() => handleOpenNewEvent(selectedDateStr)} className="w-full flex items-center gap-2 px-3 py-2 mt-1 rounded-lg border border-dashed border-border text-muted-foreground hover:border-primary/30 hover:text-primary transition-colors text-sm">
+              <CalendarIcon className="w-4 h-4" /> Ajouter un événement
+            </button>
         </div>
+        {eventDialogElement}
       </div>
     );
   }

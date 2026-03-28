@@ -1646,17 +1646,17 @@
 /* ─── Mixed mode ─── */
 [data-palette^="liquidGlass"].mixed {
   --background: 220 60% 96%;
-  --foreground: 230 40% 15%;
+  --foreground: 230 20% 30%;
   --card: 220 40% 98%;
-  --card-foreground: 230 40% 15%;
+  --card-foreground: 230 20% 30%;
   --popover: 220 30% 99%;
-  --popover-foreground: 230 40% 15%;
+  --popover-foreground: 230 20% 30%;
   --primary: 239 84% 63%;
   --primary-foreground: 0 0% 100%;
   --secondary: 220 20% 93%;
-  --secondary-foreground: 230 25% 35%;
+  --secondary-foreground: 230 15% 42%;
   --muted: 220 15% 95%;
-  --muted-foreground: 230 10% 45%;
+  --muted-foreground: 230 10% 50%;
   --accent: 239 60% 65%;
   --accent-foreground: 0 0% 100%;
   --destructive: 0 68% 52%;

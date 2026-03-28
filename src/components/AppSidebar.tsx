@@ -592,11 +592,7 @@ export default function AppSidebar() {
             <MoveHorizontal className="w-3 h-3" />
             Déposez sur un espace pour déplacer le projet
           </p>
-        ) : (
-          <p className="text-[10px] text-sidebar-fg/40 px-2 mb-2 leading-tight hidden md:block">
-            Survolez un projet pour voir la poignée de glissement
-          </p>
-        )}
+        ) : null}
 
         {/* Add space form */}
         {addingSpace && (

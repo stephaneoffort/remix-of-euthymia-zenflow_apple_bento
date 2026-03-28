@@ -1370,6 +1370,14 @@ function ThemeSwitcher() {
     { key: 'bentoRose', label: 'Bento Rose', colors: ['#f8f0f0', '#5c2434'] },
     { key: 'bentoAmber', label: 'Bento Amber', colors: ['#f5efe5', '#d4a04a'] },
     { key: 'liquidGlass', label: 'Liquid Glass', colors: ['#e8f4ff', '#6366f1'] },
+    { key: 'liquidGlassOcean', label: 'LG Ocean', colors: ['#38bdf8', '#0284c7'] },
+    { key: 'liquidGlassAurora', label: 'LG Aurora', colors: ['#34d399', '#059669'] },
+    { key: 'liquidGlassRose', label: 'LG Rose', colors: ['#f472b6', '#be185d'] },
+    { key: 'liquidGlassAmber', label: 'LG Amber', colors: ['#fbbf24', '#d97706'] },
+    { key: 'liquidGlassViolet', label: 'LG Violet', colors: ['#a78bfa', '#7c3aed'] },
+    { key: 'liquidGlassCoral', label: 'LG Coral', colors: ['#fb7185', '#dc2626'] },
+    { key: 'liquidGlassSlate', label: 'LG Slate', colors: ['#94a3b8', '#475569'] },
+    { key: 'liquidGlassMidnight', label: 'LG Midnight', colors: ['#6366f1', '#1e1b4b'] },
   ];
 
   return (

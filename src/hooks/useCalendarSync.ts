@@ -155,6 +155,7 @@ export function useCalendarSync() {
   }, [fetchAccounts]);
 
   const addIcsAccount = useCallback(async (label: string, icsUrl: string) => {
+    const userId = await getCurrentUserId();
     const { data, error } = await supabase
       .from('calendar_accounts')
       .insert({
@@ -162,6 +163,7 @@ export function useCalendarSync() {
         label,
         ics_url: icsUrl,
         is_active: true,
+        user_id: userId,
       } as any)
       .select()
       .single();

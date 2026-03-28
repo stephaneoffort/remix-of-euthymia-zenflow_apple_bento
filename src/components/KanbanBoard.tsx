@@ -274,6 +274,7 @@ export default function KanbanBoard() {
               />
             );
           })}
+          </AnimatePresence>
 
           {/* Inline add task */}
           {newTaskStatus === status && (

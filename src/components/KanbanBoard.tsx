@@ -79,6 +79,7 @@ export default function KanbanBoard() {
       moveTask(draggedTaskId, status);
       setDraggedTaskId(null);
     }
+    setDropTargetTask(null);
   };
 
   // Column drag handlers

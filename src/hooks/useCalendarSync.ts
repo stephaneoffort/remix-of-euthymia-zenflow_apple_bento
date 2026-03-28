@@ -10,9 +10,14 @@ async function getCurrentUserId(): Promise<string | null> {
 const CALENDAR_SYNC_URL = 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/calendar-sync';
 
 async function invokeCalendarSync(body: Record<string, unknown>) {
+  const { data: { session } } = await supabase.auth.getSession();
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (session?.access_token) {
+    headers['Authorization'] = `Bearer ${session.access_token}`;
+  }
   const res = await fetch(CALENDAR_SYNC_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify(body),
   });
   if (!res.ok) {

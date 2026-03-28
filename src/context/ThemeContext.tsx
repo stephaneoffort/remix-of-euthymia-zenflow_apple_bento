@@ -58,6 +58,11 @@ export const PALETTE_META: Record<ThemePalette, { label: string; description: st
     description: 'Ambre chaud + Charbon — Chaleur minérale 2026',
     colors: ['#f5efe5', '#ede6da', '#2e2a26', '#d4a04a'],
   },
+  liquidGlass: {
+    label: 'Liquid Glass',
+    description: 'Apple iOS 26 — Verre translucide + fond vivant',
+    colors: ['#e8f4ff', '#f0e8ff', '#6366f1', '#ffffff'],
+  },
 };
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {

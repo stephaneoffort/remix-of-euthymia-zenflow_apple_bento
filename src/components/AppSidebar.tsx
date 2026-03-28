@@ -1369,6 +1369,7 @@ function ThemeSwitcher() {
     { key: 'bentoOcean', label: 'Bento Ocean', colors: ['#eef3f8', '#1e3a5f'] },
     { key: 'bentoRose', label: 'Bento Rose', colors: ['#f8f0f0', '#5c2434'] },
     { key: 'bentoAmber', label: 'Bento Amber', colors: ['#f5efe5', '#d4a04a'] },
+    { key: 'liquidGlass', label: 'Liquid Glass', colors: ['#e8f4ff', '#6366f1'] },
   ];
 
   return (

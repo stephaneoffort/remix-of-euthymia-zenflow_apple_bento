@@ -38,6 +38,7 @@ type ModalStep = 'picker' | 'caldav' | 'ics';
 export default function CalendarAccountsManager({ accounts, syncing, onSync, onDelete, onAddCalDav, onAddIcs, onTestConnection }: Props) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<ModalStep>('picker');
+  const [accountsOpen, setAccountsOpen] = useState(true);
 
   // CalDAV form
   const [caldavProvider, setCaldavProvider] = useState('caldav');

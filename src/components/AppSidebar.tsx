@@ -1512,16 +1512,18 @@ function InstallAppLink() {
   );
 }
 
-function LogoutButton() {
+const LogoutButton = React.forwardRef<HTMLButtonElement, React.ComponentPropsWithoutRef<'button'>>((props, ref) => {
   const { signOut } = useAuth();
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
           <button
+            ref={ref}
             onClick={signOut}
              className="flex items-center justify-center p-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors"
              title="Déconnexion"
+             {...props}
            >
              <LogOut className="w-4 h-4" />
            </button>
@@ -1532,7 +1534,8 @@ function LogoutButton() {
       </Tooltip>
     </TooltipProvider>
   );
-}
+});
+LogoutButton.displayName = 'LogoutButton';
 
 // Sortable wrapper for spaces
 function SortableSpace({ space, children }: { space: { id: string }; children: React.ReactNode }) {

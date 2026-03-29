@@ -460,7 +460,7 @@ Deno.serve(async (req) => {
         const externalId = event?.external_id;
         if (!externalId) throw new Error("No external_id for delete");
         if (provider === "google") await googlePushDelete(account, externalId);
-        else if (provider === "outlook") await outlookPushDelete(account, externalId);
+        else if (isCalDav) await caldavPushDelete(account, externalId);
         else if (isCalDav) await caldavPushDelete(account, externalId);
         await supabase.from("calendar_events").delete().eq("id", event_id);
       } else if (action === "create") {

@@ -183,6 +183,78 @@ export type Database = {
           },
         ]
       }
+      canva_attachments: {
+        Row: {
+          created_at: string | null
+          design_id: string
+          design_name: string
+          design_type: string | null
+          design_url: string
+          entity_id: string
+          entity_type: string
+          id: string
+          thumbnail_url: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          design_id: string
+          design_name: string
+          design_type?: string | null
+          design_url: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          thumbnail_url?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          design_id?: string
+          design_name?: string
+          design_type?: string | null
+          design_url?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          thumbnail_url?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      canva_connections: {
+        Row: {
+          access_token: string
+          created_at: string | null
+          display_name: string | null
+          email: string | null
+          id: string
+          refresh_token: string
+          token_expiry: string
+          user_id: string | null
+        }
+        Insert: {
+          access_token: string
+          created_at?: string | null
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          refresh_token: string
+          token_expiry: string
+          user_id?: string | null
+        }
+        Update: {
+          access_token?: string
+          created_at?: string | null
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          refresh_token?: string
+          token_expiry?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       chat_categories: {
         Row: {
           created_at: string

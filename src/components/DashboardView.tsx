@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import DriveAttachments from '@/components/drive/DriveAttachments';
+import CanvaAttachments from '@/components/canva/CanvaAttachments';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { useThemeMode } from '@/context/ThemeContext';
@@ -552,8 +553,9 @@ export default function DashboardView() {
                     {project.name}
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-3">
                   <DriveAttachments entityType="project" entityId={project.id} compact />
+                  <CanvaAttachments entityType="project" entityId={project.id} compact />
                 </CardContent>
               </Card>
             ))}

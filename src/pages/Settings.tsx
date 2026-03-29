@@ -720,42 +720,102 @@ function ThemePalettePanel() {
 }
 
 function IntegrationsPanel() {
-  const [isConnected, setIsConnected] = useState(false);
-  const [connectionEmail, setConnectionEmail] = useState<string | null>(null);
+  const [isDriveConnected, setIsDriveConnected] = useState(false);
+  const [driveEmail, setDriveEmail] = useState<string | null>(null);
+  const [isCanvaConnected, setIsCanvaConnected] = useState(false);
+  const [canvaInfo, setCanvaInfo] = useState<{ email?: string; display_name?: string } | null>(null);
 
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const { data } = await supabase
+
+      // Drive
+      const { data: driveData } = await supabase
         .from('drive_connections' as any)
         .select('id, email')
         .eq('user_id', user.id)
         .limit(1);
-      const connections = data as any[] | null;
-      setIsConnected((connections?.length ?? 0) > 0);
-      setConnectionEmail(connections?.[0]?.email ?? null);
+      const driveConns = driveData as any[] | null;
+      setIsDriveConnected((driveConns?.length ?? 0) > 0);
+      setDriveEmail(driveConns?.[0]?.email ?? null);
+
+      // Canva
+      const { data: canvaData } = await supabase
+        .from('canva_connections' as any)
+        .select('id, email, display_name')
+        .not('email', 'like', 'pending_%')
+        .limit(1);
+      const canvaConns = canvaData as any[] | null;
+      setIsCanvaConnected((canvaConns?.length ?? 0) > 0);
+      if (canvaConns && canvaConns.length > 0) {
+        setCanvaInfo({ email: canvaConns[0].email, display_name: canvaConns[0].display_name });
+      }
     })();
 
     if (window.location.search.includes('drive_connected=true')) {
-      setIsConnected(true);
+      setIsDriveConnected(true);
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+    if (window.location.search.includes('canva_connected=true')) {
+      setIsCanvaConnected(true);
       window.history.replaceState({}, '', window.location.pathname);
     }
   }, []);
 
-  const handleConnect = async () => {
+  const handleDriveConnect = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     window.location.href = `https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/google-drive-oauth/authorize?user_id=${user?.id || ''}`;
   };
 
-  const handleDisconnect = async () => {
+  const handleDriveDisconnect = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     await supabase.from('drive_connections' as any).delete().eq('user_id', user.id);
-    setIsConnected(false);
-    setConnectionEmail(null);
+    setIsDriveConnected(false);
+    setDriveEmail(null);
     toast.success('Google Drive déconnecté');
   };
+
+  const handleCanvaConnect = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    window.location.href = `https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/canva-oauth/authorize?user_id=${user?.id || ''}`;
+  };
+
+  const handleCanvaDisconnect = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    await supabase.from('canva_connections' as any).delete().eq('user_id', user.id);
+    setIsCanvaConnected(false);
+    setCanvaInfo(null);
+    toast.success('Canva déconnecté');
+  };
+
+  const renderCard = (
+    emoji: string, name: string, description: string, connected: boolean,
+    onConnect: () => void, onDisconnect: () => void
+  ) => (
+    <div className="flex items-center justify-between p-4 rounded-lg border border-border bg-muted/20">
+      <div className="flex items-center gap-3">
+        <span className="text-2xl">{emoji}</span>
+        <div>
+          <p className="text-sm font-semibold text-foreground">{name}</p>
+          <p className="text-xs text-muted-foreground">{description}</p>
+        </div>
+      </div>
+      <div className="flex items-center gap-2">
+        <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${connected ? 'bg-green-500/10 text-green-600' : 'bg-muted text-muted-foreground'}`}>
+          <span className={`w-1.5 h-1.5 rounded-full ${connected ? 'bg-green-500' : 'bg-muted-foreground'}`} />
+          {connected ? 'Connecté' : 'Inactif'}
+        </span>
+        {connected ? (
+          <Button variant="outline" size="sm" onClick={onDisconnect}>Déconnecter</Button>
+        ) : (
+          <Button size="sm" onClick={onConnect} className="gap-1.5">Connecter</Button>
+        )}
+      </div>
+    </div>
+  );
 
   return (
     <Card>
@@ -763,32 +823,20 @@ function IntegrationsPanel() {
         <CardTitle className="text-foreground">Intégrations</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-center justify-between p-4 rounded-lg border border-border bg-muted/20">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">📁</span>
-            <div>
-              <p className="text-sm font-semibold text-foreground">Google Drive</p>
-              <p className="text-xs text-muted-foreground">
-                {isConnected
-                  ? `Connecté${connectionEmail ? ` · ${connectionEmail}` : ''}`
-                  : 'Joindre des fichiers Drive à vos tâches et événements'}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${isConnected ? 'bg-green-500/10 text-green-600' : 'bg-muted text-muted-foreground'}`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-green-500' : 'bg-muted-foreground'}`} />
-              {isConnected ? 'Connecté' : 'Inactif'}
-            </span>
-            {isConnected ? (
-              <Button variant="outline" size="sm" onClick={handleDisconnect}>Déconnecter</Button>
-            ) : (
-              <Button size="sm" onClick={handleConnect} className="gap-1.5">
-                Connecter
-              </Button>
-            )}
-          </div>
-        </div>
+        {renderCard(
+          '📁', 'Google Drive',
+          isDriveConnected
+            ? `Connecté${driveEmail ? ` · ${driveEmail}` : ''}`
+            : 'Joindre des fichiers Drive à vos tâches et événements',
+          isDriveConnected, handleDriveConnect, handleDriveDisconnect
+        )}
+        {renderCard(
+          '🎨', 'Canva',
+          isCanvaConnected
+            ? `Connecté${canvaInfo?.display_name ? ` · ${canvaInfo.display_name}` : ''}${canvaInfo?.email ? ` (${canvaInfo.email})` : ''}`
+            : 'Créer et joindre des visuels Canva à vos tâches',
+          isCanvaConnected, handleCanvaConnect, handleCanvaDisconnect
+        )}
       </CardContent>
     </Card>
   );

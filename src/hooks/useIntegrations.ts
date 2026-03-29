@@ -99,6 +99,41 @@ export function useIntegrations() {
       .upsert(rows, { onConflict: 'user_id,integration', ignoreDuplicates: true });
   }, []);
 
+  const syncConnectionStatus = useCallback(async (userId: string) => {
+    // Check actual connection tables to auto-sync member_integrations
+    const connectionChecks: { key: IntegrationKey; table: string }[] = [
+      { key: 'google_drive', table: 'drive_connections' },
+      { key: 'zoom', table: 'zoom_connections' },
+      { key: 'canva', table: 'canva_connections' },
+      { key: 'brevo', table: 'brevo_connections' },
+    ];
+
+    for (const { key, table } of connectionChecks) {
+      const { data } = await (supabase as any)
+        .from(table)
+        .select('id')
+        .eq('user_id', userId)
+        .limit(1);
+      
+      const hasConnection = (data?.length ?? 0) > 0;
+      if (hasConnection) {
+        // Auto-enable and mark as connected if a real connection exists
+        await (supabase as any)
+          .from('member_integrations')
+          .update({
+            is_enabled: true,
+            is_connected: true,
+            enabled_at: new Date().toISOString(),
+            connected_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          })
+          .eq('user_id', userId)
+          .eq('integration', key)
+          .eq('is_connected', false);
+      }
+    }
+  }, []);
+
   const fetchIntegrations = useCallback(async () => {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
@@ -106,6 +141,9 @@ export function useIntegrations() {
 
     // Ensure rows exist
     await ensureRows(user.id);
+
+    // Auto-sync from actual connection tables
+    await syncConnectionStatus(user.id);
 
     const { data } = await (supabase as any)
       .from('member_integrations')
@@ -130,7 +168,7 @@ export function useIntegrations() {
       setIntegrations(map);
     }
     setLoading(false);
-  }, [ensureRows]);
+  }, [ensureRows, syncConnectionStatus]);
 
   useEffect(() => {
     fetchIntegrations();

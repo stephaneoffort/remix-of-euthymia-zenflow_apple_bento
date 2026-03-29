@@ -24,9 +24,11 @@ const OFFSET_LABELS: Record<string, string> = {
   "1h": "1 heure",
 };
 
-// Convert base64url string to Uint8Array
+// Convert base64url or base64 string to Uint8Array
 function b64urlToUint8Array(str: string): Uint8Array {
-  return base64url.decode(str);
+  // Normalize base64 to base64url
+  const b64url = str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  return base64url.decode(b64url);
 }
 
 // Import ECDSA P-256 key for signing

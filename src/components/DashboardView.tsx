@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import DashboardZoomSection from '@/components/dashboard/DashboardZoomSection';
 import DashboardResourcesSection from '@/components/dashboard/DashboardResourcesSection';
+import BrevoStats from '@/components/brevo/BrevoStats';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { useThemeMode } from '@/context/ThemeContext';

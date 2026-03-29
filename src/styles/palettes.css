@@ -1726,6 +1726,11 @@
   --sidebar-accent: 235 30% 16%;
   --sidebar-accent-foreground: 230 20% 92%;
   --sidebar-ring: 239 84% 63%;
+  --sidebar-bg: 235 35% 12%;
+  --sidebar-fg: 230 15% 72%;
+  --sidebar-fg-bright: 230 20% 92%;
+  --sidebar-hover: 235 30% 16%;
+  --sidebar-active: 239 84% 67%;
   --sidebar-border: 235 25% 18%;
   --bento-bg: transparent;
   --bento-bg-hover: rgba(255, 255, 255, 0.08);

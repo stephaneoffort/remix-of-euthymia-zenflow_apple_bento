@@ -197,7 +197,8 @@ export default function DashboardZoomSection() {
                     </button>
                   </div>
                 </div>
-              ))}
+                );
+              })}
               {remaining > 0 && (
                 <button
                   onClick={() => setExpanded(!expanded)}

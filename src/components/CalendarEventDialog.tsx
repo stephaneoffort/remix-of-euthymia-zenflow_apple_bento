@@ -43,8 +43,11 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
   const [isAllDay, setIsAllDay] = useState(false);
   const [location, setLocation] = useState('');
   const [hasMeet, setHasMeet] = useState(false);
+  const [hasZoom, setHasZoom] = useState(false);
+  const [creatingZoom, setCreatingZoom] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const zoom = useZoom();
 
   useEffect(() => {
     if (open) {

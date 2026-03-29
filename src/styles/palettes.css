@@ -3021,7 +3021,11 @@ html body::after {
 [data-palette="neutrals"] .bento-cell,
 [data-palette="sapphire"] .bento-cell,
 [data-palette="cinematic"] .bento-cell,
-[data-palette="teal"] .bento-cell {
+[data-palette="teal"] .bento-cell,
+[data-palette="bento2026"] .bento-cell,
+[data-palette="bentoOcean"] .bento-cell,
+[data-palette="bentoRose"] .bento-cell,
+[data-palette="bentoAmber"] .bento-cell {
   background: rgba(255,255,255,0.04) !important;
   backdrop-filter: blur(24px) saturate(160%);
   -webkit-backdrop-filter: blur(24px) saturate(160%);
@@ -3045,7 +3049,15 @@ html body::after {
 [data-palette="cinematic"].light .bento-cell,
 [data-palette="cinematic"].mixed .bento-cell,
 [data-palette="teal"].light .bento-cell,
-[data-palette="teal"].mixed .bento-cell {
+[data-palette="teal"].mixed .bento-cell,
+[data-palette="bento2026"].light .bento-cell,
+[data-palette="bento2026"].mixed .bento-cell,
+[data-palette="bentoOcean"].light .bento-cell,
+[data-palette="bentoOcean"].mixed .bento-cell,
+[data-palette="bentoRose"].light .bento-cell,
+[data-palette="bentoRose"].mixed .bento-cell,
+[data-palette="bentoAmber"].light .bento-cell,
+[data-palette="bentoAmber"].mixed .bento-cell {
   background: rgba(255,255,255,0.18) !important;
   backdrop-filter: blur(24px) saturate(180%) brightness(1.05);
   -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.05);
@@ -3181,25 +3193,16 @@ html body::after {
   border-right: 1px solid rgba(255,255,255,0.06) !important;
 }
 
-/* ─── Transparent bg-background for all non-LG palettes (light/mixed) ─── */
-[data-palette="clubroom"].light .bg-background,
-[data-palette="clubroom"].mixed .bg-background,
-[data-palette="neutrals"].light .bg-background,
-[data-palette="neutrals"].mixed .bg-background,
-[data-palette="sapphire"].light .bg-background,
-[data-palette="sapphire"].mixed .bg-background,
-[data-palette="cinematic"].light .bg-background,
-[data-palette="cinematic"].mixed .bg-background,
-[data-palette="teal"].light .bg-background,
-[data-palette="teal"].mixed .bg-background,
-[data-palette="bento2026"].light .bg-background,
-[data-palette="bento2026"].mixed .bg-background,
-[data-palette="bentoOcean"].light .bg-background,
-[data-palette="bentoOcean"].mixed .bg-background,
-[data-palette="bentoRose"].light .bg-background,
-[data-palette="bentoRose"].mixed .bg-background,
-[data-palette="bentoAmber"].light .bg-background,
-[data-palette="bentoAmber"].mixed .bg-background {
+/* ─── Transparent bg-background for all non-LG palettes (ALL modes) ─── */
+[data-palette="clubroom"] .bg-background,
+[data-palette="neutrals"] .bg-background,
+[data-palette="sapphire"] .bg-background,
+[data-palette="cinematic"] .bg-background,
+[data-palette="teal"] .bg-background,
+[data-palette="bento2026"] .bg-background,
+[data-palette="bentoOcean"] .bg-background,
+[data-palette="bentoRose"] .bg-background,
+[data-palette="bentoAmber"] .bg-background {
   background: transparent !important;
 }
 
@@ -3213,7 +3216,15 @@ html body::after {
 [data-palette="cinematic"].light .bg-card,
 [data-palette="cinematic"].mixed .bg-card,
 [data-palette="teal"].light .bg-card,
-[data-palette="teal"].mixed .bg-card {
+[data-palette="teal"].mixed .bg-card,
+[data-palette="bento2026"].light .bg-card,
+[data-palette="bento2026"].mixed .bg-card,
+[data-palette="bentoOcean"].light .bg-card,
+[data-palette="bentoOcean"].mixed .bg-card,
+[data-palette="bentoRose"].light .bg-card,
+[data-palette="bentoRose"].mixed .bg-card,
+[data-palette="bentoAmber"].light .bg-card,
+[data-palette="bentoAmber"].mixed .bg-card {
   background: rgba(255,255,255,0.18) !important;
   backdrop-filter: blur(24px) saturate(180%) brightness(1.05) !important;
   -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.05) !important;
@@ -3228,7 +3239,11 @@ html body::after {
 [data-palette="neutrals"]:not(.light):not(.mixed) .bg-card,
 [data-palette="sapphire"]:not(.light):not(.mixed) .bg-card,
 [data-palette="cinematic"]:not(.light):not(.mixed) .bg-card,
-[data-palette="teal"]:not(.light):not(.mixed) .bg-card {
+[data-palette="teal"]:not(.light):not(.mixed) .bg-card,
+[data-palette="bento2026"]:not(.light):not(.mixed) .bg-card,
+[data-palette="bentoOcean"]:not(.light):not(.mixed) .bg-card,
+[data-palette="bentoRose"]:not(.light):not(.mixed) .bg-card,
+[data-palette="bentoAmber"]:not(.light):not(.mixed) .bg-card {
   background: rgba(255,255,255,0.04) !important;
   backdrop-filter: blur(24px) saturate(160%) !important;
   -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
@@ -3237,12 +3252,16 @@ html body::after {
   border-radius: 24px !important;
 }
 
-/* ─── Interactive hover lift for classic palettes ─── */
+/* ─── Interactive hover lift for all non-LG palettes ─── */
 [data-palette="clubroom"] .bento-cell:hover,
 [data-palette="neutrals"] .bento-cell:hover,
 [data-palette="sapphire"] .bento-cell:hover,
 [data-palette="cinematic"] .bento-cell:hover,
-[data-palette="teal"] .bento-cell:hover {
+[data-palette="teal"] .bento-cell:hover,
+[data-palette="bento2026"] .bento-cell:hover,
+[data-palette="bentoOcean"] .bento-cell:hover,
+[data-palette="bentoRose"] .bento-cell:hover,
+[data-palette="bentoAmber"] .bento-cell:hover {
   transform: translateY(-4px);
 }
 

@@ -47,6 +47,10 @@ export default function IntegrationsSettings() {
         .from('zoom_connections').select('email, display_name').eq('user_id', user.id).limit(1);
       if (zoomData?.[0]) info.zoom = { email: zoomData[0].email, display_name: zoomData[0].display_name };
 
+      const { data: brevoData } = await (supabase as any)
+        .from('brevo_connections').select('account_email, account_name, plan').eq('user_id', user.id).limit(1);
+      if (brevoData?.[0]) info.brevo = { email: brevoData[0].account_email, display_name: `${brevoData[0].account_name ?? ''} (${brevoData[0].plan ?? 'free'})` };
+
       setConnInfo(info);
     })();
 

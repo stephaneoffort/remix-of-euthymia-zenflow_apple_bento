@@ -12,7 +12,8 @@ import ZoomMeetings from '@/components/zoom/ZoomMeetings';
 import BrevoContacts from '@/components/brevo/BrevoContacts';
 import type { CalendarEvent } from '@/hooks/useCalendarSync';
 import { toast } from 'sonner';
-import { useIntegrations } from '@/hooks/useIntegrations';
+import { useIntegrations, INTEGRATION_CONFIG } from '@/hooks/useIntegrations';
+import { useZoom } from '@/hooks/useZoom';
 
 interface Props {
   open: boolean;

@@ -6,7 +6,8 @@ export type IntegrationKey =
   | 'zoom'
   | 'canva'
   | 'google_meet'
-  | 'gmail';
+  | 'gmail'
+  | 'brevo';
 
 export interface IntegrationStatus {
   key: IntegrationKey;

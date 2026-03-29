@@ -136,24 +136,47 @@ export default function DashboardZoomSection() {
             <p className="text-sm text-muted-foreground py-4 text-center">Aucune réunion à venir</p>
           ) : (
             <div className="space-y-1">
-              {visible.map((m) => (
+              {visible.map((m) => {
+                const isSoon = m.start_time && differenceInMinutes(parseISO(m.start_time), new Date()) <= 15 && differenceInMinutes(parseISO(m.start_time), new Date()) >= 0;
+                return (
                 <div
                   key={m.id}
-                  className="w-full text-left py-2.5 hover:bg-muted/50 transition-colors flex items-center gap-3 px-1 rounded-md group"
+                  className={`w-full text-left py-2.5 hover:bg-muted/50 transition-colors flex items-center gap-3 px-1 rounded-md group ${isSoon ? 'bg-destructive/10 border border-destructive/20 animate-pulse' : ''}`}
                 >
-                  <div className="p-1.5 rounded-md bg-muted/50 shrink-0">
-                    <img src={INTEGRATION_CONFIG.zoom.icon} alt="" className="w-4 h-4" />
+                  <div className={`p-1.5 rounded-md shrink-0 ${isSoon ? 'bg-destructive/20' : 'bg-muted/50'}`}>
+                    {isSoon ? (
+                      <AlertCircle className="w-4 h-4 text-destructive" />
+                    ) : (
+                      <img src={INTEGRATION_CONFIG.zoom.icon} alt="" className="w-4 h-4" />
+                    )}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm text-foreground truncate">{m.topic}</p>
+                    <div className="flex items-center gap-1.5">
+                      <p className={`text-sm truncate ${isSoon ? 'text-destructive font-semibold' : 'text-foreground'}`}>{m.topic}</p>
+                      {isSoon && (
+                        <span className="text-[10px] font-bold text-destructive bg-destructive/15 px-1.5 py-0.5 rounded-full whitespace-nowrap shrink-0">
+                          Imminent
+                        </span>
+                      )}
+                    </div>
                     {m.start_time && (
-                      <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                      <p className={`text-xs flex items-center gap-1 mt-0.5 ${isSoon ? 'text-destructive/80' : 'text-muted-foreground'}`}>
                         <Clock className="w-3 h-3" />
                         {format(parseISO(m.start_time), "d MMM · HH:mm", { locale: fr })}
                         {m.duration > 0 && ` · ${m.duration} min`}
                       </p>
                     )}
                   </div>
+                  {isSoon && (
+                    <Button
+                      size="sm"
+                      className="h-7 px-2.5 text-xs gap-1 shrink-0"
+                      onClick={() => window.open(m.join_url, "_blank")}
+                    >
+                      <Video className="w-3.5 h-3.5" />
+                      Rejoindre
+                    </Button>
+                  )}
                   <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                     <button
                       onClick={() => window.open(m.join_url, "_blank")}

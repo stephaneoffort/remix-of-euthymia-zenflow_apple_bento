@@ -40,6 +40,8 @@ export default function ZoomMeetings({ entityType, entityId, compact, defaultTit
     fetchMeetings();
   }, [fetchMeetings]);
 
+  if (!isActive('zoom')) return null;
+
   const handleDelete = async (m: ZoomMeeting) => {
     if (!confirm('Supprimer cette réunion Zoom ?')) return;
     try {

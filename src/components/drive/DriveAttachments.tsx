@@ -45,6 +45,8 @@ export default function DriveAttachments({ entityType, entityId, compact }: Driv
     fetchAttachments();
   }, [fetchAttachments]);
 
+  if (!isActive('google_drive')) return null;
+
   const handleDetach = async (att: DriveAttachment) => {
     try {
       await drive.detachFile(att.id);

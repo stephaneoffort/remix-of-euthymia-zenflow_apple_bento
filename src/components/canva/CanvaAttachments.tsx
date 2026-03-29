@@ -43,6 +43,8 @@ export default function CanvaAttachments({ entityType, entityId, compact, defaul
     fetchAttachments();
   }, [fetchAttachments]);
 
+  if (!isActive('canva')) return null;
+
   const handleDetach = async (att: CanvaAttachment) => {
     try {
       await canva.detachDesign(att.id);

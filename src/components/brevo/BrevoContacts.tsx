@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useBrevo } from '@/hooks/useBrevo';
-import { useIntegrations } from '@/hooks/useIntegrations';
+import { useIntegrations, INTEGRATION_CONFIG } from '@/hooks/useIntegrations';
 import { toast } from 'sonner';
 import { Plus, Trash2, Send, Loader2, Mail } from 'lucide-react';
 

@@ -61,6 +61,8 @@ export function useZoom() {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session?.access_token) throw new Error("Not authenticated");
 
+    console.log("Zoom API call:", JSON.stringify(body));
+
     const res = await fetch(ZOOM_API, {
       method: "POST",
       headers: {
@@ -71,7 +73,16 @@ export function useZoom() {
     });
 
     if (res.status === 401) throw new Error("Session expirée");
-    return res.json();
+    
+    const data = await res.json();
+    console.log("Zoom API response:", data);
+
+    if (data.error) {
+      console.error("Zoom API error:", data.error);
+      throw new Error(data.error);
+    }
+
+    return data;
   };
 
   const createMeeting = (

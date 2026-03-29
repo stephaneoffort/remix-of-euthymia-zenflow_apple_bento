@@ -709,7 +709,7 @@ export default function AppSidebar() {
                         </span>
                       ) : (
                         <span
-                          className={`flex-1 font-medium text-sm cursor-pointer truncate flex items-center gap-1 ${
+                          className={`flex-1 font-semibold text-sm cursor-pointer truncate flex items-center gap-1 ${
                             selectedSpaceId === space.id ? 'text-sidebar-fg-bright' : 'text-sidebar-fg'
                           }`}
                           onClick={() => {

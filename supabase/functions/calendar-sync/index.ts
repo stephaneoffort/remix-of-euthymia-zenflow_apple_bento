@@ -381,8 +381,10 @@ async function caldavPushDelete(account: any, externalId: string): Promise<void>
     method: "DELETE",
     headers: { Authorization: `Basic ${auth}` },
   });
-  if (!res.ok && res.status !== 204)
+  if (!res.ok && res.status !== 204 && res.status !== 404 && res.status !== 410) {
     throw new Error(`CalDAV delete failed: ${await res.text()}`);
+  }
+  if (!res.ok) await res.text(); // consume body for 404/410 — resource already gone
 }
 
 async function caldavTest(account: any): Promise<boolean> {

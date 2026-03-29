@@ -18,6 +18,7 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Switch } from '@/components/ui/switch';
 import TaskReminders from '@/components/TaskReminders';
+import DriveAttachments from '@/components/drive/DriveAttachments';
 // Format date for display
 function formatDateDisplay(isoStr: string): string {
   const d = new Date(isoStr);
@@ -654,6 +655,9 @@ export default function TaskDetailPanel() {
                 </button>
               </div>
             </div>
+
+            {/* Google Drive */}
+            <DriveAttachments entityType="task" entityId={task.id} compact />
 
             {/* Time */}
             <div className="flex gap-3 sm:gap-4">

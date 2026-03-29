@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown, Palette, BellRing } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown, Palette, BellRing, HardDrive } from 'lucide-react';
 import { useThemeMode, PALETTE_META, type ThemePalette } from '@/context/ThemeContext';
 import DataExportImport from '@/components/DataExportImport';
 import InviteMemberDialog from '@/components/InviteMemberDialog';
@@ -62,7 +62,7 @@ export default function Settings() {
 
       <div className="max-w-3xl mx-auto p-6">
         <Tabs defaultValue="members">
-          <TabsList className="grid w-full grid-cols-6 mb-6">
+          <TabsList className="grid w-full grid-cols-7 mb-6">
             <TabsTrigger value="members" className="gap-2">
               <Users className="w-4 h-4" />
               <span className="hidden sm:inline">Membres</span>
@@ -78,6 +78,10 @@ export default function Settings() {
             <TabsTrigger value="theme" className="gap-2">
               <Palette className="w-4 h-4" />
               <span className="hidden sm:inline">Thème</span>
+            </TabsTrigger>
+            <TabsTrigger value="integrations" className="gap-2">
+              <HardDrive className="w-4 h-4" />
+              <span className="hidden sm:inline">Intégrations</span>
             </TabsTrigger>
             <TabsTrigger value="data" className="gap-2">
               <DatabaseBackup className="w-4 h-4" />
@@ -103,6 +107,10 @@ export default function Settings() {
 
           <TabsContent value="theme">
             <ThemePalettePanel />
+          </TabsContent>
+
+          <TabsContent value="integrations">
+            <IntegrationsPanel />
           </TabsContent>
 
           <TabsContent value="data">
@@ -705,6 +713,81 @@ function ThemePalettePanel() {
               </button>
             );
           })}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function IntegrationsPanel() {
+  const [isConnected, setIsConnected] = useState(false);
+  const [connectionEmail, setConnectionEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from('drive_connections' as any)
+        .select('id, email')
+        .eq('user_id', user.id)
+        .limit(1);
+      const connections = data as any[] | null;
+      setIsConnected((connections?.length ?? 0) > 0);
+      setConnectionEmail(connections?.[0]?.email ?? null);
+    })();
+
+    if (window.location.search.includes('drive_connected=true')) {
+      setIsConnected(true);
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
+
+  const handleConnect = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    window.location.href = `https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/google-drive-oauth/authorize?user_id=${user?.id || ''}`;
+  };
+
+  const handleDisconnect = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    await supabase.from('drive_connections' as any).delete().eq('user_id', user.id);
+    setIsConnected(false);
+    setConnectionEmail(null);
+    toast.success('Google Drive déconnecté');
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-foreground">Intégrations</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex items-center justify-between p-4 rounded-lg border border-border bg-muted/20">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">📁</span>
+            <div>
+              <p className="text-sm font-semibold text-foreground">Google Drive</p>
+              <p className="text-xs text-muted-foreground">
+                {isConnected
+                  ? `Connecté${connectionEmail ? ` · ${connectionEmail}` : ''}`
+                  : 'Joindre des fichiers Drive à vos tâches et événements'}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${isConnected ? 'bg-green-500/10 text-green-600' : 'bg-muted text-muted-foreground'}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-green-500' : 'bg-muted-foreground'}`} />
+              {isConnected ? 'Connecté' : 'Inactif'}
+            </span>
+            {isConnected ? (
+              <Button variant="outline" size="sm" onClick={handleDisconnect}>Déconnecter</Button>
+            ) : (
+              <Button size="sm" onClick={handleConnect} className="gap-1.5">
+                Connecter
+              </Button>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Loader2 } from 'lucide-react';
+import DriveAttachments from '@/components/drive/DriveAttachments';
 import type { CalendarEvent } from '@/hooks/useCalendarSync';
 
 interface Props {
@@ -131,6 +132,9 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
             <Label htmlFor="ev-desc">Description (optionnel)</Label>
             <Textarea id="ev-desc" value={description} onChange={e => setDescription(e.target.value)} rows={2} />
           </div>
+          {event && (
+            <DriveAttachments entityType="event" entityId={event.id} compact />
+          )}
           <div className="flex items-center justify-between pt-2">
             {event && onDelete ? (
               <Button variant="destructive" size="sm" onClick={handleDelete} disabled={deleting}>

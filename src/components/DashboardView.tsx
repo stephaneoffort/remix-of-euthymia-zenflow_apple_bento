@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import DriveAttachments from '@/components/drive/DriveAttachments';
 import CanvaAttachments from '@/components/canva/CanvaAttachments';
 import { useApp } from '@/context/AppContext';
@@ -538,29 +539,34 @@ export default function DashboardView() {
         </Card>
       </section>
 
-      {/* Google Drive par projet */}
+      {/* Google Drive par projet — collapsible */}
       {projects.length > 0 && (
-        <section>
-          <h2 className="text-base font-semibold text-foreground mb-3 flex items-center gap-2">
-            📁 Ressources Drive
-          </h2>
-          <div className="grid gap-4 md:grid-cols-2">
-            {projects.map(project => (
-              <Card key={project.id} className="bg-card border-border">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-foreground flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: project.color }} />
-                    {project.name}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <DriveAttachments entityType="project" entityId={project.id} compact />
-                  <CanvaAttachments entityType="project" entityId={project.id} compact />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
+        <Collapsible defaultOpen={false}>
+          <CollapsibleTrigger className="w-full flex items-center justify-between group cursor-pointer mb-3">
+            <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
+              📁 Ressources Drive
+            </h2>
+            <ChevronDown className="w-4 h-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="grid gap-4 md:grid-cols-2">
+              {projects.map(project => (
+                <Card key={project.id} className="bg-card border-border">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-medium text-foreground flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: project.color }} />
+                      {project.name}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <DriveAttachments entityType="project" entityId={project.id} compact />
+                    <CanvaAttachments entityType="project" entityId={project.id} compact />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
       )}
     </div>
   );

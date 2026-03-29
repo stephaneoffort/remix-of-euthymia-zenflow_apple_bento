@@ -71,7 +71,7 @@ export default function DriveAttachments({ entityType, entityId, compact }: Driv
           className="w-full text-xs gap-2"
           onClick={drive.connect}
         >
-          <img src={INTEGRATION_CONFIG.google_drive.icon} alt="" className="w-3.5 h-3.5" /> Connecter Google Drive
+          <img src={INTEGRATION_CONFIG.google_drive.icon} alt="" className="w-4 h-4" /> Connecter Google Drive
         </Button>
       </div>
     );

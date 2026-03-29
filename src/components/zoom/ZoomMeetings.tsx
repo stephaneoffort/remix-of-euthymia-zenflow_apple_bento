@@ -65,7 +65,7 @@ export default function ZoomMeetings({ entityType, entityId, compact, defaultTit
           <img src={INTEGRATION_CONFIG.zoom.icon} alt="Zoom" className="w-5 h-5" /> Zoom
         </p>
         <Button variant="outline" size="sm" onClick={zoom.connect} className="gap-1.5 text-xs">
-          <img src={INTEGRATION_CONFIG.zoom.icon} alt="" className="w-3.5 h-3.5" /> Connecter Zoom
+          <img src={INTEGRATION_CONFIG.zoom.icon} alt="" className="w-4 h-4" /> Connecter Zoom
         </Button>
       </div>
     );

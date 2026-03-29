@@ -78,7 +78,7 @@ export default function CanvaAttachments({ entityType, entityId, compact, defaul
           <img src={INTEGRATION_CONFIG.canva.icon} alt="Canva" className="w-5 h-5" /> Canva
         </p>
         <Button variant="outline" size="sm" onClick={canva.connect} className="gap-1.5 text-xs">
-          <img src={INTEGRATION_CONFIG.canva.icon} alt="" className="w-3.5 h-3.5" /> Connecter Canva
+          <img src={INTEGRATION_CONFIG.canva.icon} alt="" className="w-4 h-4" /> Connecter Canva
         </Button>
       </div>
     );

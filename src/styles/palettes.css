@@ -45,11 +45,11 @@
   --sidebar-accent: 260 10% 10%;
   --sidebar-accent-foreground: 40 14% 90%;
   --sidebar-ring: 42 58% 50%;
-  --bento-bg: #13121a;
-  --bento-bg-hover: #1a1924;
-  --bento-border: rgba(201,168,76,0.08);
-  --bento-border-h: rgba(201,168,76,0.18);
-  --bento-shadow: 0 1px 0 rgba(201,168,76,0.03) inset, 0 0 0 0.5px rgba(201,168,76,0.06), 0 4px 24px rgba(0,0,0,0.5);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(201,168,76,0.06);
+  --bento-border: rgba(201,168,76,0.1);
+  --bento-border-h: rgba(201,168,76,0.2);
+  --bento-shadow: 0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(201,168,76,0.06);
 }
 [data-palette="clubroom"].light {
   --background: 40 22% 96%;
@@ -82,11 +82,11 @@
   --sidebar-accent: 40 14% 90%;
   --sidebar-accent-foreground: 260 10% 15%;
   --sidebar-ring: 42 58% 50%;
-  --bento-bg: hsl(40,18%,98%);
-  --bento-bg-hover: hsl(40,16%,95%);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(201,168,76,0.04);
   --bento-border: rgba(0,0,0,0.06);
   --bento-border-h: rgba(0,0,0,0.12);
-  --bento-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 0 0 0.5px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.03);
+  --bento-shadow: 0 8px 32px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
 }
 [data-palette="clubroom"].mixed {
   --background: 40 22% 96%;
@@ -119,11 +119,11 @@
   --sidebar-accent: 260 10% 10%;
   --sidebar-accent-foreground: 40 14% 90%;
   --sidebar-ring: 42 58% 50%;
-  --bento-bg: hsl(40,18%,98%);
-  --bento-bg-hover: hsl(40,16%,95%);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(201,168,76,0.04);
   --bento-border: rgba(0,0,0,0.06);
   --bento-border-h: rgba(0,0,0,0.12);
-  --bento-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 0 0 0.5px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.03);
+  --bento-shadow: 0 8px 32px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
 }
 
 /* ─── ELEVATED NEUTRALS — Sable & Pierre ─── */
@@ -160,11 +160,11 @@
   --sidebar-accent: 28 8% 11%;
   --sidebar-accent-foreground: 30 12% 88%;
   --sidebar-ring: 28 28% 62%;
-  --bento-bg: #171513;
-  --bento-bg-hover: #1e1c19;
-  --bento-border: rgba(184,175,166,0.07);
-  --bento-border-h: rgba(184,175,166,0.15);
-  --bento-shadow: 0 1px 0 rgba(184,175,166,0.02) inset, 0 0 0 0.5px rgba(184,175,166,0.04), 0 4px 24px rgba(0,0,0,0.45);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(184,175,166,0.06);
+  --bento-border: rgba(184,175,166,0.1);
+  --bento-border-h: rgba(184,175,166,0.18);
+  --bento-shadow: 0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(184,175,166,0.06);
 }
 [data-palette="neutrals"].light {
   --background: 33 28% 97%;
@@ -197,11 +197,11 @@
   --sidebar-accent: 30 14% 90%;
   --sidebar-accent-foreground: 24 14% 15%;
   --sidebar-ring: 28 32% 48%;
-  --bento-bg: hsl(33,22%,98%);
-  --bento-bg-hover: hsl(33,18%,95%);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(184,175,166,0.04);
   --bento-border: rgba(0,0,0,0.05);
   --bento-border-h: rgba(0,0,0,0.10);
-  --bento-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 0 0 0.5px rgba(0,0,0,0.02), 0 4px 16px rgba(0,0,0,0.025);
+  --bento-shadow: 0 8px 32px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
 }
 [data-palette="neutrals"].mixed {
   --background: 33 28% 97%;
@@ -234,11 +234,11 @@
   --sidebar-accent: 28 8% 11%;
   --sidebar-accent-foreground: 30 12% 88%;
   --sidebar-ring: 28 32% 48%;
-  --bento-bg: hsl(33,22%,98%);
-  --bento-bg-hover: hsl(33,18%,95%);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(184,175,166,0.04);
   --bento-border: rgba(0,0,0,0.05);
   --bento-border-h: rgba(0,0,0,0.10);
-  --bento-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 0 0 0.5px rgba(0,0,0,0.02), 0 4px 16px rgba(0,0,0,0.025);
+  --bento-shadow: 0 8px 32px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
 }
 
 /* ─── SAPPHIRE DEPTH — Bleu profond + Teal ─── */
@@ -275,11 +275,11 @@
   --sidebar-accent: 220 28% 10%;
   --sidebar-accent-foreground: 210 16% 92%;
   --sidebar-ring: 173 78% 30%;
-  --bento-bg: #0c1018;
-  --bento-bg-hover: #111620;
-  --bento-border: rgba(45,212,191,0.06);
-  --bento-border-h: rgba(45,212,191,0.14);
-  --bento-shadow: 0 1px 0 rgba(45,212,191,0.02) inset, 0 0 0 0.5px rgba(45,212,191,0.04), 0 4px 24px rgba(0,0,0,0.5);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(45,212,191,0.06);
+  --bento-border: rgba(45,212,191,0.08);
+  --bento-border-h: rgba(45,212,191,0.16);
+  --bento-shadow: 0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(45,212,191,0.06);
 }
 [data-palette="sapphire"].light {
   --background: 214 28% 97%;
@@ -312,11 +312,11 @@
   --sidebar-accent: 214 16% 90%;
   --sidebar-accent-foreground: 222 22% 12%;
   --sidebar-ring: 173 78% 38%;
-  --bento-bg: hsl(214,24%,98%);
-  --bento-bg-hover: hsl(214,20%,95%);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(45,212,191,0.04);
   --bento-border: rgba(0,0,0,0.05);
   --bento-border-h: rgba(0,0,0,0.10);
-  --bento-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 0 0 0.5px rgba(0,0,0,0.02), 0 4px 16px rgba(0,0,0,0.025);
+  --bento-shadow: 0 8px 32px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
 }
 [data-palette="sapphire"].mixed {
   --background: 214 28% 97%;
@@ -349,11 +349,11 @@
   --sidebar-accent: 220 28% 10%;
   --sidebar-accent-foreground: 210 16% 92%;
   --sidebar-ring: 173 78% 38%;
-  --bento-bg: hsl(214,24%,98%);
-  --bento-bg-hover: hsl(214,20%,95%);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(45,212,191,0.04);
   --bento-border: rgba(0,0,0,0.05);
   --bento-border-h: rgba(0,0,0,0.10);
-  --bento-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 0 0 0.5px rgba(0,0,0,0.02), 0 4px 16px rgba(0,0,0,0.025);
+  --bento-shadow: 0 8px 32px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
 }
 
 /* ─── CINEMATIC GLOW — Violet & Rose ─── */
@@ -390,11 +390,11 @@
   --sidebar-accent: 260 26% 10%;
   --sidebar-accent-foreground: 260 14% 92%;
   --sidebar-ring: 265 68% 56%;
-  --bento-bg: #0e0a1c;
-  --bento-bg-hover: #151026;
-  --bento-border: rgba(124,92,237,0.08);
-  --bento-border-h: rgba(124,92,237,0.18);
-  --bento-shadow: 0 1px 0 rgba(124,92,237,0.02) inset, 0 0 0 0.5px rgba(124,92,237,0.05), 0 4px 24px rgba(0,0,0,0.5);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(124,92,237,0.06);
+  --bento-border: rgba(124,92,237,0.1);
+  --bento-border-h: rgba(124,92,237,0.2);
+  --bento-shadow: 0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(124,92,237,0.06);
 }
 [data-palette="cinematic"].light {
   --background: 268 28% 97%;
@@ -427,11 +427,11 @@
   --sidebar-accent: 268 16% 90%;
   --sidebar-accent-foreground: 262 18% 12%;
   --sidebar-ring: 265 68% 54%;
-  --bento-bg: hsl(268,24%,98%);
-  --bento-bg-hover: hsl(268,20%,95%);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(100,50,200,0.04);
   --bento-border: rgba(100,50,200,0.06);
   --bento-border-h: rgba(100,50,200,0.12);
-  --bento-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 0 0 0.5px rgba(100,50,200,0.03), 0 4px 16px rgba(0,0,0,0.025);
+  --bento-shadow: 0 8px 32px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
 }
 [data-palette="cinematic"].mixed {
   --background: 268 28% 97%;
@@ -464,11 +464,11 @@
   --sidebar-accent: 260 26% 10%;
   --sidebar-accent-foreground: 260 14% 92%;
   --sidebar-ring: 265 68% 54%;
-  --bento-bg: hsl(268,24%,98%);
-  --bento-bg-hover: hsl(268,20%,95%);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(100,50,200,0.04);
   --bento-border: rgba(100,50,200,0.06);
   --bento-border-h: rgba(100,50,200,0.12);
-  --bento-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 0 0 0.5px rgba(100,50,200,0.03), 0 4px 16px rgba(0,0,0,0.025);
+  --bento-shadow: 0 8px 32px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
 }
 
 /* ─── OCEAN TEAL — Bleu-vert organique ─── */
@@ -505,11 +505,11 @@
   --sidebar-accent: 186 24% 9%;
   --sidebar-accent-foreground: 170 12% 90%;
   --sidebar-ring: 168 74% 30%;
-  --bento-bg: #0a1518;
-  --bento-bg-hover: #0f1c20;
-  --bento-border: rgba(20,184,166,0.07);
-  --bento-border-h: rgba(20,184,166,0.16);
-  --bento-shadow: 0 1px 0 rgba(20,184,166,0.02) inset, 0 0 0 0.5px rgba(20,184,166,0.04), 0 4px 24px rgba(0,0,0,0.5);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(20,184,166,0.06);
+  --bento-border: rgba(20,184,166,0.1);
+  --bento-border-h: rgba(20,184,166,0.18);
+  --bento-shadow: 0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(20,184,166,0.06);
 }
 [data-palette="teal"].light {
   --background: 168 28% 97%;
@@ -542,11 +542,11 @@
   --sidebar-accent: 168 16% 90%;
   --sidebar-accent-foreground: 186 18% 12%;
   --sidebar-ring: 168 74% 40%;
-  --bento-bg: hsl(168,24%,98%);
-  --bento-bg-hover: hsl(168,20%,95%);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(20,184,166,0.04);
   --bento-border: rgba(20,184,166,0.06);
   --bento-border-h: rgba(20,184,166,0.12);
-  --bento-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 0 0 0.5px rgba(20,184,166,0.03), 0 4px 16px rgba(0,0,0,0.025);
+  --bento-shadow: 0 8px 32px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
 }
 [data-palette="teal"].mixed {
   --background: 168 28% 97%;
@@ -579,11 +579,11 @@
   --sidebar-accent: 186 24% 9%;
   --sidebar-accent-foreground: 170 12% 90%;
   --sidebar-ring: 168 74% 40%;
-  --bento-bg: hsl(168,24%,98%);
-  --bento-bg-hover: hsl(168,20%,95%);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(20,184,166,0.04);
   --bento-border: rgba(20,184,166,0.06);
   --bento-border-h: rgba(20,184,166,0.12);
-  --bento-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 0 0 0.5px rgba(20,184,166,0.03), 0 4px 16px rgba(0,0,0,0.025);
+  --bento-shadow: 0 8px 32px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
 }
 
 /* ─── BENTO 2026 — Off-white chaud + Vert forêt ─── */
@@ -624,11 +624,11 @@
   --sidebar-accent: 140 12% 12%;
   --sidebar-accent-foreground: 37 38% 90%;
   --sidebar-ring: 138 33% 52%;
-  --bento-bg: #141e16;
-  --bento-bg-hover: #1a2a1d;
-  --bento-border: rgba(168,213,181,0.07);
-  --bento-border-h: rgba(168,213,181,0.16);
-  --bento-shadow: 0 1px 0 rgba(168,213,181,0.02) inset, 0 0 0 0.5px rgba(168,213,181,0.04), 0 4px 24px rgba(0,0,0,0.5);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(168,213,181,0.06);
+  --bento-border: rgba(168,213,181,0.1);
+  --bento-border-h: rgba(168,213,181,0.18);
+  --bento-shadow: 0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(168,213,181,0.06);
 }
 
 /* Light mode */
@@ -665,11 +665,11 @@
   --sidebar-accent: 36 22% 87%;
   --sidebar-accent-foreground: 0 0% 10%;
   --sidebar-ring: 125 13% 24%;
-  --bento-bg: hsl(36,28%,95%);
-  --bento-bg-hover: hsl(36,24%,92%);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(45,58,46,0.04);
   --bento-border: rgba(45,58,46,0.08);
   --bento-border-h: rgba(45,58,46,0.15);
-  --bento-shadow: 0 2px 20px rgba(45,58,46,0.08);
+  --bento-shadow: 0 8px 32px rgba(45,58,46,0.08), inset 0 1px 0 rgba(255,255,255,0.6);
 }
 
 /* Mixed mode (light content + dark sidebar) */
@@ -706,11 +706,11 @@
   --sidebar-accent: 140 12% 12%;
   --sidebar-accent-foreground: 37 38% 90%;
   --sidebar-ring: 138 33% 52%;
-  --bento-bg: hsl(36,28%,95%);
-  --bento-bg-hover: hsl(36,24%,92%);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(45,58,46,0.04);
   --bento-border: rgba(45,58,46,0.08);
   --bento-border-h: rgba(45,58,46,0.15);
-  --bento-shadow: 0 2px 20px rgba(45,58,46,0.08);
+  --bento-shadow: 0 8px 32px rgba(45,58,46,0.08), inset 0 1px 0 rgba(255,255,255,0.6);
 }
 
 /* ─── BENTO 2026 Scoped Overrides ─── */
@@ -923,9 +923,9 @@
   --sidebar-accent-foreground: 210 18% 90%;
   --sidebar-ring: 12 80% 62%;
   --sidebar-border: 210 20% 14%;
-  --bento-bg: #0f1a28;
-  --bento-bg-hover: #162236;
-  --bento-border: rgba(240,132,106,0.08);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(240,132,106,0.06);
+  --bento-border: rgba(240,132,106,0.1);
   --bento-accent: rgba(240,132,106,0.12);
   --priority-urgent: 0 60% 52%;
   --priority-high: 20 58% 52%;
@@ -967,8 +967,8 @@
   --sidebar-accent-foreground: 210 20% 25%;
   --sidebar-ring: 210 55% 30%;
   --sidebar-border: 210 16% 90%;
-  --bento-bg: #eef3f8;
-  --bento-bg-hover: #e4ecf4;
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(30,58,95,0.04);
   --bento-border: rgba(30,58,95,0.1);
   --bento-accent: rgba(240,132,106,0.12);
   --priority-urgent: 0 55% 46%;
@@ -1011,8 +1011,8 @@
   --sidebar-accent-foreground: 210 18% 90%;
   --sidebar-ring: 12 80% 62%;
   --sidebar-border: 210 20% 14%;
-  --bento-bg: #eef3f8;
-  --bento-bg-hover: #e4ecf4;
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(30,58,95,0.04);
   --bento-border: rgba(30,58,95,0.1);
   --bento-accent: rgba(240,132,106,0.12);
   --priority-urgent: 0 55% 46%;
@@ -1142,9 +1142,9 @@
   --sidebar-accent-foreground: 350 14% 90%;
   --sidebar-ring: 345 50% 55%;
   --sidebar-border: 350 14% 14%;
-  --bento-bg: #1e1218;
-  --bento-bg-hover: #2a1a22;
-  --bento-border: rgba(232,160,176,0.08);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(232,160,176,0.06);
+  --bento-border: rgba(232,160,176,0.1);
   --bento-accent: rgba(232,160,176,0.12);
   --priority-urgent: 0 55% 52%;
   --priority-high: 15 50% 52%;
@@ -1186,8 +1186,8 @@
   --sidebar-accent-foreground: 350 18% 25%;
   --sidebar-ring: 345 45% 28%;
   --sidebar-border: 350 14% 90%;
-  --bento-bg: #f8f0f0;
-  --bento-bg-hover: #f0e6e6;
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(92,36,52,0.04);
   --bento-border: rgba(92,36,52,0.1);
   --bento-accent: rgba(232,160,176,0.15);
   --priority-urgent: 0 50% 46%;
@@ -1230,8 +1230,8 @@
   --sidebar-accent-foreground: 350 14% 90%;
   --sidebar-ring: 345 50% 55%;
   --sidebar-border: 350 14% 14%;
-  --bento-bg: #f8f0f0;
-  --bento-bg-hover: #f0e6e6;
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(92,36,52,0.04);
   --bento-border: rgba(92,36,52,0.1);
   --bento-accent: rgba(232,160,176,0.15);
   --priority-urgent: 0 50% 46%;
@@ -1361,9 +1361,9 @@
   --sidebar-accent-foreground: 35 14% 90%;
   --sidebar-ring: 38 65% 52%;
   --sidebar-border: 30 10% 14%;
-  --bento-bg: #1c1a17;
-  --bento-bg-hover: #252220;
-  --bento-border: rgba(212,160,74,0.08);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(212,160,74,0.06);
+  --bento-border: rgba(212,160,74,0.1);
   --bento-accent: rgba(212,160,74,0.12);
   --priority-urgent: 4 55% 52%;
   --priority-high: 25 52% 52%;
@@ -1405,8 +1405,8 @@
   --sidebar-accent-foreground: 30 16% 25%;
   --sidebar-ring: 30 30% 22%;
   --sidebar-border: 35 14% 89%;
-  --bento-bg: #f5efe5;
-  --bento-bg-hover: #ede6da;
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(46,42,38,0.04);
   --bento-border: rgba(46,42,38,0.1);
   --bento-accent: rgba(212,160,74,0.15);
   --priority-urgent: 4 50% 46%;
@@ -1449,8 +1449,8 @@
   --sidebar-accent-foreground: 35 14% 90%;
   --sidebar-ring: 38 65% 52%;
   --sidebar-border: 30 10% 14%;
-  --bento-bg: #f5efe5;
-  --bento-bg-hover: #ede6da;
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(46,42,38,0.04);
   --bento-border: rgba(46,42,38,0.1);
   --bento-accent: rgba(212,160,74,0.15);
   --priority-urgent: 4 50% 46%;
@@ -1972,9 +1972,9 @@
   outline-offset: 3px;
 }
 
-/* ─── Hide App.css ambient orbs for liquidGlass ─── */
-[data-palette^="liquidGlass"] body::before,
-[data-palette^="liquidGlass"] body::after {
+/* ─── Hide App.css ambient orbs for all palettes ─── */
+html body::before,
+html body::after {
   display: none !important;
 }
 
@@ -2726,4 +2726,550 @@
   border: 1px solid rgba(99,102,241,0.4) !important;
   border-top-color: rgba(165,180,252,0.5) !important;
   box-shadow: 0 4px 16px rgba(99,102,241,0.3), inset 0 1px 0 rgba(255,255,255,0.2) !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════
+   UNIVERSAL LIQUID GLASS — Applied to ALL palettes
+   Mesh gradients + glass surfaces + shimmer + grain
+   ═══════════════════════════════════════════════════════ */
+
+/* ─── Mesh Gradient Backgrounds per Classic Palette ─── */
+
+/* CLUBROOM */
+[data-palette="clubroom"] {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(201,168,76,0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(180,150,60,0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 75% 75% at 50% 50%, rgba(100,80,40,0.1) 0%, transparent 70%),
+    linear-gradient(135deg, #0e0d14 0%, #13121a 50%, #0e0d14 100%) !important;
+  background-size: 200% 200%, 200% 200%, 200% 200%, 100% 100% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
+}
+[data-palette="clubroom"].light {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(201,168,76,0.2) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(160,130,50,0.15) 0%, transparent 70%),
+    linear-gradient(135deg, #f5f0e8 0%, #ede6d8 50%, #f5f0e8 100%) !important;
+  background-size: 200% 200%, 200% 200%, 100% 100% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+[data-palette="clubroom"].mixed {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(201,168,76,0.2) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(160,130,50,0.15) 0%, transparent 70%),
+    linear-gradient(135deg, #f5f0e8 0%, #ede6d8 50%, #f5f0e8 100%) !important;
+  background-size: 200% 200%, 200% 200%, 100% 100% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+
+/* NEUTRALS */
+[data-palette="neutrals"] {
+  background:
+    radial-gradient(ellipse 80% 80% at 25% 25%, rgba(160,136,104,0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 75% 75%, rgba(140,120,90,0.12) 0%, transparent 70%),
+    linear-gradient(135deg, #12100e 0%, #171513 50%, #12100e 100%) !important;
+  background-size: 200% 200%, 200% 200%, 100% 100% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
+}
+[data-palette="neutrals"].light {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(160,136,104,0.2) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(140,120,90,0.15) 0%, transparent 70%),
+    linear-gradient(135deg, #f5f3ef 0%, #ede8df 50%, #f5f3ef 100%) !important;
+  background-size: 200% 200%, 200% 200%, 100% 100% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+[data-palette="neutrals"].mixed {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(160,136,104,0.2) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(140,120,90,0.15) 0%, transparent 70%),
+    linear-gradient(135deg, #f5f3ef 0%, #ede8df 50%, #f5f3ef 100%) !important;
+  background-size: 200% 200%, 200% 200%, 100% 100% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+
+/* SAPPHIRE */
+[data-palette="sapphire"] {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(45,212,191,0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(30,80,180,0.12) 0%, transparent 70%),
+    linear-gradient(135deg, #080c14 0%, #0c1018 50%, #080c14 100%) !important;
+  background-size: 200% 200%, 200% 200%, 100% 100% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
+}
+[data-palette="sapphire"].light {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(45,212,191,0.25) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(60,140,240,0.18) 0%, transparent 70%),
+    linear-gradient(135deg, #eef2f7 0%, #e4ecf4 50%, #eef2f7 100%) !important;
+  background-size: 200% 200%, 200% 200%, 100% 100% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+[data-palette="sapphire"].mixed {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(45,212,191,0.25) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(60,140,240,0.18) 0%, transparent 70%),
+    linear-gradient(135deg, #eef2f7 0%, #e4ecf4 50%, #eef2f7 100%) !important;
+  background-size: 200% 200%, 200% 200%, 100% 100% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+
+/* CINEMATIC */
+[data-palette="cinematic"] {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(124,92,237,0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(236,72,153,0.12) 0%, transparent 70%),
+    linear-gradient(135deg, #0a0714 0%, #0e0a1c 50%, #0a0714 100%) !important;
+  background-size: 200% 200%, 200% 200%, 100% 100% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
+}
+[data-palette="cinematic"].light {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(124,92,237,0.2) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(236,72,153,0.15) 0%, transparent 70%),
+    linear-gradient(135deg, #f5f0ff 0%, #fce7f3 50%, #f5f0ff 100%) !important;
+  background-size: 200% 200%, 200% 200%, 100% 100% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+[data-palette="cinematic"].mixed {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(124,92,237,0.2) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(236,72,153,0.15) 0%, transparent 70%),
+    linear-gradient(135deg, #f5f0ff 0%, #fce7f3 50%, #f5f0ff 100%) !important;
+  background-size: 200% 200%, 200% 200%, 100% 100% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+
+/* TEAL */
+[data-palette="teal"] {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(20,184,166,0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(56,189,248,0.1) 0%, transparent 70%),
+    linear-gradient(135deg, #070f12 0%, #0a1518 50%, #070f12 100%) !important;
+  background-size: 200% 200%, 200% 200%, 100% 100% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
+}
+[data-palette="teal"].light {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(20,184,166,0.25) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(56,189,248,0.18) 0%, transparent 70%),
+    linear-gradient(135deg, #e8faf5 0%, #e0f7fa 50%, #e8faf5 100%) !important;
+  background-size: 200% 200%, 200% 200%, 100% 100% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+[data-palette="teal"].mixed {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(20,184,166,0.25) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(56,189,248,0.18) 0%, transparent 70%),
+    linear-gradient(135deg, #e8faf5 0%, #e0f7fa 50%, #e8faf5 100%) !important;
+  background-size: 200% 200%, 200% 200%, 100% 100% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+
+/* BENTO 2026 */
+[data-palette="bento2026"] {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(168,213,181,0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(100,180,120,0.1) 0%, transparent 70%),
+    linear-gradient(135deg, #0f170f 0%, #141e16 50%, #0f170f 100%) !important;
+  background-size: 200% 200%, 200% 200%, 100% 100% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
+}
+[data-palette="bento2026"].light {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(168,213,181,0.3) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(100,160,110,0.2) 0%, transparent 70%),
+    linear-gradient(135deg, #f5f0e8 0%, #ede8df 50%, #f5f0e8 100%) !important;
+  background-size: 200% 200%, 200% 200%, 100% 100% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+[data-palette="bento2026"].mixed {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(168,213,181,0.3) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(100,160,110,0.2) 0%, transparent 70%),
+    linear-gradient(135deg, #f5f0e8 0%, #ede8df 50%, #f5f0e8 100%) !important;
+  background-size: 200% 200%, 200% 200%, 100% 100% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+
+/* BENTO OCEAN */
+[data-palette="bentoOcean"] {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(240,132,106,0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(30,58,95,0.15) 0%, transparent 70%),
+    linear-gradient(135deg, #0a1420 0%, #0f1a28 50%, #0a1420 100%) !important;
+  background-size: 200% 200%, 200% 200%, 100% 100% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
+}
+[data-palette="bentoOcean"].light {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(240,132,106,0.2) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(30,58,95,0.15) 0%, transparent 70%),
+    linear-gradient(135deg, #eef3f8 0%, #e4ecf4 50%, #eef3f8 100%) !important;
+  background-size: 200% 200%, 200% 200%, 100% 100% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+[data-palette="bentoOcean"].mixed {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(240,132,106,0.2) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(30,58,95,0.15) 0%, transparent 70%),
+    linear-gradient(135deg, #eef3f8 0%, #e4ecf4 50%, #eef3f8 100%) !important;
+  background-size: 200% 200%, 200% 200%, 100% 100% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+
+/* BENTO ROSE */
+[data-palette="bentoRose"] {
+  background:
+    radial-gradient(ellipse 80% 80% at 25% 25%, rgba(232,160,176,0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 75% 75%, rgba(92,36,52,0.12) 0%, transparent 70%),
+    linear-gradient(135deg, #160d12 0%, #1e1218 50%, #160d12 100%) !important;
+  background-size: 200% 200%, 200% 200%, 100% 100% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
+}
+[data-palette="bentoRose"].light {
+  background:
+    radial-gradient(ellipse 80% 80% at 25% 25%, rgba(232,160,176,0.25) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 75% 75%, rgba(92,36,52,0.12) 0%, transparent 70%),
+    linear-gradient(135deg, #f8f0f0 0%, #f0e6e6 50%, #f8f0f0 100%) !important;
+  background-size: 200% 200%, 200% 200%, 100% 100% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+[data-palette="bentoRose"].mixed {
+  background:
+    radial-gradient(ellipse 80% 80% at 25% 25%, rgba(232,160,176,0.25) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 75% 75%, rgba(92,36,52,0.12) 0%, transparent 70%),
+    linear-gradient(135deg, #f8f0f0 0%, #f0e6e6 50%, #f8f0f0 100%) !important;
+  background-size: 200% 200%, 200% 200%, 100% 100% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+
+/* BENTO AMBER */
+[data-palette="bentoAmber"] {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 20%, rgba(212,160,74,0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(180,120,40,0.1) 0%, transparent 70%),
+    linear-gradient(135deg, #141210 0%, #1c1a17 50%, #141210 100%) !important;
+  background-size: 200% 200%, 200% 200%, 100% 100% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
+}
+[data-palette="bentoAmber"].light {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 20%, rgba(212,160,74,0.25) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(180,120,40,0.18) 0%, transparent 70%),
+    linear-gradient(135deg, #f5efe5 0%, #ede6da 50%, #f5efe5 100%) !important;
+  background-size: 200% 200%, 200% 200%, 100% 100% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+[data-palette="bentoAmber"].mixed {
+  background:
+    radial-gradient(ellipse 80% 80% at 20% 20%, rgba(212,160,74,0.25) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(180,120,40,0.18) 0%, transparent 70%),
+    linear-gradient(135deg, #f5efe5 0%, #ede6da 50%, #f5efe5 100%) !important;
+  background-size: 200% 200%, 200% 200%, 100% 100% !important;
+  background-attachment: fixed !important;
+  animation: liquidMeshMove 25s ease-in-out infinite !important;
+}
+
+/* ─── Grain overlay for non-LG palettes ─── */
+[data-palette="clubroom"]::before,
+[data-palette="neutrals"]::before,
+[data-palette="sapphire"]::before,
+[data-palette="cinematic"]::before,
+[data-palette="teal"]::before,
+[data-palette="bento2026"]::before,
+[data-palette="bentoOcean"]::before,
+[data-palette="bentoRose"]::before,
+[data-palette="bentoAmber"]::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── Universal glass cells for classic palettes (dark) ─── */
+[data-palette="clubroom"] .bento-cell,
+[data-palette="neutrals"] .bento-cell,
+[data-palette="sapphire"] .bento-cell,
+[data-palette="cinematic"] .bento-cell,
+[data-palette="teal"] .bento-cell {
+  background: rgba(255,255,255,0.04) !important;
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-top-color: rgba(255,255,255,0.18) !important;
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ─── Universal glass cells for classic palettes (light/mixed) ─── */
+[data-palette="clubroom"].light .bento-cell,
+[data-palette="clubroom"].mixed .bento-cell,
+[data-palette="neutrals"].light .bento-cell,
+[data-palette="neutrals"].mixed .bento-cell,
+[data-palette="sapphire"].light .bento-cell,
+[data-palette="sapphire"].mixed .bento-cell,
+[data-palette="cinematic"].light .bento-cell,
+[data-palette="cinematic"].mixed .bento-cell,
+[data-palette="teal"].light .bento-cell,
+[data-palette="teal"].mixed .bento-cell {
+  background: rgba(255,255,255,0.18) !important;
+  backdrop-filter: blur(24px) saturate(180%) brightness(1.05);
+  -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.05);
+  border: 1px solid rgba(255,255,255,0.45) !important;
+  border-top-color: rgba(255,255,255,0.7) !important;
+  border-left-color: rgba(255,255,255,0.6) !important;
+  box-shadow:
+    0 8px 32px rgba(31,38,135,0.08),
+    0 2px 8px rgba(31,38,135,0.06),
+    inset 0 1px 0 rgba(255,255,255,0.6),
+    inset 0 -1px 0 rgba(255,255,255,0.1);
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ─── Shimmer on hover for all non-LG palettes ─── */
+[data-palette="clubroom"] .bento-cell::after,
+[data-palette="neutrals"] .bento-cell::after,
+[data-palette="sapphire"] .bento-cell::after,
+[data-palette="cinematic"] .bento-cell::after,
+[data-palette="teal"] .bento-cell::after,
+[data-palette="bento2026"] .bento-cell::after,
+[data-palette="bentoOcean"] .bento-cell::after,
+[data-palette="bentoRose"] .bento-cell::after,
+[data-palette="bentoAmber"] .bento-cell::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.15) 50%,
+    rgba(255,255,255,0) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+[data-palette="clubroom"] .bento-cell:hover::after,
+[data-palette="neutrals"] .bento-cell:hover::after,
+[data-palette="sapphire"] .bento-cell:hover::after,
+[data-palette="cinematic"] .bento-cell:hover::after,
+[data-palette="teal"] .bento-cell:hover::after,
+[data-palette="bento2026"] .bento-cell:hover::after,
+[data-palette="bentoOcean"] .bento-cell:hover::after,
+[data-palette="bentoRose"] .bento-cell:hover::after,
+[data-palette="bentoAmber"] .bento-cell:hover::after {
+  opacity: 1;
+}
+
+/* ─── Glass reveal animation for all non-LG palettes ─── */
+[data-palette="clubroom"] .bento-cell,
+[data-palette="neutrals"] .bento-cell,
+[data-palette="sapphire"] .bento-cell,
+[data-palette="cinematic"] .bento-cell,
+[data-palette="teal"] .bento-cell,
+[data-palette="bento2026"] .bento-cell,
+[data-palette="bentoOcean"] .bento-cell,
+[data-palette="bentoRose"] .bento-cell,
+[data-palette="bentoAmber"] .bento-cell {
+  animation: liquidGlassReveal 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+[data-palette="clubroom"] .bento-cell:nth-child(1),
+[data-palette="neutrals"] .bento-cell:nth-child(1),
+[data-palette="sapphire"] .bento-cell:nth-child(1),
+[data-palette="cinematic"] .bento-cell:nth-child(1),
+[data-palette="teal"] .bento-cell:nth-child(1),
+[data-palette="bento2026"] .bento-cell:nth-child(1),
+[data-palette="bentoOcean"] .bento-cell:nth-child(1),
+[data-palette="bentoRose"] .bento-cell:nth-child(1),
+[data-palette="bentoAmber"] .bento-cell:nth-child(1) { animation-delay: 0.05s; }
+[data-palette="clubroom"] .bento-cell:nth-child(2),
+[data-palette="neutrals"] .bento-cell:nth-child(2),
+[data-palette="sapphire"] .bento-cell:nth-child(2),
+[data-palette="cinematic"] .bento-cell:nth-child(2),
+[data-palette="teal"] .bento-cell:nth-child(2),
+[data-palette="bento2026"] .bento-cell:nth-child(2),
+[data-palette="bentoOcean"] .bento-cell:nth-child(2),
+[data-palette="bentoRose"] .bento-cell:nth-child(2),
+[data-palette="bentoAmber"] .bento-cell:nth-child(2) { animation-delay: 0.10s; }
+[data-palette="clubroom"] .bento-cell:nth-child(3),
+[data-palette="neutrals"] .bento-cell:nth-child(3),
+[data-palette="sapphire"] .bento-cell:nth-child(3),
+[data-palette="cinematic"] .bento-cell:nth-child(3),
+[data-palette="teal"] .bento-cell:nth-child(3),
+[data-palette="bento2026"] .bento-cell:nth-child(3),
+[data-palette="bentoOcean"] .bento-cell:nth-child(3),
+[data-palette="bentoRose"] .bento-cell:nth-child(3),
+[data-palette="bentoAmber"] .bento-cell:nth-child(3) { animation-delay: 0.15s; }
+[data-palette="clubroom"] .bento-cell:nth-child(4),
+[data-palette="neutrals"] .bento-cell:nth-child(4),
+[data-palette="sapphire"] .bento-cell:nth-child(4),
+[data-palette="cinematic"] .bento-cell:nth-child(4),
+[data-palette="teal"] .bento-cell:nth-child(4),
+[data-palette="bento2026"] .bento-cell:nth-child(4),
+[data-palette="bentoOcean"] .bento-cell:nth-child(4),
+[data-palette="bentoRose"] .bento-cell:nth-child(4),
+[data-palette="bentoAmber"] .bento-cell:nth-child(4) { animation-delay: 0.20s; }
+[data-palette="clubroom"] .bento-cell:nth-child(5),
+[data-palette="neutrals"] .bento-cell:nth-child(5),
+[data-palette="sapphire"] .bento-cell:nth-child(5),
+[data-palette="cinematic"] .bento-cell:nth-child(5),
+[data-palette="teal"] .bento-cell:nth-child(5),
+[data-palette="bento2026"] .bento-cell:nth-child(5),
+[data-palette="bentoOcean"] .bento-cell:nth-child(5),
+[data-palette="bentoRose"] .bento-cell:nth-child(5),
+[data-palette="bentoAmber"] .bento-cell:nth-child(5) { animation-delay: 0.25s; }
+[data-palette="clubroom"] .bento-cell:nth-child(6),
+[data-palette="neutrals"] .bento-cell:nth-child(6),
+[data-palette="sapphire"] .bento-cell:nth-child(6),
+[data-palette="cinematic"] .bento-cell:nth-child(6),
+[data-palette="teal"] .bento-cell:nth-child(6),
+[data-palette="bento2026"] .bento-cell:nth-child(6),
+[data-palette="bentoOcean"] .bento-cell:nth-child(6),
+[data-palette="bentoRose"] .bento-cell:nth-child(6),
+[data-palette="bentoAmber"] .bento-cell:nth-child(6) { animation-delay: 0.30s; }
+
+/* ─── Glass sidebar for non-LG palettes ─── */
+[data-palette="clubroom"] [data-sidebar="sidebar"],
+[data-palette="neutrals"] [data-sidebar="sidebar"],
+[data-palette="sapphire"] [data-sidebar="sidebar"],
+[data-palette="cinematic"] [data-sidebar="sidebar"],
+[data-palette="teal"] [data-sidebar="sidebar"],
+[data-palette="bento2026"] [data-sidebar="sidebar"],
+[data-palette="bentoOcean"] [data-sidebar="sidebar"],
+[data-palette="bentoRose"] [data-sidebar="sidebar"],
+[data-palette="bentoAmber"] [data-sidebar="sidebar"] {
+  backdrop-filter: blur(28px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(150%) !important;
+  border-right: 1px solid rgba(255,255,255,0.06) !important;
+}
+
+/* ─── Transparent bg-background for all non-LG palettes (light/mixed) ─── */
+[data-palette="clubroom"].light .bg-background,
+[data-palette="clubroom"].mixed .bg-background,
+[data-palette="neutrals"].light .bg-background,
+[data-palette="neutrals"].mixed .bg-background,
+[data-palette="sapphire"].light .bg-background,
+[data-palette="sapphire"].mixed .bg-background,
+[data-palette="cinematic"].light .bg-background,
+[data-palette="cinematic"].mixed .bg-background,
+[data-palette="teal"].light .bg-background,
+[data-palette="teal"].mixed .bg-background,
+[data-palette="bento2026"].light .bg-background,
+[data-palette="bento2026"].mixed .bg-background,
+[data-palette="bentoOcean"].light .bg-background,
+[data-palette="bentoOcean"].mixed .bg-background,
+[data-palette="bentoRose"].light .bg-background,
+[data-palette="bentoRose"].mixed .bg-background,
+[data-palette="bentoAmber"].light .bg-background,
+[data-palette="bentoAmber"].mixed .bg-background {
+  background: transparent !important;
+}
+
+/* ─── Glass cards (shadcn) for classic palettes (light/mixed) ─── */
+[data-palette="clubroom"].light .bg-card,
+[data-palette="clubroom"].mixed .bg-card,
+[data-palette="neutrals"].light .bg-card,
+[data-palette="neutrals"].mixed .bg-card,
+[data-palette="sapphire"].light .bg-card,
+[data-palette="sapphire"].mixed .bg-card,
+[data-palette="cinematic"].light .bg-card,
+[data-palette="cinematic"].mixed .bg-card,
+[data-palette="teal"].light .bg-card,
+[data-palette="teal"].mixed .bg-card {
+  background: rgba(255,255,255,0.18) !important;
+  backdrop-filter: blur(24px) saturate(180%) brightness(1.05) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.05) !important;
+  border: 1px solid rgba(255,255,255,0.45) !important;
+  border-top-color: rgba(255,255,255,0.7) !important;
+  box-shadow: 0 8px 32px rgba(31,38,135,0.08), inset 0 1px 0 rgba(255,255,255,0.6) !important;
+  border-radius: 24px !important;
+}
+
+/* ─── Glass cards for classic palettes (dark) ─── */
+[data-palette="clubroom"]:not(.light):not(.mixed) .bg-card,
+[data-palette="neutrals"]:not(.light):not(.mixed) .bg-card,
+[data-palette="sapphire"]:not(.light):not(.mixed) .bg-card,
+[data-palette="cinematic"]:not(.light):not(.mixed) .bg-card,
+[data-palette="teal"]:not(.light):not(.mixed) .bg-card {
+  background: rgba(255,255,255,0.04) !important;
+  backdrop-filter: blur(24px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1) !important;
+  border-radius: 24px !important;
+}
+
+/* ─── Interactive hover lift for classic palettes ─── */
+[data-palette="clubroom"] .bento-cell:hover,
+[data-palette="neutrals"] .bento-cell:hover,
+[data-palette="sapphire"] .bento-cell:hover,
+[data-palette="cinematic"] .bento-cell:hover,
+[data-palette="teal"] .bento-cell:hover {
+  transform: translateY(-4px);
+}
+
+/* ─── Glass reveal on .bg-card for non-LG ─── */
+[data-palette="clubroom"] .bg-card,
+[data-palette="neutrals"] .bg-card,
+[data-palette="sapphire"] .bg-card,
+[data-palette="cinematic"] .bg-card,
+[data-palette="teal"] .bg-card,
+[data-palette="bento2026"] .bg-card,
+[data-palette="bentoOcean"] .bg-card,
+[data-palette="bentoRose"] .bg-card,
+[data-palette="bentoAmber"] .bg-card {
+  animation: liquidGlassReveal 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* ─── Reduced motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  [data-palette="clubroom"],
+  [data-palette="neutrals"],
+  [data-palette="sapphire"],
+  [data-palette="cinematic"],
+  [data-palette="teal"],
+  [data-palette="bento2026"],
+  [data-palette="bentoOcean"],
+  [data-palette="bentoRose"],
+  [data-palette="bentoAmber"] {
+    animation: none !important;
+  }
 }

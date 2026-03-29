@@ -466,7 +466,7 @@ Deno.serve(async (req) => {
       } else if (action === "create") {
         if (evErr || !event) throw new Error("Event not found");
         if (provider === "google") await googlePushCreate(account, event);
-        else if (provider === "outlook") await outlookPushCreate(account, event);
+        else if (isCalDav) await caldavPushCreate(account, event);
         else if (isCalDav) await caldavPushCreate(account, event);
       } else if (action === "update") {
         if (evErr || !event) throw new Error("Event not found");

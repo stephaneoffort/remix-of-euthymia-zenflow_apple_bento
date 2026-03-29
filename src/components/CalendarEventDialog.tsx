@@ -8,6 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Loader2 } from 'lucide-react';
 import DriveAttachments from '@/components/drive/DriveAttachments';
 import CanvaAttachments from '@/components/canva/CanvaAttachments';
+import ZoomMeetings from '@/components/zoom/ZoomMeetings';
 import type { CalendarEvent } from '@/hooks/useCalendarSync';
 
 interface Props {
@@ -137,6 +138,7 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
             <>
               <DriveAttachments entityType="event" entityId={event.id} compact />
               <CanvaAttachments entityType="event" entityId={event.id} compact defaultTitle={event.title} />
+              <ZoomMeetings entityType="event" entityId={event.id} compact defaultTitle={event.title} />
             </>
           )}
           <div className="flex items-center justify-between pt-2">

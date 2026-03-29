@@ -64,40 +64,42 @@ export default function Settings() {
 
       <div className="max-w-3xl mx-auto p-6">
         <Tabs defaultValue="members">
-          <TabsList className="grid w-full grid-cols-8 mb-6">
-            <TabsTrigger value="members" className="gap-2">
-              <Users className="w-4 h-4" />
-              <span className="hidden sm:inline">Membres</span>
-            </TabsTrigger>
-            <TabsTrigger value="statuses" className="gap-2">
-              <ListChecks className="w-4 h-4" />
-              <span className="hidden sm:inline">Avancements</span>
-            </TabsTrigger>
-            <TabsTrigger value="chat" className="gap-2">
-              <MessageCircle className="w-4 h-4" />
-              <span className="hidden sm:inline">Chat</span>
-            </TabsTrigger>
-            <TabsTrigger value="theme" className="gap-2">
-              <Palette className="w-4 h-4" />
-              <span className="hidden sm:inline">Thème</span>
-            </TabsTrigger>
-            <TabsTrigger value="integrations" className="gap-2">
-              <HardDrive className="w-4 h-4" />
-              <span className="hidden sm:inline">Intégrations</span>
-            </TabsTrigger>
-            <TabsTrigger value="calendar" className="gap-2">
-              <CalendarSync className="w-4 h-4" />
-              <span className="hidden sm:inline">Calendrier</span>
-            </TabsTrigger>
-            <TabsTrigger value="data" className="gap-2">
-              <DatabaseBackup className="w-4 h-4" />
-              <span className="hidden sm:inline">Données</span>
-            </TabsTrigger>
-            <TabsTrigger value="push" className="gap-2">
-              <BellRing className="w-4 h-4" />
-              <span className="hidden sm:inline">Push</span>
-            </TabsTrigger>
-          </TabsList>
+          <div className="mb-6 -mx-1 overflow-x-auto scrollbar-none">
+            <TabsList className="inline-flex w-auto min-w-full sm:grid sm:grid-cols-8 gap-1 p-1">
+              <TabsTrigger value="members" className="gap-1.5 px-3 whitespace-nowrap">
+                <Users className="w-4 h-4 shrink-0" />
+                <span className="text-xs sm:text-sm">Membres</span>
+              </TabsTrigger>
+              <TabsTrigger value="statuses" className="gap-1.5 px-3 whitespace-nowrap">
+                <ListChecks className="w-4 h-4 shrink-0" />
+                <span className="text-xs sm:text-sm">Avancements</span>
+              </TabsTrigger>
+              <TabsTrigger value="chat" className="gap-1.5 px-3 whitespace-nowrap">
+                <MessageCircle className="w-4 h-4 shrink-0" />
+                <span className="text-xs sm:text-sm">Chat</span>
+              </TabsTrigger>
+              <TabsTrigger value="theme" className="gap-1.5 px-3 whitespace-nowrap">
+                <Palette className="w-4 h-4 shrink-0" />
+                <span className="text-xs sm:text-sm">Thème</span>
+              </TabsTrigger>
+              <TabsTrigger value="integrations" className="gap-1.5 px-3 whitespace-nowrap">
+                <HardDrive className="w-4 h-4 shrink-0" />
+                <span className="text-xs sm:text-sm">Intégrations</span>
+              </TabsTrigger>
+              <TabsTrigger value="calendar" className="gap-1.5 px-3 whitespace-nowrap">
+                <CalendarSync className="w-4 h-4 shrink-0" />
+                <span className="text-xs sm:text-sm">Calendrier</span>
+              </TabsTrigger>
+              <TabsTrigger value="data" className="gap-1.5 px-3 whitespace-nowrap">
+                <DatabaseBackup className="w-4 h-4 shrink-0" />
+                <span className="text-xs sm:text-sm">Données</span>
+              </TabsTrigger>
+              <TabsTrigger value="push" className="gap-1.5 px-3 whitespace-nowrap">
+                <BellRing className="w-4 h-4 shrink-0" />
+                <span className="text-xs sm:text-sm">Push</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="members">
             <MembersPanel />

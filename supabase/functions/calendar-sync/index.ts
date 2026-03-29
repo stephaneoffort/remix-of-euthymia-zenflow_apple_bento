@@ -433,6 +433,144 @@ async function icsPull(account: any): Promise<number> {
   return events.length;
 }
 
+// ─── ZENFLOW TASK SYNC ───
+async function getOrCreateZenflowCalendar(token: string, accountId: string): Promise<string> {
+  const { data: account } = await supabase
+    .from("calendar_accounts").select("zenflow_calendar_id").eq("id", accountId).single();
+
+  if (account?.zenflow_calendar_id) {
+    const checkRes = await fetch(
+      `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(account.zenflow_calendar_id)}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+    );
+    if (checkRes.ok) { await checkRes.text(); return account.zenflow_calendar_id; }
+    await checkRes.text();
+  }
+
+  const listRes = await fetch(
+    "https://www.googleapis.com/calendar/v3/users/me/calendarList",
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  const calList = await listRes.json();
+  const existing = calList.items?.find((c: any) => c.summary === "ZENFLOW");
+
+  if (existing) {
+    await supabase.from("calendar_accounts").update({ zenflow_calendar_id: existing.id } as any).eq("id", accountId);
+    return existing.id;
+  }
+
+  const createRes = await fetch(
+    "https://www.googleapis.com/calendar/v3/calendars",
+    {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        summary: "ZENFLOW",
+        description: "Tâches synchronisées depuis Euthymia ZenFlow",
+        timeZone: "Europe/Paris",
+      }),
+    },
+  );
+  const created = await createRes.json();
+
+  // Set color
+  await fetch(
+    `https://www.googleapis.com/calendar/v3/users/me/calendarList/${encodeURIComponent(created.id)}`,
+    {
+      method: "PATCH",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ colorId: "9" }),
+    },
+  ).then(r => r.text());
+
+  await supabase.from("calendar_accounts").update({ zenflow_calendar_id: created.id } as any).eq("id", accountId);
+  return created.id;
+}
+
+async function pushTaskToZenflow(account: any, taskId: string, action: string) {
+  const token = await refreshGoogleToken(account);
+  const zenflowCalId = await getOrCreateZenflowCalendar(token, account.id);
+  const baseUrl = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(zenflowCalId)}/events`;
+  const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
+
+  const { data: task } = await supabase.from("tasks").select("*").eq("id", taskId).single();
+
+  if (action === "delete") {
+    if (task?.google_event_id) {
+      const res = await fetch(`${baseUrl}/${task.google_event_id}`, { method: "DELETE", headers });
+      if (!res.ok && res.status !== 410 && res.status !== 404) { await res.text(); }
+      else { await res.text(); }
+    }
+    await supabase.from("tasks").update({ google_event_id: null } as any).eq("id", taskId);
+    return;
+  }
+
+  if (!task) throw new Error("Task not found");
+
+  const isSubtask = !!task.parent_task_id;
+  const prefix = isSubtask ? "↳ " : "✓ ";
+  const statusEmoji: Record<string, string> = { todo: "🔵", in_progress: "🟡", in_review: "🟠", done: "🟢", blocked: "🔴" };
+  const emoji = statusEmoji[task.status] ?? "🔵";
+  const eventTitle = `${emoji} ${prefix}${task.title}`;
+
+  const startDate = task.due_date ? new Date(task.due_date) : new Date();
+  const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
+
+  const description = [
+    task.description || "",
+    "",
+    "── Détails ZenFlow ──",
+    `Statut : ${task.status}`,
+    `Priorité : ${task.priority}`,
+    isSubtask ? "Type : Sous-tâche" : "Type : Tâche",
+    `ID : ${task.id}`,
+    "",
+    "https://euthymia-zenflow-bento.lovable.app",
+  ].join("\n");
+
+  const colorId: Record<string, string> = { todo: "9", in_progress: "5", in_review: "6", done: "10", blocked: "11" };
+
+  const payload = {
+    summary: eventTitle,
+    description,
+    start: { dateTime: startDate.toISOString(), timeZone: "Europe/Paris" },
+    end: { dateTime: endDate.toISOString(), timeZone: "Europe/Paris" },
+    colorId: colorId[task.status] ?? "9",
+    source: { title: "Euthymia ZenFlow", url: "https://euthymia-zenflow-bento.lovable.app" },
+  };
+
+  if (action === "create" || (action === "update" && !task.google_event_id)) {
+    const res = await fetch(baseUrl, { method: "POST", headers, body: JSON.stringify(payload) });
+    const created = await res.json();
+    if (created.error) throw new Error("Google error: " + created.error.message);
+    await supabase.from("tasks").update({ google_event_id: created.id } as any).eq("id", taskId);
+  } else if (action === "update" && task.google_event_id) {
+    const res = await fetch(`${baseUrl}/${task.google_event_id}`, { method: "PUT", headers, body: JSON.stringify(payload) });
+    const updated = await res.json();
+    if (updated.error) throw new Error("Google error: " + updated.error.message);
+  }
+}
+
+async function syncPendingTasks(account: any): Promise<number> {
+  const { data: pendingTasks } = await supabase
+    .from("tasks").select("*")
+    .is("google_event_id", null)
+    .not("due_date", "is", null);
+
+  if (!pendingTasks?.length) return 0;
+
+  let synced = 0;
+  for (const task of pendingTasks) {
+    try {
+      await pushTaskToZenflow(account, task.id, "create");
+      synced++;
+    } catch (err) {
+      console.error(`Failed to sync task ${task.id}:`, err);
+    }
+  }
+  return synced;
+}
+
 // ─── AUTH HELPER ───
 async function authenticateUser(req: Request): Promise<string> {
   const authHeader = req.headers.get("Authorization")
@@ -467,7 +605,8 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { account_id, direction, event_id, action } = await req.json();
+    const body = await req.json();
+    const { account_id, direction, event_id, action, task_id } = body;
     if (!account_id || !direction) {
       return new Response(
         JSON.stringify({ error: "account_id and direction are required" }),
@@ -494,6 +633,38 @@ Deno.serve(async (req) => {
 
     const provider = account.provider;
     const isCalDav = ["caldav", "icloud", "nextcloud", "proton", "fastmail"].includes(provider);
+
+    // ─── ZENFLOW TASK SYNC DIRECTIONS ───
+    if (direction === "push_task") {
+      if (!task_id || !action) {
+        return new Response(
+          JSON.stringify({ error: "task_id and action required for push_task" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+      await pushTaskToZenflow(account, task_id, action);
+      return new Response(
+        JSON.stringify({ success: true }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    if (direction === "sync_pending_tasks") {
+      const count = await syncPendingTasks(account);
+      return new Response(
+        JSON.stringify({ success: true, synced: count }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    if (direction === "init_zenflow_calendar") {
+      const token = await refreshGoogleToken(account);
+      const calId = await getOrCreateZenflowCalendar(token, account.id);
+      return new Response(
+        JSON.stringify({ calendar_id: calId }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
     // ─── TEST ───
     if (direction === "test") {

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { Task } from '@/types';
-import { PriorityBadge, AvatarGroup, SubtaskProgress } from '@/components/TaskBadges';
+import { PriorityBadge, AvatarGroup, SubtaskProgress, ZenflowBadge } from '@/components/TaskBadges';
 import { Plus, GripVertical, GripHorizontal, ChevronRight, ChevronsLeftRight, ChevronsRightLeft, Repeat, ArrowRightLeft } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import {
@@ -485,6 +485,7 @@ function KanbanCard({
               </span>
             )}
             <SubtaskProgress total={subtasks.length} done={doneSubtasks.length} />
+            <ZenflowBadge googleEventId={task.googleEventId} />
           </div>
           <div className="flex items-center justify-between mt-1.5 sm:mt-2">
             <div className="flex gap-1 flex-wrap items-center">

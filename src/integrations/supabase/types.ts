@@ -202,6 +202,7 @@ export type Database = {
           refresh_token: string | null
           token_expiry: string | null
           user_id: string | null
+          zenflow_calendar_id: string | null
         }
         Insert: {
           access_token?: string | null
@@ -220,6 +221,7 @@ export type Database = {
           refresh_token?: string | null
           token_expiry?: string | null
           user_id?: string | null
+          zenflow_calendar_id?: string | null
         }
         Update: {
           access_token?: string | null
@@ -238,6 +240,7 @@ export type Database = {
           refresh_token?: string | null
           token_expiry?: string | null
           user_id?: string | null
+          zenflow_calendar_id?: string | null
         }
         Relationships: []
       }
@@ -1225,6 +1228,7 @@ export type Database = {
           created_at: string
           description: string
           due_date: string | null
+          google_event_id: string | null
           id: string
           list_id: string
           parent_task_id: string | null
@@ -1245,6 +1249,7 @@ export type Database = {
           created_at?: string
           description?: string
           due_date?: string | null
+          google_event_id?: string | null
           id?: string
           list_id: string
           parent_task_id?: string | null
@@ -1265,6 +1270,7 @@ export type Database = {
           created_at?: string
           description?: string
           due_date?: string | null
+          google_event_id?: string | null
           id?: string
           list_id?: string
           parent_task_id?: string | null

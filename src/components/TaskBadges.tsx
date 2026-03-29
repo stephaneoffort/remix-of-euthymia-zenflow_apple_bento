@@ -1,6 +1,6 @@
 import React from 'react';
 import { Priority } from '@/types';
-import { AlertCircle, ArrowUp, Minus, ArrowDown, Circle, Loader, Eye, CheckCircle, Ban } from 'lucide-react';
+import { AlertCircle, ArrowUp, Minus, ArrowDown, Circle, Loader, Eye, CheckCircle, Ban, CalendarSync } from 'lucide-react';
 
 export const PriorityBadge = React.forwardRef<HTMLSpanElement, { priority: Priority }>(({ priority }, ref) => {
   const config: Record<Priority, { label: string; className: string; icon: React.ReactNode }> = {
@@ -98,6 +98,16 @@ export function SubtaskProgress({ total, done }: { total: number; done: number }
       </span>
       <CheckCircle className="w-3 h-3" />
       {done}/{total}
+    </span>
+  );
+}
+
+export function ZenflowBadge({ googleEventId }: { googleEventId?: string | null }) {
+  if (!googleEventId) return null;
+  return (
+    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-primary/10 text-primary" title="Synchronisé avec ZENFLOW">
+      <CalendarSync className="w-3 h-3" />
+      ZENFLOW
     </span>
   );
 }

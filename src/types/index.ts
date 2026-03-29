@@ -73,6 +73,7 @@ export interface Task {
   aiSummary: string | null;
   recurrence?: Recurrence;
   recurrenceEndDate?: string | null;
+  googleEventId?: string | null;
   createdAt: string;
   order: number;
 }

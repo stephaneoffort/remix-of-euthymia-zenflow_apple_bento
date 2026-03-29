@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
 import { enqueue } from '@/lib/offlineQueue';
+import { useTaskSync } from '@/hooks/useTaskSync';
 
 export interface AdvancedFilters {
   statuses: string[];
@@ -103,6 +104,7 @@ function dbToTask(row: any, assigneeIds: string[], comments: Comment[], attachme
     aiSummary: row.ai_summary,
     recurrence: (row.recurrence as Recurrence) || null,
     recurrenceEndDate: row.recurrence_end_date || null,
+    googleEventId: row.google_event_id || null,
     createdAt: row.created_at,
     order: row.sort_order,
   };
@@ -111,6 +113,7 @@ function dbToTask(row: any, assigneeIds: string[], comments: Comment[], attachme
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
   const { teamMemberId } = useAuth();
+  const { syncTask } = useTaskSync();
   const [selectedProjectId, _setSelectedProjectId] = useState<string | null>(() => {
     return localStorage.getItem('euthymia:selectedProject') || null;
   });
@@ -321,7 +324,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      if (data) toast.success('Tâche créée');
+      if (data) {
+        toast.success('Tâche créée');
+        // Sync to ZENFLOW if task has a due date
+        if (data.due_date) syncTask(data.id, 'create');
+      }
     },
     onError: (error) => {
       console.error('Failed to add task:', error);
@@ -349,7 +356,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (Object.keys(dbUpdates).length > 0) {
         if (!navigator.onLine) {
           await enqueue({ table: 'tasks', operation: 'update', payload: dbUpdates, match: { id } });
-          return;
+          return { id, syncFields: Object.keys(updates) };
         }
         const { error } = await supabase.from('tasks').update(dbUpdates).eq('id', id);
         if (error) throw error;
@@ -362,7 +369,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           if (updates.assigneeIds.length > 0) {
             await enqueue({ table: 'task_assignees', operation: 'insert', payload: updates.assigneeIds.map(mid => ({ task_id: id, member_id: mid })) });
           }
-          return;
+          return { id, syncFields: Object.keys(updates) };
         }
         await supabase.from('task_assignees').delete().eq('task_id', id);
         if (updates.assigneeIds.length > 0) {
@@ -392,13 +399,33 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           if (error) throw error;
         }
       }
+
+      return { id, syncFields: Object.keys(updates) };
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks'] }),
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      // Sync to ZENFLOW on meaningful changes
+      if (result && typeof result === 'object' && 'id' in result) {
+        const syncableFields = ['title', 'status', 'priority', 'dueDate', 'description'];
+        const needsSync = (result as any).syncFields?.some((f: string) => syncableFields.includes(f));
+        if (needsSync) {
+          const task = tasks.find(t => t.id === (result as any).id);
+          if (task?.dueDate || task?.googleEventId) {
+            syncTask((result as any).id, task?.googleEventId ? 'update' : 'create');
+          }
+        }
+      }
+    },
   });
 
   // Delete task mutation
   const deleteTaskMutation = useMutation({
     mutationFn: async (id: string) => {
+      // Sync delete to ZENFLOW before removing
+      const task = tasks.find(t => t.id === id);
+      if (task?.googleEventId) {
+        syncTask(id, 'delete');
+      }
       if (!navigator.onLine) {
         await enqueue({ table: 'tasks', operation: 'delete', payload: null, match: { id } });
         toast.info('Suppression enregistrée hors-ligne');

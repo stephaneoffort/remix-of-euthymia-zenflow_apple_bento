@@ -4,7 +4,7 @@ import EmptyState from '@/components/EmptyState';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { PRIORITY_LABELS, Status, Priority } from '@/types';
-import { PriorityBadge, StatusBadge, AvatarGroup, SubtaskProgress } from '@/components/TaskBadges';
+import { PriorityBadge, StatusBadge, AvatarGroup, SubtaskProgress, ZenflowBadge } from '@/components/TaskBadges';
 import { ChevronRight, ChevronDown, ArrowUpDown, Plus, Repeat } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -132,6 +132,7 @@ export default function ListView() {
                   <StatusBadge status={task.status} />
                   <PriorityBadge priority={task.priority} />
                   <SubtaskProgress total={subtasks.length} done={doneSubtasks.length} />
+                  <ZenflowBadge googleEventId={task.googleEventId} />
                 </div>
                 <div className="flex items-center justify-between mt-1.5">
                   {task.dueDate ? (
@@ -228,6 +229,7 @@ export default function ListView() {
                   <span className={`text-sm font-medium ${isOverdue ? 'text-priority-urgent' : 'text-foreground'}`}>{task.title}</span>
                   {task.recurrence && <Repeat className="w-3 h-3 text-primary shrink-0" />}
                   <SubtaskProgress total={subtasks.length} done={doneSubtasks.length} />
+                  <ZenflowBadge googleEventId={task.googleEventId} />
                 </div>
               </div>
             </div>

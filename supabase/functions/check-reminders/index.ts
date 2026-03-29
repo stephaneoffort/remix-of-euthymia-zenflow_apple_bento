@@ -223,7 +223,7 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const vapidPrivateKey = Deno.env.get("VAPID_PRIVATE_KEY")!;
-    const vapidPublicKey = "BH60WPWbXxd73SIbLKmFX7MsuDj4p-liploW-VZwNJhu_NtUo78K22FtGxmTzcM-bgjsrKG8_1xfU9aVDGozQF4";
+    const vapidPublicKey = "BFl-X7dNVfMkGjlUJCes-O4IbVfdJrxkNJ91375nwCufXggVCNYMOIcw2_rRNEP1Bu3ZYjSz4PlK8cKIr_tsJ4Y";
 
     const supabase = createClient(supabaseUrl, serviceKey);
 

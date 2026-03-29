@@ -413,8 +413,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         if (needsSync) {
           const task = tasks.find(t => t.id === (result as any).id);
           const newStatus = (result as any).updates?.status;
-          // If task is marked done, delete from Google Calendar
-          if (newStatus === 'done' && task?.googleEventId) {
+          // If task is marked done, always try to delete from Google Calendar
+          if (newStatus === 'done') {
             syncTask((result as any).id, 'delete');
           } else if (newStatus !== 'done' && (task?.dueDate || task?.googleEventId)) {
             syncTask((result as any).id, task?.googleEventId ? 'update' : 'create');

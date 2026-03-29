@@ -10,7 +10,7 @@ interface Props {
   onConnected?: () => void;
 }
 
-export default function BrevoConnectionForm({ onConnected }: Props) {
+const BrevoConnectionForm = React.forwardRef<HTMLFormElement, Props>(function BrevoConnectionForm({ onConnected }, ref) {
   const { saveApiKey } = useBrevo();
   const [apiKey, setApiKey] = useState('');
   const [show, setShow] = useState(false);

@@ -2774,6 +2774,11 @@ html body::after {
   --primary: 0 84% 64%;
   --primary-foreground: 0 0% 100%;
   --ring: 0 84% 64%;
+  --sidebar-primary: 0 84% 64%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-active: 0 84% 58%;
+  --sidebar-active-fg: 0 0% 100%;
+  --sidebar-ring: 0 84% 64%;
   background:
     radial-gradient(ellipse 80% 80% at 25% 25%, rgba(251,113,133,0.18) 0%, transparent 70%),
     radial-gradient(ellipse 80% 80% at 75% 70%, rgba(249,115,22,0.12) 0%, transparent 70%),

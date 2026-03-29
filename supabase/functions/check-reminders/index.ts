@@ -330,13 +330,15 @@ serve(async (req) => {
     let zoomSent = 0;
     try {
       const fifteenMinLater = new Date(now.getTime() + 15 * 60 * 1000);
-      const { data: upcomingMeetings } = await supabase
+      console.log("Zoom check window:", now.toISOString(), "->", fifteenMinLater.toISOString());
+      const { data: upcomingMeetings, error: zoomQueryErr } = await supabase
         .from("zoom_meetings")
         .select("id, topic, start_time, join_url, user_id")
         .is("notified_at", null)
         .not("start_time", "is", null)
         .gte("start_time", now.toISOString())
         .lte("start_time", fifteenMinLater.toISOString());
+      console.log("Zoom meetings found:", upcomingMeetings?.length, "error:", zoomQueryErr);
 
       if (upcomingMeetings && upcomingMeetings.length > 0) {
         // Get profiles to map user_id -> team_member_id

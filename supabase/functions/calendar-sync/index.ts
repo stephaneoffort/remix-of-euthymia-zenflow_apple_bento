@@ -423,7 +423,7 @@ Deno.serve(async (req) => {
     if (direction === "pull") {
       let count = 0;
       if (provider === "google") count = await googlePull(account);
-      else if (provider === "outlook") count = await outlookPull(account);
+      else if (isCalDav) count = await caldavPull(account);
       else if (isCalDav) count = await caldavPull(account);
       else if (provider === "ics") count = await icsPull(account);
       else throw new Error(`Unsupported provider: ${provider}`);

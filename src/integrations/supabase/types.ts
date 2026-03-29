@@ -758,6 +758,42 @@ export type Database = {
         }
         Relationships: []
       }
+      member_integrations: {
+        Row: {
+          connected_at: string | null
+          created_at: string | null
+          enabled_at: string | null
+          id: string
+          integration: string
+          is_connected: boolean | null
+          is_enabled: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          connected_at?: string | null
+          created_at?: string | null
+          enabled_at?: string | null
+          id?: string
+          integration: string
+          is_connected?: boolean | null
+          is_enabled?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          connected_at?: string | null
+          created_at?: string | null
+          enabled_at?: string | null
+          id?: string
+          integration?: string
+          is_connected?: boolean | null
+          is_enabled?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

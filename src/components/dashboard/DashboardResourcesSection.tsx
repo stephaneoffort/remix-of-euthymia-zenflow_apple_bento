@@ -5,6 +5,7 @@ import { ChevronDown } from "lucide-react";
 import DriveAttachments from "@/components/drive/DriveAttachments";
 import CanvaAttachments from "@/components/canva/CanvaAttachments";
 import { Project } from "@/types";
+import { useIntegrations } from "@/hooks/useIntegrations";
 
 const VISIBLE_COUNT = 5;
 
@@ -13,10 +14,12 @@ interface Props {
 }
 
 export default function DashboardResourcesSection({ projects }: Props) {
+  const { isActive } = useIntegrations();
   const [driveExpanded, setDriveExpanded] = useState(false);
   const [canvaExpanded, setCanvaExpanded] = useState(false);
 
   if (projects.length === 0) return null;
+  if (!isActive('google_drive') && !isActive('canva')) return null;
 
   const driveVisible = driveExpanded ? projects : projects.slice(0, VISIBLE_COUNT);
   const canvaVisible = canvaExpanded ? projects : projects.slice(0, VISIBLE_COUNT);

@@ -6,17 +6,19 @@ import { ChevronDown, Video, ExternalLink, Copy, Clock } from "lucide-react";
 import { format, parseISO, isFuture } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
+import { useIntegrations } from "@/hooks/useIntegrations";
 
 const VISIBLE_COUNT = 5;
 
 export default function DashboardZoomSection() {
+  const { isActive } = useIntegrations();
   const zoom = useZoom();
   const [meetings, setMeetings] = useState<ZoomMeeting[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
-    if (!zoom.isConnected) { setLoading(false); return; }
+    if (!isActive('zoom') || !zoom.isConnected) { setLoading(false); return; }
     (async () => {
       try {
         // List all meetings for "project" entity type with empty id to get all
@@ -35,6 +37,7 @@ export default function DashboardZoomSection() {
     })();
   }, [zoom.isConnected]);
 
+  if (!isActive('zoom')) return null;
   if (!zoom.isConnected && !loading) return null;
 
   const visibleMeetings = expanded ? meetings : meetings.slice(0, VISIBLE_COUNT);

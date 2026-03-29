@@ -21,6 +21,7 @@ import TaskReminders from '@/components/TaskReminders';
 import DriveAttachments from '@/components/drive/DriveAttachments';
 import CanvaAttachments from '@/components/canva/CanvaAttachments';
 import ZoomMeetings from '@/components/zoom/ZoomMeetings';
+import { useIntegrations } from '@/hooks/useIntegrations';
 // Format date for display
 function formatDateDisplay(isoStr: string): string {
   const d = new Date(isoStr);
@@ -142,6 +143,7 @@ function DateTimeField({ value, onChange }: { value: string | null | undefined; 
 
 export default function TaskDetailPanel() {
   const { selectedTaskId, setSelectedTaskId, setSelectedProjectId, getTaskById, updateTask, deleteTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks, teamMembers, allStatuses, getStatusLabel, addAttachment, deleteAttachment, projects, spaces, getListsForProject, convertTaskToProject } = useApp();
+  const { isActive } = useIntegrations();
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [addingSubtaskFor, setAddingSubtaskFor] = useState<string | null>(null);
   const [newComment, setNewComment] = useState('');
@@ -658,14 +660,19 @@ export default function TaskDetailPanel() {
               </div>
             </div>
 
-            {/* Google Drive */}
+            {/* Integrations */}
             <DriveAttachments entityType="task" entityId={task.id} compact />
-
-            {/* Canva */}
             <CanvaAttachments entityType="task" entityId={task.id} compact defaultTitle={task.title} />
-
-            {/* Zoom */}
             <ZoomMeetings entityType="task" entityId={task.id} compact defaultTitle={task.title} />
+
+            {!isActive('google_drive') && !isActive('canva') && !isActive('zoom') && (
+              <a
+                href="/settings"
+                className="block w-full py-3 px-4 border border-dashed border-border rounded-lg text-xs text-muted-foreground hover:border-primary/50 hover:text-primary transition-colors text-center"
+              >
+                📁 🎨 📹 — Connecte des outils depuis les Settings pour enrichir tes tâches →
+              </a>
+            )}
 
             {/* Time */}
             <div className="flex gap-3 sm:gap-4">

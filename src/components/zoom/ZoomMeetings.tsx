@@ -10,6 +10,7 @@ import { useZoom, type ZoomMeeting } from '@/hooks/useZoom';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { useIntegrations } from '@/hooks/useIntegrations';
 
 interface Props {
   entityType: 'task' | 'event' | 'project';
@@ -19,6 +20,7 @@ interface Props {
 }
 
 export default function ZoomMeetings({ entityType, entityId, compact, defaultTitle }: Props) {
+  const { isActive } = useIntegrations();
   const zoom = useZoom();
   const [meetings, setMeetings] = useState<ZoomMeeting[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,6 +39,8 @@ export default function ZoomMeetings({ entityType, entityId, compact, defaultTit
   useEffect(() => {
     fetchMeetings();
   }, [fetchMeetings]);
+
+  if (!isActive('zoom')) return null;
 
   const handleDelete = async (m: ZoomMeeting) => {
     if (!confirm('Supprimer cette réunion Zoom ?')) return;

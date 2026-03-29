@@ -6,6 +6,7 @@ import { useGoogleDrive, type DriveAttachment } from '@/hooks/useGoogleDrive';
 import { getDriveIcon } from '@/components/drive/DriveFilePicker';
 import DriveFilePicker from '@/components/drive/DriveFilePicker';
 import { toast } from 'sonner';
+import { useIntegrations } from '@/hooks/useIntegrations';
 
 function formatSize(bytes: number | null) {
   if (!bytes) return '';
@@ -21,6 +22,7 @@ interface DriveAttachmentsProps {
 }
 
 export default function DriveAttachments({ entityType, entityId, compact }: DriveAttachmentsProps) {
+  const { isActive } = useIntegrations();
   const drive = useGoogleDrive();
   const [attachments, setAttachments] = useState<DriveAttachment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,6 +44,8 @@ export default function DriveAttachments({ entityType, entityId, compact }: Driv
   useEffect(() => {
     fetchAttachments();
   }, [fetchAttachments]);
+
+  if (!isActive('google_drive')) return null;
 
   const handleDetach = async (att: DriveAttachment) => {
     try {

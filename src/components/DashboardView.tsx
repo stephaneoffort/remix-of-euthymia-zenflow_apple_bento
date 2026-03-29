@@ -563,4 +563,3 @@ export default function DashboardView() {
     </div>
   );
 }
-}

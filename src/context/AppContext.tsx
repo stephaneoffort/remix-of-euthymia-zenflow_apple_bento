@@ -113,6 +113,7 @@ function dbToTask(row: any, assigneeIds: string[], comments: Comment[], attachme
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
   const { teamMemberId } = useAuth();
+  const { syncTask } = useTaskSync();
   const [selectedProjectId, _setSelectedProjectId] = useState<string | null>(() => {
     return localStorage.getItem('euthymia:selectedProject') || null;
   });

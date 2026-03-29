@@ -1164,6 +1164,7 @@ export default function CalendarView() {
           </div>
           <DragOverlay>{activeTask ? <div className="text-[11px] px-1.5 py-0.5 rounded bg-primary/20 text-primary shadow-lg border border-primary/30 max-w-[150px] truncate">{activeTask.title}</div> : null}</DragOverlay>
         </DndContext>
+        {eventDialogElement}
       </div>
     );
   }

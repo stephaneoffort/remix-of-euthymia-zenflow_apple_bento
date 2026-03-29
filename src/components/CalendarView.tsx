@@ -356,6 +356,11 @@ function AgendaExternalEvents({ dateStr, externalEventsByDate, accountMap, onEdi
               <span className={`w-2 h-2 rounded-full shrink-0 ${meta.dot}`} />
             )}
             <span className="text-sm font-medium text-foreground flex-1 truncate">{ev.title}</span>
+            {ev.has_meet && (
+              <span className="inline-flex items-center gap-0.5 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-[hsl(174,60%,30%)]/10 text-[hsl(174,60%,30%)]">
+                Meet
+              </span>
+            )}
             <span className="text-xs text-muted-foreground shrink-0">{timeStr}</span>
             <button onClick={(e) => { e.stopPropagation(); onDeleteEvent(ev); }} className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-destructive/10 transition-all">
               <Trash2 className="w-3.5 h-3.5 text-destructive" />
@@ -618,7 +623,7 @@ export default function CalendarView() {
     await calSync.deleteCalendarEvent(event.id);
   };
 
-  const handleSaveEvent = async (data: { title: string; description: string; start_time: string; end_time: string; is_all_day: boolean; location: string }) => {
+  const handleSaveEvent = async (data: { title: string; description: string; start_time: string; end_time: string; is_all_day: boolean; location: string; has_meet?: boolean }) => {
     if (editingEvent) {
       await calSync.updateCalendarEvent(editingEvent.id, data);
     } else {

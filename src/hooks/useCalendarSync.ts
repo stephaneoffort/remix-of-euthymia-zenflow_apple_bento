@@ -59,6 +59,9 @@ export interface CalendarEvent {
   is_all_day: boolean;
   status: string | null;
   sync_status: string | null;
+  meet_link: string | null;
+  conference_id: string | null;
+  has_meet: boolean;
   last_synced_at: string | null;
   created_at: string;
   updated_at: string;
@@ -207,6 +210,7 @@ export function useCalendarSync() {
     end_time: string;
     is_all_day?: boolean;
     location?: string;
+    has_meet?: boolean;
   }) => {
     // Find first active writable account
     const { data: activeAccounts } = await supabase
@@ -231,6 +235,7 @@ export function useCalendarSync() {
         end_time: data.end_time,
         is_all_day: data.is_all_day ?? false,
         location: data.location || null,
+        has_meet: data.has_meet ?? false,
         provider: account?.provider || 'google',
         account_id: account?.id || null,
         sync_status: account ? 'pending' : 'local',

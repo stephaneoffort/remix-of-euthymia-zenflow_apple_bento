@@ -57,22 +57,29 @@ async function googlePull(account: any): Promise<number> {
   const data = await res.json();
   if (!res.ok) throw new Error(`Google pull failed: ${JSON.stringify(data)}`);
 
-  const events = (data.items || []).map((e: any) => ({
-    account_id: account.id,
-    user_id: account.user_id,
-    external_id: e.id,
-    provider: "google",
-    title: e.summary || "(Sans titre)",
-    description: e.description || null,
-    location: e.location || null,
-    start_time: e.start?.dateTime || e.start?.date,
-    end_time: e.end?.dateTime || e.end?.date,
-    is_all_day: !e.start?.dateTime,
-    status: e.status || "confirmed",
-    sync_status: "synced",
-    last_synced_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  }));
+  const events = (data.items || []).map((e: any) => {
+    const meetLink = e.conferenceData?.entryPoints
+      ?.find((ep: any) => ep.entryPointType === "video")?.uri ?? null;
+    return {
+      account_id: account.id,
+      user_id: account.user_id,
+      external_id: e.id,
+      provider: "google",
+      title: e.summary || "(Sans titre)",
+      description: e.description || null,
+      location: e.location || null,
+      start_time: e.start?.dateTime || e.start?.date,
+      end_time: e.end?.dateTime || e.end?.date,
+      is_all_day: !e.start?.dateTime,
+      status: e.status || "confirmed",
+      sync_status: "synced",
+      meet_link: meetLink,
+      conference_id: e.conferenceData?.conferenceId ?? null,
+      has_meet: meetLink !== null,
+      last_synced_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+  });
 
   if (events.length > 0) {
     const { error } = await supabase
@@ -86,26 +93,49 @@ async function googlePull(account: any): Promise<number> {
 async function googlePushCreate(account: any, event: any): Promise<string> {
   const token = await refreshGoogleToken(account);
   const calId = encodeURIComponent(account.calendar_id || "primary");
-  const payload = event.is_all_day
-    ? { start: { date: event.start_time.split("T")[0] }, end: { date: event.end_time.split("T")[0] } }
-    : { start: { dateTime: event.start_time, timeZone: "Europe/Paris" }, end: { dateTime: event.end_time, timeZone: "Europe/Paris" } };
+  const payload: any = {
+    summary: event.title,
+    description: event.description,
+    location: event.location,
+    ...(event.is_all_day
+      ? { start: { date: event.start_time.split("T")[0] }, end: { date: event.end_time.split("T")[0] } }
+      : { start: { dateTime: event.start_time, timeZone: "Europe/Paris" }, end: { dateTime: event.end_time, timeZone: "Europe/Paris" } }),
+  };
+
+  // Add Google Meet if requested
+  if (event.has_meet) {
+    payload.conferenceData = {
+      createRequest: {
+        requestId: crypto.randomUUID(),
+        conferenceSolutionKey: { type: "hangoutsMeet" },
+      },
+    };
+  }
+
+  const meetParam = event.has_meet ? "?conferenceDataVersion=1" : "";
   const res = await fetch(
-    `https://www.googleapis.com/calendar/v3/calendars/${calId}/events`,
+    `https://www.googleapis.com/calendar/v3/calendars/${calId}/events${meetParam}`,
     {
       method: "POST",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        summary: event.title,
-        description: event.description,
-        location: event.location,
-        ...payload,
-      }),
+      body: JSON.stringify(payload),
     },
   );
   const data = await res.json();
   if (!res.ok) throw new Error(`Google create failed: ${JSON.stringify(data)}`);
+
+  const meetLink = data.conferenceData?.entryPoints
+    ?.find((e: any) => e.entryPointType === "video")?.uri ?? null;
+
   await supabase.from("calendar_events")
-    .update({ external_id: data.id, sync_status: "synced", last_synced_at: new Date().toISOString() })
+    .update({
+      external_id: data.id,
+      sync_status: "synced",
+      meet_link: meetLink,
+      conference_id: data.conferenceData?.conferenceId ?? null,
+      has_meet: meetLink !== null,
+      last_synced_at: new Date().toISOString(),
+    })
     .eq("id", event.id);
   return data.id;
 }
@@ -113,25 +143,47 @@ async function googlePushCreate(account: any, event: any): Promise<string> {
 async function googlePushUpdate(account: any, event: any): Promise<void> {
   const token = await refreshGoogleToken(account);
   const calId = encodeURIComponent(account.calendar_id || "primary");
-  const payload = event.is_all_day
-    ? { start: { date: event.start_time.split("T")[0] }, end: { date: event.end_time.split("T")[0] } }
-    : { start: { dateTime: event.start_time, timeZone: "Europe/Paris" }, end: { dateTime: event.end_time, timeZone: "Europe/Paris" } };
+  const payload: any = {
+    summary: event.title,
+    description: event.description,
+    location: event.location,
+    ...(event.is_all_day
+      ? { start: { date: event.start_time.split("T")[0] }, end: { date: event.end_time.split("T")[0] } }
+      : { start: { dateTime: event.start_time, timeZone: "Europe/Paris" }, end: { dateTime: event.end_time, timeZone: "Europe/Paris" } }),
+  };
+
+  if (event.has_meet && !event.conference_id) {
+    payload.conferenceData = {
+      createRequest: {
+        requestId: crypto.randomUUID(),
+        conferenceSolutionKey: { type: "hangoutsMeet" },
+      },
+    };
+  }
+
+  const meetParam = event.has_meet ? "?conferenceDataVersion=1" : "";
   const res = await fetch(
-    `https://www.googleapis.com/calendar/v3/calendars/${calId}/events/${event.external_id}`,
+    `https://www.googleapis.com/calendar/v3/calendars/${calId}/events/${event.external_id}${meetParam}`,
     {
       method: "PUT",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        summary: event.title,
-        description: event.description,
-        location: event.location,
-        ...payload,
-      }),
+      body: JSON.stringify(payload),
     },
   );
   if (!res.ok) throw new Error(`Google update failed: ${await res.text()}`);
+
+  const data = await res.json();
+  const meetLink = data.conferenceData?.entryPoints
+    ?.find((e: any) => e.entryPointType === "video")?.uri ?? null;
+
   await supabase.from("calendar_events")
-    .update({ sync_status: "synced", last_synced_at: new Date().toISOString() })
+    .update({
+      sync_status: "synced",
+      meet_link: meetLink,
+      conference_id: data.conferenceData?.conferenceId ?? null,
+      has_meet: meetLink !== null,
+      last_synced_at: new Date().toISOString(),
+    })
     .eq("id", event.id);
 }
 

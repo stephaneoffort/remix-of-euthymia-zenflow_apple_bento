@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState } from "react";
 import DashboardZoomSection from '@/components/dashboard/DashboardZoomSection';
 import DashboardResourcesSection from '@/components/dashboard/DashboardResourcesSection';
 import { useApp } from '@/context/AppContext';

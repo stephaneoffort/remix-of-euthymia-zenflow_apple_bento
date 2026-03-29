@@ -1174,6 +1174,90 @@ export type Database = {
         }
         Relationships: []
       }
+      zoom_connections: {
+        Row: {
+          access_token: string
+          created_at: string | null
+          display_name: string | null
+          email: string | null
+          id: string
+          refresh_token: string
+          token_expiry: string
+          user_id: string
+          zoom_user_id: string | null
+        }
+        Insert: {
+          access_token: string
+          created_at?: string | null
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          refresh_token: string
+          token_expiry: string
+          user_id: string
+          zoom_user_id?: string | null
+        }
+        Update: {
+          access_token?: string
+          created_at?: string | null
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          refresh_token?: string
+          token_expiry?: string
+          user_id?: string
+          zoom_user_id?: string | null
+        }
+        Relationships: []
+      }
+      zoom_meetings: {
+        Row: {
+          created_at: string | null
+          duration: number | null
+          entity_id: string
+          entity_type: string
+          id: string
+          join_url: string
+          password: string | null
+          start_time: string | null
+          start_url: string
+          status: string | null
+          topic: string
+          user_id: string
+          zoom_meeting_id: number
+        }
+        Insert: {
+          created_at?: string | null
+          duration?: number | null
+          entity_id: string
+          entity_type: string
+          id?: string
+          join_url: string
+          password?: string | null
+          start_time?: string | null
+          start_url: string
+          status?: string | null
+          topic: string
+          user_id: string
+          zoom_meeting_id: number
+        }
+        Update: {
+          created_at?: string | null
+          duration?: number | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          join_url?: string
+          password?: string | null
+          start_time?: string | null
+          start_url?: string
+          status?: string | null
+          topic?: string
+          user_id?: string
+          zoom_meeting_id?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

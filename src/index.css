@@ -48,13 +48,13 @@
 
     /* Sidebar */
     --sidebar-bg: 220 32% 6%;
-    --sidebar-fg: 210 15% 75%;
+    --sidebar-fg: 210 15% 72%;
     --sidebar-fg-bright: 0 0% 94%;
     --sidebar-hover: 220 25% 12%;
     --sidebar-active: 173 80% 29%;
     --sidebar-border: 220 22% 14%;
     --sidebar-background: 220 32% 6%;
-    --sidebar-foreground: 210 15% 75%;
+    --sidebar-foreground: 210 15% 78%;
     --sidebar-primary: 173 80% 29%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 220 25% 12%;

@@ -2173,7 +2173,7 @@ html body::after {
 [data-palette="bentoRose"].mixed .task-detail-panel,
 [data-palette="bentoAmber"].light .task-detail-panel,
 [data-palette="bentoAmber"].mixed .task-detail-panel {
-  background: rgba(255, 255, 255, 0.82) !important;
+  background: rgba(255, 255, 255, 0.81) !important;
   backdrop-filter: blur(40px) saturate(180%) brightness(1.02) !important;
   -webkit-backdrop-filter: blur(40px) saturate(180%) brightness(1.02) !important;
 }

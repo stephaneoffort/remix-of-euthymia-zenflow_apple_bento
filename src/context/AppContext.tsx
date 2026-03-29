@@ -356,7 +356,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (Object.keys(dbUpdates).length > 0) {
         if (!navigator.onLine) {
           await enqueue({ table: 'tasks', operation: 'update', payload: dbUpdates, match: { id } });
-          return;
+          return { id, syncFields: Object.keys(updates) };
         }
         const { error } = await supabase.from('tasks').update(dbUpdates).eq('id', id);
         if (error) throw error;
@@ -369,7 +369,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           if (updates.assigneeIds.length > 0) {
             await enqueue({ table: 'task_assignees', operation: 'insert', payload: updates.assigneeIds.map(mid => ({ task_id: id, member_id: mid })) });
           }
-          return;
+          return { id, syncFields: Object.keys(updates) };
         }
         await supabase.from('task_assignees').delete().eq('task_id', id);
         if (updates.assigneeIds.length > 0) {
@@ -399,8 +399,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           if (error) throw error;
         }
       }
+
+      return { id, syncFields: Object.keys(updates) };
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks'] }),
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      // Sync to ZENFLOW on meaningful changes
+      if (result && typeof result === 'object' && 'id' in result) {
+        const syncableFields = ['title', 'status', 'priority', 'dueDate', 'description'];
+        const needsSync = (result as any).syncFields?.some((f: string) => syncableFields.includes(f));
+        if (needsSync) {
+          const task = tasks.find(t => t.id === (result as any).id);
+          if (task?.dueDate || task?.googleEventId) {
+            syncTask((result as any).id, task?.googleEventId ? 'update' : 'create');
+          }
+        }
+      }
+    },
   });
 
   // Delete task mutation

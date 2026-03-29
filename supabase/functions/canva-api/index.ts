@@ -94,8 +94,28 @@ serve(async (req: Request) => {
 
     const body = await req.json()
     const { action } = body
-    const token = await getValidToken(userId)
 
+    // Actions that only need Supabase (no Canva API token required)
+    if (action === "list_attachments") {
+      const { entity_type, entity_id } = body
+      const { data } = await supabase
+        .from("canva_attachments")
+        .select("*")
+        .eq("user_id", userId)
+        .eq("entity_type", entity_type)
+        .eq("entity_id", entity_id)
+        .order("created_at", { ascending: false })
+      return new Response(JSON.stringify(data ?? []), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
+    }
+
+    if (action === "detach") {
+      const { attachment_id } = body
+      await supabase.from("canva_attachments").delete().eq("id", attachment_id).eq("user_id", userId)
+      return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
+    }
+
+    // All other actions require a valid Canva token
+    const token = await getValidToken(userId)
     const canvaHeaders = {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
@@ -152,23 +172,6 @@ serve(async (req: Request) => {
       return new Response(JSON.stringify(data), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
     }
 
-    if (action === "list_attachments") {
-      const { entity_type, entity_id } = body
-      const { data } = await supabase
-        .from("canva_attachments")
-        .select("*")
-        .eq("user_id", userId)
-        .eq("entity_type", entity_type)
-        .eq("entity_id", entity_id)
-        .order("created_at", { ascending: false })
-      return new Response(JSON.stringify(data ?? []), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
-    }
-
-    if (action === "detach") {
-      const { attachment_id } = body
-      await supabase.from("canva_attachments").delete().eq("id", attachment_id).eq("user_id", userId)
-      return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
-    }
 
     if (action === "export") {
       const { design_id, format } = body

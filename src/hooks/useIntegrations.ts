@@ -18,7 +18,7 @@ export interface IntegrationStatus {
 }
 
 const ALL_INTEGRATIONS: IntegrationKey[] = [
-  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail',
+  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo',
 ];
 
 export const INTEGRATION_CONFIG: Record<IntegrationKey, {

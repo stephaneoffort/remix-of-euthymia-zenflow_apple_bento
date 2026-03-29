@@ -30,13 +30,17 @@ export default function DashboardMeetSection() {
       try {
         const { data } = await supabase
           .from('calendar_events')
-          .select('id, title, start_time, end_time, meet_link')
+          .select('id, title, start_time, end_time, meet_link, provider')
           .eq('has_meet', true)
           .not('meet_link', 'is', null)
           .gte('start_time', new Date().toISOString())
           .order('start_time', { ascending: true })
           .limit(20);
-        setEvents((data as MeetEvent[]) ?? []);
+        // Exclude Zoom-originated events — only keep Google Meet
+        const meetOnly = (data ?? []).filter((e: any) =>
+          e.meet_link && e.meet_link.includes('meet.google.com')
+        );
+        setEvents(meetOnly as MeetEvent[]);
       } catch { /* ignore */ }
       setLoading(false);
     })();

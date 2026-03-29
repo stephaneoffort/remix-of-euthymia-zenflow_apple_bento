@@ -17,7 +17,8 @@ export default function DashboardZoomSection() {
   const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
-    if (!isActive('zoom') || !zoom.isConnected) { setLoading(false); return; }
+    if (!isActive('zoom')) { setLoading(false); return; }
+    if (!zoom.isConnected) { setLoading(false); return; }
     (async () => {
       try {
         const res = await zoom.listMeetings("project", "");
@@ -33,7 +34,7 @@ export default function DashboardZoomSection() {
       } catch { /* ignore */ }
       setLoading(false);
     })();
-  }, [zoom.isConnected]);
+  }, [zoom.isConnected, isActive('zoom')]);
 
   if (!isActive('zoom')) return null;
 

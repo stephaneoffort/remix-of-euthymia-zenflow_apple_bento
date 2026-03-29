@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronDown } from "lucide-react";
 import DriveAttachments from "@/components/drive/DriveAttachments";
@@ -7,110 +6,124 @@ import CanvaAttachments from "@/components/canva/CanvaAttachments";
 import { Project } from "@/types";
 import { useIntegrations, INTEGRATION_CONFIG } from "@/hooks/useIntegrations";
 
-const VISIBLE_COUNT = 5;
+const MAX_VISIBLE = 5;
 
 interface Props {
   projects: Project[];
 }
 
+function DriveCard({ projects }: Props) {
+  const [expanded, setExpanded] = useState(false);
+  const visible = expanded ? projects : projects.slice(0, MAX_VISIBLE);
+  const remaining = projects.length - MAX_VISIBLE;
+
+  return (
+    <Card className="bg-card border-border">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium text-foreground flex items-center gap-2">
+          <img src={INTEGRATION_CONFIG.google_drive.icon} alt="Google Drive" className="w-5 h-5" />
+          Ressources Drive
+          {projects.length > 0 && (
+            <span className="text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full ml-auto">
+              {projects.length}
+            </span>
+          )}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {projects.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-4 text-center">Aucune ressource Drive</p>
+        ) : (
+          <div className="space-y-1">
+            {visible.map((project) => (
+              <div key={project.id} className="py-2 px-1 rounded-md hover:bg-muted/50 transition-colors">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: project.color }} />
+                  <p className="text-sm font-medium text-foreground truncate">{project.name}</p>
+                </div>
+                <DriveAttachments entityType="project" entityId={project.id} compact />
+              </div>
+            ))}
+            {remaining > 0 && (
+              <button
+                onClick={() => setExpanded(!expanded)}
+                className="w-full py-2 flex items-center justify-center gap-1.5 text-xs font-semibold text-primary/70 hover:text-primary transition-colors rounded-lg hover:bg-primary/5"
+              >
+                {expanded ? (
+                  <>Réduire <ChevronDown className="w-3.5 h-3.5 rotate-180" /></>
+                ) : (
+                  <>+{remaining} projet{remaining > 1 ? "s" : ""} <ChevronDown className="w-3.5 h-3.5" /></>
+                )}
+              </button>
+            )}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function CanvaCard({ projects }: Props) {
+  const [expanded, setExpanded] = useState(false);
+  const visible = expanded ? projects : projects.slice(0, MAX_VISIBLE);
+  const remaining = projects.length - MAX_VISIBLE;
+
+  return (
+    <Card className="bg-card border-border">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium text-foreground flex items-center gap-2">
+          <img src={INTEGRATION_CONFIG.canva.icon} alt="Canva" className="w-5 h-5" />
+          Ressources Canva
+          {projects.length > 0 && (
+            <span className="text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full ml-auto">
+              {projects.length}
+            </span>
+          )}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {projects.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-4 text-center">Aucune ressource Canva</p>
+        ) : (
+          <div className="space-y-1">
+            {visible.map((project) => (
+              <div key={project.id} className="py-2 px-1 rounded-md hover:bg-muted/50 transition-colors">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: project.color }} />
+                  <p className="text-sm font-medium text-foreground truncate">{project.name}</p>
+                </div>
+                <CanvaAttachments entityType="project" entityId={project.id} compact />
+              </div>
+            ))}
+            {remaining > 0 && (
+              <button
+                onClick={() => setExpanded(!expanded)}
+                className="w-full py-2 flex items-center justify-center gap-1.5 text-xs font-semibold text-primary/70 hover:text-primary transition-colors rounded-lg hover:bg-primary/5"
+              >
+                {expanded ? (
+                  <>Réduire <ChevronDown className="w-3.5 h-3.5 rotate-180" /></>
+                ) : (
+                  <>+{remaining} projet{remaining > 1 ? "s" : ""} <ChevronDown className="w-3.5 h-3.5" /></>
+                )}
+              </button>
+            )}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function DashboardResourcesSection({ projects }: Props) {
   const { isActive } = useIntegrations();
-  const [driveExpanded, setDriveExpanded] = useState(false);
-  const [canvaExpanded, setCanvaExpanded] = useState(false);
 
   if (projects.length === 0) return null;
   if (!isActive('google_drive') && !isActive('canva')) return null;
 
-  const driveVisible = driveExpanded ? projects : projects.slice(0, VISIBLE_COUNT);
-  const canvaVisible = canvaExpanded ? projects : projects.slice(0, VISIBLE_COUNT);
-  const driveRemaining = projects.length - VISIBLE_COUNT;
-  const canvaRemaining = projects.length - VISIBLE_COUNT;
-
   return (
     <>
-      {/* Google Drive */}
-      <Collapsible defaultOpen={false}>
-        <CollapsibleTrigger className="w-full flex items-center justify-between group cursor-pointer mb-3">
-          <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
-            <img src={INTEGRATION_CONFIG.google_drive.icon} alt="Google Drive" className="w-5 h-5" /> Ressources Drive
-            <span className="text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
-              {projects.length}
-            </span>
-          </h2>
-          <ChevronDown className="w-4 h-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
-        </CollapsibleTrigger>
-        <CollapsibleContent>
-          <div className="grid gap-4 md:grid-cols-2">
-            {driveVisible.map((project) => (
-              <Card key={project.id} className="bg-card border-border">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-foreground flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: project.color }} />
-                    {project.name}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <DriveAttachments entityType="project" entityId={project.id} compact />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-          {driveRemaining > 0 && (
-            <button
-              onClick={() => setDriveExpanded(!driveExpanded)}
-              className="w-full mt-2 py-2 flex items-center justify-center gap-1.5 text-xs font-semibold text-primary/70 hover:text-primary transition-colors rounded-lg hover:bg-primary/5"
-            >
-              {driveExpanded ? (
-                <>Réduire <ChevronDown className="w-3.5 h-3.5 rotate-180" /></>
-              ) : (
-                <>+{driveRemaining} projet{driveRemaining > 1 ? "s" : ""} <ChevronDown className="w-3.5 h-3.5" /></>
-              )}
-            </button>
-          )}
-        </CollapsibleContent>
-      </Collapsible>
-
-      {/* Canva */}
-      <Collapsible defaultOpen={false}>
-        <CollapsibleTrigger className="w-full flex items-center justify-between group cursor-pointer mb-3">
-          <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
-            <img src={INTEGRATION_CONFIG.canva.icon} alt="Canva" className="w-5 h-5" /> Ressources Canva
-            <span className="text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
-              {projects.length}
-            </span>
-          </h2>
-          <ChevronDown className="w-4 h-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
-        </CollapsibleTrigger>
-        <CollapsibleContent>
-          <div className="grid gap-4 md:grid-cols-2">
-            {canvaVisible.map((project) => (
-              <Card key={project.id} className="bg-card border-border">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-foreground flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: project.color }} />
-                    {project.name}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CanvaAttachments entityType="project" entityId={project.id} compact />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-          {canvaRemaining > 0 && (
-            <button
-              onClick={() => setCanvaExpanded(!canvaExpanded)}
-              className="w-full mt-2 py-2 flex items-center justify-center gap-1.5 text-xs font-semibold text-primary/70 hover:text-primary transition-colors rounded-lg hover:bg-primary/5"
-            >
-              {canvaExpanded ? (
-                <>Réduire <ChevronDown className="w-3.5 h-3.5 rotate-180" /></>
-              ) : (
-                <>+{canvaRemaining} projet{canvaRemaining > 1 ? "s" : ""} <ChevronDown className="w-3.5 h-3.5" /></>
-              )}
-            </button>
-          )}
-        </CollapsibleContent>
-      </Collapsible>
+      {isActive('google_drive') && <DriveCard projects={projects} />}
+      {isActive('canva') && <CanvaCard projects={projects} />}
     </>
   );
 }

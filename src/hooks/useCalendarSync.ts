@@ -213,16 +213,17 @@ export function useCalendarSync() {
     has_meet?: boolean;
     target_calendar_id?: string | null;
   }) => {
-    // Find first active writable account, or use a specific one if target_calendar_id is set
+    // Find first active writable account (Google or CalDAV, not ICS)
     const { data: activeAccounts } = await supabase
       .from('calendar_accounts')
       .select('*')
       .eq('is_active', true)
       .neq('provider', 'ics')
-      .order('created_at', { ascending: true })
-      .limit(1);
+      .order('created_at', { ascending: true });
 
-    const account = activeAccounts?.[0];
+    // Prefer Google account for push sync
+    const googleAccount = activeAccounts?.find(a => a.provider === 'google');
+    const account = googleAccount || activeAccounts?.[0] || null;
 
     const userId = await getCurrentUserId();
 
@@ -282,6 +283,7 @@ export function useCalendarSync() {
     end_time: string;
     is_all_day?: boolean;
     location?: string;
+    has_meet?: boolean;
   }) => {
     const { error } = await supabase
       .from('calendar_events')
@@ -292,6 +294,7 @@ export function useCalendarSync() {
         end_time: data.end_time,
         is_all_day: data.is_all_day ?? false,
         location: data.location || null,
+        has_meet: data.has_meet ?? false,
         sync_status: 'pending',
       } as any)
       .eq('id', eventId);
@@ -308,9 +311,10 @@ export function useCalendarSync() {
       .eq('id', eventId)
       .single();
 
-    if (ev?.account_id && ev?.external_id) {
+    if (ev?.account_id) {
       try {
-        await invokeCalendarSync({ account_id: ev.account_id, direction: 'push', event_id: eventId, action: 'update' });
+        const action = ev.external_id ? 'update' : 'create';
+        await invokeCalendarSync({ account_id: ev.account_id, direction: 'push', event_id: eventId, action });
         toast.success('Événement mis à jour ✅');
       } catch (err: any) {
         toast.error('Erreur push : ' + (err.message || 'Inconnue'));

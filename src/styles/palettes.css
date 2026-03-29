@@ -2186,7 +2186,7 @@ html body::after {
 [data-palette="bentoOcean"]:not(.light):not(.mixed) .task-detail-panel,
 [data-palette="bentoRose"]:not(.light):not(.mixed) .task-detail-panel,
 [data-palette="bentoAmber"]:not(.light):not(.mixed) .task-detail-panel {
-  background: rgba(15, 15, 25, 0.81) !important;
+  background: rgba(15, 15, 25, 0.75) !important;
   backdrop-filter: blur(40px) saturate(160%) !important;
   -webkit-backdrop-filter: blur(40px) saturate(160%) !important;
 }

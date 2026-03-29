@@ -194,7 +194,8 @@ async function googlePushDelete(account: any, externalId: string): Promise<void>
     `https://www.googleapis.com/calendar/v3/calendars/${calId}/events/${externalId}`,
     { method: "DELETE", headers: { Authorization: `Bearer ${token}` } },
   );
-  if (!res.ok) throw new Error(`Google delete failed: ${await res.text()}`);
+  if (!res.ok && res.status !== 410) throw new Error(`Google delete failed: ${await res.text()}`);
+  if (res.status === 410) await res.text(); // consume body — event already deleted, treat as success
 }
 
 async function googleTest(account: any): Promise<boolean> {

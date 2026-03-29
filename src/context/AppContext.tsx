@@ -412,10 +412,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         const needsSync = (result as any).syncFields?.some((f: string) => syncableFields.includes(f));
         if (needsSync) {
           const task = tasks.find(t => t.id === (result as any).id);
+          const newStatus = (result as any).updates?.status;
           // If task is marked done, delete from Google Calendar
-          if (task?.status === 'done' && task?.googleEventId) {
+          if (newStatus === 'done' && task?.googleEventId) {
             syncTask((result as any).id, 'delete');
-          } else if (task?.dueDate || task?.googleEventId) {
+          } else if (newStatus !== 'done' && (task?.dueDate || task?.googleEventId)) {
             syncTask((result as any).id, task?.googleEventId ? 'update' : 'create');
           }
         }

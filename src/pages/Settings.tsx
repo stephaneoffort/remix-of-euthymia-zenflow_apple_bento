@@ -808,6 +808,21 @@ function IntegrationsPanel() {
     toast.success('Canva déconnecté');
   };
 
+  const handleZoomConnect = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) return;
+    window.location.href = `https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/zoom-oauth/authorize?token=${session.access_token}`;
+  };
+
+  const handleZoomDisconnect = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    await supabase.from('zoom_connections' as any).delete().eq('user_id', user.id);
+    setIsZoomConnected(false);
+    setZoomInfo(null);
+    toast.success('Zoom déconnecté');
+  };
+
   const renderCard = (
     emoji: string, name: string, description: string, connected: boolean,
     onConnect: () => void, onDisconnect: () => void
@@ -853,6 +868,13 @@ function IntegrationsPanel() {
             ? `Connecté${canvaInfo?.display_name ? ` · ${canvaInfo.display_name}` : ''}${canvaInfo?.email ? ` (${canvaInfo.email})` : ''}`
             : 'Créer et joindre des visuels Canva à vos tâches',
           isCanvaConnected, handleCanvaConnect, handleCanvaDisconnect
+        )}
+        {renderCard(
+          '📹', 'Zoom',
+          isZoomConnected
+            ? `Connecté${zoomInfo?.display_name ? ` · ${zoomInfo.display_name}` : ''}${zoomInfo?.email ? ` (${zoomInfo.email})` : ''}`
+            : 'Créer des réunions Zoom depuis vos tâches et événements',
+          isZoomConnected, handleZoomConnect, handleZoomDisconnect
         )}
       </CardContent>
     </Card>

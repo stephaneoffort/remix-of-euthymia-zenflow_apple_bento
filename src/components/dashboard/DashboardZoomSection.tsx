@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useZoom, ZoomMeeting } from "@/hooks/useZoom";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronDown, Video, ExternalLink, Copy, Clock } from "lucide-react";
+import { ChevronDown, ExternalLink, Copy, Clock } from "lucide-react";
 import { format, parseISO, isFuture } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
-import { useIntegrations } from "@/hooks/useIntegrations";
+import { useIntegrations, INTEGRATION_CONFIG } from "@/hooks/useIntegrations";
 
 const VISIBLE_COUNT = 5;
 
@@ -47,7 +47,7 @@ export default function DashboardZoomSection() {
     <Collapsible defaultOpen={false}>
       <CollapsibleTrigger className="w-full flex items-center justify-between group cursor-pointer mb-3">
         <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
-          <Video className="w-4 h-4 text-blue-500" />
+          <img src={INTEGRATION_CONFIG.zoom.icon} alt="Zoom" className="w-4 h-4" />
           Réunions Zoom
           {meetings.length > 0 && (
             <span className="text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
@@ -67,8 +67,8 @@ export default function DashboardZoomSection() {
             {visibleMeetings.map((m) => (
               <Card key={m.id} className="bg-card border-border">
                 <CardContent className="p-3 flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-blue-500/10 shrink-0">
-                    <Video className="w-4 h-4 text-blue-500" />
+                  <div className="p-2 rounded-lg bg-muted/50 shrink-0">
+                    <img src={INTEGRATION_CONFIG.zoom.icon} alt="Zoom" className="w-4 h-4" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-foreground truncate">{m.topic}</p>

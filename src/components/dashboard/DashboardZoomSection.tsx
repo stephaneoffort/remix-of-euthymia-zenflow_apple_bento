@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useZoom, ZoomMeeting } from "@/hooks/useZoom";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronDown, Video, ExternalLink, Copy, Clock } from "lucide-react";
+import { ChevronDown, ExternalLink, Copy, Clock } from "lucide-react";
 import { format, parseISO, isFuture } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";

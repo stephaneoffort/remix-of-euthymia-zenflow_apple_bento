@@ -38,38 +38,6 @@ async function refreshGoogleToken(account: any): Promise<string> {
   return data.access_token;
 }
 
-// ─── TOKEN REFRESH: OUTLOOK ───
-async function refreshOutlookToken(account: any): Promise<string> {
-  const expiryTime = new Date(account.token_expiry).getTime();
-  if (expiryTime > Date.now() + 5 * 60 * 1000) return account.access_token;
-
-  const tenantId = Deno.env.get("OUTLOOK_TENANT_ID") ?? "common";
-  const res = await fetch(
-    `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        client_id: Deno.env.get("OUTLOOK_CLIENT_ID") ?? "",
-        client_secret: Deno.env.get("OUTLOOK_CLIENT_SECRET") ?? "",
-        refresh_token: account.refresh_token,
-        grant_type: "refresh_token",
-        scope: "Calendars.ReadWrite offline_access",
-      }),
-    },
-  );
-  const data = await res.json();
-  if (!res.ok) throw new Error(`Outlook token refresh failed: ${JSON.stringify(data)}`);
-
-  const newExpiry = new Date(Date.now() + data.expires_in * 1000).toISOString();
-  await supabase.from("calendar_accounts")
-    .update({ access_token: data.access_token, token_expiry: newExpiry })
-    .eq("id", account.id);
-  account.access_token = data.access_token;
-  account.token_expiry = newExpiry;
-  return data.access_token;
-}
-
 // ─── GOOGLE ───
 async function googlePull(account: any): Promise<number> {
   const token = await refreshGoogleToken(account);

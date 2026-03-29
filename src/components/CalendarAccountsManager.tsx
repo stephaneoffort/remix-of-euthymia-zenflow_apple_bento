@@ -239,15 +239,6 @@ export default function CalendarAccountsManager({ accounts, syncing, visibleAcco
                 <Badge variant="secondary" className="text-[10px] mt-1">Bidirectionnel</Badge>
               </button>
 
-              {/* Outlook */}
-              <button onClick={handleConnectOutlook}
-                className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-border hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-all text-center group">
-                <span className="text-3xl">📧</span>
-                <span className="text-sm font-semibold text-foreground">Microsoft Outlook</span>
-                <span className="text-[11px] text-muted-foreground">OAuth sécurisé</span>
-                <Badge variant="secondary" className="text-[10px] mt-1">Bidirectionnel</Badge>
-              </button>
-
               {/* Apple iCal */}
               <button onClick={handleStartIcloud}
                 className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-border hover:border-gray-400 hover:bg-gray-50 dark:hover:bg-gray-950/20 transition-all text-center group">

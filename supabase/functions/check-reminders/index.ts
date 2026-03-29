@@ -117,8 +117,8 @@ async function createVapidJwt(
   };
 
   const encoder = new TextEncoder();
-  const headerB64 = base64url.encode(encoder.encode(JSON.stringify(header)));
-  const payloadB64 = base64url.encode(encoder.encode(JSON.stringify(payload)));
+  const headerB64 = toBase64url(encoder.encode(JSON.stringify(header)));
+  const payloadB64 = toBase64url(encoder.encode(JSON.stringify(payload)));
   const unsignedToken = `${headerB64}.${payloadB64}`;
 
   const signature = await crypto.subtle.sign(

@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import DriveAttachments from '@/components/drive/DriveAttachments';
-import CanvaAttachments from '@/components/canva/CanvaAttachments';
+import DashboardZoomSection from '@/components/dashboard/DashboardZoomSection';
+import DashboardResourcesSection from '@/components/dashboard/DashboardResourcesSection';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { useThemeMode } from '@/context/ThemeContext';

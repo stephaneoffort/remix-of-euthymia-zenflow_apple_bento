@@ -21,7 +21,8 @@ import { Label } from "@/components/ui/label";
 const MAX_VISIBLE = 5;
 
 export default function DashboardZoomSection() {
-  const { isActive } = useIntegrations();
+  const { isActive, integrations } = useIntegrations();
+  const navigate = useNavigate();
   const zoom = useZoom();
   const [meetings, setMeetings] = useState<ZoomMeeting[]>([]);
   const [loading, setLoading] = useState(true);

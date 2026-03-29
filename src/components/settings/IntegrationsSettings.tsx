@@ -273,6 +273,24 @@ export default function IntegrationsSettings() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Brevo API Key Dialog */}
+      <Dialog open={brevoFormOpen} onOpenChange={setBrevoFormOpen}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <span className="text-xl">📨</span> Connecter Brevo
+            </DialogTitle>
+            <DialogDescription>
+              Entre ta clé API Brevo pour activer l'intégration.
+            </DialogDescription>
+          </DialogHeader>
+          <BrevoConnectionForm onConnected={() => {
+            setBrevoFormOpen(false);
+            refetch();
+          }} />
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

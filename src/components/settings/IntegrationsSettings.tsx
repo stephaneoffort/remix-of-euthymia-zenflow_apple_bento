@@ -79,6 +79,11 @@ export default function IntegrationsSettings() {
       return;
     }
 
+    if (key === 'brevo') {
+      setBrevoFormOpen(true);
+      return;
+    }
+
     const url = CONNECT_URLS[key];
     if (!url) return;
 
@@ -86,7 +91,6 @@ export default function IntegrationsSettings() {
     const { data: { session } } = await supabase.auth.getSession();
     if (!user || !session) return;
 
-    // For zoom, use token param; for others, use user_id
     if (key === 'zoom') {
       window.location.href = `${url}?token=${session.access_token}`;
     } else {

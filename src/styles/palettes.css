@@ -234,11 +234,11 @@
   --sidebar-accent: 28 8% 11%;
   --sidebar-accent-foreground: 30 12% 88%;
   --sidebar-ring: 28 32% 48%;
-  --bento-bg: hsl(33,22%,98%);
-  --bento-bg-hover: hsl(33,18%,95%);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(184,175,166,0.04);
   --bento-border: rgba(0,0,0,0.05);
   --bento-border-h: rgba(0,0,0,0.10);
-  --bento-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 0 0 0.5px rgba(0,0,0,0.02), 0 4px 16px rgba(0,0,0,0.025);
+  --bento-shadow: 0 8px 32px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
 }
 
 /* ─── SAPPHIRE DEPTH — Bleu profond + Teal ─── */

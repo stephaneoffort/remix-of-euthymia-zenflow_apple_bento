@@ -326,7 +326,73 @@ serve(async (req) => {
         .in("id", triggeredIds);
     }
 
-    return new Response(JSON.stringify({ sent: sentCount, triggered: triggeredIds.length }), {
+    // ── Zoom imminent meeting notifications ──
+    let zoomSent = 0;
+    try {
+      const fifteenMinLater = new Date(now.getTime() + 15 * 60 * 1000);
+      const { data: upcomingMeetings } = await supabase
+        .from("zoom_meetings")
+        .select("id, topic, start_time, join_url, user_id")
+        .is("notified_at", null)
+        .not("start_time", "is", null)
+        .gte("start_time", now.toISOString())
+        .lte("start_time", fifteenMinLater.toISOString());
+
+      if (upcomingMeetings && upcomingMeetings.length > 0) {
+        // Get profiles to map user_id -> team_member_id
+        const userIds = [...new Set(upcomingMeetings.map((m: any) => m.user_id))];
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, team_member_id")
+          .in("id", userIds);
+
+        const userToMember = new Map<string, string>();
+        for (const p of profiles || []) {
+          if (p.team_member_id) userToMember.set(p.id, p.team_member_id);
+        }
+
+        const notifiedMeetingIds: string[] = [];
+
+        for (const meeting of upcomingMeetings) {
+          const memberId = userToMember.get(meeting.user_id);
+          if (!memberId) continue;
+
+          const subs = subsByMember.get(memberId) || [];
+          if (subs.length === 0) continue;
+
+          const startDate = new Date(meeting.start_time);
+          const minsLeft = Math.round((startDate.getTime() - now.getTime()) / 60000);
+
+          const payloadStr = JSON.stringify({
+            title: `🎥 ${meeting.topic}`,
+            body: `Réunion Zoom dans ${minsLeft} min`,
+            data: { joinUrl: meeting.join_url },
+          });
+
+          for (const sub of subs) {
+            const ok = await sendWebPush(
+              { endpoint: sub.endpoint, p256dh: sub.p256dh, auth: sub.auth },
+              payloadStr,
+              vapidPublicKey,
+              vapidPrivateKey
+            );
+            if (ok) zoomSent++;
+          }
+          notifiedMeetingIds.push(meeting.id);
+        }
+
+        if (notifiedMeetingIds.length > 0) {
+          await supabase
+            .from("zoom_meetings")
+            .update({ notified_at: now.toISOString() })
+            .in("id", notifiedMeetingIds);
+        }
+      }
+    } catch (zErr) {
+      console.error("Zoom notification error:", zErr);
+    }
+
+    return new Response(JSON.stringify({ sent: sentCount + zoomSent, triggered: triggeredIds.length, zoomNotified: zoomSent }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {

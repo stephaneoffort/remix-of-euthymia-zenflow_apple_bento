@@ -84,6 +84,7 @@ export default {
         "sidebar-fg-bright": "hsl(var(--sidebar-fg-bright))",
         "sidebar-hover": "hsl(var(--sidebar-hover))",
         "sidebar-active": "hsl(var(--sidebar-active))",
+        "sidebar-active-fg": "hsl(var(--sidebar-active-fg))",
         "sidebar-border-color": "hsl(var(--sidebar-border))",
         "priority-urgent": "hsl(var(--priority-urgent))",
         "priority-high": "hsl(var(--priority-high))",

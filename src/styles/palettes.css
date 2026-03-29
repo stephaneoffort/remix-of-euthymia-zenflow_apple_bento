@@ -160,11 +160,11 @@
   --sidebar-accent: 28 8% 11%;
   --sidebar-accent-foreground: 30 12% 88%;
   --sidebar-ring: 28 28% 62%;
-  --bento-bg: #171513;
-  --bento-bg-hover: #1e1c19;
-  --bento-border: rgba(184,175,166,0.07);
-  --bento-border-h: rgba(184,175,166,0.15);
-  --bento-shadow: 0 1px 0 rgba(184,175,166,0.02) inset, 0 0 0 0.5px rgba(184,175,166,0.04), 0 4px 24px rgba(0,0,0,0.45);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(184,175,166,0.06);
+  --bento-border: rgba(184,175,166,0.1);
+  --bento-border-h: rgba(184,175,166,0.18);
+  --bento-shadow: 0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(184,175,166,0.06);
 }
 [data-palette="neutrals"].light {
   --background: 33 28% 97%;

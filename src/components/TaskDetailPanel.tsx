@@ -252,7 +252,7 @@ export default function TaskDetailPanel() {
   const isLink = (url: string) => /^https?:\/\//i.test(url) && !url.includes('task-attachments');
 
   return (
-    <div className={`flex flex-col h-full bg-card border-l border-border shadow-xl ${
+    <div className={`flex flex-col h-full border-l border-border shadow-xl task-detail-panel ${
       expanded ? 'fixed inset-0 z-[60]' : ''
     }`}>
       {/* Header */}

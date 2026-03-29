@@ -875,7 +875,7 @@ export default function AppSidebar() {
                                         ? 'bg-primary/20 ring-2 ring-primary/50 shadow-sm shadow-primary/10'
                                         : selectedProjectId === project.id
                                           ? 'bg-sidebar-active text-sidebar-active-fg'
-                                          : 'text-sidebar-fg hover:bg-sidebar-hover'
+                                          : 'text-sidebar-fg/75 hover:text-sidebar-fg hover:bg-sidebar-hover'
                                     } ${draggingProjectId === project.id ? 'opacity-50 scale-95' : ''}`}
                                   >
                                     <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: project.color }} />

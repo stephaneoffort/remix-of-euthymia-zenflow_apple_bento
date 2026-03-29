@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import DashboardZoomSection from '@/components/dashboard/DashboardZoomSection';
+import DashboardMeetSection from '@/components/dashboard/DashboardMeetSection';
 import DashboardResourcesSection from '@/components/dashboard/DashboardResourcesSection';
 import BrevoStats from '@/components/brevo/BrevoStats';
 import { useApp } from '@/context/AppContext';
@@ -539,14 +540,15 @@ export default function DashboardView() {
         </Card>
       </section>
 
-      {/* Zoom meetings */}
-      <DashboardZoomSection />
+      {/* ═══ SECTION 4 : INTÉGRATIONS ═══ */}
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <DashboardZoomSection />
+        <DashboardMeetSection />
+        <BrevoStats />
+      </section>
 
       {/* Drive & Canva resources */}
       <DashboardResourcesSection projects={projects} />
-
-      {/* Brevo stats */}
-      <BrevoStats />
     </div>
   );
 }

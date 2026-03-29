@@ -634,6 +634,38 @@ Deno.serve(async (req) => {
     const provider = account.provider;
     const isCalDav = ["caldav", "icloud", "nextcloud", "proton", "fastmail"].includes(provider);
 
+    // ─── ZENFLOW TASK SYNC DIRECTIONS ───
+    if (direction === "push_task") {
+      if (!task_id || !action) {
+        return new Response(
+          JSON.stringify({ error: "task_id and action required for push_task" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+      await pushTaskToZenflow(account, task_id, action);
+      return new Response(
+        JSON.stringify({ success: true }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    if (direction === "sync_pending_tasks") {
+      const count = await syncPendingTasks(account);
+      return new Response(
+        JSON.stringify({ success: true, synced: count }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    if (direction === "init_zenflow_calendar") {
+      const token = await refreshGoogleToken(account);
+      const calId = await getOrCreateZenflowCalendar(token, account.id);
+      return new Response(
+        JSON.stringify({ calendar_id: calId }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
     // ─── TEST ───
     if (direction === "test") {
       let connected = false;

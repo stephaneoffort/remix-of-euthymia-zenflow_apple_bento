@@ -96,8 +96,8 @@ async function createVapidJwt(
   // Derive x and y from uncompressed public key (65 bytes: 04 || x || y)
   const pubBytes = b64urlToUint8Array(publicKeyB64url);
   if (pubBytes.length === 65 && pubBytes[0] === 0x04) {
-    jwk.x = base64url.encode(pubBytes.slice(1, 33));
-    jwk.y = base64url.encode(pubBytes.slice(33, 65));
+    jwk.x = toBase64url(pubBytes.slice(1, 33));
+    jwk.y = toBase64url(pubBytes.slice(33, 65));
   }
 
   const key = await crypto.subtle.importKey(

@@ -54,7 +54,23 @@ export default function DriveAttachments({ entityType, entityId, compact }: Driv
   };
 
   if (!drive.isConnected && attachments.length === 0 && !loading) {
-    return null;
+    return (
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <p className={`font-medium text-foreground ${compact ? 'text-xs' : 'text-sm'}`}>
+            📁 Google Drive
+          </p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full text-xs gap-2"
+          onClick={drive.connect}
+        >
+          <span>📁</span> Connecter Google Drive
+        </Button>
+      </div>
+    );
   }
 
   return (

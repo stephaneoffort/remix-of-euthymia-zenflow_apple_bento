@@ -2059,6 +2059,7 @@ html body::after {
 /* ─── Liquid Glass: bg-background → transparent (page wrappers) ─── */
 [data-palette^="liquidGlass"].light .bg-background,
 [data-palette^="liquidGlass"].mixed .bg-background,
+[data-palette^="liquidGlass"].dark .bg-background,
 [data-palette^="liquidGlass"]:not(.dark):not(.mixed) .bg-background {
   background: transparent !important;
 }

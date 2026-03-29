@@ -11,15 +11,10 @@ const supabase = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
 );
 
-// ─── UTILITAIRE : refreshAccessToken ───
-async function refreshAccessToken(account: any): Promise<string> {
+// ─── TOKEN REFRESH: GOOGLE ───
+async function refreshGoogleToken(account: any): Promise<string> {
   const expiryTime = new Date(account.token_expiry).getTime();
-  const now = Date.now();
-  const fiveMin = 5 * 60 * 1000;
-
-  if (expiryTime > now + fiveMin) {
-    return account.access_token;
-  }
+  if (expiryTime > Date.now() + 5 * 60 * 1000) return account.access_token;
 
   const res = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
@@ -32,14 +27,44 @@ async function refreshAccessToken(account: any): Promise<string> {
     }),
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(`Token refresh failed: ${JSON.stringify(data)}`);
+  if (!res.ok) throw new Error(`Google token refresh failed: ${JSON.stringify(data)}`);
 
   const newExpiry = new Date(Date.now() + data.expires_in * 1000).toISOString();
-  await supabase
-    .from("calendar_accounts")
+  await supabase.from("calendar_accounts")
     .update({ access_token: data.access_token, token_expiry: newExpiry })
     .eq("id", account.id);
+  account.access_token = data.access_token;
+  account.token_expiry = newExpiry;
+  return data.access_token;
+}
 
+// ─── TOKEN REFRESH: OUTLOOK ───
+async function refreshOutlookToken(account: any): Promise<string> {
+  const expiryTime = new Date(account.token_expiry).getTime();
+  if (expiryTime > Date.now() + 5 * 60 * 1000) return account.access_token;
+
+  const tenantId = Deno.env.get("OUTLOOK_TENANT_ID") ?? "common";
+  const res = await fetch(
+    `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        client_id: Deno.env.get("OUTLOOK_CLIENT_ID") ?? "",
+        client_secret: Deno.env.get("OUTLOOK_CLIENT_SECRET") ?? "",
+        refresh_token: account.refresh_token,
+        grant_type: "refresh_token",
+        scope: "Calendars.ReadWrite offline_access",
+      }),
+    },
+  );
+  const data = await res.json();
+  if (!res.ok) throw new Error(`Outlook token refresh failed: ${JSON.stringify(data)}`);
+
+  const newExpiry = new Date(Date.now() + data.expires_in * 1000).toISOString();
+  await supabase.from("calendar_accounts")
+    .update({ access_token: data.access_token, token_expiry: newExpiry })
+    .eq("id", account.id);
   account.access_token = data.access_token;
   account.token_expiry = newExpiry;
   return data.access_token;
@@ -47,7 +72,7 @@ async function refreshAccessToken(account: any): Promise<string> {
 
 // ─── GOOGLE ───
 async function googlePull(account: any): Promise<number> {
-  const token = await refreshAccessToken(account);
+  const token = await refreshGoogleToken(account);
   const calId = encodeURIComponent(account.calendar_id || "primary");
   const now = new Date();
   const future = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
@@ -69,7 +94,7 @@ async function googlePull(account: any): Promise<number> {
     user_id: account.user_id,
     external_id: e.id,
     provider: "google",
-    title: e.summary || "(No title)",
+    title: e.summary || "(Sans titre)",
     description: e.description || null,
     location: e.location || null,
     start_time: e.start?.dateTime || e.start?.date,
@@ -91,8 +116,11 @@ async function googlePull(account: any): Promise<number> {
 }
 
 async function googlePushCreate(account: any, event: any): Promise<string> {
-  const token = await refreshAccessToken(account);
+  const token = await refreshGoogleToken(account);
   const calId = encodeURIComponent(account.calendar_id || "primary");
+  const payload = event.is_all_day
+    ? { start: { date: event.start_time.split("T")[0] }, end: { date: event.end_time.split("T")[0] } }
+    : { start: { dateTime: event.start_time, timeZone: "Europe/Paris" }, end: { dateTime: event.end_time, timeZone: "Europe/Paris" } };
   const res = await fetch(
     `https://www.googleapis.com/calendar/v3/calendars/${calId}/events`,
     {
@@ -102,23 +130,24 @@ async function googlePushCreate(account: any, event: any): Promise<string> {
         summary: event.title,
         description: event.description,
         location: event.location,
-        start: { dateTime: event.start_time },
-        end: { dateTime: event.end_time },
+        ...payload,
       }),
     },
   );
   const data = await res.json();
   if (!res.ok) throw new Error(`Google create failed: ${JSON.stringify(data)}`);
-  await supabase
-    .from("calendar_events")
-    .update({ external_id: data.id, sync_status: "synced" })
+  await supabase.from("calendar_events")
+    .update({ external_id: data.id, sync_status: "synced", last_synced_at: new Date().toISOString() })
     .eq("id", event.id);
   return data.id;
 }
 
 async function googlePushUpdate(account: any, event: any): Promise<void> {
-  const token = await refreshAccessToken(account);
+  const token = await refreshGoogleToken(account);
   const calId = encodeURIComponent(account.calendar_id || "primary");
+  const payload = event.is_all_day
+    ? { start: { date: event.start_time.split("T")[0] }, end: { date: event.end_time.split("T")[0] } }
+    : { start: { dateTime: event.start_time, timeZone: "Europe/Paris" }, end: { dateTime: event.end_time, timeZone: "Europe/Paris" } };
   const res = await fetch(
     `https://www.googleapis.com/calendar/v3/calendars/${calId}/events/${event.external_id}`,
     {
@@ -128,46 +157,40 @@ async function googlePushUpdate(account: any, event: any): Promise<void> {
         summary: event.title,
         description: event.description,
         location: event.location,
-        start: { dateTime: event.start_time },
-        end: { dateTime: event.end_time },
+        ...payload,
       }),
     },
   );
-  const text = await res.text();
-  if (!res.ok) throw new Error(`Google update failed: ${text}`);
-  await supabase.from("calendar_events").update({ sync_status: "synced" }).eq("id", event.id);
+  if (!res.ok) throw new Error(`Google update failed: ${await res.text()}`);
+  await supabase.from("calendar_events")
+    .update({ sync_status: "synced", last_synced_at: new Date().toISOString() })
+    .eq("id", event.id);
 }
 
 async function googlePushDelete(account: any, externalId: string): Promise<void> {
-  const token = await refreshAccessToken(account);
+  const token = await refreshGoogleToken(account);
   const calId = encodeURIComponent(account.calendar_id || "primary");
   const res = await fetch(
     `https://www.googleapis.com/calendar/v3/calendars/${calId}/events/${externalId}`,
     { method: "DELETE", headers: { Authorization: `Bearer ${token}` } },
   );
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Google delete failed: ${text}`);
-  }
+  if (!res.ok) throw new Error(`Google delete failed: ${await res.text()}`);
 }
 
 async function googleTest(account: any): Promise<boolean> {
   try {
-    const token = await refreshAccessToken(account);
+    const token = await refreshGoogleToken(account);
     const res = await fetch(
       "https://www.googleapis.com/calendar/v3/users/me/calendarList?maxResults=1",
       { headers: { Authorization: `Bearer ${token}` } },
     );
-    await res.text();
     return res.ok;
-  } catch {
-    return false;
-  }
+  } catch { return false; }
 }
 
 // ─── OUTLOOK ───
 async function outlookPull(account: any): Promise<number> {
-  const token = await refreshAccessToken(account);
+  const token = await refreshOutlookToken(account);
   const now = new Date();
   const future = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
   const params = new URLSearchParams({
@@ -177,7 +200,7 @@ async function outlookPull(account: any): Promise<number> {
   });
   const res = await fetch(
     `https://graph.microsoft.com/v1.0/me/calendarView?${params}`,
-    { headers: { Authorization: `Bearer ${token}` } },
+    { headers: { Authorization: `Bearer ${token}`, Prefer: 'outlook.timezone="Europe/Paris"' } },
   );
   const data = await res.json();
   if (!res.ok) throw new Error(`Outlook pull failed: ${JSON.stringify(data)}`);
@@ -187,13 +210,13 @@ async function outlookPull(account: any): Promise<number> {
     user_id: account.user_id,
     external_id: e.id,
     provider: "outlook",
-    title: e.subject || "(No title)",
+    title: e.subject || "(Sans titre)",
     description: e.bodyPreview || null,
     location: e.location?.displayName || null,
     start_time: e.start?.dateTime ? e.start.dateTime + "Z" : null,
     end_time: e.end?.dateTime ? e.end.dateTime + "Z" : null,
     is_all_day: e.isAllDay || false,
-    status: "confirmed",
+    status: e.isCancelled ? "cancelled" : "confirmed",
     sync_status: "synced",
     last_synced_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
@@ -209,29 +232,29 @@ async function outlookPull(account: any): Promise<number> {
 }
 
 async function outlookPushCreate(account: any, event: any): Promise<string> {
-  const token = await refreshAccessToken(account);
+  const token = await refreshOutlookToken(account);
   const res = await fetch("https://graph.microsoft.com/v1.0/me/events", {
     method: "POST",
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     body: JSON.stringify({
       subject: event.title,
       body: { contentType: "text", content: event.description || "" },
-      start: { dateTime: event.start_time, timeZone: "UTC" },
-      end: { dateTime: event.end_time, timeZone: "UTC" },
+      start: { dateTime: event.start_time, timeZone: "Europe/Paris" },
+      end: { dateTime: event.end_time, timeZone: "Europe/Paris" },
       location: { displayName: event.location || "" },
+      isAllDay: event.is_all_day ?? false,
     }),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(`Outlook create failed: ${JSON.stringify(data)}`);
-  await supabase
-    .from("calendar_events")
-    .update({ external_id: data.id, sync_status: "synced" })
+  await supabase.from("calendar_events")
+    .update({ external_id: data.id, sync_status: "synced", last_synced_at: new Date().toISOString() })
     .eq("id", event.id);
   return data.id;
 }
 
 async function outlookPushUpdate(account: any, event: any): Promise<void> {
-  const token = await refreshAccessToken(account);
+  const token = await refreshOutlookToken(account);
   const res = await fetch(
     `https://graph.microsoft.com/v1.0/me/events/${event.external_id}`,
     {
@@ -240,43 +263,38 @@ async function outlookPushUpdate(account: any, event: any): Promise<void> {
       body: JSON.stringify({
         subject: event.title,
         body: { contentType: "text", content: event.description || "" },
-        start: { dateTime: event.start_time, timeZone: "UTC" },
-        end: { dateTime: event.end_time, timeZone: "UTC" },
+        start: { dateTime: event.start_time, timeZone: "Europe/Paris" },
+        end: { dateTime: event.end_time, timeZone: "Europe/Paris" },
         location: { displayName: event.location || "" },
+        isAllDay: event.is_all_day ?? false,
       }),
     },
   );
-  const text = await res.text();
-  if (!res.ok) throw new Error(`Outlook update failed: ${text}`);
-  await supabase.from("calendar_events").update({ sync_status: "synced" }).eq("id", event.id);
+  if (!res.ok) throw new Error(`Outlook update failed: ${await res.text()}`);
+  await supabase.from("calendar_events")
+    .update({ sync_status: "synced", last_synced_at: new Date().toISOString() })
+    .eq("id", event.id);
 }
 
 async function outlookPushDelete(account: any, externalId: string): Promise<void> {
-  const token = await refreshAccessToken(account);
+  const token = await refreshOutlookToken(account);
   const res = await fetch(
     `https://graph.microsoft.com/v1.0/me/events/${externalId}`,
     { method: "DELETE", headers: { Authorization: `Bearer ${token}` } },
   );
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Outlook delete failed: ${text}`);
-  }
+  if (!res.ok) throw new Error(`Outlook delete failed: ${await res.text()}`);
 }
 
 async function outlookTest(account: any): Promise<boolean> {
   try {
-    const token = await refreshAccessToken(account);
-    const res = await fetch("https://graph.microsoft.com/v1.0/me", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    await res.text();
+    const token = await refreshOutlookToken(account);
+    const res = await fetch("https://graph.microsoft.com/v1.0/me/calendar",
+      { headers: { Authorization: `Bearer ${token}` } });
     return res.ok;
-  } catch {
-    return false;
-  }
+  } catch { return false; }
 }
 
-// ─── CALDAV ───
+// ─── CALDAV (iCloud, Nextcloud, Proton, Fastmail) ───
 function parseICalEvents(ical: string): any[] {
   const events: any[] = [];
   const blocks = ical.split("BEGIN:VEVENT");
@@ -286,21 +304,26 @@ function parseICalEvents(ical: string): any[] {
       const m = block.match(new RegExp(`${key}[^:]*:(.+?)\\r?\\n`, "i"));
       return m ? m[1].trim() : null;
     };
-    events.push({
-      uid: get("UID"),
-      title: get("SUMMARY") || "(No title)",
-      description: get("DESCRIPTION"),
-      location: get("LOCATION"),
-      start_time: parseICalDate(get("DTSTART")),
-      end_time: parseICalDate(get("DTEND")),
-    });
+    const uid = get("UID");
+    const dtstart = get("DTSTART");
+    if (uid && dtstart) {
+      events.push({
+        uid,
+        title: get("SUMMARY") || "(Sans titre)",
+        description: get("DESCRIPTION"),
+        location: get("LOCATION"),
+        start_time: parseICalDate(dtstart),
+        end_time: parseICalDate(get("DTEND")),
+        is_all_day: !dtstart.includes("T"),
+        status: (get("STATUS") || "confirmed").toLowerCase(),
+      });
+    }
   }
   return events;
 }
 
 function parseICalDate(val: string | null): string | null {
   if (!val) return null;
-  // 20250101T120000Z or 20250101
   const clean = val.replace(/[^0-9TZ]/g, "");
   if (clean.length >= 15) {
     return `${clean.slice(0, 4)}-${clean.slice(4, 6)}-${clean.slice(6, 8)}T${clean.slice(9, 11)}:${clean.slice(11, 13)}:${clean.slice(13, 15)}Z`;
@@ -314,23 +337,24 @@ function parseICalDate(val: string | null): string | null {
 function buildVEvent(event: any): string {
   const uid = event.external_id || event.id || crypto.randomUUID();
   const now = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
-  const dtstart = (event.start_time || "").replace(/[-:]/g, "").replace(/\.\d{3}/, "");
-  const dtend = (event.end_time || "").replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const fmt = (dt: string, allDay: boolean) =>
+    allDay ? dt.split("T")[0].replace(/-/g, "") : dt.replace(/[-:]/g, "").replace(/\.\d{3}/, "");
   return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Lovable//CalendarSync//EN",
+    "PRODID:-//EuthymiaZenFlow//CalendarSync//FR",
     "BEGIN:VEVENT",
     `UID:${uid}`,
     `DTSTAMP:${now}`,
-    `DTSTART:${dtstart}`,
-    `DTEND:${dtend}`,
+    `DTSTART${event.is_all_day ? ";VALUE=DATE" : ""}:${fmt(event.start_time, event.is_all_day)}`,
+    `DTEND${event.is_all_day ? ";VALUE=DATE" : ""}:${fmt(event.end_time, event.is_all_day)}`,
     `SUMMARY:${event.title || ""}`,
-    `DESCRIPTION:${event.description || ""}`,
-    `LOCATION:${event.location || ""}`,
+    event.description ? `DESCRIPTION:${event.description}` : "",
+    event.location ? `LOCATION:${event.location}` : "",
+    `STATUS:${(event.status || "CONFIRMED").toUpperCase()}`,
     "END:VEVENT",
     "END:VCALENDAR",
-  ].join("\r\n");
+  ].filter(Boolean).join("\r\n");
 }
 
 async function caldavPull(account: any): Promise<number> {
@@ -361,7 +385,7 @@ async function caldavPull(account: any): Promise<number> {
     body,
   });
   const xml = await res.text();
-  if (!res.ok) throw new Error(`CalDAV pull failed: ${xml.slice(0, 500)}`);
+  if (!res.ok && res.status !== 207) throw new Error(`CalDAV pull failed: ${xml.slice(0, 500)}`);
 
   const parsed = parseICalEvents(xml);
   const events = parsed
@@ -376,8 +400,8 @@ async function caldavPull(account: any): Promise<number> {
       location: e.location,
       start_time: e.start_time,
       end_time: e.end_time,
-      is_all_day: false,
-      status: "confirmed",
+      is_all_day: e.is_all_day ?? false,
+      status: e.status || "confirmed",
       sync_status: "synced",
       last_synced_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -398,21 +422,38 @@ async function caldavPushCreate(account: any, event: any): Promise<string> {
   const url = `${account.caldav_url.replace(/\/$/, "")}/${uid}.ics`;
   const res = await fetch(url, {
     method: "PUT",
-    headers: { Authorization: `Basic ${auth}`, "Content-Type": "text/calendar" },
+    headers: {
+      Authorization: `Basic ${auth}`,
+      "Content-Type": "text/calendar; charset=utf-8",
+      "If-None-Match": "*",
+    },
     body: buildVEvent({ ...event, external_id: uid }),
   });
-  const text = await res.text();
   if (!res.ok && res.status !== 201 && res.status !== 204)
-    throw new Error(`CalDAV create failed: ${text}`);
-  await supabase
-    .from("calendar_events")
-    .update({ external_id: uid, sync_status: "synced" })
+    throw new Error(`CalDAV create failed: ${await res.text()}`);
+  await supabase.from("calendar_events")
+    .update({ external_id: uid, sync_status: "synced", last_synced_at: new Date().toISOString() })
     .eq("id", event.id);
   return uid;
 }
 
 async function caldavPushUpdate(account: any, event: any): Promise<void> {
-  await caldavPushCreate(account, event); // PUT is idempotent in CalDAV
+  const uid = event.external_id || event.id;
+  const auth = btoa(`${account.caldav_username}:${account.caldav_password}`);
+  const url = `${account.caldav_url.replace(/\/$/, "")}/${uid}.ics`;
+  const res = await fetch(url, {
+    method: "PUT",
+    headers: {
+      Authorization: `Basic ${auth}`,
+      "Content-Type": "text/calendar; charset=utf-8",
+    },
+    body: buildVEvent({ ...event, external_id: uid }),
+  });
+  if (!res.ok && res.status !== 204)
+    throw new Error(`CalDAV update failed: ${await res.text()}`);
+  await supabase.from("calendar_events")
+    .update({ sync_status: "synced", last_synced_at: new Date().toISOString() })
+    .eq("id", event.id);
 }
 
 async function caldavPushDelete(account: any, externalId: string): Promise<void> {
@@ -422,10 +463,8 @@ async function caldavPushDelete(account: any, externalId: string): Promise<void>
     method: "DELETE",
     headers: { Authorization: `Basic ${auth}` },
   });
-  if (!res.ok && res.status !== 204) {
-    const text = await res.text();
-    throw new Error(`CalDAV delete failed: ${text}`);
-  }
+  if (!res.ok && res.status !== 204)
+    throw new Error(`CalDAV delete failed: ${await res.text()}`);
 }
 
 async function caldavTest(account: any): Promise<boolean> {
@@ -435,18 +474,15 @@ async function caldavTest(account: any): Promise<boolean> {
       method: "PROPFIND",
       headers: { Authorization: `Basic ${auth}`, Depth: "0" },
     });
-    await res.text();
     return res.ok || res.status === 207;
-  } catch {
-    return false;
-  }
+  } catch { return false; }
 }
 
 // ─── ICS (read-only) ───
 async function icsPull(account: any): Promise<number> {
   const res = await fetch(account.ics_url);
+  if (!res.ok) throw new Error(`ICS fetch failed: ${res.status}`);
   const text = await res.text();
-  if (!res.ok) throw new Error(`ICS fetch failed`);
 
   const parsed = parseICalEvents(text);
   const events = parsed
@@ -461,8 +497,8 @@ async function icsPull(account: any): Promise<number> {
       location: e.location,
       start_time: e.start_time,
       end_time: e.end_time,
-      is_all_day: false,
-      status: "confirmed",
+      is_all_day: e.is_all_day ?? false,
+      status: e.status || "confirmed",
       sync_status: "synced",
       last_synced_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -492,12 +528,8 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Fetch account
     const { data: account, error: accErr } = await supabase
-      .from("calendar_accounts")
-      .select("*")
-      .eq("id", account_id)
-      .single();
+      .from("calendar_accounts").select("*").eq("id", account_id).single();
     if (accErr || !account) {
       return new Response(
         JSON.stringify({ error: "Account not found" }),
@@ -506,21 +538,17 @@ Deno.serve(async (req) => {
     }
 
     const provider = account.provider;
+    const isCalDav = ["caldav", "icloud", "nextcloud", "proton", "fastmail"].includes(provider);
 
     // ─── TEST ───
     if (direction === "test") {
       let connected = false;
       if (provider === "google") connected = await googleTest(account);
       else if (provider === "outlook") connected = await outlookTest(account);
-      else if (["caldav", "icloud", "nextcloud", "proton", "fastmail"].includes(provider))
-        connected = await caldavTest(account);
+      else if (isCalDav) connected = await caldavTest(account);
       else if (provider === "ics") {
-        try {
-          const r = await fetch(account.ics_url, { method: "HEAD" });
-          connected = r.ok;
-        } catch {
-          connected = false;
-        }
+        try { const r = await fetch(account.ics_url, { method: "HEAD" }); connected = r.ok; }
+        catch { connected = false; }
       }
       return new Response(
         JSON.stringify({ connected }),
@@ -533,13 +561,11 @@ Deno.serve(async (req) => {
       let count = 0;
       if (provider === "google") count = await googlePull(account);
       else if (provider === "outlook") count = await outlookPull(account);
-      else if (["caldav", "icloud", "nextcloud", "proton", "fastmail"].includes(provider))
-        count = await caldavPull(account);
+      else if (isCalDav) count = await caldavPull(account);
       else if (provider === "ics") count = await icsPull(account);
       else throw new Error(`Unsupported provider: ${provider}`);
 
-      await supabase
-        .from("calendar_accounts")
+      await supabase.from("calendar_accounts")
         .update({ last_synced_at: new Date().toISOString() })
         .eq("id", account_id);
 
@@ -557,7 +583,6 @@ Deno.serve(async (req) => {
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
         );
       }
-
       if (!event_id || !action) {
         return new Response(
           JSON.stringify({ error: "event_id and action are required for push" }),
@@ -566,28 +591,25 @@ Deno.serve(async (req) => {
       }
 
       const { data: event, error: evErr } = await supabase
-        .from("calendar_events")
-        .select("*")
-        .eq("id", event_id)
-        .single();
+        .from("calendar_events").select("*").eq("id", event_id).single();
 
       if (action === "delete") {
         const externalId = event?.external_id;
         if (!externalId) throw new Error("No external_id for delete");
         if (provider === "google") await googlePushDelete(account, externalId);
         else if (provider === "outlook") await outlookPushDelete(account, externalId);
-        else await caldavPushDelete(account, externalId);
+        else if (isCalDav) await caldavPushDelete(account, externalId);
         await supabase.from("calendar_events").delete().eq("id", event_id);
       } else if (action === "create") {
         if (evErr || !event) throw new Error("Event not found");
         if (provider === "google") await googlePushCreate(account, event);
         else if (provider === "outlook") await outlookPushCreate(account, event);
-        else await caldavPushCreate(account, event);
+        else if (isCalDav) await caldavPushCreate(account, event);
       } else if (action === "update") {
         if (evErr || !event) throw new Error("Event not found");
         if (provider === "google") await googlePushUpdate(account, event);
         else if (provider === "outlook") await outlookPushUpdate(account, event);
-        else await caldavPushUpdate(account, event);
+        else if (isCalDav) await caldavPushUpdate(account, event);
       }
 
       return new Response(
@@ -601,6 +623,7 @@ Deno.serve(async (req) => {
       { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (err) {
+    console.error("Sync error:", err);
     return new Response(
       JSON.stringify({ error: err.message }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },

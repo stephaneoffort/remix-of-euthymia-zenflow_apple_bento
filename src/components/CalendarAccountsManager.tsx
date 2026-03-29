@@ -189,7 +189,7 @@ export default function CalendarAccountsManager({ accounts, syncing, visibleAcco
       {/* Add button + modal */}
       <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForms(); }}>
         <DialogTrigger asChild>
-          <Button variant="outline" size="sm" className="gap-1.5">
+          <Button variant="outline" size="sm" className="gap-1.5 text-foreground">
             <Plus className="w-3.5 h-3.5" />
             Connecter un agenda
           </Button>

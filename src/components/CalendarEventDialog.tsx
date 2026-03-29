@@ -27,6 +27,7 @@ interface Props {
     is_all_day: boolean;
     location: string;
     has_meet?: boolean;
+    target_calendar_id?: string | null;
   }) => Promise<void>;
   onDelete?: () => Promise<void>;
   event?: CalendarEvent | null;

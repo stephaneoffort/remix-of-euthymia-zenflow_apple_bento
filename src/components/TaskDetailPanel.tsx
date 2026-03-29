@@ -21,6 +21,7 @@ import TaskReminders from '@/components/TaskReminders';
 import DriveAttachments from '@/components/drive/DriveAttachments';
 import CanvaAttachments from '@/components/canva/CanvaAttachments';
 import ZoomMeetings from '@/components/zoom/ZoomMeetings';
+import { useIntegrations } from '@/hooks/useIntegrations';
 // Format date for display
 function formatDateDisplay(isoStr: string): string {
   const d = new Date(isoStr);

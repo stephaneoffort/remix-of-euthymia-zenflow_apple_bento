@@ -7,9 +7,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// Web Push imports
-import * as base64url from "https://deno.land/std@0.168.0/encoding/base64url.ts";
-
+// Web Push helpers
 const OFFSET_MS: Record<string, number> = {
   "3d": 3 * 24 * 60 * 60 * 1000,
   "1d": 1 * 24 * 60 * 60 * 1000,
@@ -24,9 +22,39 @@ const OFFSET_LABELS: Record<string, string> = {
   "1h": "1 heure",
 };
 
-// Convert base64url string to Uint8Array
+// Convert base64url or base64 string to Uint8Array using atob
 function b64urlToUint8Array(str: string): Uint8Array {
-  return base64url.decode(str);
+  // Trim and clean
+  const cleaned = str.trim().replace(/\s/g, '');
+  // Convert base64url to base64
+  let b64 = cleaned.replace(/-/g, '+').replace(/_/g, '/');
+  // Add padding
+  while (b64.length % 4 !== 0) b64 += '=';
+  // Use manual decode to avoid atob issues
+  const lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  const bytes: number[] = [];
+  for (let i = 0; i < b64.length; i += 4) {
+    const a = lookup.indexOf(b64[i]);
+    const b = lookup.indexOf(b64[i + 1]);
+    const c = b64[i + 2] === '=' ? 0 : lookup.indexOf(b64[i + 2]);
+    const d = b64[i + 3] === '=' ? 0 : lookup.indexOf(b64[i + 3]);
+    if (a < 0 || b < 0) {
+      console.error('Invalid base64 char at', i, 'chars:', JSON.stringify(b64.substring(i, i + 4)), 'original:', JSON.stringify(cleaned.substring(0, 10)));
+      throw new Error('Invalid base64');
+    }
+    bytes.push((a << 2) | (b >> 4));
+    if (b64[i + 2] !== '=') bytes.push(((b & 15) << 4) | (c >> 2));
+    if (b64[i + 3] !== '=') bytes.push(((c & 3) << 6) | d);
+  }
+  return new Uint8Array(bytes);
+}
+
+// base64url encode without padding
+function toBase64url(buf: ArrayBuffer | Uint8Array): string {
+  const bytes = buf instanceof Uint8Array ? buf : new Uint8Array(buf);
+  let binary = '';
+  for (const b of bytes) binary += String.fromCharCode(b);
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
 // Import ECDSA P-256 key for signing
@@ -83,8 +111,8 @@ async function createVapidJwt(
   // Derive x and y from uncompressed public key (65 bytes: 04 || x || y)
   const pubBytes = b64urlToUint8Array(publicKeyB64url);
   if (pubBytes.length === 65 && pubBytes[0] === 0x04) {
-    jwk.x = base64url.encode(pubBytes.slice(1, 33));
-    jwk.y = base64url.encode(pubBytes.slice(33, 65));
+    jwk.x = toBase64url(pubBytes.slice(1, 33));
+    jwk.y = toBase64url(pubBytes.slice(33, 65));
   }
 
   const key = await crypto.subtle.importKey(
@@ -104,8 +132,8 @@ async function createVapidJwt(
   };
 
   const encoder = new TextEncoder();
-  const headerB64 = base64url.encode(encoder.encode(JSON.stringify(header)));
-  const payloadB64 = base64url.encode(encoder.encode(JSON.stringify(payload)));
+  const headerB64 = toBase64url(encoder.encode(JSON.stringify(header)));
+  const payloadB64 = toBase64url(encoder.encode(JSON.stringify(payload)));
   const unsignedToken = `${headerB64}.${payloadB64}`;
 
   const signature = await crypto.subtle.sign(
@@ -131,10 +159,10 @@ async function createVapidJwt(
     const rawSig = new Uint8Array(64);
     rawSig.set(r, 0);
     rawSig.set(s, 32);
-    return `${unsignedToken}.${base64url.encode(rawSig)}`;
+    return `${unsignedToken}.${toBase64url(rawSig)}`;
   } else {
     // Already raw
-    return `${unsignedToken}.${base64url.encode(sigBytes)}`;
+    return `${unsignedToken}.${toBase64url(sigBytes)}`;
   }
 }
 

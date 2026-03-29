@@ -192,6 +192,7 @@ export function useIntegrations() {
     if (!s) return false;
     // Google Meet doesn't need a separate connection
     if (key === 'google_meet') return s.is_enabled;
+    // Brevo uses API key, check is_connected
     return s.is_enabled && s.is_connected;
   }, [integrations]);
 

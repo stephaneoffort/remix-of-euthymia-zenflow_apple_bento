@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Loader2 } from 'lucide-react';
 import DriveAttachments from '@/components/drive/DriveAttachments';
+import CanvaAttachments from '@/components/canva/CanvaAttachments';
 import type { CalendarEvent } from '@/hooks/useCalendarSync';
 
 interface Props {

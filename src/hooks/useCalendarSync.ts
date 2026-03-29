@@ -211,8 +211,9 @@ export function useCalendarSync() {
     is_all_day?: boolean;
     location?: string;
     has_meet?: boolean;
+    target_calendar_id?: string | null;
   }) => {
-    // Find first active writable account
+    // Find first active writable account, or use a specific one if target_calendar_id is set
     const { data: activeAccounts } = await supabase
       .from('calendar_accounts')
       .select('*')

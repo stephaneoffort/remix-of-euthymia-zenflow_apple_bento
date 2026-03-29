@@ -32,6 +32,7 @@ export default function DashboardMeetSection() {
           .from('calendar_events')
           .select('id, title, start_time, end_time, meet_link')
           .eq('has_meet', true)
+          .not('meet_link', 'is', null)
           .gte('start_time', new Date().toISOString())
           .order('start_time', { ascending: true })
           .limit(20);

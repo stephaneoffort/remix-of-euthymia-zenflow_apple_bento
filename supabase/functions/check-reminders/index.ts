@@ -144,10 +144,10 @@ async function createVapidJwt(
     const rawSig = new Uint8Array(64);
     rawSig.set(r, 0);
     rawSig.set(s, 32);
-    return `${unsignedToken}.${base64url.encode(rawSig)}`;
+    return `${unsignedToken}.${toBase64url(rawSig)}`;
   } else {
     // Already raw
-    return `${unsignedToken}.${base64url.encode(sigBytes)}`;
+    return `${unsignedToken}.${toBase64url(sigBytes)}`;
   }
 }
 

@@ -1972,9 +1972,9 @@
   outline-offset: 3px;
 }
 
-/* ─── Hide App.css ambient orbs for liquidGlass ─── */
-[data-palette^="liquidGlass"] body::before,
-[data-palette^="liquidGlass"] body::after {
+/* ─── Hide App.css ambient orbs for all palettes ─── */
+html body::before,
+html body::after {
   display: none !important;
 }
 

@@ -21,46 +21,53 @@ const ALL_INTEGRATIONS: IntegrationKey[] = [
   'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo',
 ];
 
+import googleDriveIcon from '@/assets/integrations/google-drive.png';
+import zoomIcon from '@/assets/integrations/zoom.png';
+import canvaIcon from '@/assets/integrations/canva.png';
+import googleMeetIcon from '@/assets/integrations/google-meet.png';
+import gmailIcon from '@/assets/integrations/gmail.png';
+import brevoIcon from '@/assets/integrations/brevo.png';
+
 export const INTEGRATION_CONFIG: Record<IntegrationKey, {
   label: string;
   description: string;
-  emoji: string;
+  icon: string;
   color: string;
 }> = {
   google_drive: {
     label: 'Google Drive',
     description: 'Joindre des fichiers Drive aux tâches et projets',
-    emoji: '📁',
+    icon: googleDriveIcon,
     color: '#4285F4',
   },
   zoom: {
     label: 'Zoom',
     description: 'Créer des réunions Zoom depuis les tâches',
-    emoji: '📹',
+    icon: zoomIcon,
     color: '#2D8CFF',
   },
   canva: {
     label: 'Canva',
     description: 'Créer et joindre des designs Canva',
-    emoji: '🎨',
+    icon: canvaIcon,
     color: '#00C4CC',
   },
   google_meet: {
     label: 'Google Meet',
     description: 'Ajouter des liens Meet aux événements agenda',
-    emoji: '🟢',
+    icon: googleMeetIcon,
     color: '#00897B',
   },
   gmail: {
     label: 'Gmail',
     description: 'Lire et envoyer des emails depuis les tâches',
-    emoji: '📧',
+    icon: gmailIcon,
     color: '#EA4335',
   },
   brevo: {
     label: 'Brevo',
     description: 'Newsletters, contacts et campagnes email',
-    emoji: '📨',
+    icon: brevoIcon,
     color: '#0092FF',
   },
 };

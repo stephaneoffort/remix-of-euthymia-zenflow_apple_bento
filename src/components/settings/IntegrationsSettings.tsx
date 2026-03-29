@@ -163,7 +163,7 @@ export default function IntegrationsSettings() {
                   enabled ? 'border-primary/30 bg-primary/5' : 'border-border bg-muted/20'
                 }`}
               >
-                <span className="text-2xl shrink-0">{config.emoji}</span>
+                <img src={config.icon} alt={config.label} className="w-7 h-7 shrink-0 rounded" loading="lazy" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-foreground">{config.label}</p>
                   {!enabled && (
@@ -226,7 +226,7 @@ export default function IntegrationsSettings() {
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              {confirmDialog && <span className="text-xl">{INTEGRATION_CONFIG[confirmDialog.key].emoji}</span>}
+              {confirmDialog && <img src={INTEGRATION_CONFIG[confirmDialog.key].icon} alt="" className="w-5 h-5" />}
               Connexion requise
             </DialogTitle>
             <DialogDescription>
@@ -252,7 +252,7 @@ export default function IntegrationsSettings() {
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              {confirmDialog && <span className="text-xl">{INTEGRATION_CONFIG[confirmDialog.key].emoji}</span>}
+              {confirmDialog && <img src={INTEGRATION_CONFIG[confirmDialog.key].icon} alt="" className="w-5 h-5" />}
               Désactiver {confirmDialog ? INTEGRATION_CONFIG[confirmDialog.key].label : ''} ?
             </DialogTitle>
             <DialogDescription>
@@ -279,7 +279,7 @@ export default function IntegrationsSettings() {
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <span className="text-xl">📨</span> Connecter Brevo
+              <img src={INTEGRATION_CONFIG.brevo.icon} alt="Brevo" className="w-5 h-5" /> Connecter Brevo
             </DialogTitle>
             <DialogDescription>
               Entre ta clé API Brevo pour activer l'intégration.

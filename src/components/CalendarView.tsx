@@ -776,7 +776,7 @@ export default function CalendarView() {
           return (
             <Tooltip key={ev.id}>
               <TooltipTrigger asChild>
-                <div className="text-[11px] px-1.5 py-0.5 rounded bg-muted/60 text-muted-foreground hover:bg-muted transition-colors flex items-center gap-1 cursor-default">
+                <div className="text-[11px] px-1.5 py-0.5 rounded bg-muted/80 text-foreground hover:bg-muted transition-colors flex items-center gap-1 cursor-default">
                   {isGoogle ? (
                     <span className="w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center shrink-0">G</span>
                   ) : (

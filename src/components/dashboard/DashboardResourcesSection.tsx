@@ -118,31 +118,37 @@ function CanvaCard({ projects }: Props) {
           </span>
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-1">
-          {visible.map((project) => (
-            <div key={project.id} className="py-2 px-1 rounded-md hover:bg-muted/50 transition-colors">
-              <div className="flex items-center gap-2 mb-1.5">
-                <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: project.color }} />
-                <p className="text-sm font-medium text-foreground truncate">{project.name}</p>
+      {projectsWithDesigns.length === 0 ? (
+        <CardContent>
+          <p className="text-sm text-muted-foreground py-2 text-center">Aucune ressource</p>
+        </CardContent>
+      ) : (
+        <CardContent>
+          <div className="space-y-1">
+            {visible.map((project) => (
+              <div key={project.id} className="py-2 px-1 rounded-md hover:bg-muted/50 transition-colors">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: project.color }} />
+                  <p className="text-sm font-medium text-foreground truncate">{project.name}</p>
+                </div>
+                <CanvaAttachments entityType="project" entityId={project.id} compact />
               </div>
-              <CanvaAttachments entityType="project" entityId={project.id} compact />
-            </div>
-          ))}
-          {remaining > 0 && (
-            <button
-              onClick={() => setExpanded(!expanded)}
-              className="w-full py-2 flex items-center justify-center gap-1.5 text-xs font-semibold text-primary/70 hover:text-primary transition-colors rounded-lg hover:bg-primary/5"
-            >
-              {expanded ? (
-                <>Réduire <ChevronDown className="w-3.5 h-3.5 rotate-180" /></>
-              ) : (
-                <>+{remaining} projet{remaining > 1 ? "s" : ""} <ChevronDown className="w-3.5 h-3.5" /></>
-              )}
-            </button>
-          )}
-        </div>
-      </CardContent>
+            ))}
+            {remaining > 0 && (
+              <button
+                onClick={() => setExpanded(!expanded)}
+                className="w-full py-2 flex items-center justify-center gap-1.5 text-xs font-semibold text-primary/70 hover:text-primary transition-colors rounded-lg hover:bg-primary/5"
+              >
+                {expanded ? (
+                  <>Réduire <ChevronDown className="w-3.5 h-3.5 rotate-180" /></>
+                ) : (
+                  <>+{remaining} projet{remaining > 1 ? "s" : ""} <ChevronDown className="w-3.5 h-3.5" /></>
+                )}
+              </button>
+            )}
+          </div>
+        </CardContent>
+      )}
     </Card>
   );
 }

@@ -52,6 +52,7 @@ serve(async (req: Request) => {
     authUrl.searchParams.set("client_id", ZOOM_CLIENT_ID)
     authUrl.searchParams.set("redirect_uri", REDIRECT_URI)
     authUrl.searchParams.set("response_type", "code")
+    authUrl.searchParams.set("scope", "meeting:write:meeting meeting:read:meeting user:read:user")
     authUrl.searchParams.set("state", state)
 
     return Response.redirect(authUrl.toString(), 302)

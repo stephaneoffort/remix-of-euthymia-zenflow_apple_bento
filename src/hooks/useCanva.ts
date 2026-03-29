@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-const CANVA_API = "https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/canva-api";
+const CANVA_API = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/canva-api`;
 
 export interface CanvaAttachment {
   id: string;
@@ -43,7 +43,7 @@ export function useCanva() {
   const connect = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     window.location.href =
-      `https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/canva-oauth/authorize?user_id=${user?.id || ""}`;
+      `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/canva-oauth/authorize?user_id=${user?.id || ""}`;
   };
 
   const disconnect = async () => {
@@ -55,12 +55,21 @@ export function useCanva() {
   };
 
   const call = async (body: object) => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) {
+      throw new Error("User not authenticated");
+    }
     const res = await fetch(CANVA_API, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...body, user_id: user?.id }),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify(body),
     });
+    if (res.status === 401) {
+      throw new Error("Session expirée — reconnecte-toi");
+    }
     return res.json();
   };
 

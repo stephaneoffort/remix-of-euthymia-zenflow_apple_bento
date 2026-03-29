@@ -376,6 +376,23 @@ async function icsPull(account: any): Promise<number> {
   return events.length;
 }
 
+// ─── AUTH HELPER ───
+async function authenticateUser(req: Request): Promise<string> {
+  const authHeader = req.headers.get("Authorization")
+  if (!authHeader?.startsWith("Bearer ")) {
+    throw new Error("UNAUTHORIZED")
+  }
+  const supabaseUser = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_ANON_KEY")!,
+    { global: { headers: { Authorization: authHeader } } }
+  )
+  const token = authHeader.replace("Bearer ", "")
+  const { data, error } = await supabaseUser.auth.getClaims(token)
+  if (error || !data?.claims) throw new Error("UNAUTHORIZED")
+  return data.claims.sub as string
+}
+
 // ─── MAIN HANDLER ───
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -383,6 +400,16 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Authenticate user
+    let userId: string;
+    try {
+      userId = await authenticateUser(req);
+    } catch {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { account_id, direction, event_id, action } = await req.json();
     if (!account_id || !direction) {
       return new Response(
@@ -397,6 +424,14 @@ Deno.serve(async (req) => {
       return new Response(
         JSON.stringify({ error: "Account not found" }),
         { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    // Verify account ownership
+    if (account.user_id && account.user_id !== userId) {
+      return new Response(
+        JSON.stringify({ error: "Forbidden" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 

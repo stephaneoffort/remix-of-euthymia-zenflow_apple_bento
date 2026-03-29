@@ -4,7 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 }
 
 const supabase = createClient(
@@ -15,27 +15,39 @@ const supabase = createClient(
 const CANVA_CLIENT_ID = Deno.env.get("CANVA_CLIENT_ID") ?? ""
 const CANVA_CLIENT_SECRET = Deno.env.get("CANVA_CLIENT_SECRET") ?? ""
 
-async function getValidToken(userId?: string): Promise<string> {
-  let query = supabase
+async function authenticateUser(req: Request): Promise<string> {
+  const authHeader = req.headers.get("Authorization")
+  if (!authHeader?.startsWith("Bearer ")) {
+    throw new Error("UNAUTHORIZED")
+  }
+
+  const supabaseUser = createClient(
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+    { global: { headers: { Authorization: authHeader } } }
+  )
+
+  const token = authHeader.replace("Bearer ", "")
+  const { data, error } = await supabaseUser.auth.getClaims(token)
+  if (error || !data?.claims) {
+    throw new Error("UNAUTHORIZED")
+  }
+
+  return data.claims.sub as string
+}
+
+async function getValidToken(userId: string): Promise<string> {
+  const { data } = await supabase
     .from("canva_connections")
     .select("*")
+    .eq("user_id", userId)
     .not("email", "like", "pending_%")
     .order("created_at", { ascending: false })
     .limit(1)
+    .single()
 
-  if (userId) {
-    query = supabase
-      .from("canva_connections")
-      .select("*")
-      .eq("user_id", userId)
-      .not("email", "like", "pending_%")
-      .order("created_at", { ascending: false })
-      .limit(1)
-  }
-
-  const { data } = await query.single()
   const conn = data as any
-  if (!conn) throw new Error("No Canva connection found")
+  if (!conn) throw new Error("No Canva connection found for this user")
 
   if (new Date(conn.token_expiry) > new Date(Date.now() + 5 * 60 * 1000)) {
     return conn.access_token
@@ -72,9 +84,17 @@ serve(async (req: Request) => {
   }
 
   try {
+    // Authenticate user via JWT
+    let userId: string
+    try {
+      userId = await authenticateUser(req)
+    } catch {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } })
+    }
+
     const body = await req.json()
-    const { action, user_id } = body
-    const token = await getValidToken(user_id)
+    const { action } = body
+    const token = await getValidToken(userId)
 
     const canvaHeaders = {
       Authorization: `Bearer ${token}`,
@@ -116,7 +136,7 @@ serve(async (req: Request) => {
       const { data, error } = await supabase
         .from("canva_attachments")
         .insert({
-          user_id: user_id || null,
+          user_id: userId,
           entity_type,
           entity_id,
           design_id: design.id ?? design_id,
@@ -137,6 +157,7 @@ serve(async (req: Request) => {
       const { data } = await supabase
         .from("canva_attachments")
         .select("*")
+        .eq("user_id", userId)
         .eq("entity_type", entity_type)
         .eq("entity_id", entity_id)
         .order("created_at", { ascending: false })
@@ -145,7 +166,7 @@ serve(async (req: Request) => {
 
     if (action === "detach") {
       const { attachment_id } = body
-      await supabase.from("canva_attachments").delete().eq("id", attachment_id)
+      await supabase.from("canva_attachments").delete().eq("id", attachment_id).eq("user_id", userId)
       return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
     }
 

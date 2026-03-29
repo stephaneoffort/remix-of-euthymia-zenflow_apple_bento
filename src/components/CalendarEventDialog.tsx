@@ -100,6 +100,7 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
         is_all_day: isAllDay,
         location: location.trim(),
         has_meet: hasMeet,
+        target_calendar_id: targetCalendarId,
       });
 
       if (hasZoom && zoom.isConnected) {

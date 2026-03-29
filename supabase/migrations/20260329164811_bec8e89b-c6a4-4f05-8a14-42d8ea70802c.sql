@@ -1,0 +1,1 @@
+ALTER TABLE public.tasks ADD COLUMN IF NOT EXISTS target_calendar_id TEXT DEFAULT NULL;

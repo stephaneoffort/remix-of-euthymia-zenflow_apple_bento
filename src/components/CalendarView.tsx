@@ -505,7 +505,7 @@ export default function CalendarView() {
   const tasks = useMemo(() => {
     const parentIds = new Set(filteredParents.map(t => t.id));
     const subtasks = allTasks.filter(t => t.parentTaskId && !parentIds.has(t.id) && t.status !== 'done');
-    return [...filteredParents, ...subtasks];
+    return [...filteredParents, ...subtasks].filter(t => t.status !== 'done');
   }, [allTasks, filteredParents]);
 
   // All tasks indexed by every date they cover (for cell rendering)

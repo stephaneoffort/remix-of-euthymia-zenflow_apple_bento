@@ -25,8 +25,6 @@ interface Props {
 export default function CanvaAttachments({ entityType, entityId, compact, defaultTitle }: Props) {
   const { isActive } = useIntegrations();
   const canva = useCanva();
-
-  if (!isActive('canva')) return null;
   const [attachments, setAttachments] = useState<CanvaAttachment[]>([]);
   const [loading, setLoading] = useState(true);
   const [pickerOpen, setPickerOpen] = useState(false);

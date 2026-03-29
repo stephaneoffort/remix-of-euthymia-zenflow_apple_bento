@@ -22,8 +22,6 @@ interface Props {
 export default function ZoomMeetings({ entityType, entityId, compact, defaultTitle }: Props) {
   const { isActive } = useIntegrations();
   const zoom = useZoom();
-
-  if (!isActive('zoom')) return null;
   const [meetings, setMeetings] = useState<ZoomMeeting[]>([]);
   const [loading, setLoading] = useState(true);
   const [creatorOpen, setCreatorOpen] = useState(false);

@@ -3021,7 +3021,11 @@ html body::after {
 [data-palette="neutrals"] .bento-cell,
 [data-palette="sapphire"] .bento-cell,
 [data-palette="cinematic"] .bento-cell,
-[data-palette="teal"] .bento-cell {
+[data-palette="teal"] .bento-cell,
+[data-palette="bento2026"] .bento-cell,
+[data-palette="bentoOcean"] .bento-cell,
+[data-palette="bentoRose"] .bento-cell,
+[data-palette="bentoAmber"] .bento-cell {
   background: rgba(255,255,255,0.04) !important;
   backdrop-filter: blur(24px) saturate(160%);
   -webkit-backdrop-filter: blur(24px) saturate(160%);

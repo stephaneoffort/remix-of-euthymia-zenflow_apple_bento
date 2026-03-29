@@ -934,7 +934,7 @@ export default function CalendarView() {
           {mobileActionBar}
           <div className="grid grid-cols-7 gap-px bg-border mx-2 rounded-lg overflow-hidden">
             {DAYS_FR_SHORT.map((d, i) => (
-              <div key={i} className="py-1 text-center text-label font-semibold text-foreground/70 bg-muted/40">{d}</div>
+              <div key={i} className="py-1 text-center text-label font-semibold text-foreground bg-muted/60">{d}</div>
             ))}
             {mCalDays.map((day, i) => {
               const ds = toDateStr(day.date);

@@ -5,11 +5,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Video, Copy, ExternalLink } from 'lucide-react';
 import DriveAttachments from '@/components/drive/DriveAttachments';
 import CanvaAttachments from '@/components/canva/CanvaAttachments';
 import ZoomMeetings from '@/components/zoom/ZoomMeetings';
 import type { CalendarEvent } from '@/hooks/useCalendarSync';
+import { toast } from 'sonner';
 
 interface Props {
   open: boolean;
@@ -21,6 +22,7 @@ interface Props {
     end_time: string;
     is_all_day: boolean;
     location: string;
+    has_meet?: boolean;
   }) => Promise<void>;
   onDelete?: () => Promise<void>;
   event?: CalendarEvent | null;
@@ -36,6 +38,7 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
   const [endTime, setEndTime] = useState('10:00');
   const [isAllDay, setIsAllDay] = useState(false);
   const [location, setLocation] = useState('');
+  const [hasMeet, setHasMeet] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -46,6 +49,7 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
         setDescription(event.description || '');
         setLocation(event.location || '');
         setIsAllDay(event.is_all_day);
+        setHasMeet(event.has_meet ?? false);
         const s = new Date(event.start_time);
         const e = new Date(event.end_time);
         setStartDate(s.toISOString().slice(0, 10));
@@ -58,6 +62,7 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
         setDescription('');
         setLocation('');
         setIsAllDay(false);
+        setHasMeet(false);
         setStartDate(d);
         setStartTime('09:00');
         setEndDate(d);
@@ -81,6 +86,7 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
         end_time: new Date(end).toISOString(),
         is_all_day: isAllDay,
         location: location.trim(),
+        has_meet: hasMeet,
       });
       onClose();
     } finally {
@@ -96,6 +102,13 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
       onClose();
     } finally {
       setDeleting(false);
+    }
+  };
+
+  const copyMeetLink = () => {
+    if (event?.meet_link) {
+      navigator.clipboard.writeText(event.meet_link);
+      toast.success('Lien Meet copié ✅');
     }
   };
 
@@ -134,6 +147,34 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
             <Label htmlFor="ev-desc">Description (optionnel)</Label>
             <Textarea id="ev-desc" value={description} onChange={e => setDescription(e.target.value)} rows={2} />
           </div>
+
+          <div className="flex items-center gap-3 p-2.5 rounded-lg border border-border bg-muted/20">
+            <Video className="w-4 h-4 text-[hsl(174,60%,30%)] shrink-0" />
+            <div className="flex-1">
+              <Label htmlFor="ev-meet" className="text-sm font-medium cursor-pointer">Google Meet</Label>
+              {hasMeet && !event?.meet_link && (
+                <p className="text-[10px] text-muted-foreground">Un lien Meet sera généré automatiquement</p>
+              )}
+            </div>
+            <Switch id="ev-meet" checked={hasMeet} onCheckedChange={setHasMeet} />
+          </div>
+
+          {event?.meet_link && (
+            <div className="flex items-center gap-2 p-2.5 rounded-lg bg-[hsl(174,60%,30%)]/10 border border-[hsl(174,60%,30%)]/20">
+              <Video className="w-4 h-4 text-[hsl(174,60%,30%)] shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-foreground">Google Meet actif</p>
+                <p className="text-[10px] text-muted-foreground truncate">{event.meet_link.replace('https://', '')}</p>
+              </div>
+              <button onClick={() => window.open(event.meet_link!, '_blank')} className="p-1 rounded hover:bg-muted" title="Rejoindre">
+                <ExternalLink className="w-3.5 h-3.5 text-muted-foreground" />
+              </button>
+              <button onClick={copyMeetLink} className="p-1 rounded hover:bg-muted" title="Copier le lien">
+                <Copy className="w-3.5 h-3.5 text-muted-foreground" />
+              </button>
+            </div>
+          )}
+
           {event && (
             <>
               <DriveAttachments entityType="event" entityId={event.id} compact />

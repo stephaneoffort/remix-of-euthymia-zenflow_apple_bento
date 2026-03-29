@@ -36,7 +36,6 @@ function DriveCard({ projects }: Props) {
   const remaining = projectsWithFiles.length - MAX_VISIBLE;
 
   if (loading) return null;
-  if (projectsWithFiles.length === 0) return null;
 
   return (
     <Card className="bg-card border-border">

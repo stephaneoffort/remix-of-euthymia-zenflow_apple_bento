@@ -24,14 +24,29 @@ const OFFSET_LABELS: Record<string, string> = {
 
 // Convert base64url or base64 string to Uint8Array using atob
 function b64urlToUint8Array(str: string): Uint8Array {
-  // Trim whitespace and normalize base64url to base64
-  let b64 = str.trim().replace(/-/g, '+').replace(/_/g, '/').replace(/\s/g, '');
+  // Trim and clean
+  const cleaned = str.trim().replace(/\s/g, '');
+  // Convert base64url to base64
+  let b64 = cleaned.replace(/-/g, '+').replace(/_/g, '/');
   // Add padding
   while (b64.length % 4 !== 0) b64 += '=';
-  const raw = atob(b64);
-  const arr = new Uint8Array(raw.length);
-  for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
-  return arr;
+  // Use manual decode to avoid atob issues
+  const lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  const bytes: number[] = [];
+  for (let i = 0; i < b64.length; i += 4) {
+    const a = lookup.indexOf(b64[i]);
+    const b = lookup.indexOf(b64[i + 1]);
+    const c = b64[i + 2] === '=' ? 0 : lookup.indexOf(b64[i + 2]);
+    const d = b64[i + 3] === '=' ? 0 : lookup.indexOf(b64[i + 3]);
+    if (a < 0 || b < 0) {
+      console.error('Invalid base64 char at', i, 'chars:', JSON.stringify(b64.substring(i, i + 4)), 'original:', JSON.stringify(cleaned.substring(0, 10)));
+      throw new Error('Invalid base64');
+    }
+    bytes.push((a << 2) | (b >> 4));
+    if (b64[i + 2] !== '=') bytes.push(((b & 15) << 4) | (c >> 2));
+    if (b64[i + 3] !== '=') bytes.push(((c & 3) << 6) | d);
+  }
+  return new Uint8Array(bytes);
 }
 
 // base64url encode without padding

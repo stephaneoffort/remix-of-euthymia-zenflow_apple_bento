@@ -540,14 +540,15 @@ export default function DashboardView() {
         </Card>
       </section>
 
-      {/* Zoom meetings */}
-      <DashboardZoomSection />
+      {/* ═══ SECTION 4 : INTÉGRATIONS ═══ */}
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <DashboardZoomSection />
+        <DashboardMeetSection />
+        <BrevoStats />
+      </section>
 
       {/* Drive & Canva resources */}
       <DashboardResourcesSection projects={projects} />
-
-      {/* Brevo stats */}
-      <BrevoStats />
     </div>
   );
 }

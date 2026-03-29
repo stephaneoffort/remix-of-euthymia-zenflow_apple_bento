@@ -584,6 +584,16 @@ async function pushTaskForUser(userId: string, taskId: string, action: string) {
 
   if (!task) throw new Error("Task not found");
 
+  // If task is done, delete from calendar instead of syncing
+  if (task.status === "done") {
+    if (task.google_event_id) {
+      const res = await fetch(`${baseUrl}/${task.google_event_id}`, { method: "DELETE", headers });
+      await res.text();
+      await supabase.from("tasks").update({ google_event_id: null } as any).eq("id", taskId);
+    }
+    return;
+  }
+
   // Check sync preferences
   const prefs = await getSyncPrefs(userId);
   const isSubtask = !!task.parent_task_id;

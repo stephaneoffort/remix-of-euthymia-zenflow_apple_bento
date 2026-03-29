@@ -177,6 +177,7 @@ export function useIntegrations() {
       google_drive: 'drive_connections',
       zoom: 'zoom_connections',
       canva: 'canva_connections',
+      brevo: 'brevo_connections',
     };
     const table = tableMap[key];
     if (table) {

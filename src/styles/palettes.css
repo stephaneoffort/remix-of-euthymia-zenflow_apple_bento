@@ -923,9 +923,9 @@
   --sidebar-accent-foreground: 210 18% 90%;
   --sidebar-ring: 12 80% 62%;
   --sidebar-border: 210 20% 14%;
-  --bento-bg: #0f1a28;
-  --bento-bg-hover: #162236;
-  --bento-border: rgba(240,132,106,0.08);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(240,132,106,0.06);
+  --bento-border: rgba(240,132,106,0.1);
   --bento-accent: rgba(240,132,106,0.12);
   --priority-urgent: 0 60% 52%;
   --priority-high: 20 58% 52%;

@@ -11,10 +11,13 @@ import { useIntegrations } from "@/hooks/useIntegrations";
 const VISIBLE_COUNT = 5;
 
 export default function DashboardZoomSection() {
+  const { isActive } = useIntegrations();
   const zoom = useZoom();
   const [meetings, setMeetings] = useState<ZoomMeeting[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
+
+  if (!isActive('zoom')) return null;
 
   useEffect(() => {
     if (!zoom.isConnected) { setLoading(false); return; }

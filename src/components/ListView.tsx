@@ -229,6 +229,7 @@ export default function ListView() {
                   <span className={`text-sm font-medium ${isOverdue ? 'text-priority-urgent' : 'text-foreground'}`}>{task.title}</span>
                   {task.recurrence && <Repeat className="w-3 h-3 text-primary shrink-0" />}
                   <SubtaskProgress total={subtasks.length} done={doneSubtasks.length} />
+                  <ZenflowBadge googleEventId={task.googleEventId} />
                 </div>
               </div>
             </div>

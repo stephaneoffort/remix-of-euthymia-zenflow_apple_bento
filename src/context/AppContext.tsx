@@ -421,6 +421,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // Delete task mutation
   const deleteTaskMutation = useMutation({
     mutationFn: async (id: string) => {
+      // Sync delete to ZENFLOW before removing
+      const task = tasks.find(t => t.id === id);
+      if (task?.googleEventId) {
+        syncTask(id, 'delete');
+      }
       if (!navigator.onLine) {
         await enqueue({ table: 'tasks', operation: 'delete', payload: null, match: { id } });
         toast.info('Suppression enregistrée hors-ligne');

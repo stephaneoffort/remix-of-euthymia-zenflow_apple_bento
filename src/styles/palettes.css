@@ -2125,14 +2125,14 @@ html body::after {
 [data-palette^="liquidGlass"].light .task-detail-panel,
 [data-palette^="liquidGlass"].mixed .task-detail-panel,
 [data-palette^="liquidGlass"]:not(.dark):not(.mixed) .task-detail-panel {
-  background: rgba(255, 255, 255, 0.82) !important;
+  background: rgba(255, 255, 255, 0.81) !important;
   backdrop-filter: blur(40px) saturate(180%) brightness(1.02) !important;
   -webkit-backdrop-filter: blur(40px) saturate(180%) brightness(1.02) !important;
   border-left: 1px solid rgba(255, 255, 255, 0.5) !important;
   border-radius: 0 !important;
 }
 [data-palette^="liquidGlass"].dark .task-detail-panel {
-  background: rgba(15, 15, 30, 0.88) !important;
+  background: rgba(15, 15, 30, 0.81) !important;
   backdrop-filter: blur(40px) saturate(160%) !important;
   -webkit-backdrop-filter: blur(40px) saturate(160%) !important;
   border-left: 1px solid rgba(255, 255, 255, 0.08) !important;
@@ -2173,7 +2173,7 @@ html body::after {
 [data-palette="bentoRose"].mixed .task-detail-panel,
 [data-palette="bentoAmber"].light .task-detail-panel,
 [data-palette="bentoAmber"].mixed .task-detail-panel {
-  background: rgba(255, 255, 255, 0.82) !important;
+  background: rgba(255, 255, 255, 0.81) !important;
   backdrop-filter: blur(40px) saturate(180%) brightness(1.02) !important;
   -webkit-backdrop-filter: blur(40px) saturate(180%) brightness(1.02) !important;
 }
@@ -2186,7 +2186,7 @@ html body::after {
 [data-palette="bentoOcean"]:not(.light):not(.mixed) .task-detail-panel,
 [data-palette="bentoRose"]:not(.light):not(.mixed) .task-detail-panel,
 [data-palette="bentoAmber"]:not(.light):not(.mixed) .task-detail-panel {
-  background: rgba(15, 15, 25, 0.88) !important;
+  background: rgba(15, 15, 25, 0.81) !important;
   backdrop-filter: blur(40px) saturate(160%) !important;
   -webkit-backdrop-filter: blur(40px) saturate(160%) !important;
 }

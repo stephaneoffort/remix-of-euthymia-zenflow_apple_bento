@@ -100,7 +100,6 @@ function CanvaCard({ projects }: Props) {
   const remaining = projectsWithDesigns.length - MAX_VISIBLE;
 
   if (loading) return null;
-  if (projectsWithDesigns.length === 0) return null;
 
   return (
     <Card className="bg-card border-border">

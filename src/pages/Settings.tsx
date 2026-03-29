@@ -724,6 +724,8 @@ function IntegrationsPanel() {
   const [driveEmail, setDriveEmail] = useState<string | null>(null);
   const [isCanvaConnected, setIsCanvaConnected] = useState(false);
   const [canvaInfo, setCanvaInfo] = useState<{ email?: string; display_name?: string } | null>(null);
+  const [isZoomConnected, setIsZoomConnected] = useState(false);
+  const [zoomInfo, setZoomInfo] = useState<{ email?: string; display_name?: string } | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -751,6 +753,17 @@ function IntegrationsPanel() {
       if (canvaConns && canvaConns.length > 0) {
         setCanvaInfo({ email: canvaConns[0].email, display_name: canvaConns[0].display_name });
       }
+
+      // Zoom
+      const { data: zoomData } = await supabase
+        .from('zoom_connections' as any)
+        .select('id, email, display_name')
+        .limit(1);
+      const zoomConns = zoomData as any[] | null;
+      setIsZoomConnected((zoomConns?.length ?? 0) > 0);
+      if (zoomConns && zoomConns.length > 0) {
+        setZoomInfo({ email: zoomConns[0].email, display_name: zoomConns[0].display_name });
+      }
     })();
 
     if (window.location.search.includes('drive_connected=true')) {
@@ -759,6 +772,10 @@ function IntegrationsPanel() {
     }
     if (window.location.search.includes('canva_connected=true')) {
       setIsCanvaConnected(true);
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+    if (window.location.search.includes('zoom_connected=true')) {
+      setIsZoomConnected(true);
       window.history.replaceState({}, '', window.location.pathname);
     }
   }, []);

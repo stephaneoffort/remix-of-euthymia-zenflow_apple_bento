@@ -1566,7 +1566,7 @@
   --secondary: 220 20% 93%;
   --secondary-foreground: 230 15% 42%;
   --muted: 220 15% 95%;
-  --muted-foreground: 230 10% 42%;
+  --muted-foreground: 230 12% 38%;
   --accent: 239 60% 65%;
   --accent-foreground: 0 0% 100%;
   --destructive: 0 68% 52%;
@@ -1601,46 +1601,46 @@
 /* ─── Dark mode ─── */
 [data-palette^="liquidGlass"].dark {
   --background: 235 30% 6%;
-  --foreground: 220 15% 85%;
+  --foreground: 220 15% 90%;
   --card: 235 25% 9%;
-  --card-foreground: 220 15% 85%;
-  --popover: 235 28% 8%;
-  --popover-foreground: 220 15% 85%;
+  --card-foreground: 220 15% 90%;
+  --popover: 235 28% 10%;
+  --popover-foreground: 220 15% 90%;
   --primary: 239 84% 67%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 235 20% 14%;
-  --secondary-foreground: 220 12% 70%;
-  --muted: 235 18% 12%;
-  --muted-foreground: 220 10% 62%;
+  --secondary: 235 20% 16%;
+  --secondary-foreground: 220 12% 78%;
+  --muted: 235 18% 14%;
+  --muted-foreground: 220 10% 72%;
   --accent: 239 50% 22%;
-  --accent-foreground: 239 80% 78%;
+  --accent-foreground: 239 80% 82%;
   --destructive: 0 68% 52%;
   --destructive-foreground: 0 0% 100%;
-  --border: 235 18% 18%;
-  --input: 235 18% 14%;
+  --border: 235 18% 24%;
+  --input: 235 18% 16%;
   --ring: 239 84% 67%;
   --sidebar-background: 235 35% 5%;
-  --sidebar-foreground: 220 10% 75%;
+  --sidebar-foreground: 220 10% 80%;
   --sidebar-primary: 239 84% 67%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 235 28% 10%;
-  --sidebar-accent-foreground: 220 18% 82%;
+  --sidebar-accent: 235 28% 12%;
+  --sidebar-accent-foreground: 220 18% 88%;
   --sidebar-ring: 239 84% 67%;
-  --sidebar-border: 235 22% 14%;
+  --sidebar-border: 235 22% 20%;
   --bento-bg: rgba(20, 20, 35, 0.55);
   --bento-bg-hover: rgba(30, 30, 50, 0.65);
-  --bento-border: rgba(255, 255, 255, 0.12);
+  --bento-border: rgba(255, 255, 255, 0.15);
   --bento-accent: rgba(99, 102, 241, 0.15);
 
-  --priority-urgent: 0 65% 55%;
-  --priority-high: 25 70% 55%;
-  --priority-normal: 239 60% 62%;
-  --priority-low: 220 12% 55%;
-  --status-todo: 220 12% 55%;
-  --status-progress: 239 60% 62%;
-  --status-review: 38 75% 55%;
-  --status-done: 142 55% 48%;
-  --status-blocked: 0 58% 55%;
+  --priority-urgent: 0 65% 58%;
+  --priority-high: 25 70% 58%;
+  --priority-normal: 239 60% 68%;
+  --priority-low: 220 12% 60%;
+  --status-todo: 220 12% 60%;
+  --status-progress: 239 60% 68%;
+  --status-review: 38 75% 58%;
+  --status-done: 142 55% 52%;
+  --status-blocked: 0 58% 58%;
 }
 
 /* ─── Mixed mode ─── */
@@ -1656,7 +1656,7 @@
   --secondary: 220 20% 93%;
   --secondary-foreground: 230 15% 42%;
   --muted: 220 15% 95%;
-  --muted-foreground: 230 10% 42%;
+  --muted-foreground: 230 12% 38%;
   --accent: 239 60% 65%;
   --accent-foreground: 0 0% 100%;
   --destructive: 0 68% 52%;
@@ -2033,6 +2033,19 @@ html body::after {
   overflow: hidden;
 }
 
+/* ─── Liquid Glass dark: shadcn cards ─── */
+[data-palette^="liquidGlass"].dark .bg-card {
+  background: rgba(20, 20, 40, 0.6) !important;
+  backdrop-filter: blur(28px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(160%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-top-color: rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  border-radius: 24px !important;
+  position: relative;
+  overflow: hidden;
+}
+
 /* ─── Liquid Glass: shimmer on card hover ─── */
 [data-palette^="liquidGlass"].light .bg-card:hover,
 [data-palette^="liquidGlass"].mixed .bg-card:hover,
@@ -2046,6 +2059,7 @@ html body::after {
 /* ─── Liquid Glass: bg-background → transparent (page wrappers) ─── */
 [data-palette^="liquidGlass"].light .bg-background,
 [data-palette^="liquidGlass"].mixed .bg-background,
+[data-palette^="liquidGlass"].dark .bg-background,
 [data-palette^="liquidGlass"]:not(.dark):not(.mixed) .bg-background {
   background: transparent !important;
 }
@@ -3318,11 +3332,12 @@ html body::after {
 [data-palette="bentoOcean"]:not(.light):not(.mixed) .bg-card,
 [data-palette="bentoRose"]:not(.light):not(.mixed) .bg-card,
 [data-palette="bentoAmber"]:not(.light):not(.mixed) .bg-card {
-  background: rgba(255,255,255,0.04) !important;
+  background: rgba(255,255,255,0.06) !important;
   backdrop-filter: blur(24px) saturate(160%) !important;
   -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
-  border: 1px solid rgba(255,255,255,0.1) !important;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1) !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+  border-top-color: rgba(255,255,255,0.2) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.12) !important;
   border-radius: 24px !important;
 }
 

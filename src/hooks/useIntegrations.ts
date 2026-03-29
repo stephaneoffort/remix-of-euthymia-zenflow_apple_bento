@@ -57,6 +57,12 @@ export const INTEGRATION_CONFIG: Record<IntegrationKey, {
     emoji: '📧',
     color: '#EA4335',
   },
+  brevo: {
+    label: 'Brevo',
+    description: 'Newsletters, contacts et campagnes email',
+    emoji: '📨',
+    color: '#0092FF',
+  },
 };
 
 const defaultStatus = (key: IntegrationKey): IntegrationStatus => ({

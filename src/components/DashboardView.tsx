@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import DriveAttachments from '@/components/drive/DriveAttachments';
+import CanvaAttachments from '@/components/canva/CanvaAttachments';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { useThemeMode } from '@/context/ThemeContext';

@@ -656,6 +656,9 @@ export default function TaskDetailPanel() {
               </div>
             </div>
 
+            {/* Google Drive */}
+            <DriveAttachments entityType="task" entityId={task.id} compact />
+
             {/* Time */}
             <div className="flex gap-3 sm:gap-4">
               <div className="flex-1">

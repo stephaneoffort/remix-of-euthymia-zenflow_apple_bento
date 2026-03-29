@@ -179,6 +179,13 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
             <Textarea id="ev-desc" value={description} onChange={e => setDescription(e.target.value)} rows={2} />
           </div>
 
+          {!event && (
+            <GoogleCalendarPicker
+              value={targetCalendarId}
+              onChange={setTargetCalendarId}
+            />
+          )}
+
           {isActive('google_meet') && (
             <div className="flex items-center gap-3 p-2.5 rounded-lg border border-border bg-muted/20">
               <Video className="w-4 h-4 text-[hsl(174,60%,30%)] shrink-0" />

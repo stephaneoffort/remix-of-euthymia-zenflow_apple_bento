@@ -96,8 +96,8 @@ export default function BrevoContacts({ entityType, entityId, compact }: Props) 
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-          <Mail className="w-3 h-3" /> Contacts Brevo
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+          <img src={INTEGRATION_CONFIG.brevo.icon} alt="Brevo" className="w-4 h-4" /> Contacts Brevo
         </p>
         <Button variant="ghost" size="sm" onClick={() => setAddOpen(true)} className="h-6 text-xs gap-1">
           <Plus className="w-3 h-3" /> Ajouter

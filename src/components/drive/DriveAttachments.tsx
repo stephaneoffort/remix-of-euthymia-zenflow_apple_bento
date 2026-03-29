@@ -61,8 +61,8 @@ export default function DriveAttachments({ entityType, entityId, compact }: Driv
     return (
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <p className={`font-medium text-foreground ${compact ? 'text-xs' : 'text-sm'}`}>
-            📁 Google Drive
+          <p className={`font-medium text-foreground flex items-center gap-1.5 ${compact ? 'text-xs' : 'text-sm'}`}>
+            <img src={INTEGRATION_CONFIG.google_drive.icon} alt="Google Drive" className="w-4 h-4" /> Google Drive
           </p>
         </div>
         <Button
@@ -71,7 +71,7 @@ export default function DriveAttachments({ entityType, entityId, compact }: Driv
           className="w-full text-xs gap-2"
           onClick={drive.connect}
         >
-          <span>📁</span> Connecter Google Drive
+          <img src={INTEGRATION_CONFIG.google_drive.icon} alt="" className="w-3.5 h-3.5" /> Connecter Google Drive
         </Button>
       </div>
     );
@@ -80,8 +80,8 @@ export default function DriveAttachments({ entityType, entityId, compact }: Driv
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <p className={`font-medium text-foreground ${compact ? 'text-xs' : 'text-sm'}`}>
-          📁 Google Drive
+        <p className={`font-medium text-foreground flex items-center gap-1.5 ${compact ? 'text-xs' : 'text-sm'}`}>
+          <img src={INTEGRATION_CONFIG.google_drive.icon} alt="Google Drive" className="w-4 h-4" /> Google Drive
         </p>
         {drive.isConnected && (
           <Button

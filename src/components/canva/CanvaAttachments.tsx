@@ -74,9 +74,11 @@ export default function CanvaAttachments({ entityType, entityId, compact, defaul
   if (!canva.isConnected && attachments.length === 0 && !loading) {
     return (
       <div className="space-y-2">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">🎨 Canva</p>
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+          <img src={INTEGRATION_CONFIG.canva.icon} alt="Canva" className="w-4 h-4" /> Canva
+        </p>
         <Button variant="outline" size="sm" onClick={canva.connect} className="gap-1.5 text-xs">
-          <span>🎨</span> Connecter Canva
+          <img src={INTEGRATION_CONFIG.canva.icon} alt="" className="w-3.5 h-3.5" /> Connecter Canva
         </Button>
       </div>
     );
@@ -85,7 +87,9 @@ export default function CanvaAttachments({ entityType, entityId, compact, defaul
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">🎨 Canva</p>
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+          <img src={INTEGRATION_CONFIG.canva.icon} alt="Canva" className="w-4 h-4" /> Canva
+        </p>
         {canva.isConnected && (
           <Button variant="ghost" size="sm" onClick={() => setPickerOpen(true)} className="h-6 px-2 text-xs gap-1">
             <Plus className="w-3 h-3" /> Design

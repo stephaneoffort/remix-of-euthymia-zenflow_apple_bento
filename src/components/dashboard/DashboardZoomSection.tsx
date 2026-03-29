@@ -109,7 +109,28 @@ export default function DashboardZoomSection() {
           {loading ? (
             <p className="text-sm text-muted-foreground py-4 text-center">Chargement…</p>
           ) : !zoom.isConnected ? (
-            <p className="text-sm text-muted-foreground py-4 text-center">Connectez Zoom dans les paramètres</p>
+            <div className="flex flex-col items-center gap-3 py-4">
+              <div className="p-3 rounded-full bg-muted/50">
+                <LinkIcon className="w-5 h-5 text-muted-foreground" />
+              </div>
+              <p className="text-sm text-muted-foreground text-center">Zoom n'est pas encore connecté</p>
+              <Button
+                size="sm"
+                variant="outline"
+                className="gap-1.5 text-xs"
+                onClick={() => zoom.connect()}
+              >
+                <Video className="w-3.5 h-3.5" />
+                Connecter Zoom
+              </Button>
+              <button
+                onClick={() => navigate("/settings")}
+                className="text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+              >
+                <Settings className="w-3 h-3" />
+                Paramètres d'intégration
+              </button>
+            </div>
           ) : meetings.length === 0 ? (
             <p className="text-sm text-muted-foreground py-4 text-center">Aucune réunion à venir</p>
           ) : (

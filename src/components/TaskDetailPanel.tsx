@@ -23,6 +23,7 @@ import CanvaAttachments from '@/components/canva/CanvaAttachments';
 import ZoomMeetings from '@/components/zoom/ZoomMeetings';
 import BrevoContacts from '@/components/brevo/BrevoContacts';
 import { useIntegrations, INTEGRATION_CONFIG } from '@/hooks/useIntegrations';
+import GoogleCalendarPicker from '@/components/GoogleCalendarPicker';
 // Format date for display
 function formatDateDisplay(isoStr: string): string {
   const d = new Date(isoStr);

@@ -693,6 +693,7 @@ async function syncPendingTasks(account: any, userId: string): Promise<number> {
 
   let query = supabase.from("tasks").select("*")
     .is("google_event_id", null)
+    .neq("status", "done")
     .in("id", assignedTaskIds);
 
   if (!prefs.sync_tasks_without_date) {

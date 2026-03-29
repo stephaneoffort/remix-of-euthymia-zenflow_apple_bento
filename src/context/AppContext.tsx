@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
 import { enqueue } from '@/lib/offlineQueue';
+import { useTaskSync } from '@/hooks/useTaskSync';
 
 export interface AdvancedFilters {
   statuses: string[];

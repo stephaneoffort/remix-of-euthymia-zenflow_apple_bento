@@ -408,7 +408,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       // Sync to ZENFLOW on meaningful changes
       if (result && typeof result === 'object' && 'id' in result) {
-        const syncableFields = ['title', 'status', 'priority', 'dueDate', 'description'];
+        const syncableFields = ['title', 'status', 'priority', 'dueDate', 'description', 'targetCalendarId'];
         const needsSync = (result as any).syncFields?.some((f: string) => syncableFields.includes(f));
         if (needsSync) {
           const task = tasks.find(t => t.id === (result as any).id);

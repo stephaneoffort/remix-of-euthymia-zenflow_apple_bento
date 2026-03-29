@@ -163,7 +163,7 @@ export default function IntegrationsSettings() {
                   enabled ? 'border-primary/30 bg-primary/5' : 'border-border bg-muted/20'
                 }`}
               >
-                <span className="text-2xl shrink-0">{config.emoji}</span>
+                <img src={config.icon} alt={config.label} className="w-7 h-7 shrink-0 rounded" loading="lazy" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-foreground">{config.label}</p>
                   {!enabled && (

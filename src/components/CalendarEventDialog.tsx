@@ -49,6 +49,7 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
   const [creatingZoom, setCreatingZoom] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [targetCalendarId, setTargetCalendarId] = useState<string | null>(null);
   const zoom = useZoom();
 
   useEffect(() => {

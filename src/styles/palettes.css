@@ -119,11 +119,11 @@
   --sidebar-accent: 260 10% 10%;
   --sidebar-accent-foreground: 40 14% 90%;
   --sidebar-ring: 42 58% 50%;
-  --bento-bg: hsl(40,18%,98%);
-  --bento-bg-hover: hsl(40,16%,95%);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(201,168,76,0.04);
   --bento-border: rgba(0,0,0,0.06);
   --bento-border-h: rgba(0,0,0,0.12);
-  --bento-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 0 0 0.5px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.03);
+  --bento-shadow: 0 8px 32px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
 }
 
 /* ─── ELEVATED NEUTRALS — Sable & Pierre ─── */

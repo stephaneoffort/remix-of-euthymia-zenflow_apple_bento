@@ -1175,7 +1175,7 @@ export default function CalendarView() {
       <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <div className="grid grid-cols-7 border border-border rounded-lg overflow-hidden flex-1">
           {DAYS_FR.map((d, i) => (
-            <div key={i} className="py-2 text-center text-xs font-semibold text-foreground/70 bg-muted/40 border-b border-border">{d}</div>
+            <div key={i} className="py-2 text-center text-xs font-semibold text-foreground bg-muted/60 border-b border-border">{d}</div>
           ))}
           {calendarDays.map((day, i) => {
             const dateStr = toDateStr(day.date);

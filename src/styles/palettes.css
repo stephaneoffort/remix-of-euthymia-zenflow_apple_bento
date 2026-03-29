@@ -3181,25 +3181,16 @@ html body::after {
   border-right: 1px solid rgba(255,255,255,0.06) !important;
 }
 
-/* ─── Transparent bg-background for all non-LG palettes (light/mixed) ─── */
-[data-palette="clubroom"].light .bg-background,
-[data-palette="clubroom"].mixed .bg-background,
-[data-palette="neutrals"].light .bg-background,
-[data-palette="neutrals"].mixed .bg-background,
-[data-palette="sapphire"].light .bg-background,
-[data-palette="sapphire"].mixed .bg-background,
-[data-palette="cinematic"].light .bg-background,
-[data-palette="cinematic"].mixed .bg-background,
-[data-palette="teal"].light .bg-background,
-[data-palette="teal"].mixed .bg-background,
-[data-palette="bento2026"].light .bg-background,
-[data-palette="bento2026"].mixed .bg-background,
-[data-palette="bentoOcean"].light .bg-background,
-[data-palette="bentoOcean"].mixed .bg-background,
-[data-palette="bentoRose"].light .bg-background,
-[data-palette="bentoRose"].mixed .bg-background,
-[data-palette="bentoAmber"].light .bg-background,
-[data-palette="bentoAmber"].mixed .bg-background {
+/* ─── Transparent bg-background for all non-LG palettes (ALL modes) ─── */
+[data-palette="clubroom"] .bg-background,
+[data-palette="neutrals"] .bg-background,
+[data-palette="sapphire"] .bg-background,
+[data-palette="cinematic"] .bg-background,
+[data-palette="teal"] .bg-background,
+[data-palette="bento2026"] .bg-background,
+[data-palette="bentoOcean"] .bg-background,
+[data-palette="bentoRose"] .bg-background,
+[data-palette="bentoAmber"] .bg-background {
   background: transparent !important;
 }
 

@@ -275,11 +275,11 @@
   --sidebar-accent: 220 28% 10%;
   --sidebar-accent-foreground: 210 16% 92%;
   --sidebar-ring: 173 78% 30%;
-  --bento-bg: #0c1018;
-  --bento-bg-hover: #111620;
-  --bento-border: rgba(45,212,191,0.06);
-  --bento-border-h: rgba(45,212,191,0.14);
-  --bento-shadow: 0 1px 0 rgba(45,212,191,0.02) inset, 0 0 0 0.5px rgba(45,212,191,0.04), 0 4px 24px rgba(0,0,0,0.5);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(45,212,191,0.06);
+  --bento-border: rgba(45,212,191,0.08);
+  --bento-border-h: rgba(45,212,191,0.16);
+  --bento-shadow: 0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(45,212,191,0.06);
 }
 [data-palette="sapphire"].light {
   --background: 214 28% 97%;

@@ -544,6 +544,9 @@ export default function DashboardView() {
 
       {/* Drive & Canva resources */}
       <DashboardResourcesSection projects={projects} />
+
+      {/* Brevo stats */}
+      <BrevoStats />
     </div>
   );
 }

@@ -605,7 +605,8 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { account_id, direction, event_id, action } = await req.json();
+    const body = await req.json();
+    const { account_id, direction, event_id, action, task_id } = body;
     if (!account_id || !direction) {
       return new Response(
         JSON.stringify({ error: "account_id and direction are required" }),

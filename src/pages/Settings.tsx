@@ -111,7 +111,7 @@ export default function Settings() {
           </TabsContent>
 
           <TabsContent value="integrations">
-            <IntegrationsPanel />
+            <IntegrationsSettings />
           </TabsContent>
 
           <TabsContent value="data">

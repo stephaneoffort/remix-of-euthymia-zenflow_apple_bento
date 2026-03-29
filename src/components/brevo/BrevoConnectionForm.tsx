@@ -85,4 +85,6 @@ const BrevoConnectionForm = React.forwardRef<HTMLFormElement, Props>(function Br
       </Button>
     </form>
   );
-}
+});
+
+export default BrevoConnectionForm;

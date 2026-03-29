@@ -22,7 +22,10 @@ interface DriveAttachmentsProps {
 }
 
 export default function DriveAttachments({ entityType, entityId, compact }: DriveAttachmentsProps) {
+  const { isActive } = useIntegrations();
   const drive = useGoogleDrive();
+
+  if (!isActive('google_drive')) return null;
   const [attachments, setAttachments] = useState<DriveAttachment[]>([]);
   const [loading, setLoading] = useState(true);
   const [pickerOpen, setPickerOpen] = useState(false);

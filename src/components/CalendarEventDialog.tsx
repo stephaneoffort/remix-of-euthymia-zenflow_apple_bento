@@ -11,6 +11,7 @@ import CanvaAttachments from '@/components/canva/CanvaAttachments';
 import ZoomMeetings from '@/components/zoom/ZoomMeetings';
 import type { CalendarEvent } from '@/hooks/useCalendarSync';
 import { toast } from 'sonner';
+import { useIntegrations } from '@/hooks/useIntegrations';
 
 interface Props {
   open: boolean;

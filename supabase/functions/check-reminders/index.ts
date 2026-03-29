@@ -39,8 +39,7 @@ function b64urlToUint8Array(str: string): Uint8Array {
     const c = b64[i + 2] === '=' ? 0 : lookup.indexOf(b64[i + 2]);
     const d = b64[i + 3] === '=' ? 0 : lookup.indexOf(b64[i + 3]);
     if (a < 0 || b < 0) {
-      console.error('Invalid base64 char at', i, 'chars:', JSON.stringify(b64.substring(i, i + 4)), 'original:', JSON.stringify(cleaned.substring(0, 10)));
-      throw new Error('Invalid base64');
+      throw new Error('Invalid base64 character in VAPID key');
     }
     bytes.push((a << 2) | (b >> 4));
     if (b64[i + 2] !== '=') bytes.push(((b & 15) << 4) | (c >> 2));
@@ -223,7 +222,7 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const vapidPrivateKey = Deno.env.get("VAPID_PRIVATE_KEY")!;
-    const vapidPublicKey = "BH60WPWbXxd73SIbLKmFX7MsuDj4p-liploW-VZwNJhu_NtUo78K22FtGxmTzcM-bgjsrKG8_1xfU9aVDGozQF4";
+    const vapidPublicKey = "BFl-X7dNVfMkGjlUJCes-O4IbVfdJrxkNJ91375nwCufXggVCNYMOIcw2_rRNEP1Bu3ZYjSz4PlK8cKIr_tsJ4Y";
 
     const supabase = createClient(supabaseUrl, serviceKey);
 

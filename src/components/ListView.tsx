@@ -132,6 +132,7 @@ export default function ListView() {
                   <StatusBadge status={task.status} />
                   <PriorityBadge priority={task.priority} />
                   <SubtaskProgress total={subtasks.length} done={doneSubtasks.length} />
+                  <ZenflowBadge googleEventId={task.googleEventId} />
                 </div>
                 <div className="flex items-center justify-between mt-1.5">
                   {task.dueDate ? (

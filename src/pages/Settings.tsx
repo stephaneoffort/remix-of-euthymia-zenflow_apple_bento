@@ -720,13 +720,78 @@ function ThemePalettePanel() {
 }
 
 function IntegrationsPanel() {
-  const { useGoogleDrive } = require('@/hooks/useGoogleDrive');
-  return <IntegrationsPanelInner />;
-}
+  const [isConnected, setIsConnected] = useState(false);
+  const [connectionEmail, setConnectionEmail] = useState<string | null>(null);
 
-function IntegrationsPanelInner() {
-  const drive = (await import('@/hooks/useGoogleDrive')).useGoogleDrive();
-  return null;
+  useEffect(() => {
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from('drive_connections' as any)
+        .select('id, email')
+        .eq('user_id', user.id)
+        .limit(1);
+      const connections = data as any[] | null;
+      setIsConnected((connections?.length ?? 0) > 0);
+      setConnectionEmail(connections?.[0]?.email ?? null);
+    })();
+
+    if (window.location.search.includes('drive_connected=true')) {
+      setIsConnected(true);
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
+
+  const handleConnect = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    window.location.href = `https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/google-drive-oauth/authorize?user_id=${user?.id || ''}`;
+  };
+
+  const handleDisconnect = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    await supabase.from('drive_connections' as any).delete().eq('user_id', user.id);
+    setIsConnected(false);
+    setConnectionEmail(null);
+    toast.success('Google Drive déconnecté');
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-foreground">Intégrations</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex items-center justify-between p-4 rounded-lg border border-border bg-muted/20">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">📁</span>
+            <div>
+              <p className="text-sm font-semibold text-foreground">Google Drive</p>
+              <p className="text-xs text-muted-foreground">
+                {isConnected
+                  ? `Connecté${connectionEmail ? ` · ${connectionEmail}` : ''}`
+                  : 'Joindre des fichiers Drive à vos tâches et événements'}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${isConnected ? 'bg-green-500/10 text-green-600' : 'bg-muted text-muted-foreground'}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-green-500' : 'bg-muted-foreground'}`} />
+              {isConnected ? 'Connecté' : 'Inactif'}
+            </span>
+            {isConnected ? (
+              <Button variant="outline" size="sm" onClick={handleDisconnect}>Déconnecter</Button>
+            ) : (
+              <Button size="sm" onClick={handleConnect} className="gap-1.5">
+                Connecter
+              </Button>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
 }
 
 function PushDebugPanel() {

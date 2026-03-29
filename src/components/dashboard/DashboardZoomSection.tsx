@@ -161,16 +161,31 @@ export default function DashboardZoomSection() {
                 {meetings.length}
               </span>
             )}
-            <Button
-              size="sm"
-              variant="ghost"
-              className="ml-auto h-7 px-2 text-xs gap-1 text-primary hover:text-primary"
-              onClick={() => setDialogOpen(true)}
-              disabled={!zoom.isConnected}
-            >
-              <Plus className="w-3.5 h-3.5" />
-              Nouvelle
-            </Button>
+            <div className="ml-auto flex items-center gap-1">
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-7 w-7 p-0"
+                onClick={toggleSound}
+                title={soundEnabled ? "Désactiver le son d'alerte" : "Activer le son d'alerte"}
+              >
+                {soundEnabled ? (
+                  <Volume2 className="w-3.5 h-3.5 text-primary" />
+                ) : (
+                  <VolumeX className="w-3.5 h-3.5 text-muted-foreground" />
+                )}
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-7 px-2 text-xs gap-1 text-primary hover:text-primary"
+                onClick={() => setDialogOpen(true)}
+                disabled={!zoom.isConnected}
+              >
+                <Plus className="w-3.5 h-3.5" />
+                Nouvelle
+              </Button>
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent>

@@ -719,6 +719,16 @@ function ThemePalettePanel() {
   );
 }
 
+function IntegrationsPanel() {
+  const { useGoogleDrive } = require('@/hooks/useGoogleDrive');
+  return <IntegrationsPanelInner />;
+}
+
+function IntegrationsPanelInner() {
+  const drive = (await import('@/hooks/useGoogleDrive')).useGoogleDrive();
+  return null;
+}
+
 function PushDebugPanel() {
   const { teamMemberId } = useAuth();
   const { isSupported, isSubscribed, loading, subscribe, unsubscribe } = usePushNotifications(teamMemberId);

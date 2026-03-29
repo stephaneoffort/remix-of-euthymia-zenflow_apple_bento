@@ -57,22 +57,29 @@ async function googlePull(account: any): Promise<number> {
   const data = await res.json();
   if (!res.ok) throw new Error(`Google pull failed: ${JSON.stringify(data)}`);
 
-  const events = (data.items || []).map((e: any) => ({
-    account_id: account.id,
-    user_id: account.user_id,
-    external_id: e.id,
-    provider: "google",
-    title: e.summary || "(Sans titre)",
-    description: e.description || null,
-    location: e.location || null,
-    start_time: e.start?.dateTime || e.start?.date,
-    end_time: e.end?.dateTime || e.end?.date,
-    is_all_day: !e.start?.dateTime,
-    status: e.status || "confirmed",
-    sync_status: "synced",
-    last_synced_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  }));
+  const events = (data.items || []).map((e: any) => {
+    const meetLink = e.conferenceData?.entryPoints
+      ?.find((ep: any) => ep.entryPointType === "video")?.uri ?? null;
+    return {
+      account_id: account.id,
+      user_id: account.user_id,
+      external_id: e.id,
+      provider: "google",
+      title: e.summary || "(Sans titre)",
+      description: e.description || null,
+      location: e.location || null,
+      start_time: e.start?.dateTime || e.start?.date,
+      end_time: e.end?.dateTime || e.end?.date,
+      is_all_day: !e.start?.dateTime,
+      status: e.status || "confirmed",
+      sync_status: "synced",
+      meet_link: meetLink,
+      conference_id: e.conferenceData?.conferenceId ?? null,
+      has_meet: meetLink !== null,
+      last_synced_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+  });
 
   if (events.length > 0) {
     const { error } = await supabase

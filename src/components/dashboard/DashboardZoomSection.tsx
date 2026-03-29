@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useZoom, ZoomMeeting } from "@/hooks/useZoom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ExternalLink, Copy, Clock, Plus, Video, Loader2, LinkIcon, Settings, AlertCircle } from "lucide-react";
+import { ChevronDown, ExternalLink, Copy, Clock, Plus, Video, Loader2, LinkIcon, Settings, AlertCircle, Volume2, VolumeX } from "lucide-react";
 import { differenceInMinutes } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { format, parseISO, isFuture } from "date-fns";
@@ -21,6 +21,30 @@ import { Label } from "@/components/ui/label";
 
 const MAX_VISIBLE = 5;
 
+/** Play a short notification chime using Web Audio API */
+function playZoomAlertSound() {
+  try {
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const notes = [523.25, 659.25, 783.99]; // C5, E5, G5 – ascending triad
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.18, ctx.currentTime + i * 0.15);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.15 + 0.4);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime + i * 0.15);
+      osc.stop(ctx.currentTime + i * 0.15 + 0.4);
+    });
+    // Close context after sound completes
+    setTimeout(() => ctx.close(), 1500);
+  } catch {
+    // Web Audio not supported – silent fallback
+  }
+}
+
 export default function DashboardZoomSection() {
   const { isActive, integrations } = useIntegrations();
   const navigate = useNavigate();
@@ -33,8 +57,51 @@ export default function DashboardZoomSection() {
   const [topic, setTopic] = useState("Réunion rapide");
   const [startTime, setStartTime] = useState("");
   const [duration, setDuration] = useState(30);
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    try { return localStorage.getItem("zoom_alert_sound") !== "off"; } catch { return true; }
+  });
+  const alertedMeetingsRef = useRef<Set<string>>(new Set());
   const zoomEnabled = integrations.zoom?.is_enabled ?? false;
   const zoomActive = isActive('zoom');
+
+  const toggleSound = useCallback(() => {
+    setSoundEnabled(prev => {
+      const next = !prev;
+      try { localStorage.setItem("zoom_alert_sound", next ? "on" : "off"); } catch {}
+      return next;
+    });
+  }, []);
+
+  // Check for imminent meetings and play alert sound
+  useEffect(() => {
+    if (!soundEnabled || meetings.length === 0) return;
+    const interval = setInterval(() => {
+      const now = new Date();
+      for (const m of meetings) {
+        if (!m.start_time || alertedMeetingsRef.current.has(m.id)) continue;
+        const minsLeft = differenceInMinutes(parseISO(m.start_time), now);
+        if (minsLeft <= 15 && minsLeft >= 0) {
+          alertedMeetingsRef.current.add(m.id);
+          playZoomAlertSound();
+          toast.info(`🎥 "${m.topic}" commence dans ${minsLeft} min`, { duration: 8000 });
+          break; // one alert at a time
+        }
+      }
+    }, 30_000); // check every 30s
+    // Also check immediately
+    const now = new Date();
+    for (const m of meetings) {
+      if (!m.start_time || alertedMeetingsRef.current.has(m.id)) continue;
+      const minsLeft = differenceInMinutes(parseISO(m.start_time), now);
+      if (minsLeft <= 15 && minsLeft >= 0) {
+        alertedMeetingsRef.current.add(m.id);
+        playZoomAlertSound();
+        toast.info(`🎥 "${m.topic}" commence dans ${minsLeft} min`, { duration: 8000 });
+        break;
+      }
+    }
+    return () => clearInterval(interval);
+  }, [meetings, soundEnabled]);
 
   const fetchMeetings = async () => {
     if (!zoomActive || !zoom.isConnected) { setLoading(false); return; }

@@ -57,7 +57,9 @@ Deno.serve(async (req: Request) => {
     const { action, query, file_id, entity_type, entity_id, attachment_id, user_id } = await req.json();
     if (!user_id) throw new Error("user_id is required");
 
-    const token = await getValidToken(user_id);
+    // DB-only actions don't need a Google token
+    const needsToken = !["list_attachments", "detach"].includes(action);
+    const token = needsToken ? await getValidToken(user_id) : "";
 
     // ── Search files ──
     if (action === "search") {

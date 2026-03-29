@@ -407,7 +407,7 @@ Deno.serve(async (req) => {
     if (direction === "test") {
       let connected = false;
       if (provider === "google") connected = await googleTest(account);
-      else if (provider === "outlook") connected = await outlookTest(account);
+      else if (isCalDav) connected = await caldavTest(account);
       else if (isCalDav) connected = await caldavTest(account);
       else if (provider === "ics") {
         try { const r = await fetch(account.ics_url, { method: "HEAD" }); connected = r.ok; }

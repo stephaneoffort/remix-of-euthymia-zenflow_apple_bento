@@ -545,10 +545,8 @@ export default function DashboardView() {
         <DashboardZoomSection />
         <DashboardMeetSection />
         <BrevoStats />
+        <DashboardResourcesSection projects={projects} />
       </section>
-
-      {/* Drive & Canva resources */}
-      <DashboardResourcesSection projects={projects} />
     </div>
   );
 }

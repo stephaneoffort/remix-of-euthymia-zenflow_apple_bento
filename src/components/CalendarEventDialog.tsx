@@ -87,15 +87,33 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
     try {
       const start = isAllDay ? `${startDate}T00:00:00` : `${startDate}T${startTime}:00`;
       const end = isAllDay ? `${endDate || startDate}T23:59:59` : `${endDate || startDate}T${endTime}:00`;
+      const startISO = new Date(start).toISOString();
       await onSave({
         title: title.trim(),
         description: description.trim(),
-        start_time: new Date(start).toISOString(),
+        start_time: startISO,
         end_time: new Date(end).toISOString(),
         is_all_day: isAllDay,
         location: location.trim(),
         has_meet: hasMeet,
       });
+
+      if (hasZoom && zoom.isConnected) {
+        try {
+          const durationMin = Math.round((new Date(end).getTime() - new Date(start).getTime()) / 60000);
+          await zoom.createMeeting(
+            title.trim(),
+            'event',
+            '',
+            isAllDay ? undefined : startISO,
+            durationMin > 0 ? durationMin : 60
+          );
+          toast.success('Réunion Zoom créée ✅');
+        } catch {
+          toast.error('Événement créé, mais erreur Zoom');
+        }
+      }
+
       onClose();
     } finally {
       setSaving(false);

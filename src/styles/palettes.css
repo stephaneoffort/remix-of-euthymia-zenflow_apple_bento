@@ -624,11 +624,11 @@
   --sidebar-accent: 140 12% 12%;
   --sidebar-accent-foreground: 37 38% 90%;
   --sidebar-ring: 138 33% 52%;
-  --bento-bg: #141e16;
-  --bento-bg-hover: #1a2a1d;
-  --bento-border: rgba(168,213,181,0.07);
-  --bento-border-h: rgba(168,213,181,0.16);
-  --bento-shadow: 0 1px 0 rgba(168,213,181,0.02) inset, 0 0 0 0.5px rgba(168,213,181,0.04), 0 4px 24px rgba(0,0,0,0.5);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(168,213,181,0.06);
+  --bento-border: rgba(168,213,181,0.1);
+  --bento-border-h: rgba(168,213,181,0.18);
+  --bento-shadow: 0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(168,213,181,0.06);
 }
 
 /* Light mode */

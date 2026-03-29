@@ -665,11 +665,11 @@
   --sidebar-accent: 36 22% 87%;
   --sidebar-accent-foreground: 0 0% 10%;
   --sidebar-ring: 125 13% 24%;
-  --bento-bg: hsl(36,28%,95%);
-  --bento-bg-hover: hsl(36,24%,92%);
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(45,58,46,0.04);
   --bento-border: rgba(45,58,46,0.08);
   --bento-border-h: rgba(45,58,46,0.15);
-  --bento-shadow: 0 2px 20px rgba(45,58,46,0.08);
+  --bento-shadow: 0 8px 32px rgba(45,58,46,0.08), inset 0 1px 0 rgba(255,255,255,0.6);
 }
 
 /* Mixed mode (light content + dark sidebar) */

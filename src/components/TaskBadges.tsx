@@ -101,3 +101,13 @@ export function SubtaskProgress({ total, done }: { total: number; done: number }
     </span>
   );
 }
+
+export function ZenflowBadge({ googleEventId }: { googleEventId?: string | null }) {
+  if (!googleEventId) return null;
+  return (
+    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-primary/10 text-primary" title="Synchronisé avec ZENFLOW">
+      <CalendarSync className="w-3 h-3" />
+      ZENFLOW
+    </span>
+  );
+}

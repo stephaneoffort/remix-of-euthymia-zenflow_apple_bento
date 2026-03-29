@@ -393,15 +393,17 @@ export default function CalendarView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [calSync.accounts.length]);
 
-  // Handle ?connected=true after Google OAuth callback
+  // Handle ?connected=true|outlook after OAuth callback
   useEffect(() => {
-    if (searchParams.get('connected') === 'true') {
+    const connectedParam = searchParams.get('connected');
+    if (connectedParam) {
+      const providerLabel = connectedParam === 'outlook' ? 'Outlook' : 'Google Calendar';
       (async () => {
         try {
           await calSync.fetchAccounts();
           await calSync.fetchEvents();
 
-          // Sync all accounts after Google OAuth
+          // Sync all accounts after OAuth
           const { data: activeAccounts } = await supabase
             .from('calendar_accounts')
             .select('*')
@@ -417,11 +419,11 @@ export default function CalendarView() {
             }
             await calSync.fetchEvents();
           }
-          toast.success('Google Calendar synchronisé ✅');
+          toast.success(`${providerLabel} synchronisé ✅`);
         } catch (err: any) {
           toast.error('Erreur de synchronisation : ' + (err.message || 'Inconnue'));
         }
-        // Remove ?connected=true from URL
+        // Remove ?connected from URL
         const newParams = new URLSearchParams(searchParams);
         newParams.delete('connected');
         setSearchParams(newParams, { replace: true });

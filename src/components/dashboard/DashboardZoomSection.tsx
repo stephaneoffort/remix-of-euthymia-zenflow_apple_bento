@@ -67,8 +67,8 @@ export default function DashboardZoomSection() {
             {visibleMeetings.map((m) => (
               <Card key={m.id} className="bg-card border-border">
                 <CardContent className="p-3 flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-blue-500/10 shrink-0">
-                    <Video className="w-4 h-4 text-blue-500" />
+                  <div className="p-2 rounded-lg bg-muted/50 shrink-0">
+                    <img src={INTEGRATION_CONFIG.zoom.icon} alt="Zoom" className="w-4 h-4" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-foreground truncate">{m.topic}</p>

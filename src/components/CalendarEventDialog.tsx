@@ -74,6 +74,7 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
         setIsAllDay(false);
         setHasMeet(false);
         setHasZoom(false);
+        setTargetCalendarId(null);
         setStartDate(d);
         setStartTime('09:00');
         setEndDate(d);

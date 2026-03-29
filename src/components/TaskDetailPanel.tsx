@@ -22,7 +22,7 @@ import DriveAttachments from '@/components/drive/DriveAttachments';
 import CanvaAttachments from '@/components/canva/CanvaAttachments';
 import ZoomMeetings from '@/components/zoom/ZoomMeetings';
 import BrevoContacts from '@/components/brevo/BrevoContacts';
-import { useIntegrations } from '@/hooks/useIntegrations';
+import { useIntegrations, INTEGRATION_CONFIG } from '@/hooks/useIntegrations';
 // Format date for display
 function formatDateDisplay(isoStr: string): string {
   const d = new Date(isoStr);
@@ -670,9 +670,13 @@ export default function TaskDetailPanel() {
             {!isActive('google_drive') && !isActive('canva') && !isActive('zoom') && !isActive('brevo') && (
               <a
                 href="/settings"
-                className="block w-full py-3 px-4 border border-dashed border-border rounded-lg text-xs text-muted-foreground hover:border-primary/50 hover:text-primary transition-colors text-center"
+                className="flex items-center justify-center gap-2 w-full py-3 px-4 border border-dashed border-border rounded-lg text-xs text-muted-foreground hover:border-primary/50 hover:text-primary transition-colors"
               >
-                📁 🎨 📹 📨 — Connecte des outils depuis les Settings pour enrichir tes tâches →
+                <img src={INTEGRATION_CONFIG.google_drive.icon} alt="" className="w-4 h-4" />
+                <img src={INTEGRATION_CONFIG.canva.icon} alt="" className="w-4 h-4" />
+                <img src={INTEGRATION_CONFIG.zoom.icon} alt="" className="w-4 h-4" />
+                <img src={INTEGRATION_CONFIG.brevo.icon} alt="" className="w-4 h-4" />
+                <span>— Connecte des outils depuis les Settings →</span>
               </a>
             )}
 

@@ -10,7 +10,7 @@ import { useZoom, type ZoomMeeting } from '@/hooks/useZoom';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { useIntegrations } from '@/hooks/useIntegrations';
+import { useIntegrations, INTEGRATION_CONFIG } from '@/hooks/useIntegrations';
 
 interface Props {
   entityType: 'task' | 'event' | 'project';
@@ -61,9 +61,11 @@ export default function ZoomMeetings({ entityType, entityId, compact, defaultTit
   if (!zoom.isConnected && meetings.length === 0 && !loading) {
     return (
       <div className="space-y-2">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">📹 Zoom</p>
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+          <img src={INTEGRATION_CONFIG.zoom.icon} alt="Zoom" className="w-4 h-4" /> Zoom
+        </p>
         <Button variant="outline" size="sm" onClick={zoom.connect} className="gap-1.5 text-xs">
-          <Video className="w-3.5 h-3.5" /> Connecter Zoom
+          <img src={INTEGRATION_CONFIG.zoom.icon} alt="" className="w-3.5 h-3.5" /> Connecter Zoom
         </Button>
       </div>
     );
@@ -72,7 +74,9 @@ export default function ZoomMeetings({ entityType, entityId, compact, defaultTit
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">📹 Zoom</p>
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+          <img src={INTEGRATION_CONFIG.zoom.icon} alt="Zoom" className="w-4 h-4" /> Zoom
+        </p>
         {zoom.isConnected && (
           <Button variant="ghost" size="sm" onClick={() => setCreatorOpen(true)} className="h-6 px-2 text-xs gap-1">
             <Plus className="w-3 h-3" /> Réunion

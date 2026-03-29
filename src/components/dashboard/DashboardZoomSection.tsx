@@ -36,7 +36,6 @@ export default function DashboardZoomSection() {
   }, [zoom.isConnected]);
 
   if (!isActive('zoom')) return null;
-  if (!zoom.isConnected && !loading) return null;
 
   const visible = expanded ? meetings : meetings.slice(0, MAX_VISIBLE);
   const remaining = meetings.length - MAX_VISIBLE;

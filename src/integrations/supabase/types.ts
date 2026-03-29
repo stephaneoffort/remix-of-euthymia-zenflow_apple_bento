@@ -61,6 +61,129 @@ export type Database = {
           },
         ]
       }
+      brevo_campaigns: {
+        Row: {
+          campaign_id: number
+          click_rate: number | null
+          created_at: string | null
+          entity_id: string
+          entity_type: string
+          id: string
+          name: string
+          open_rate: number | null
+          scheduled_at: string | null
+          sent_count: number | null
+          status: string | null
+          subject: string | null
+          user_id: string
+        }
+        Insert: {
+          campaign_id: number
+          click_rate?: number | null
+          created_at?: string | null
+          entity_id: string
+          entity_type: string
+          id?: string
+          name: string
+          open_rate?: number | null
+          scheduled_at?: string | null
+          sent_count?: number | null
+          status?: string | null
+          subject?: string | null
+          user_id: string
+        }
+        Update: {
+          campaign_id?: number
+          click_rate?: number | null
+          created_at?: string | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          name?: string
+          open_rate?: number | null
+          scheduled_at?: string | null
+          sent_count?: number | null
+          status?: string | null
+          subject?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      brevo_connections: {
+        Row: {
+          account_email: string | null
+          account_name: string | null
+          api_key: string
+          created_at: string | null
+          id: string
+          plan: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          account_email?: string | null
+          account_name?: string | null
+          api_key: string
+          created_at?: string | null
+          id?: string
+          plan?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          account_email?: string | null
+          account_name?: string | null
+          api_key?: string
+          created_at?: string | null
+          id?: string
+          plan?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      brevo_contacts: {
+        Row: {
+          attributes: Json | null
+          brevo_contact_id: number | null
+          created_at: string | null
+          email: string
+          entity_id: string
+          entity_type: string
+          first_name: string | null
+          id: string
+          last_name: string | null
+          list_ids: number[] | null
+          user_id: string
+        }
+        Insert: {
+          attributes?: Json | null
+          brevo_contact_id?: number | null
+          created_at?: string | null
+          email: string
+          entity_id: string
+          entity_type: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          list_ids?: number[] | null
+          user_id: string
+        }
+        Update: {
+          attributes?: Json | null
+          brevo_contact_id?: number | null
+          created_at?: string | null
+          email?: string
+          entity_id?: string
+          entity_type?: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          list_ids?: number[] | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       calendar_accounts: {
         Row: {
           access_token: string | null

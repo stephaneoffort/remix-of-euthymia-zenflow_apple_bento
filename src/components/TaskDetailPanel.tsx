@@ -21,6 +21,7 @@ import TaskReminders from '@/components/TaskReminders';
 import DriveAttachments from '@/components/drive/DriveAttachments';
 import CanvaAttachments from '@/components/canva/CanvaAttachments';
 import ZoomMeetings from '@/components/zoom/ZoomMeetings';
+import BrevoContacts from '@/components/brevo/BrevoContacts';
 import { useIntegrations } from '@/hooks/useIntegrations';
 // Format date for display
 function formatDateDisplay(isoStr: string): string {
@@ -664,13 +665,14 @@ export default function TaskDetailPanel() {
             <DriveAttachments entityType="task" entityId={task.id} compact />
             <CanvaAttachments entityType="task" entityId={task.id} compact defaultTitle={task.title} />
             <ZoomMeetings entityType="task" entityId={task.id} compact defaultTitle={task.title} />
+            <BrevoContacts entityType="task" entityId={task.id} compact />
 
-            {!isActive('google_drive') && !isActive('canva') && !isActive('zoom') && (
+            {!isActive('google_drive') && !isActive('canva') && !isActive('zoom') && !isActive('brevo') && (
               <a
                 href="/settings"
                 className="block w-full py-3 px-4 border border-dashed border-border rounded-lg text-xs text-muted-foreground hover:border-primary/50 hover:text-primary transition-colors text-center"
               >
-                📁 🎨 📹 — Connecte des outils depuis les Settings pour enrichir tes tâches →
+                📁 🎨 📹 📨 — Connecte des outils depuis les Settings pour enrichir tes tâches →
               </a>
             )}
 

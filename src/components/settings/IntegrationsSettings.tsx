@@ -7,6 +7,7 @@ import { useIntegrations, INTEGRATION_CONFIG, type IntegrationKey } from '@/hook
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
+import BrevoConnectionForm from '@/components/brevo/BrevoConnectionForm';
 
 const CONNECT_URLS: Partial<Record<IntegrationKey, string>> = {
   google_drive: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/google-drive-oauth/authorize',
@@ -24,6 +25,7 @@ export default function IntegrationsSettings() {
   const { integrations, loading, toggleEnabled, updateConnected, disconnect, refetch } = useIntegrations();
   const [connInfo, setConnInfo] = useState<Record<string, { email?: string; display_name?: string }>>({});
   const [confirmDialog, setConfirmDialog] = useState<{ type: 'connect' | 'disconnect'; key: IntegrationKey } | null>(null);
+  const [brevoFormOpen, setBrevoFormOpen] = useState(false);
 
   // Fetch connection info for display
   useEffect(() => {
@@ -44,6 +46,10 @@ export default function IntegrationsSettings() {
       const { data: zoomData } = await (supabase as any)
         .from('zoom_connections').select('email, display_name').eq('user_id', user.id).limit(1);
       if (zoomData?.[0]) info.zoom = { email: zoomData[0].email, display_name: zoomData[0].display_name };
+
+      const { data: brevoData } = await (supabase as any)
+        .from('brevo_connections').select('account_email, account_name, plan').eq('user_id', user.id).limit(1);
+      if (brevoData?.[0]) info.brevo = { email: brevoData[0].account_email, display_name: `${brevoData[0].account_name ?? ''} (${brevoData[0].plan ?? 'free'})` };
 
       setConnInfo(info);
     })();
@@ -73,6 +79,11 @@ export default function IntegrationsSettings() {
       return;
     }
 
+    if (key === 'brevo') {
+      setBrevoFormOpen(true);
+      return;
+    }
+
     const url = CONNECT_URLS[key];
     if (!url) return;
 
@@ -80,7 +91,6 @@ export default function IntegrationsSettings() {
     const { data: { session } } = await supabase.auth.getSession();
     if (!user || !session) return;
 
-    // For zoom, use token param; for others, use user_id
     if (key === 'zoom') {
       window.location.href = `${url}?token=${session.access_token}`;
     } else {
@@ -115,7 +125,8 @@ export default function IntegrationsSettings() {
     }
   };
 
-  const allKeys: IntegrationKey[] = ['google_drive', 'zoom', 'canva', 'google_meet', 'gmail'];
+  const allKeys: IntegrationKey[] = ['google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo'];
+  const isGmailNotReady = (key: IntegrationKey) => key === 'gmail';
 
   if (loading) {
     return (
@@ -260,6 +271,24 @@ export default function IntegrationsSettings() {
               Désactiver
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Brevo API Key Dialog */}
+      <Dialog open={brevoFormOpen} onOpenChange={setBrevoFormOpen}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <span className="text-xl">📨</span> Connecter Brevo
+            </DialogTitle>
+            <DialogDescription>
+              Entre ta clé API Brevo pour activer l'intégration.
+            </DialogDescription>
+          </DialogHeader>
+          <BrevoConnectionForm onConnected={() => {
+            setBrevoFormOpen(false);
+            refetch();
+          }} />
         </DialogContent>
       </Dialog>
     </>

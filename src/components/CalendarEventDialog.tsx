@@ -9,6 +9,7 @@ import { Loader2, Video, Copy, ExternalLink } from 'lucide-react';
 import DriveAttachments from '@/components/drive/DriveAttachments';
 import CanvaAttachments from '@/components/canva/CanvaAttachments';
 import ZoomMeetings from '@/components/zoom/ZoomMeetings';
+import BrevoContacts from '@/components/brevo/BrevoContacts';
 import type { CalendarEvent } from '@/hooks/useCalendarSync';
 import { toast } from 'sonner';
 import { useIntegrations } from '@/hooks/useIntegrations';
@@ -184,6 +185,7 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
               <DriveAttachments entityType="event" entityId={event.id} compact />
               <CanvaAttachments entityType="event" entityId={event.id} compact defaultTitle={event.title} />
               <ZoomMeetings entityType="event" entityId={event.id} compact defaultTitle={event.title} />
+              <BrevoContacts entityType="event" entityId={event.id} compact />
             </>
           )}
           <div className="flex items-center justify-between pt-2">

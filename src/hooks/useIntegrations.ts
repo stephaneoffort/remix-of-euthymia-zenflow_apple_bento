@@ -6,7 +6,8 @@ export type IntegrationKey =
   | 'zoom'
   | 'canva'
   | 'google_meet'
-  | 'gmail';
+  | 'gmail'
+  | 'brevo';
 
 export interface IntegrationStatus {
   key: IntegrationKey;
@@ -17,7 +18,7 @@ export interface IntegrationStatus {
 }
 
 const ALL_INTEGRATIONS: IntegrationKey[] = [
-  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail',
+  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo',
 ];
 
 export const INTEGRATION_CONFIG: Record<IntegrationKey, {
@@ -55,6 +56,12 @@ export const INTEGRATION_CONFIG: Record<IntegrationKey, {
     description: 'Lire et envoyer des emails depuis les tâches',
     emoji: '📧',
     color: '#EA4335',
+  },
+  brevo: {
+    label: 'Brevo',
+    description: 'Newsletters, contacts et campagnes email',
+    emoji: '📨',
+    color: '#0092FF',
   },
 };
 
@@ -170,6 +177,7 @@ export function useIntegrations() {
       google_drive: 'drive_connections',
       zoom: 'zoom_connections',
       canva: 'canva_connections',
+      brevo: 'brevo_connections',
     };
     const table = tableMap[key];
     if (table) {
@@ -184,6 +192,7 @@ export function useIntegrations() {
     if (!s) return false;
     // Google Meet doesn't need a separate connection
     if (key === 'google_meet') return s.is_enabled;
+    // Brevo uses API key, check is_connected
     return s.is_enabled && s.is_connected;
   }, [integrations]);
 

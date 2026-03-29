@@ -672,10 +672,10 @@ export default function TaskDetailPanel() {
                 href="/settings"
                 className="flex items-center justify-center gap-2 w-full py-3 px-4 border border-dashed border-border rounded-lg text-xs text-muted-foreground hover:border-primary/50 hover:text-primary transition-colors"
               >
-                <img src={INTEGRATION_CONFIG.google_drive.icon} alt="" className="w-4 h-4" />
-                <img src={INTEGRATION_CONFIG.canva.icon} alt="" className="w-4 h-4" />
-                <img src={INTEGRATION_CONFIG.zoom.icon} alt="" className="w-4 h-4" />
-                <img src={INTEGRATION_CONFIG.brevo.icon} alt="" className="w-4 h-4" />
+                <img src={INTEGRATION_CONFIG.google_drive.icon} alt="" className="w-5 h-5" />
+                <img src={INTEGRATION_CONFIG.canva.icon} alt="" className="w-5 h-5" />
+                <img src={INTEGRATION_CONFIG.zoom.icon} alt="" className="w-5 h-5" />
+                <img src={INTEGRATION_CONFIG.brevo.icon} alt="" className="w-5 h-5" />
                 <span>— Connecte des outils depuis les Settings →</span>
               </a>
             )}

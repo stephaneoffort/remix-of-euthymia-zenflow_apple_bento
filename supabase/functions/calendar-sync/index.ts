@@ -38,38 +38,6 @@ async function refreshGoogleToken(account: any): Promise<string> {
   return data.access_token;
 }
 
-// ─── TOKEN REFRESH: OUTLOOK ───
-async function refreshOutlookToken(account: any): Promise<string> {
-  const expiryTime = new Date(account.token_expiry).getTime();
-  if (expiryTime > Date.now() + 5 * 60 * 1000) return account.access_token;
-
-  const tenantId = Deno.env.get("OUTLOOK_TENANT_ID") ?? "common";
-  const res = await fetch(
-    `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        client_id: Deno.env.get("OUTLOOK_CLIENT_ID") ?? "",
-        client_secret: Deno.env.get("OUTLOOK_CLIENT_SECRET") ?? "",
-        refresh_token: account.refresh_token,
-        grant_type: "refresh_token",
-        scope: "Calendars.ReadWrite offline_access",
-      }),
-    },
-  );
-  const data = await res.json();
-  if (!res.ok) throw new Error(`Outlook token refresh failed: ${JSON.stringify(data)}`);
-
-  const newExpiry = new Date(Date.now() + data.expires_in * 1000).toISOString();
-  await supabase.from("calendar_accounts")
-    .update({ access_token: data.access_token, token_expiry: newExpiry })
-    .eq("id", account.id);
-  account.access_token = data.access_token;
-  account.token_expiry = newExpiry;
-  return data.access_token;
-}
-
 // ─── GOOGLE ───
 async function googlePull(account: any): Promise<number> {
   const token = await refreshGoogleToken(account);
@@ -188,111 +156,6 @@ async function googleTest(account: any): Promise<boolean> {
   } catch { return false; }
 }
 
-// ─── OUTLOOK ───
-async function outlookPull(account: any): Promise<number> {
-  const token = await refreshOutlookToken(account);
-  const now = new Date();
-  const future = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
-  const params = new URLSearchParams({
-    startDateTime: now.toISOString(),
-    endDateTime: future.toISOString(),
-    $top: "250",
-  });
-  const res = await fetch(
-    `https://graph.microsoft.com/v1.0/me/calendarView?${params}`,
-    { headers: { Authorization: `Bearer ${token}`, Prefer: 'outlook.timezone="Europe/Paris"' } },
-  );
-  const data = await res.json();
-  if (!res.ok) throw new Error(`Outlook pull failed: ${JSON.stringify(data)}`);
-
-  const events = (data.value || []).map((e: any) => ({
-    account_id: account.id,
-    user_id: account.user_id,
-    external_id: e.id,
-    provider: "outlook",
-    title: e.subject || "(Sans titre)",
-    description: e.bodyPreview || null,
-    location: e.location?.displayName || null,
-    start_time: e.start?.dateTime ? e.start.dateTime + "Z" : null,
-    end_time: e.end?.dateTime ? e.end.dateTime + "Z" : null,
-    is_all_day: e.isAllDay || false,
-    status: e.isCancelled ? "cancelled" : "confirmed",
-    sync_status: "synced",
-    last_synced_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  }));
-
-  if (events.length > 0) {
-    const { error } = await supabase
-      .from("calendar_events")
-      .upsert(events, { onConflict: "account_id,external_id" });
-    if (error) throw new Error(`Upsert failed: ${error.message}`);
-  }
-  return events.length;
-}
-
-async function outlookPushCreate(account: any, event: any): Promise<string> {
-  const token = await refreshOutlookToken(account);
-  const res = await fetch("https://graph.microsoft.com/v1.0/me/events", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      subject: event.title,
-      body: { contentType: "text", content: event.description || "" },
-      start: { dateTime: event.start_time, timeZone: "Europe/Paris" },
-      end: { dateTime: event.end_time, timeZone: "Europe/Paris" },
-      location: { displayName: event.location || "" },
-      isAllDay: event.is_all_day ?? false,
-    }),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(`Outlook create failed: ${JSON.stringify(data)}`);
-  await supabase.from("calendar_events")
-    .update({ external_id: data.id, sync_status: "synced", last_synced_at: new Date().toISOString() })
-    .eq("id", event.id);
-  return data.id;
-}
-
-async function outlookPushUpdate(account: any, event: any): Promise<void> {
-  const token = await refreshOutlookToken(account);
-  const res = await fetch(
-    `https://graph.microsoft.com/v1.0/me/events/${event.external_id}`,
-    {
-      method: "PATCH",
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        subject: event.title,
-        body: { contentType: "text", content: event.description || "" },
-        start: { dateTime: event.start_time, timeZone: "Europe/Paris" },
-        end: { dateTime: event.end_time, timeZone: "Europe/Paris" },
-        location: { displayName: event.location || "" },
-        isAllDay: event.is_all_day ?? false,
-      }),
-    },
-  );
-  if (!res.ok) throw new Error(`Outlook update failed: ${await res.text()}`);
-  await supabase.from("calendar_events")
-    .update({ sync_status: "synced", last_synced_at: new Date().toISOString() })
-    .eq("id", event.id);
-}
-
-async function outlookPushDelete(account: any, externalId: string): Promise<void> {
-  const token = await refreshOutlookToken(account);
-  const res = await fetch(
-    `https://graph.microsoft.com/v1.0/me/events/${externalId}`,
-    { method: "DELETE", headers: { Authorization: `Bearer ${token}` } },
-  );
-  if (!res.ok) throw new Error(`Outlook delete failed: ${await res.text()}`);
-}
-
-async function outlookTest(account: any): Promise<boolean> {
-  try {
-    const token = await refreshOutlookToken(account);
-    const res = await fetch("https://graph.microsoft.com/v1.0/me/calendar",
-      { headers: { Authorization: `Bearer ${token}` } });
-    return res.ok;
-  } catch { return false; }
-}
 
 // ─── CALDAV (iCloud, Nextcloud, Proton, Fastmail) ───
 function parseICalEvents(ical: string): any[] {
@@ -544,7 +407,7 @@ Deno.serve(async (req) => {
     if (direction === "test") {
       let connected = false;
       if (provider === "google") connected = await googleTest(account);
-      else if (provider === "outlook") connected = await outlookTest(account);
+      else if (isCalDav) connected = await caldavTest(account);
       else if (isCalDav) connected = await caldavTest(account);
       else if (provider === "ics") {
         try { const r = await fetch(account.ics_url, { method: "HEAD" }); connected = r.ok; }
@@ -560,7 +423,7 @@ Deno.serve(async (req) => {
     if (direction === "pull") {
       let count = 0;
       if (provider === "google") count = await googlePull(account);
-      else if (provider === "outlook") count = await outlookPull(account);
+      else if (isCalDav) count = await caldavPull(account);
       else if (isCalDav) count = await caldavPull(account);
       else if (provider === "ics") count = await icsPull(account);
       else throw new Error(`Unsupported provider: ${provider}`);
@@ -597,18 +460,18 @@ Deno.serve(async (req) => {
         const externalId = event?.external_id;
         if (!externalId) throw new Error("No external_id for delete");
         if (provider === "google") await googlePushDelete(account, externalId);
-        else if (provider === "outlook") await outlookPushDelete(account, externalId);
+        else if (isCalDav) await caldavPushDelete(account, externalId);
         else if (isCalDav) await caldavPushDelete(account, externalId);
         await supabase.from("calendar_events").delete().eq("id", event_id);
       } else if (action === "create") {
         if (evErr || !event) throw new Error("Event not found");
         if (provider === "google") await googlePushCreate(account, event);
-        else if (provider === "outlook") await outlookPushCreate(account, event);
+        else if (isCalDav) await caldavPushCreate(account, event);
         else if (isCalDav) await caldavPushCreate(account, event);
       } else if (action === "update") {
         if (evErr || !event) throw new Error("Event not found");
         if (provider === "google") await googlePushUpdate(account, event);
-        else if (provider === "outlook") await outlookPushUpdate(account, event);
+        else if (isCalDav) await caldavPushUpdate(account, event);
         else if (isCalDav) await caldavPushUpdate(account, event);
       }
 

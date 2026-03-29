@@ -397,7 +397,7 @@ export default function CalendarView() {
   useEffect(() => {
     const connectedParam = searchParams.get('connected');
     if (connectedParam) {
-      const providerLabel = connectedParam === 'outlook' ? 'Outlook' : 'Google Calendar';
+      const providerLabel = 'Google Calendar';
       (async () => {
         try {
           await calSync.fetchAccounts();

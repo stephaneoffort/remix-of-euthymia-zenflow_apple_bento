@@ -12,7 +12,7 @@ import type { CalendarAccount } from '@/hooks/useCalendarSync';
 
 const PROVIDER_META: Record<string, { label: string; icon: string; color: string; dot: string }> = {
   google: { label: 'Google Calendar', icon: '📅', color: 'text-red-500', dot: 'bg-[#EA4335]' },
-  outlook: { label: 'Microsoft Outlook', icon: '📧', color: 'text-blue-600', dot: 'bg-[#0078D4]' },
+  
   caldav: { label: 'CalDAV', icon: '🔗', color: 'text-purple-500', dot: 'bg-[#8B5CF6]' },
   icloud: { label: 'Apple iCal', icon: '🍎', color: 'text-gray-600', dot: 'bg-[#8B5CF6]' },
   nextcloud: { label: 'Nextcloud', icon: '☁️', color: 'text-blue-500', dot: 'bg-[#8B5CF6]' },
@@ -85,11 +85,6 @@ export default function CalendarAccountsManager({ accounts, syncing, visibleAcco
     window.location.href = `https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/google-oauth/authorize?user_id=${userId}`;
   };
 
-  const handleConnectOutlook = async () => {
-    const { data: { user } } = await (await import('@/integrations/supabase/client')).supabase.auth.getUser();
-    const userId = user?.id || '';
-    window.location.href = `https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/outlook-oauth/authorize?user_id=${userId}`;
-  };
 
   const handleStartIcloud = () => {
     setCaldavProvider('icloud');
@@ -240,15 +235,6 @@ export default function CalendarAccountsManager({ accounts, syncing, visibleAcco
                 className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-border hover:border-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all text-center group">
                 <span className="text-3xl">📅</span>
                 <span className="text-sm font-semibold text-foreground">Google Calendar</span>
-                <span className="text-[11px] text-muted-foreground">OAuth sécurisé</span>
-                <Badge variant="secondary" className="text-[10px] mt-1">Bidirectionnel</Badge>
-              </button>
-
-              {/* Outlook */}
-              <button onClick={handleConnectOutlook}
-                className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-border hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-all text-center group">
-                <span className="text-3xl">📧</span>
-                <span className="text-sm font-semibold text-foreground">Microsoft Outlook</span>
                 <span className="text-[11px] text-muted-foreground">OAuth sécurisé</span>
                 <Badge variant="secondary" className="text-[10px] mt-1">Bidirectionnel</Badge>
               </button>

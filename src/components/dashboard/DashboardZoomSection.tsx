@@ -47,7 +47,7 @@ export default function DashboardZoomSection() {
     <Collapsible defaultOpen={false}>
       <CollapsibleTrigger className="w-full flex items-center justify-between group cursor-pointer mb-3">
         <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
-          <Video className="w-4 h-4 text-blue-500" />
+          <img src={INTEGRATION_CONFIG.zoom.icon} alt="Zoom" className="w-4 h-4" />
           Réunions Zoom
           {meetings.length > 0 && (
             <span className="text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">

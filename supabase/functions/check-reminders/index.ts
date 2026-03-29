@@ -39,8 +39,7 @@ function b64urlToUint8Array(str: string): Uint8Array {
     const c = b64[i + 2] === '=' ? 0 : lookup.indexOf(b64[i + 2]);
     const d = b64[i + 3] === '=' ? 0 : lookup.indexOf(b64[i + 3]);
     if (a < 0 || b < 0) {
-      console.error('Invalid base64 char at', i, 'chars:', JSON.stringify(b64.substring(i, i + 4)), 'original:', JSON.stringify(cleaned.substring(0, 10)));
-      throw new Error('Invalid base64');
+      throw new Error('Invalid base64 character in VAPID key');
     }
     bytes.push((a << 2) | (b >> 4));
     if (b64[i + 2] !== '=') bytes.push(((b & 15) << 4) | (c >> 2));

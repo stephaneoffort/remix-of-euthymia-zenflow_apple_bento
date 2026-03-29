@@ -85,11 +85,6 @@ export default function CalendarAccountsManager({ accounts, syncing, visibleAcco
     window.location.href = `https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/google-oauth/authorize?user_id=${userId}`;
   };
 
-  const handleConnectOutlook = async () => {
-    const { data: { user } } = await (await import('@/integrations/supabase/client')).supabase.auth.getUser();
-    const userId = user?.id || '';
-    window.location.href = `https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/outlook-oauth/authorize?user_id=${userId}`;
-  };
 
   const handleStartIcloud = () => {
     setCaldavProvider('icloud');

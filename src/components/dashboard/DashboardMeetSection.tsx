@@ -22,8 +22,10 @@ export default function DashboardMeetSection() {
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
 
+  const meetActive = isActive('google_meet');
+
   useEffect(() => {
-    if (!isActive('google_meet')) { setLoading(false); return; }
+    if (!meetActive) { setLoading(false); return; }
     (async () => {
       try {
         const { data } = await supabase
@@ -37,9 +39,9 @@ export default function DashboardMeetSection() {
       } catch { /* ignore */ }
       setLoading(false);
     })();
-  }, [isActive('google_meet')]);
+  }, [meetActive]);
 
-  if (!isActive('google_meet')) return null;
+  if (!meetActive) return null;
 
   const visible = expanded ? events : events.slice(0, MAX_VISIBLE);
   const remaining = events.length - MAX_VISIBLE;

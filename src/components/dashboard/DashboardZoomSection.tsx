@@ -15,10 +15,10 @@ export default function DashboardZoomSection() {
   const [meetings, setMeetings] = useState<ZoomMeeting[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
+  const zoomActive = isActive('zoom');
 
   useEffect(() => {
-    if (!isActive('zoom')) { setLoading(false); return; }
-    if (!zoom.isConnected) { setLoading(false); return; }
+    if (!zoomActive || !zoom.isConnected) { setLoading(false); return; }
     (async () => {
       try {
         const res = await zoom.listMeetings("project", "");
@@ -34,9 +34,9 @@ export default function DashboardZoomSection() {
       } catch { /* ignore */ }
       setLoading(false);
     })();
-  }, [zoom.isConnected, isActive('zoom')]);
+  }, [zoom.isConnected, zoomActive]);
 
-  if (!isActive('zoom')) return null;
+  if (!zoomActive) return null;
 
   const visible = expanded ? meetings : meetings.slice(0, MAX_VISIBLE);
   const remaining = meetings.length - MAX_VISIBLE;

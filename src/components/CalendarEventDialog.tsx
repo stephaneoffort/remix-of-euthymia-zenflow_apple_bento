@@ -203,6 +203,7 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
             </div>
           )}
 
+          {event?.meet_link && (
             <div className="flex items-center gap-2 p-2.5 rounded-lg bg-[hsl(174,60%,30%)]/10 border border-[hsl(174,60%,30%)]/20">
               <Video className="w-4 h-4 text-[hsl(174,60%,30%)] shrink-0" />
               <div className="flex-1 min-w-0">

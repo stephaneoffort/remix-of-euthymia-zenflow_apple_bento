@@ -244,7 +244,7 @@ function DroppableDay({ dateStr, isCurrentMonth, isToday, dayNum, children, onAd
 }) {
   const { isOver, setNodeRef } = useDroppable({ id: dateStr });
   return (
-    <div ref={setNodeRef} className={`group min-h-[100px] p-1.5 border-b border-r border-border transition-colors ${isCurrentMonth ? 'bg-card' : 'bg-muted/20'} ${isOver ? 'bg-primary/10 ring-1 ring-inset ring-primary/30' : ''}`}>
+    <div ref={setNodeRef} className={`group min-h-[100px] p-1.5 border-b border-r border-border transition-colors ${isCurrentMonth ? 'bg-card' : 'bg-muted/40'} ${isOver ? 'bg-primary/10 ring-1 ring-inset ring-primary/30' : ''}`}>
       <div className="flex items-center justify-between">
         <span className={`text-xs font-medium inline-flex items-center justify-center w-6 h-6 rounded-full ${isToday ? 'bg-primary text-primary-foreground' : isCurrentMonth ? 'text-foreground' : 'text-muted-foreground'}`}>{dayNum}</span>
         {isCurrentMonth && (

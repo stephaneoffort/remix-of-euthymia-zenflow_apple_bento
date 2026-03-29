@@ -365,8 +365,10 @@ async function caldavPushUpdate(account: any, event: any): Promise<void> {
     },
     body: buildVEvent({ ...event, external_id: uid }),
   });
-  if (!res.ok && res.status !== 204)
+  if (!res.ok && res.status !== 204 && res.status !== 404 && res.status !== 410) {
     throw new Error(`CalDAV update failed: ${await res.text()}`);
+  }
+  if (!res.ok) await res.text(); // consume body for 404/410
   await supabase.from("calendar_events")
     .update({ sync_status: "synced", last_synced_at: new Date().toISOString() })
     .eq("id", event.id);
@@ -379,8 +381,10 @@ async function caldavPushDelete(account: any, externalId: string): Promise<void>
     method: "DELETE",
     headers: { Authorization: `Basic ${auth}` },
   });
-  if (!res.ok && res.status !== 204)
+  if (!res.ok && res.status !== 204 && res.status !== 404 && res.status !== 410) {
     throw new Error(`CalDAV delete failed: ${await res.text()}`);
+  }
+  if (!res.ok) await res.text(); // consume body for 404/410 — resource already gone
 }
 
 async function caldavTest(account: any): Promise<boolean> {

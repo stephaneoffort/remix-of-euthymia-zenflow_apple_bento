@@ -143,25 +143,47 @@ async function googlePushCreate(account: any, event: any): Promise<string> {
 async function googlePushUpdate(account: any, event: any): Promise<void> {
   const token = await refreshGoogleToken(account);
   const calId = encodeURIComponent(account.calendar_id || "primary");
-  const payload = event.is_all_day
-    ? { start: { date: event.start_time.split("T")[0] }, end: { date: event.end_time.split("T")[0] } }
-    : { start: { dateTime: event.start_time, timeZone: "Europe/Paris" }, end: { dateTime: event.end_time, timeZone: "Europe/Paris" } };
+  const payload: any = {
+    summary: event.title,
+    description: event.description,
+    location: event.location,
+    ...(event.is_all_day
+      ? { start: { date: event.start_time.split("T")[0] }, end: { date: event.end_time.split("T")[0] } }
+      : { start: { dateTime: event.start_time, timeZone: "Europe/Paris" }, end: { dateTime: event.end_time, timeZone: "Europe/Paris" } }),
+  };
+
+  if (event.has_meet && !event.conference_id) {
+    payload.conferenceData = {
+      createRequest: {
+        requestId: crypto.randomUUID(),
+        conferenceSolutionKey: { type: "hangoutsMeet" },
+      },
+    };
+  }
+
+  const meetParam = event.has_meet ? "?conferenceDataVersion=1" : "";
   const res = await fetch(
-    `https://www.googleapis.com/calendar/v3/calendars/${calId}/events/${event.external_id}`,
+    `https://www.googleapis.com/calendar/v3/calendars/${calId}/events/${event.external_id}${meetParam}`,
     {
       method: "PUT",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        summary: event.title,
-        description: event.description,
-        location: event.location,
-        ...payload,
-      }),
+      body: JSON.stringify(payload),
     },
   );
   if (!res.ok) throw new Error(`Google update failed: ${await res.text()}`);
+
+  const data = await res.json();
+  const meetLink = data.conferenceData?.entryPoints
+    ?.find((e: any) => e.entryPointType === "video")?.uri ?? null;
+
   await supabase.from("calendar_events")
-    .update({ sync_status: "synced", last_synced_at: new Date().toISOString() })
+    .update({
+      sync_status: "synced",
+      meet_link: meetLink,
+      conference_id: data.conferenceData?.conferenceId ?? null,
+      has_meet: meetLink !== null,
+      last_synced_at: new Date().toISOString(),
+    })
     .eq("id", event.id);
 }
 

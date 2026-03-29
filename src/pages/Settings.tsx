@@ -62,7 +62,7 @@ export default function Settings() {
 
       <div className="max-w-3xl mx-auto p-6">
         <Tabs defaultValue="members">
-          <TabsList className="grid w-full grid-cols-6 mb-6">
+          <TabsList className="grid w-full grid-cols-7 mb-6">
             <TabsTrigger value="members" className="gap-2">
               <Users className="w-4 h-4" />
               <span className="hidden sm:inline">Membres</span>
@@ -78,6 +78,10 @@ export default function Settings() {
             <TabsTrigger value="theme" className="gap-2">
               <Palette className="w-4 h-4" />
               <span className="hidden sm:inline">Thème</span>
+            </TabsTrigger>
+            <TabsTrigger value="integrations" className="gap-2">
+              <HardDrive className="w-4 h-4" />
+              <span className="hidden sm:inline">Intégrations</span>
             </TabsTrigger>
             <TabsTrigger value="data" className="gap-2">
               <DatabaseBackup className="w-4 h-4" />

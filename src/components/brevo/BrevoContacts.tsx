@@ -32,11 +32,11 @@ export default function BrevoContacts({ entityType, entityId, compact }: Props) 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
 
-  if (!isActive('brevo')) return null;
+  const active = isActive('brevo');
 
   useEffect(() => {
-    fetchContacts();
-  }, [entityType, entityId]);
+    if (active) fetchContacts();
+  }, [entityType, entityId, active]);
 
   const fetchContacts = async () => {
     try {
@@ -44,6 +44,8 @@ export default function BrevoContacts({ entityType, entityId, compact }: Props) 
       setContacts(data ?? []);
     } catch {}
   };
+
+  if (!active) return null;
 
   const handleAdd = async () => {
     if (!email.trim()) return;
@@ -81,7 +83,7 @@ export default function BrevoContacts({ entityType, entityId, compact }: Props) 
       );
       toast.success(`Email envoyé à ${contact.email}`);
     } catch (err: any) {
-      toast.error(err.message || 'Erreur d\'envoi');
+      toast.error(err.message || "Erreur d'envoi");
     }
   };
 

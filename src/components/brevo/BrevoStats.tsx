@@ -19,9 +19,10 @@ export default function BrevoStats() {
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  if (!isActive('brevo')) return null;
+  const active = isActive('brevo');
 
   useEffect(() => {
+    if (!active) { setLoading(false); return; }
     (async () => {
       try {
         const data = await listCampaigns();
@@ -29,7 +30,9 @@ export default function BrevoStats() {
       } catch {}
       setLoading(false);
     })();
-  }, []);
+  }, [active]);
+
+  if (!active) return null;
 
   if (loading) {
     return (
@@ -52,7 +55,6 @@ export default function BrevoStats() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* KPI cards */}
         <div className="grid grid-cols-3 gap-2">
           <div className="rounded-lg bg-muted/50 p-2.5 text-center">
             <BarChart3 className="w-4 h-4 mx-auto text-muted-foreground mb-1" />
@@ -77,7 +79,6 @@ export default function BrevoStats() {
           </div>
         </div>
 
-        {/* Campaign list */}
         {campaigns.length === 0 ? (
           <p className="text-xs text-muted-foreground text-center py-2">Aucune campagne</p>
         ) : (

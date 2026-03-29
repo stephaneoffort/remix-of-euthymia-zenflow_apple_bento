@@ -279,7 +279,7 @@ export default function IntegrationsSettings() {
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <span className="text-xl">📨</span> Connecter Brevo
+              <img src={INTEGRATION_CONFIG.brevo.icon} alt="Brevo" className="w-5 h-5" /> Connecter Brevo
             </DialogTitle>
             <DialogDescription>
               Entre ta clé API Brevo pour activer l'intégration.

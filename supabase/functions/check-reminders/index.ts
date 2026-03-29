@@ -24,8 +24,8 @@ const OFFSET_LABELS: Record<string, string> = {
 
 // Convert base64url or base64 string to Uint8Array using atob
 function b64urlToUint8Array(str: string): Uint8Array {
-  // Normalize base64url to base64
-  let b64 = str.replace(/-/g, '+').replace(/_/g, '/');
+  // Trim whitespace and normalize base64url to base64
+  let b64 = str.trim().replace(/-/g, '+').replace(/_/g, '/').replace(/\s/g, '');
   // Add padding
   while (b64.length % 4 !== 0) b64 += '=';
   const raw = atob(b64);

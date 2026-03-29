@@ -792,6 +792,28 @@ Deno.serve(async (req) => {
     }
 
     // ─── TEST ───
+    // ─── LIST CALENDARS ───
+    if (direction === "list_calendars") {
+      if (provider !== "google") {
+        return new Response(JSON.stringify({ calendars: [] }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+      const token = await refreshGoogleToken(account);
+      const listRes = await fetch(
+        "https://www.googleapis.com/calendar/v3/users/me/calendarList",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const list = await listRes.json();
+      const calendars = (list.items || []).map((c: any) => ({
+        id: c.id,
+        summary: c.summary,
+        primary: c.primary ?? false,
+      }));
+      return new Response(JSON.stringify({ calendars }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    // ─── TEST ───
     if (direction === "test") {
       let connected = false;
       if (provider === "google") connected = await googleTest(account);

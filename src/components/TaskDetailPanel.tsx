@@ -664,6 +664,9 @@ export default function TaskDetailPanel() {
             {/* Canva */}
             <CanvaAttachments entityType="task" entityId={task.id} compact defaultTitle={task.title} />
 
+            {/* Zoom */}
+            <ZoomMeetings entityType="task" entityId={task.id} compact defaultTitle={task.title} />
+
             {/* Time */}
             <div className="flex gap-3 sm:gap-4">
               <div className="flex-1">

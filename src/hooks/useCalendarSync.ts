@@ -59,6 +59,9 @@ export interface CalendarEvent {
   is_all_day: boolean;
   status: string | null;
   sync_status: string | null;
+  meet_link: string | null;
+  conference_id: string | null;
+  has_meet: boolean;
   last_synced_at: string | null;
   created_at: string;
   updated_at: string;

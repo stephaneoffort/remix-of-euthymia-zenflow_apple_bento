@@ -579,7 +579,7 @@ function TaskPanelAnimated({ taskId, onClose }: { taskId: string | null; onClose
   return (
     <>
       <div
-        className={`fixed inset-0 z-40 transition-opacity duration-300 ${closing ? 'opacity-0' : 'opacity-100'}`}
+        className={`fixed inset-0 z-40 bg-black/20 backdrop-blur-sm transition-opacity duration-300 ${closing ? 'opacity-0' : 'opacity-100'}`}
         onClick={handleClose}
       />
       <div className={`fixed z-50 inset-0 sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[520px] ${closing ? 'animate-slide-out-right' : 'animate-slide-in-right'}`}>

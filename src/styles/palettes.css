@@ -2107,6 +2107,80 @@ html body::after {
   animation: liquidGlassReveal 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
+/* ─── Liquid Glass: Task detail panel — opaque glass for readability ─── */
+[data-palette^="liquidGlass"].light .task-detail-panel,
+[data-palette^="liquidGlass"].mixed .task-detail-panel,
+[data-palette^="liquidGlass"]:not(.dark):not(.mixed) .task-detail-panel {
+  background: rgba(255, 255, 255, 0.82) !important;
+  backdrop-filter: blur(40px) saturate(180%) brightness(1.02) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(180%) brightness(1.02) !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.5) !important;
+  border-radius: 0 !important;
+}
+[data-palette^="liquidGlass"].dark .task-detail-panel {
+  background: rgba(15, 15, 30, 0.88) !important;
+  backdrop-filter: blur(40px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(160%) !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 0 !important;
+}
+/* Disable hover lift on task detail panel */
+[data-palette^="liquidGlass"] .task-detail-panel:hover {
+  transform: none !important;
+}
+
+/* ─── Classic palettes: Task detail panel — opaque glass ─── */
+[data-palette="clubroom"] .task-detail-panel,
+[data-palette="neutrals"] .task-detail-panel,
+[data-palette="sapphire"] .task-detail-panel,
+[data-palette="cinematic"] .task-detail-panel,
+[data-palette="teal"] .task-detail-panel,
+[data-palette="bento2026"] .task-detail-panel,
+[data-palette="bentoOcean"] .task-detail-panel,
+[data-palette="bentoRose"] .task-detail-panel,
+[data-palette="bentoAmber"] .task-detail-panel {
+  border-radius: 0 !important;
+}
+[data-palette="clubroom"].light .task-detail-panel,
+[data-palette="clubroom"].mixed .task-detail-panel,
+[data-palette="neutrals"].light .task-detail-panel,
+[data-palette="neutrals"].mixed .task-detail-panel,
+[data-palette="sapphire"].light .task-detail-panel,
+[data-palette="sapphire"].mixed .task-detail-panel,
+[data-palette="cinematic"].light .task-detail-panel,
+[data-palette="cinematic"].mixed .task-detail-panel,
+[data-palette="teal"].light .task-detail-panel,
+[data-palette="teal"].mixed .task-detail-panel,
+[data-palette="bento2026"].light .task-detail-panel,
+[data-palette="bento2026"].mixed .task-detail-panel,
+[data-palette="bentoOcean"].light .task-detail-panel,
+[data-palette="bentoOcean"].mixed .task-detail-panel,
+[data-palette="bentoRose"].light .task-detail-panel,
+[data-palette="bentoRose"].mixed .task-detail-panel,
+[data-palette="bentoAmber"].light .task-detail-panel,
+[data-palette="bentoAmber"].mixed .task-detail-panel {
+  background: rgba(255, 255, 255, 0.82) !important;
+  backdrop-filter: blur(40px) saturate(180%) brightness(1.02) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(180%) brightness(1.02) !important;
+}
+[data-palette="clubroom"]:not(.light):not(.mixed) .task-detail-panel,
+[data-palette="neutrals"]:not(.light):not(.mixed) .task-detail-panel,
+[data-palette="sapphire"]:not(.light):not(.mixed) .task-detail-panel,
+[data-palette="cinematic"]:not(.light):not(.mixed) .task-detail-panel,
+[data-palette="teal"]:not(.light):not(.mixed) .task-detail-panel,
+[data-palette="bento2026"]:not(.light):not(.mixed) .task-detail-panel,
+[data-palette="bentoOcean"]:not(.light):not(.mixed) .task-detail-panel,
+[data-palette="bentoRose"]:not(.light):not(.mixed) .task-detail-panel,
+[data-palette="bentoAmber"]:not(.light):not(.mixed) .task-detail-panel {
+  background: rgba(15, 15, 25, 0.88) !important;
+  backdrop-filter: blur(40px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(160%) !important;
+}
+/* Disable hover lift on all task-detail-panel */
+.task-detail-panel:hover {
+  transform: none !important;
+}
+
 /* ─── Liquid Glass: primary button active ─── */
 [data-palette^="liquidGlass"].light button.bg-primary:active,
 [data-palette^="liquidGlass"].mixed button.bg-primary:active {

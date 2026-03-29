@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-const DRIVE_API_URL = `https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/google-drive-api`;
-const DRIVE_OAUTH_URL = `https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/google-drive-oauth/authorize`;
+const DRIVE_API_URL = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/google-drive-api`;
+const DRIVE_OAUTH_URL = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/google-drive-oauth/authorize`;
 
 export interface DriveFile {
   id: string;
@@ -74,13 +74,21 @@ export function useGoogleDrive() {
   };
 
   const callAPI = async (body: object) => {
-    const userId = await getUserId();
-    if (!userId) throw new Error("Not authenticated");
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) {
+      throw new Error("User not authenticated");
+    }
     const res = await fetch(DRIVE_API_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...body, user_id: userId }),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify(body),
     });
+    if (res.status === 401) {
+      throw new Error("Session expirée — reconnecte-toi");
+    }
     if (!res.ok) {
       const err = await res.json();
       throw new Error(err.error || "Drive API error");

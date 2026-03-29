@@ -11,6 +11,27 @@ const supabase = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
 );
 
+async function authenticateUser(req: Request): Promise<string> {
+  const authHeader = req.headers.get("Authorization")
+  if (!authHeader?.startsWith("Bearer ")) {
+    throw new Error("UNAUTHORIZED")
+  }
+
+  const supabaseUser = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_ANON_KEY")!,
+    { global: { headers: { Authorization: authHeader } } }
+  )
+
+  const token = authHeader.replace("Bearer ", "")
+  const { data, error } = await supabaseUser.auth.getClaims(token)
+  if (error || !data?.claims) {
+    throw new Error("UNAUTHORIZED")
+  }
+
+  return data.claims.sub as string
+}
+
 async function getValidToken(userId: string): Promise<string> {
   const { data: conn } = await supabase
     .from("drive_connections")
@@ -20,7 +41,7 @@ async function getValidToken(userId: string): Promise<string> {
     .limit(1)
     .single();
 
-  if (!conn) throw new Error("No Drive connection found");
+  if (!conn) throw new Error("No Drive connection found for this user");
 
   if (new Date(conn.token_expiry) > new Date(Date.now() + 5 * 60 * 1000)) {
     return conn.access_token;
@@ -54,12 +75,22 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const { action, query, file_id, entity_type, entity_id, attachment_id, user_id } = await req.json();
-    if (!user_id) throw new Error("user_id is required");
+    // Authenticate user via JWT
+    let userId: string;
+    try {
+      userId = await authenticateUser(req);
+    } catch {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const { action, query, file_id, entity_type, entity_id, attachment_id } = await req.json();
 
     // DB-only actions don't need a Google token
     const needsToken = !["list_attachments", "detach"].includes(action);
-    const token = needsToken ? await getValidToken(user_id) : "";
+    const token = needsToken ? await getValidToken(userId) : "";
 
     // ── Search files ──
     if (action === "search") {
@@ -113,7 +144,7 @@ Deno.serve(async (req: Request) => {
       if (file.error) throw new Error(file.error.message);
 
       const { data, error } = await supabase.from("drive_attachments").insert({
-        user_id,
+        user_id: userId,
         entity_type,
         entity_id,
         file_id: file.id,
@@ -137,7 +168,7 @@ Deno.serve(async (req: Request) => {
         .select("*")
         .eq("entity_type", entity_type)
         .eq("entity_id", entity_id)
-        .eq("user_id", user_id)
+        .eq("user_id", userId)
         .order("created_at", { ascending: false });
       return new Response(JSON.stringify(data ?? []), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -146,7 +177,7 @@ Deno.serve(async (req: Request) => {
 
     // ── Detach ──
     if (action === "detach") {
-      await supabase.from("drive_attachments").delete().eq("id", attachment_id).eq("user_id", user_id);
+      await supabase.from("drive_attachments").delete().eq("id", attachment_id).eq("user_id", userId);
       return new Response(JSON.stringify({ success: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });

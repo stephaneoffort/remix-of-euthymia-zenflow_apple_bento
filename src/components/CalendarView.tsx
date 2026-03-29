@@ -508,36 +508,54 @@ export default function CalendarView() {
     return [...filteredParents, ...subtasks].filter(t => t.status !== 'done');
   }, [allTasks, filteredParents]);
 
+  // Build a lookup for parent task dates so subtasks can inherit
+  const parentDateLookup = useMemo(() => {
+    const map = new Map<string, { dueDate?: string; startDate?: string }>();
+    allTasks.forEach(t => {
+      if (t.dueDate) map.set(t.id, { dueDate: t.dueDate, startDate: t.startDate });
+    });
+    return map;
+  }, [allTasks]);
+
   // All tasks indexed by every date they cover (for cell rendering)
   const tasksByDate = useMemo(() => {
     const map = new Map<string, { task: Task; isStart: boolean; isEnd: boolean; totalDays: number }[]>();
     tasks.forEach(t => {
-      if (!t.dueDate) return;
-      const range = getTaskDateRange(t);
-      if (!range) return;
+      // Use task's own dates, or inherit from parent if subtask has no date
+      let effectiveDueDate = t.dueDate;
+      let effectiveStartDate = t.startDate;
+      if (!effectiveDueDate && t.parentTaskId) {
+        const parentDates = parentDateLookup.get(t.parentTaskId);
+        if (parentDates?.dueDate) {
+          effectiveDueDate = parentDates.dueDate;
+          effectiveStartDate = effectiveStartDate || parentDates.startDate;
+        }
+      }
+      if (!effectiveDueDate) return;
 
-      if (range.duration === 0) {
-        // Single-day task
-        const dk = range.end;
-        if (!map.has(dk)) map.set(dk, []);
-        map.get(dk)!.push({ task: t, isStart: true, isEnd: true, totalDays: 1 });
+      const endStr = effectiveDueDate.slice(0, 10);
+      const startStr = effectiveStartDate ? effectiveStartDate.slice(0, 10) : endStr;
+      const duration = Math.max(0, diffDays(dateStrToDate(startStr), dateStrToDate(endStr)));
+
+      if (duration === 0) {
+        if (!map.has(endStr)) map.set(endStr, []);
+        map.get(endStr)!.push({ task: t, isStart: true, isEnd: true, totalDays: 1 });
       } else {
-        // Multi-day: add to each day
-        const startD = dateStrToDate(range.start);
-        for (let i = 0; i <= range.duration; i++) {
+        const startD = dateStrToDate(startStr);
+        for (let i = 0; i <= duration; i++) {
           const dk = toDateStr(addDays(startD, i));
           if (!map.has(dk)) map.set(dk, []);
           map.get(dk)!.push({
             task: t,
             isStart: i === 0,
-            isEnd: i === range.duration,
-            totalDays: range.duration + 1,
+            isEnd: i === duration,
+            totalDays: duration + 1,
           });
         }
       }
     });
     return map;
-  }, [tasks]);
+  }, [tasks, parentDateLookup]);
 
   // External calendar events indexed by date (filtered by visibility)
   const externalEventsByDate = useMemo(() => {

@@ -7,9 +7,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// Web Push imports
-import * as base64url from "https://deno.land/std@0.168.0/encoding/base64url.ts";
-
+// Web Push helpers
 const OFFSET_MS: Record<string, number> = {
   "3d": 3 * 24 * 60 * 60 * 1000,
   "1d": 1 * 24 * 60 * 60 * 1000,
@@ -24,11 +22,24 @@ const OFFSET_LABELS: Record<string, string> = {
   "1h": "1 heure",
 };
 
-// Convert base64url or base64 string to Uint8Array
+// Convert base64url or base64 string to Uint8Array using atob
 function b64urlToUint8Array(str: string): Uint8Array {
-  // Normalize base64 to base64url
-  const b64url = str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-  return base64url.decode(b64url);
+  // Normalize base64url to base64
+  let b64 = str.replace(/-/g, '+').replace(/_/g, '/');
+  // Add padding
+  while (b64.length % 4 !== 0) b64 += '=';
+  const raw = atob(b64);
+  const arr = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+  return arr;
+}
+
+// base64url encode without padding
+function toBase64url(buf: ArrayBuffer | Uint8Array): string {
+  const bytes = buf instanceof Uint8Array ? buf : new Uint8Array(buf);
+  let binary = '';
+  for (const b of bytes) binary += String.fromCharCode(b);
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
 // Import ECDSA P-256 key for signing

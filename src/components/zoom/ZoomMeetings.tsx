@@ -176,12 +176,15 @@ function ZoomMeetingCreator({
     setCreating(true);
     try {
       const startTime = instant ? undefined : `${date}T${time}:00`;
-      await zoom.createMeeting(topic.trim(), entityType, entityId, startTime, parseInt(duration));
+      console.log("Creating Zoom meeting:", { topic: topic.trim(), entityType, entityId, startTime, duration: parseInt(duration) });
+      const result = await zoom.createMeeting(topic.trim(), entityType, entityId, startTime, parseInt(duration));
+      console.log("Zoom meeting created:", result);
       toast.success('Réunion Zoom créée ✅');
       onCreated();
       onOpenChange(false);
     } catch (err: any) {
-      toast.error(err?.message || 'Erreur lors de la création');
+      console.error("Zoom create error:", err);
+      toast.error(`Erreur Zoom : ${err?.message || 'Erreur lors de la création'}`);
     } finally {
       setCreating(false);
     }

@@ -391,7 +391,7 @@
   --sidebar-fg-bright: 260 14% 92%;
   --sidebar-hover: 260 26% 10%;
   --sidebar-active: 265 68% 56%;
-  --sidebar-active-fg: 0 0% 8%;
+  --sidebar-active-fg: 0 0% 100%;
   --sidebar-border: 260 20% 12%;
   --sidebar-background: 262 42% 3%;
   --sidebar-foreground: 260 10% 78%;
@@ -429,7 +429,7 @@
   --sidebar-fg-bright: 0 0% 100%;
   --sidebar-hover: 268 16% 90%;
   --sidebar-active: 265 68% 54%;
-  --sidebar-active-fg: 0 0% 8%;
+  --sidebar-active-fg: 0 0% 100%;
   --sidebar-border: 268 14% 85%;
   --sidebar-background: 268 24% 95%;
   --sidebar-foreground: 262 10% 30%;
@@ -467,7 +467,7 @@
   --sidebar-fg-bright: 260 14% 92%;
   --sidebar-hover: 260 26% 10%;
   --sidebar-active: 265 68% 54%;
-  --sidebar-active-fg: 0 0% 8%;
+  --sidebar-active-fg: 0 0% 100%;
   --sidebar-border: 260 20% 12%;
   --sidebar-background: 262 42% 3%;
   --sidebar-foreground: 260 10% 78%;
@@ -1182,7 +1182,7 @@
   --sidebar-fg-bright: 350 14% 92%;
   --sidebar-hover: 350 18% 12%;
   --sidebar-active: 345 50% 55%;
-  --sidebar-active-fg: 0 0% 8%;
+  --sidebar-active-fg: 0 0% 100%;
   --sidebar-border: 350 14% 14%;
   --bento-bg: transparent;
   --bento-bg-hover: rgba(232,160,176,0.06);
@@ -1282,7 +1282,7 @@
   --sidebar-fg-bright: 350 14% 92%;
   --sidebar-hover: 350 18% 12%;
   --sidebar-active: 345 50% 55%;
-  --sidebar-active-fg: 0 0% 8%;
+  --sidebar-active-fg: 0 0% 100%;
   --sidebar-border: 350 14% 14%;
   --bento-bg: transparent;
   --bento-bg-hover: rgba(92,36,52,0.04);
@@ -1658,7 +1658,7 @@
   --sidebar-fg-bright: 0 0% 100%;
   --sidebar-hover: 235 30% 16%;
   --sidebar-active: 239 84% 63%;
-  --sidebar-active-fg: 0 0% 8%;
+  --sidebar-active-fg: 0 0% 100%;
   --sidebar-border: 235 25% 18%;
   --bento-bg: transparent;
   --bento-bg-hover: rgba(255, 255, 255, 0.08);
@@ -1709,7 +1709,7 @@
   --sidebar-fg-bright: 220 18% 92%;
   --sidebar-hover: 235 28% 12%;
   --sidebar-active: 239 84% 67%;
-  --sidebar-active-fg: 0 0% 8%;
+  --sidebar-active-fg: 0 0% 100%;
   --sidebar-border: 235 22% 20%;
   --bento-bg: rgba(20, 20, 35, 0.55);
   --bento-bg-hover: rgba(30, 30, 50, 0.65);
@@ -1760,7 +1760,7 @@
   --sidebar-fg-bright: 230 20% 92%;
   --sidebar-hover: 235 30% 16%;
   --sidebar-active: 239 84% 67%;
-  --sidebar-active-fg: 0 0% 8%;
+  --sidebar-active-fg: 0 0% 100%;
   --sidebar-border: 235 25% 18%;
   --bento-bg: transparent;
   --bento-bg-hover: rgba(255, 255, 255, 0.08);

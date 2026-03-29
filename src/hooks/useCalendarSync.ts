@@ -283,6 +283,7 @@ export function useCalendarSync() {
     end_time: string;
     is_all_day?: boolean;
     location?: string;
+    has_meet?: boolean;
   }) => {
     const { error } = await supabase
       .from('calendar_events')
@@ -293,6 +294,7 @@ export function useCalendarSync() {
         end_time: data.end_time,
         is_all_day: data.is_all_day ?? false,
         location: data.location || null,
+        has_meet: data.has_meet ?? false,
         sync_status: 'pending',
       } as any)
       .eq('id', eventId);
@@ -309,9 +311,10 @@ export function useCalendarSync() {
       .eq('id', eventId)
       .single();
 
-    if (ev?.account_id && ev?.external_id) {
+    if (ev?.account_id) {
       try {
-        await invokeCalendarSync({ account_id: ev.account_id, direction: 'push', event_id: eventId, action: 'update' });
+        const action = ev.external_id ? 'update' : 'create';
+        await invokeCalendarSync({ account_id: ev.account_id, direction: 'push', event_id: eventId, action });
         toast.success('Événement mis à jour ✅');
       } catch (err: any) {
         toast.error('Erreur push : ' + (err.message || 'Inconnue'));

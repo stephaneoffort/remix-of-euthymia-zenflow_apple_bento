@@ -23,6 +23,7 @@ import CanvaAttachments from '@/components/canva/CanvaAttachments';
 import ZoomMeetings from '@/components/zoom/ZoomMeetings';
 import BrevoContacts from '@/components/brevo/BrevoContacts';
 import { useIntegrations, INTEGRATION_CONFIG } from '@/hooks/useIntegrations';
+import GoogleCalendarPicker from '@/components/GoogleCalendarPicker';
 // Format date for display
 function formatDateDisplay(isoStr: string): string {
   const d = new Date(isoStr);
@@ -372,6 +373,14 @@ export default function TaskDetailPanel() {
                 <DateTimeField
                   value={task.dueDate}
                   onChange={(val) => updateTask(task.id, { dueDate: val })}
+                />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">Agenda cible</label>
+                <GoogleCalendarPicker
+                  value={task.targetCalendarId}
+                  onChange={(calId) => updateTask(task.id, { targetCalendarId: calId })}
+                  compact
                 />
               </div>
               <div className="col-span-2">

@@ -1239,6 +1239,7 @@ export type Database = {
           start_date: string | null
           status: string
           tags: string[]
+          target_calendar_id: string | null
           time_estimate: number | null
           time_logged: number | null
           title: string
@@ -1260,6 +1261,7 @@ export type Database = {
           start_date?: string | null
           status?: string
           tags?: string[]
+          target_calendar_id?: string | null
           time_estimate?: number | null
           time_logged?: number | null
           title: string
@@ -1281,6 +1283,7 @@ export type Database = {
           start_date?: string | null
           status?: string
           tags?: string[]
+          target_calendar_id?: string | null
           time_estimate?: number | null
           time_logged?: number | null
           title?: string

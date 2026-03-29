@@ -105,6 +105,7 @@ function dbToTask(row: any, assigneeIds: string[], comments: Comment[], attachme
     recurrence: (row.recurrence as Recurrence) || null,
     recurrenceEndDate: row.recurrence_end_date || null,
     googleEventId: row.google_event_id || null,
+    targetCalendarId: (row as any).target_calendar_id || null,
     createdAt: row.created_at,
     order: row.sort_order,
   };
@@ -352,6 +353,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (updates.aiSummary !== undefined) dbUpdates.ai_summary = updates.aiSummary;
       if (updates.recurrence !== undefined) dbUpdates.recurrence = updates.recurrence;
       if (updates.recurrenceEndDate !== undefined) dbUpdates.recurrence_end_date = updates.recurrenceEndDate;
+      if (updates.targetCalendarId !== undefined) dbUpdates.target_calendar_id = updates.targetCalendarId;
 
       if (Object.keys(dbUpdates).length > 0) {
         if (!navigator.onLine) {
@@ -406,7 +408,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       // Sync to ZENFLOW on meaningful changes
       if (result && typeof result === 'object' && 'id' in result) {
-        const syncableFields = ['title', 'status', 'priority', 'dueDate', 'description'];
+        const syncableFields = ['title', 'status', 'priority', 'dueDate', 'description', 'targetCalendarId'];
         const needsSync = (result as any).syncFields?.some((f: string) => syncableFields.includes(f));
         if (needsSync) {
           const task = tasks.find(t => t.id === (result as any).id);

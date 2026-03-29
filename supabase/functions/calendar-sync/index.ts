@@ -556,7 +556,18 @@ async function pushTaskForUser(userId: string, taskId: string, action: string) {
   if (!account) return; // No Google account — skip
 
   const token = await refreshGoogleToken(account);
-  const calendarId = await getTargetCalendarId(token, userId, account.id);
+
+  // Task-level calendar override takes priority over user preference
+  const { data: taskRow } = await supabase.from("tasks").select("target_calendar_id").eq("id", taskId).single();
+  let calendarId: string;
+  if (taskRow?.target_calendar_id && taskRow.target_calendar_id !== '__zenflow__') {
+    calendarId = taskRow.target_calendar_id;
+  } else if (taskRow?.target_calendar_id === '__zenflow__') {
+    calendarId = await getOrCreateZenflowCalendar(token, account.id);
+  } else {
+    calendarId = await getTargetCalendarId(token, userId, account.id);
+  }
+
   const baseUrl = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`;
   const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
 

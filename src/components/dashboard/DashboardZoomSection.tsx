@@ -32,7 +32,7 @@ export default function DashboardZoomSection() {
   const [topic, setTopic] = useState("Réunion rapide");
   const [startTime, setStartTime] = useState("");
   const [duration, setDuration] = useState(30);
-  const zoomEnabled = integrations.find(i => i.key === 'zoom')?.is_enabled ?? false;
+  const zoomEnabled = integrations.zoom?.is_enabled ?? false;
   const zoomActive = isActive('zoom');
 
   const fetchMeetings = async () => {

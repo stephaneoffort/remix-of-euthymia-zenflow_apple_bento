@@ -252,7 +252,7 @@ export default function IntegrationsSettings() {
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              {confirmDialog && <span className="text-xl">{INTEGRATION_CONFIG[confirmDialog.key].emoji}</span>}
+              {confirmDialog && <img src={INTEGRATION_CONFIG[confirmDialog.key].icon} alt="" className="w-5 h-5" />}
               Désactiver {confirmDialog ? INTEGRATION_CONFIG[confirmDialog.key].label : ''} ?
             </DialogTitle>
             <DialogDescription>

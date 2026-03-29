@@ -553,8 +553,9 @@ export default function DashboardView() {
                     {project.name}
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-3">
                   <DriveAttachments entityType="project" entityId={project.id} compact />
+                  <CanvaAttachments entityType="project" entityId={project.id} compact />
                 </CardContent>
               </Card>
             ))}

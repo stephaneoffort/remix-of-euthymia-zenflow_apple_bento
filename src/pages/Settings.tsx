@@ -62,41 +62,41 @@ export default function Settings() {
         <h1 className="font-bold text-foreground text-lg">Administration</h1>
       </header>
 
-      <div className="max-w-3xl mx-auto p-6">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6">
         <Tabs defaultValue="members">
-          <div className="mb-6 -mx-1 overflow-x-auto scrollbar-none">
-            <TabsList className="inline-flex w-auto min-w-full sm:grid sm:grid-cols-8 gap-1 p-1">
-              <TabsTrigger value="members" className="gap-1.5 px-3 whitespace-nowrap">
+          <div className="mb-6">
+            <TabsList className="flex flex-wrap gap-1.5 h-auto bg-muted/50 p-1.5 rounded-xl">
+              <TabsTrigger value="members" className="gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm data-[state=active]:shadow-sm">
                 <Users className="w-4 h-4 shrink-0" />
-                <span className="text-xs sm:text-sm">Membres</span>
+                <span className="hidden xs:inline sm:inline">Membres</span>
               </TabsTrigger>
-              <TabsTrigger value="statuses" className="gap-1.5 px-3 whitespace-nowrap">
+              <TabsTrigger value="statuses" className="gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm data-[state=active]:shadow-sm">
                 <ListChecks className="w-4 h-4 shrink-0" />
-                <span className="text-xs sm:text-sm">Avancements</span>
+                <span className="hidden xs:inline sm:inline">Avancements</span>
               </TabsTrigger>
-              <TabsTrigger value="chat" className="gap-1.5 px-3 whitespace-nowrap">
+              <TabsTrigger value="chat" className="gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm data-[state=active]:shadow-sm">
                 <MessageCircle className="w-4 h-4 shrink-0" />
-                <span className="text-xs sm:text-sm">Chat</span>
+                <span className="hidden xs:inline sm:inline">Chat</span>
               </TabsTrigger>
-              <TabsTrigger value="theme" className="gap-1.5 px-3 whitespace-nowrap">
+              <TabsTrigger value="theme" className="gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm data-[state=active]:shadow-sm">
                 <Palette className="w-4 h-4 shrink-0" />
-                <span className="text-xs sm:text-sm">Thème</span>
+                <span className="hidden xs:inline sm:inline">Thème</span>
               </TabsTrigger>
-              <TabsTrigger value="integrations" className="gap-1.5 px-3 whitespace-nowrap">
+              <TabsTrigger value="integrations" className="gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm data-[state=active]:shadow-sm">
                 <HardDrive className="w-4 h-4 shrink-0" />
-                <span className="text-xs sm:text-sm">Intégrations</span>
+                <span className="hidden xs:inline sm:inline">Intégrations</span>
               </TabsTrigger>
-              <TabsTrigger value="calendar" className="gap-1.5 px-3 whitespace-nowrap">
+              <TabsTrigger value="calendar" className="gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm data-[state=active]:shadow-sm">
                 <CalendarSync className="w-4 h-4 shrink-0" />
-                <span className="text-xs sm:text-sm">Calendrier</span>
+                <span className="hidden xs:inline sm:inline">Calendrier</span>
               </TabsTrigger>
-              <TabsTrigger value="data" className="gap-1.5 px-3 whitespace-nowrap">
+              <TabsTrigger value="data" className="gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm data-[state=active]:shadow-sm">
                 <DatabaseBackup className="w-4 h-4 shrink-0" />
-                <span className="text-xs sm:text-sm">Données</span>
+                <span className="hidden xs:inline sm:inline">Données</span>
               </TabsTrigger>
-              <TabsTrigger value="push" className="gap-1.5 px-3 whitespace-nowrap">
+              <TabsTrigger value="push" className="gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm data-[state=active]:shadow-sm">
                 <BellRing className="w-4 h-4 shrink-0" />
-                <span className="text-xs sm:text-sm">Push</span>
+                <span className="hidden xs:inline sm:inline">Push</span>
               </TabsTrigger>
             </TabsList>
           </div>

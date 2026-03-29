@@ -118,6 +118,10 @@ export default function Settings() {
             <IntegrationsSettings />
           </TabsContent>
 
+          <TabsContent value="calendar">
+            <CalendarSyncSettingsPanel />
+          </TabsContent>
+
           <TabsContent value="data">
             <DataExportImport />
           </TabsContent>

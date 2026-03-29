@@ -32,7 +32,7 @@ export default function DashboardResourcesSection({ projects }: Props) {
       <Collapsible defaultOpen={false}>
         <CollapsibleTrigger className="w-full flex items-center justify-between group cursor-pointer mb-3">
           <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
-            📁 Ressources Drive
+            <img src={INTEGRATION_CONFIG.google_drive.icon} alt="Google Drive" className="w-4 h-4" /> Ressources Drive
             <span className="text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
               {projects.length}
             </span>

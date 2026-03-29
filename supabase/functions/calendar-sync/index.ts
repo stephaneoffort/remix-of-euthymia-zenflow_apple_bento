@@ -551,11 +551,35 @@ async function pushTaskToZenflow(account: any, taskId: string, action: string) {
   }
 }
 
-async function syncPendingTasks(account: any): Promise<number> {
+async function syncPendingTasks(account: any, userId: string): Promise<number> {
+  // Get the user's team_member_id from profiles
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("team_member_id")
+    .eq("id", userId)
+    .single();
+
+  const memberId = profile?.team_member_id;
+  if (!memberId) {
+    console.error("No team_member_id found for user", userId);
+    return 0;
+  }
+
+  // Get task IDs where user is assigned
+  const { data: assignments } = await supabase
+    .from("task_assignees")
+    .select("task_id")
+    .eq("member_id", memberId);
+
+  const assignedTaskIds = (assignments || []).map((a: any) => a.task_id);
+  if (!assignedTaskIds.length) return 0;
+
+  // Filter pending tasks to only assigned ones
   const { data: pendingTasks } = await supabase
     .from("tasks").select("*")
     .is("google_event_id", null)
-    .not("due_date", "is", null);
+    .not("due_date", "is", null)
+    .in("id", assignedTaskIds);
 
   if (!pendingTasks?.length) return 0;
 

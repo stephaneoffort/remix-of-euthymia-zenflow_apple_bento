@@ -331,6 +331,7 @@ serve(async (req) => {
     try {
       const fifteenMinLater = new Date(now.getTime() + 15 * 60 * 1000);
       console.log("Zoom check window:", now.toISOString(), "->", fifteenMinLater.toISOString());
+      console.log("VAPID private key length:", vapidPrivateKey?.length, "first chars:", vapidPrivateKey?.substring(0, 5));
       const { data: upcomingMeetings, error: zoomQueryErr } = await supabase
         .from("zoom_meetings")
         .select("id, topic, start_time, join_url, user_id")

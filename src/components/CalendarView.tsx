@@ -943,7 +943,7 @@ export default function CalendarView() {
               const hasTasks = tasksByDate.has(ds);
               return (
                 <button key={i} onClick={() => setSelectedDay(new Date(day.date))}
-                  className={`flex flex-col items-center py-1.5 transition-colors ${day.isCurrentMonth ? '' : 'opacity-30'} ${isSelected ? 'bg-primary/15' : isTodayCell ? 'bg-accent' : 'bg-card hover:bg-muted/50'}`}>
+                  className={`flex flex-col items-center py-1.5 transition-colors ${day.isCurrentMonth ? '' : 'opacity-40'} ${isSelected ? 'bg-primary/15' : isTodayCell ? 'bg-accent' : 'bg-card hover:bg-muted/50'}`}>
                   <span className={`text-xs font-medium w-6 h-6 flex items-center justify-center rounded-full ${isTodayCell ? 'bg-primary text-primary-foreground' : ''}`}>{day.date.getDate()}</span>
                   {hasTasks && <span className={`w-1 h-1 rounded-full mt-0.5 ${isSelected ? 'bg-primary' : 'bg-muted-foreground'}`} />}
                 </button>

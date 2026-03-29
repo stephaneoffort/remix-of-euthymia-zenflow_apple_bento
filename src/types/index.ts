@@ -74,6 +74,7 @@ export interface Task {
   recurrence?: Recurrence;
   recurrenceEndDate?: string | null;
   googleEventId?: string | null;
+  targetCalendarId?: string | null;
   createdAt: string;
   order: number;
 }

@@ -375,6 +375,14 @@ export default function TaskDetailPanel() {
                   onChange={(val) => updateTask(task.id, { dueDate: val })}
                 />
               </div>
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">Agenda cible</label>
+                <GoogleCalendarPicker
+                  value={task.targetCalendarId}
+                  onChange={(calId) => updateTask(task.id, { targetCalendarId: calId })}
+                  compact
+                />
+              </div>
               <div className="col-span-2">
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1 block">
                   <Repeat className="w-3 h-3" /> Récurrence

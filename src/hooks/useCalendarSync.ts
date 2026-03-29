@@ -210,6 +210,7 @@ export function useCalendarSync() {
     end_time: string;
     is_all_day?: boolean;
     location?: string;
+    has_meet?: boolean;
   }) => {
     // Find first active writable account
     const { data: activeAccounts } = await supabase

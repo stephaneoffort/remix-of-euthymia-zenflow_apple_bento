@@ -6,7 +6,7 @@ import { useGoogleDrive, type DriveAttachment } from '@/hooks/useGoogleDrive';
 import { getDriveIcon } from '@/components/drive/DriveFilePicker';
 import DriveFilePicker from '@/components/drive/DriveFilePicker';
 import { toast } from 'sonner';
-import { useIntegrations } from '@/hooks/useIntegrations';
+import { useIntegrations, INTEGRATION_CONFIG } from '@/hooks/useIntegrations';
 
 function formatSize(bytes: number | null) {
   if (!bytes) return '';

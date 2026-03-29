@@ -402,7 +402,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
-      return { id, syncFields: Object.keys(updates) };
+      return { id, syncFields: Object.keys(updates), updates };
     },
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });

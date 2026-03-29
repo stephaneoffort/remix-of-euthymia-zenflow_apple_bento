@@ -7,6 +7,7 @@ import { useIntegrations, INTEGRATION_CONFIG, type IntegrationKey } from '@/hook
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
+import BrevoConnectionForm from '@/components/brevo/BrevoConnectionForm';
 
 const CONNECT_URLS: Partial<Record<IntegrationKey, string>> = {
   google_drive: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/google-drive-oauth/authorize',

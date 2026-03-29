@@ -10,6 +10,7 @@ import { useZoom, type ZoomMeeting } from '@/hooks/useZoom';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { useIntegrations } from '@/hooks/useIntegrations';
 
 interface Props {
   entityType: 'task' | 'event' | 'project';

@@ -31,6 +31,7 @@ interface Props {
 }
 
 export default function CalendarEventDialog({ open, onClose, onSave, onDelete, event, defaultDate }: Props) {
+  const { isActive } = useIntegrations();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [startDate, setStartDate] = useState('');

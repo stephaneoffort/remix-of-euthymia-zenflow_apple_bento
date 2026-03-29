@@ -660,14 +660,19 @@ export default function TaskDetailPanel() {
               </div>
             </div>
 
-            {/* Google Drive */}
+            {/* Integrations */}
             <DriveAttachments entityType="task" entityId={task.id} compact />
-
-            {/* Canva */}
             <CanvaAttachments entityType="task" entityId={task.id} compact defaultTitle={task.title} />
-
-            {/* Zoom */}
             <ZoomMeetings entityType="task" entityId={task.id} compact defaultTitle={task.title} />
+
+            {!isActive('google_drive') && !isActive('canva') && !isActive('zoom') && (
+              <a
+                href="/settings"
+                className="block w-full py-3 px-4 border border-dashed border-border rounded-lg text-xs text-muted-foreground hover:border-primary/50 hover:text-primary transition-colors text-center"
+              >
+                📁 🎨 📹 — Connecte des outils depuis les Settings pour enrichir tes tâches →
+              </a>
+            )}
 
             {/* Time */}
             <div className="flex gap-3 sm:gap-4">

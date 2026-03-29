@@ -6,7 +6,7 @@ import { ChevronDown, ExternalLink, Copy, Clock } from "lucide-react";
 import { format, parseISO, isFuture } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
-import { useIntegrations } from "@/hooks/useIntegrations";
+import { useIntegrations, INTEGRATION_CONFIG } from "@/hooks/useIntegrations";
 
 const VISIBLE_COUNT = 5;
 

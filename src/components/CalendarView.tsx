@@ -618,7 +618,7 @@ export default function CalendarView() {
     await calSync.deleteCalendarEvent(event.id);
   };
 
-  const handleSaveEvent = async (data: { title: string; description: string; start_time: string; end_time: string; is_all_day: boolean; location: string }) => {
+  const handleSaveEvent = async (data: { title: string; description: string; start_time: string; end_time: string; is_all_day: boolean; location: string; has_meet?: boolean }) => {
     if (editingEvent) {
       await calSync.updateCalendarEvent(editingEvent.id, data);
     } else {

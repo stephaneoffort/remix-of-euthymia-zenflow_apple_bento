@@ -109,6 +109,10 @@ export default function Settings() {
             <ThemePalettePanel />
           </TabsContent>
 
+          <TabsContent value="integrations">
+            <IntegrationsPanel />
+          </TabsContent>
+
           <TabsContent value="data">
             <DataExportImport />
           </TabsContent>

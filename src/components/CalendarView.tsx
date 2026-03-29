@@ -1149,7 +1149,7 @@ export default function CalendarView() {
               return (
                 <DroppableDay key={`body-${i}`} dateStr={ds} isCurrentMonth={true} isToday={isTodayCell} dayNum={d.getDate()} onAddClick={() => setAddingForDate(ds)}>
                   <div className="flex items-center gap-1 mb-1">
-                    <span className="text-[10px] font-semibold text-muted-foreground uppercase">{DAYS_FR[i]}</span>
+                    <span className="text-[10px] font-semibold text-foreground/70 uppercase">{DAYS_FR[i]}</span>
                   </div>
                   {renderCellTasks(ds)}
                   {addingForDate === ds && (

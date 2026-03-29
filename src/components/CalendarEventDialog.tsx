@@ -10,6 +10,7 @@ import DriveAttachments from '@/components/drive/DriveAttachments';
 import CanvaAttachments from '@/components/canva/CanvaAttachments';
 import ZoomMeetings from '@/components/zoom/ZoomMeetings';
 import BrevoContacts from '@/components/brevo/BrevoContacts';
+import GoogleCalendarPicker from '@/components/GoogleCalendarPicker';
 import type { CalendarEvent } from '@/hooks/useCalendarSync';
 import { toast } from 'sonner';
 import { useIntegrations, INTEGRATION_CONFIG } from '@/hooks/useIntegrations';
@@ -26,6 +27,7 @@ interface Props {
     is_all_day: boolean;
     location: string;
     has_meet?: boolean;
+    target_calendar_id?: string | null;
   }) => Promise<void>;
   onDelete?: () => Promise<void>;
   event?: CalendarEvent | null;
@@ -47,6 +49,7 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
   const [creatingZoom, setCreatingZoom] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [targetCalendarId, setTargetCalendarId] = useState<string | null>(null);
   const zoom = useZoom();
 
   useEffect(() => {
@@ -71,6 +74,7 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
         setIsAllDay(false);
         setHasMeet(false);
         setHasZoom(false);
+        setTargetCalendarId(null);
         setStartDate(d);
         setStartTime('09:00');
         setEndDate(d);
@@ -96,6 +100,7 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
         is_all_day: isAllDay,
         location: location.trim(),
         has_meet: hasMeet,
+        target_calendar_id: targetCalendarId,
       });
 
       if (hasZoom && zoom.isConnected) {
@@ -173,6 +178,13 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
             <Label htmlFor="ev-desc">Description (optionnel)</Label>
             <Textarea id="ev-desc" value={description} onChange={e => setDescription(e.target.value)} rows={2} />
           </div>
+
+          {!event && (
+            <GoogleCalendarPicker
+              value={targetCalendarId}
+              onChange={setTargetCalendarId}
+            />
+          )}
 
           {isActive('google_meet') && (
             <div className="flex items-center gap-3 p-2.5 rounded-lg border border-border bg-muted/20">

@@ -211,8 +211,9 @@ export function useCalendarSync() {
     is_all_day?: boolean;
     location?: string;
     has_meet?: boolean;
+    target_calendar_id?: string | null;
   }) => {
-    // Find first active writable account
+    // Find first active writable account, or use a specific one if target_calendar_id is set
     const { data: activeAccounts } = await supabase
       .from('calendar_accounts')
       .select('*')
@@ -252,7 +253,16 @@ export function useCalendarSync() {
     // Push to external calendar if account exists
     if (account && newEvent) {
       try {
-        await invokeCalendarSync({ account_id: account.id, direction: 'push', event_id: (newEvent as any).id, action: 'create' });
+        const syncBody: Record<string, unknown> = {
+          account_id: account.id,
+          direction: 'push',
+          event_id: (newEvent as any).id,
+          action: 'create',
+        };
+        if (data.target_calendar_id) {
+          syncBody.target_calendar_id = data.target_calendar_id;
+        }
+        await invokeCalendarSync(syncBody);
         toast.success('Événement ajouté à Google Calendar ✅');
       } catch (err: any) {
         toast.error('Erreur push : ' + (err.message || 'Inconnue'));

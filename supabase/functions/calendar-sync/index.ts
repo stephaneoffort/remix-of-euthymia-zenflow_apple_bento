@@ -741,7 +741,7 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json();
-    const { account_id, direction, event_id, action, task_id } = body;
+    const { account_id, direction, event_id, action, task_id, target_calendar_id } = body;
     if (!account_id || !direction) {
       return new Response(
         JSON.stringify({ error: "account_id and direction are required" }),
@@ -886,8 +886,19 @@ Deno.serve(async (req) => {
         await supabase.from("calendar_events").delete().eq("id", event_id);
       } else if (action === "create") {
         if (evErr || !event) throw new Error("Event not found");
-        if (provider === "google") await googlePushCreate(account, event);
-        else if (isCalDav) await caldavPushCreate(account, event);
+        // Use target_calendar_id if provided
+        const pushAccount = target_calendar_id
+          ? { ...account, calendar_id: target_calendar_id === '__zenflow__' ? null : target_calendar_id }
+          : account;
+        if (provider === "google") {
+          if (target_calendar_id === '__zenflow__') {
+            const token = await refreshGoogleToken(account);
+            const zenCalId = await getOrCreateZenflowCalendar(token, account.id);
+            await googlePushCreate({ ...account, calendar_id: zenCalId }, event);
+          } else {
+            await googlePushCreate(pushAccount, event);
+          }
+        }
         else if (isCalDav) await caldavPushCreate(account, event);
       } else if (action === "update") {
         if (evErr || !event) throw new Error("Event not found");

@@ -93,26 +93,49 @@ async function googlePull(account: any): Promise<number> {
 async function googlePushCreate(account: any, event: any): Promise<string> {
   const token = await refreshGoogleToken(account);
   const calId = encodeURIComponent(account.calendar_id || "primary");
-  const payload = event.is_all_day
-    ? { start: { date: event.start_time.split("T")[0] }, end: { date: event.end_time.split("T")[0] } }
-    : { start: { dateTime: event.start_time, timeZone: "Europe/Paris" }, end: { dateTime: event.end_time, timeZone: "Europe/Paris" } };
+  const payload: any = {
+    summary: event.title,
+    description: event.description,
+    location: event.location,
+    ...(event.is_all_day
+      ? { start: { date: event.start_time.split("T")[0] }, end: { date: event.end_time.split("T")[0] } }
+      : { start: { dateTime: event.start_time, timeZone: "Europe/Paris" }, end: { dateTime: event.end_time, timeZone: "Europe/Paris" } }),
+  };
+
+  // Add Google Meet if requested
+  if (event.has_meet) {
+    payload.conferenceData = {
+      createRequest: {
+        requestId: crypto.randomUUID(),
+        conferenceSolutionKey: { type: "hangoutsMeet" },
+      },
+    };
+  }
+
+  const meetParam = event.has_meet ? "?conferenceDataVersion=1" : "";
   const res = await fetch(
-    `https://www.googleapis.com/calendar/v3/calendars/${calId}/events`,
+    `https://www.googleapis.com/calendar/v3/calendars/${calId}/events${meetParam}`,
     {
       method: "POST",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        summary: event.title,
-        description: event.description,
-        location: event.location,
-        ...payload,
-      }),
+      body: JSON.stringify(payload),
     },
   );
   const data = await res.json();
   if (!res.ok) throw new Error(`Google create failed: ${JSON.stringify(data)}`);
+
+  const meetLink = data.conferenceData?.entryPoints
+    ?.find((e: any) => e.entryPointType === "video")?.uri ?? null;
+
   await supabase.from("calendar_events")
-    .update({ external_id: data.id, sync_status: "synced", last_synced_at: new Date().toISOString() })
+    .update({
+      external_id: data.id,
+      sync_status: "synced",
+      meet_link: meetLink,
+      conference_id: data.conferenceData?.conferenceId ?? null,
+      has_meet: meetLink !== null,
+      last_synced_at: new Date().toISOString(),
+    })
     .eq("id", event.id);
   return data.id;
 }

@@ -121,14 +121,17 @@ export type Database = {
       calendar_events: {
         Row: {
           account_id: string | null
+          conference_id: string | null
           created_at: string | null
           description: string | null
           end_time: string
           external_id: string | null
+          has_meet: boolean | null
           id: string
           is_all_day: boolean | null
           last_synced_at: string | null
           location: string | null
+          meet_link: string | null
           provider: string
           start_time: string
           status: string | null
@@ -139,14 +142,17 @@ export type Database = {
         }
         Insert: {
           account_id?: string | null
+          conference_id?: string | null
           created_at?: string | null
           description?: string | null
           end_time: string
           external_id?: string | null
+          has_meet?: boolean | null
           id?: string
           is_all_day?: boolean | null
           last_synced_at?: string | null
           location?: string | null
+          meet_link?: string | null
           provider?: string
           start_time: string
           status?: string | null
@@ -157,14 +163,17 @@ export type Database = {
         }
         Update: {
           account_id?: string | null
+          conference_id?: string | null
           created_at?: string | null
           description?: string | null
           end_time?: string
           external_id?: string | null
+          has_meet?: boolean | null
           id?: string
           is_all_day?: boolean | null
           last_synced_at?: string | null
           location?: string | null
+          meet_link?: string | null
           provider?: string
           start_time?: string
           status?: string | null

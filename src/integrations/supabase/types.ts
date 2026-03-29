@@ -1348,6 +1348,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_sync_preferences: {
+        Row: {
+          auto_sync_subtasks: boolean | null
+          auto_sync_tasks: boolean | null
+          created_at: string | null
+          id: string
+          sync_tasks_without_date: boolean | null
+          task_calendar_id: string | null
+          task_calendar_label: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          auto_sync_subtasks?: boolean | null
+          auto_sync_tasks?: boolean | null
+          created_at?: string | null
+          id?: string
+          sync_tasks_without_date?: boolean | null
+          task_calendar_id?: string | null
+          task_calendar_label?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          auto_sync_subtasks?: boolean | null
+          auto_sync_tasks?: boolean | null
+          created_at?: string | null
+          id?: string
+          sync_tasks_without_date?: boolean | null
+          task_calendar_id?: string | null
+          task_calendar_label?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       zoom_connections: {
         Row: {
           access_token: string

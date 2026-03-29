@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-const CALENDAR_SYNC_URL = 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/calendar-sync';
+const CALENDAR_SYNC_URL = `https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/calendar-sync`;
 
 async function callCalendarSync(body: Record<string, unknown>) {
   const { data: { session } } = await supabase.auth.getSession();
@@ -35,12 +35,13 @@ async function getGoogleAccountId(): Promise<string | null> {
 }
 
 export function useTaskSync() {
+  /** Push a task to all assigned users' Google Calendars (non-blocking) */
   const syncTask = useCallback(async (
     taskId: string,
     action: 'create' | 'update' | 'delete',
   ) => {
     const accountId = await getGoogleAccountId();
-    if (!accountId) return; // No Google account connected — skip silently
+    if (!accountId) return;
 
     try {
       await callCalendarSync({

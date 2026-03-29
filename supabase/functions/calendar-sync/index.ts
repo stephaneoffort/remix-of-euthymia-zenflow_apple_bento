@@ -487,35 +487,37 @@ async function getOrCreateZenflowCalendar(token: string, accountId: string): Pro
   return created.id;
 }
 
-async function pushTaskToZenflow(account: any, taskId: string, action: string) {
-  const token = await refreshGoogleToken(account);
-  const zenflowCalId = await getOrCreateZenflowCalendar(token, account.id);
-  const baseUrl = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(zenflowCalId)}/events`;
-  const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
+// ── Get target calendar for a user based on sync preferences ──
+async function getTargetCalendarId(token: string, userId: string, accountId: string): Promise<string> {
+  const { data: prefs } = await supabase
+    .from("user_sync_preferences")
+    .select("task_calendar_id")
+    .eq("user_id", userId)
+    .maybeSingle();
 
-  const { data: task } = await supabase.from("tasks").select("*").eq("id", taskId).single();
+  if (prefs?.task_calendar_id) return prefs.task_calendar_id;
+  return getOrCreateZenflowCalendar(token, accountId);
+}
 
-  if (action === "delete") {
-    if (task?.google_event_id) {
-      const res = await fetch(`${baseUrl}/${task.google_event_id}`, { method: "DELETE", headers });
-      if (!res.ok && res.status !== 410 && res.status !== 404) { await res.text(); }
-      else { await res.text(); }
-    }
-    await supabase.from("tasks").update({ google_event_id: null } as any).eq("id", taskId);
-    return;
-  }
+// ── Check sync preferences for a user ──
+async function getSyncPrefs(userId: string) {
+  const { data } = await supabase
+    .from("user_sync_preferences")
+    .select("*")
+    .eq("user_id", userId)
+    .maybeSingle();
+  return data || { auto_sync_tasks: true, auto_sync_subtasks: true, sync_tasks_without_date: false, task_calendar_id: null };
+}
 
-  if (!task) throw new Error("Task not found");
-
+// ── Build Google Calendar event payload ──
+function buildEventPayload(task: any) {
   const isSubtask = !!task.parent_task_id;
   const prefix = isSubtask ? "↳ " : "✓ ";
   const statusEmoji: Record<string, string> = { todo: "🔵", in_progress: "🟡", in_review: "🟠", done: "🟢", blocked: "🔴" };
   const emoji = statusEmoji[task.status] ?? "🔵";
   const eventTitle = `${emoji} ${prefix}${task.title}`;
-
   const startDate = task.due_date ? new Date(task.due_date) : new Date();
   const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
-
   const description = [
     task.description || "",
     "",
@@ -527,10 +529,8 @@ async function pushTaskToZenflow(account: any, taskId: string, action: string) {
     "",
     "https://euthymia-zenflow-bento.lovable.app",
   ].join("\n");
-
   const colorId: Record<string, string> = { todo: "9", in_progress: "5", in_review: "6", done: "10", blocked: "11" };
-
-  const payload = {
+  return {
     summary: eventTitle,
     description,
     start: { dateTime: startDate.toISOString(), timeZone: "Europe/Paris" },
@@ -538,6 +538,111 @@ async function pushTaskToZenflow(account: any, taskId: string, action: string) {
     colorId: colorId[task.status] ?? "9",
     source: { title: "Euthymia ZenFlow", url: "https://euthymia-zenflow-bento.lovable.app" },
   };
+}
+
+// ── Push a task to a specific user's Google Calendar ──
+async function pushTaskForUser(userId: string, taskId: string, action: string) {
+  // Find user's active Google account
+  const { data: account } = await supabase
+    .from("calendar_accounts")
+    .select("*")
+    .eq("user_id", userId)
+    .eq("provider", "google")
+    .eq("is_active", true)
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  if (!account) return; // No Google account — skip
+
+  const token = await refreshGoogleToken(account);
+  const calendarId = await getTargetCalendarId(token, userId, account.id);
+  const baseUrl = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`;
+  const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
+
+  const { data: task } = await supabase.from("tasks").select("*").eq("id", taskId).single();
+
+  if (action === "delete") {
+    if (task?.google_event_id) {
+      const res = await fetch(`${baseUrl}/${task.google_event_id}`, { method: "DELETE", headers });
+      await res.text();
+    }
+    await supabase.from("tasks").update({ google_event_id: null } as any).eq("id", taskId);
+    return;
+  }
+
+  if (!task) throw new Error("Task not found");
+
+  // Check sync preferences
+  const prefs = await getSyncPrefs(userId);
+  const isSubtask = !!task.parent_task_id;
+  if (isSubtask && !prefs.auto_sync_subtasks) return;
+  if (!isSubtask && !prefs.auto_sync_tasks) return;
+  if (!task.due_date && !prefs.sync_tasks_without_date) return;
+
+  const payload = buildEventPayload(task);
+
+  if (action === "create" || (action === "update" && !task.google_event_id)) {
+    const res = await fetch(baseUrl, { method: "POST", headers, body: JSON.stringify(payload) });
+    const created = await res.json();
+    if (created.error) throw new Error("Google error: " + created.error.message);
+    await supabase.from("tasks").update({ google_event_id: created.id } as any).eq("id", taskId);
+  } else if (action === "update" && task.google_event_id) {
+    const res = await fetch(`${baseUrl}/${task.google_event_id}`, { method: "PUT", headers, body: JSON.stringify(payload) });
+    const updated = await res.json();
+    if (updated.error) throw new Error("Google error: " + updated.error.message);
+  }
+}
+
+// ── Push task to ALL assigned users' calendars ──
+async function pushTaskToAssignees(taskId: string, action: string) {
+  // Get all assignees for this task (member_id → user_id via profiles)
+  const { data: assignees } = await supabase
+    .from("task_assignees")
+    .select("member_id")
+    .eq("task_id", taskId);
+
+  if (!assignees?.length) return [];
+
+  const memberIds = assignees.map((a: any) => a.member_id);
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("id, team_member_id")
+    .in("team_member_id", memberIds);
+
+  const results: any[] = [];
+  for (const profile of (profiles || [])) {
+    try {
+      await pushTaskForUser(profile.id, taskId, action);
+      results.push({ user_id: profile.id, status: "synced" });
+    } catch (err: any) {
+      console.error(`Sync failed for user ${profile.id}:`, err);
+      results.push({ user_id: profile.id, status: "error", error: err.message });
+    }
+  }
+  return results;
+}
+
+// ── Legacy: push using caller's account directly ──
+async function pushTaskToZenflow(account: any, taskId: string, action: string) {
+  const token = await refreshGoogleToken(account);
+  const calendarId = await getTargetCalendarId(token, account.user_id, account.id);
+  const baseUrl = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`;
+  const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
+
+  const { data: task } = await supabase.from("tasks").select("*").eq("id", taskId).single();
+
+  if (action === "delete") {
+    if (task?.google_event_id) {
+      const res = await fetch(`${baseUrl}/${task.google_event_id}`, { method: "DELETE", headers });
+      await res.text();
+    }
+    await supabase.from("tasks").update({ google_event_id: null } as any).eq("id", taskId);
+    return;
+  }
+
+  if (!task) throw new Error("Task not found");
+  const payload = buildEventPayload(task);
 
   if (action === "create" || (action === "update" && !task.google_event_id)) {
     const res = await fetch(baseUrl, { method: "POST", headers, body: JSON.stringify(payload) });
@@ -552,39 +657,34 @@ async function pushTaskToZenflow(account: any, taskId: string, action: string) {
 }
 
 async function syncPendingTasks(account: any, userId: string): Promise<number> {
-  // Get the user's team_member_id from profiles
   const { data: profile } = await supabase
-    .from("profiles")
-    .select("team_member_id")
-    .eq("id", userId)
-    .single();
-
+    .from("profiles").select("team_member_id").eq("id", userId).single();
   const memberId = profile?.team_member_id;
-  if (!memberId) {
-    console.error("No team_member_id found for user", userId);
-    return 0;
-  }
+  if (!memberId) return 0;
 
-  // Get task IDs where user is assigned
+  const prefs = await getSyncPrefs(userId);
+  if (!prefs.auto_sync_tasks) return 0;
+
   const { data: assignments } = await supabase
-    .from("task_assignees")
-    .select("task_id")
-    .eq("member_id", memberId);
-
+    .from("task_assignees").select("task_id").eq("member_id", memberId);
   const assignedTaskIds = (assignments || []).map((a: any) => a.task_id);
   if (!assignedTaskIds.length) return 0;
 
-  // Filter pending tasks to only assigned ones
-  const { data: pendingTasks } = await supabase
-    .from("tasks").select("*")
+  let query = supabase.from("tasks").select("*")
     .is("google_event_id", null)
-    .not("due_date", "is", null)
     .in("id", assignedTaskIds);
 
+  if (!prefs.sync_tasks_without_date) {
+    query = query.not("due_date", "is", null);
+  }
+
+  const { data: pendingTasks } = await query;
   if (!pendingTasks?.length) return 0;
 
   let synced = 0;
   for (const task of pendingTasks) {
+    const isSubtask = !!task.parent_task_id;
+    if (isSubtask && !prefs.auto_sync_subtasks) continue;
     try {
       await pushTaskToZenflow(account, task.id, "create");
       synced++;
@@ -666,27 +766,10 @@ Deno.serve(async (req) => {
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
         );
       }
-      // Check if user is assigned to this task
-      const { data: profile } = await supabase
-        .from("profiles").select("team_member_id").eq("id", userId).single();
-      if (profile?.team_member_id) {
-        const { data: assignment } = await supabase
-          .from("task_assignees")
-          .select("task_id")
-          .eq("task_id", task_id)
-          .eq("member_id", profile.team_member_id)
-          .maybeSingle();
-        if (!assignment && action !== "delete") {
-          // Not assigned — skip silently
-          return new Response(
-            JSON.stringify({ success: true, skipped: "not_assigned" }),
-            { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-          );
-        }
-      }
-      await pushTaskToZenflow(account, task_id, action);
+      // Sync to ALL assigned users' calendars
+      const results = await pushTaskToAssignees(task_id, action);
       return new Response(
-        JSON.stringify({ success: true }),
+        JSON.stringify({ success: true, synced: results.length, results }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
@@ -706,6 +789,28 @@ Deno.serve(async (req) => {
         JSON.stringify({ calendar_id: calId }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
+    }
+
+    // ─── TEST ───
+    // ─── LIST CALENDARS ───
+    if (direction === "list_calendars") {
+      if (provider !== "google") {
+        return new Response(JSON.stringify({ calendars: [] }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+      const token = await refreshGoogleToken(account);
+      const listRes = await fetch(
+        "https://www.googleapis.com/calendar/v3/users/me/calendarList",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const list = await listRes.json();
+      const calendars = (list.items || []).map((c: any) => ({
+        id: c.id,
+        summary: c.summary,
+        primary: c.primary ?? false,
+      }));
+      return new Response(JSON.stringify({ calendars }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     // ─── TEST ───

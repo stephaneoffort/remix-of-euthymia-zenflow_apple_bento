@@ -8,12 +8,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown, Palette, BellRing, HardDrive } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown, Palette, BellRing, HardDrive, CalendarSync } from 'lucide-react';
 import { useThemeMode, PALETTE_META, type ThemePalette } from '@/context/ThemeContext';
 import DataExportImport from '@/components/DataExportImport';
 import InviteMemberDialog from '@/components/InviteMemberDialog';
 import IntegrationsSettings from '@/components/settings/IntegrationsSettings';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
+import CalendarSyncSettingsPanel from '@/components/settings/CalendarSyncSettings';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -63,7 +64,7 @@ export default function Settings() {
 
       <div className="max-w-3xl mx-auto p-6">
         <Tabs defaultValue="members">
-          <TabsList className="grid w-full grid-cols-7 mb-6">
+          <TabsList className="grid w-full grid-cols-8 mb-6">
             <TabsTrigger value="members" className="gap-2">
               <Users className="w-4 h-4" />
               <span className="hidden sm:inline">Membres</span>
@@ -83,6 +84,10 @@ export default function Settings() {
             <TabsTrigger value="integrations" className="gap-2">
               <HardDrive className="w-4 h-4" />
               <span className="hidden sm:inline">Intégrations</span>
+            </TabsTrigger>
+            <TabsTrigger value="calendar" className="gap-2">
+              <CalendarSync className="w-4 h-4" />
+              <span className="hidden sm:inline">Calendrier</span>
             </TabsTrigger>
             <TabsTrigger value="data" className="gap-2">
               <DatabaseBackup className="w-4 h-4" />
@@ -112,6 +117,10 @@ export default function Settings() {
 
           <TabsContent value="integrations">
             <IntegrationsSettings />
+          </TabsContent>
+
+          <TabsContent value="calendar">
+            <CalendarSyncSettingsPanel />
           </TabsContent>
 
           <TabsContent value="data">

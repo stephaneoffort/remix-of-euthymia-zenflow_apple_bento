@@ -187,7 +187,22 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
             </div>
           )}
 
-          {event?.meet_link && (
+          {isActive('zoom') && (
+            <div className="flex items-center gap-3 p-2.5 rounded-lg border border-border bg-muted/20">
+              <img src={INTEGRATION_CONFIG.zoom.icon} alt="Zoom" className="w-4 h-4 shrink-0" />
+              <div className="flex-1">
+                <Label htmlFor="ev-zoom" className="text-sm font-medium cursor-pointer">Zoom</Label>
+                {hasZoom && !zoom.isConnected && (
+                  <p className="text-[10px] text-destructive">Connectez Zoom dans les paramètres</p>
+                )}
+                {hasZoom && zoom.isConnected && (
+                  <p className="text-[10px] text-muted-foreground">Une réunion Zoom sera créée automatiquement</p>
+                )}
+              </div>
+              <Switch id="ev-zoom" checked={hasZoom} onCheckedChange={setHasZoom} />
+            </div>
+          )}
+
             <div className="flex items-center gap-2 p-2.5 rounded-lg bg-[hsl(174,60%,30%)]/10 border border-[hsl(174,60%,30%)]/20">
               <Video className="w-4 h-4 text-[hsl(174,60%,30%)] shrink-0" />
               <div className="flex-1 min-w-0">

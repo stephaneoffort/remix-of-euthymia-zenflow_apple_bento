@@ -3292,3 +3292,53 @@ html body::after {
     animation: none !important;
   }
 }
+
+/* ─── Text legibility on glass surfaces (dark) ─── */
+[data-palette="clubroom"]:not(.light):not(.mixed) .bento-cell,
+[data-palette="neutrals"]:not(.light):not(.mixed) .bento-cell,
+[data-palette="sapphire"]:not(.light):not(.mixed) .bento-cell,
+[data-palette="cinematic"]:not(.light):not(.mixed) .bento-cell,
+[data-palette="teal"]:not(.light):not(.mixed) .bento-cell,
+[data-palette="bento2026"]:not(.light):not(.mixed) .bento-cell,
+[data-palette="bentoOcean"]:not(.light):not(.mixed) .bento-cell,
+[data-palette="bentoRose"]:not(.light):not(.mixed) .bento-cell,
+[data-palette="bentoAmber"]:not(.light):not(.mixed) .bento-cell,
+[data-palette^="liquidGlass"].dark .bento-cell,
+[data-palette="clubroom"]:not(.light):not(.mixed) .bg-card,
+[data-palette="neutrals"]:not(.light):not(.mixed) .bg-card,
+[data-palette="sapphire"]:not(.light):not(.mixed) .bg-card,
+[data-palette="cinematic"]:not(.light):not(.mixed) .bg-card,
+[data-palette="teal"]:not(.light):not(.mixed) .bg-card,
+[data-palette^="liquidGlass"].dark .bg-card {
+  text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
+/* ─── Text legibility on glass surfaces (light/mixed) ─── */
+[data-palette="clubroom"].light .bento-cell,
+[data-palette="clubroom"].mixed .bento-cell,
+[data-palette="neutrals"].light .bento-cell,
+[data-palette="neutrals"].mixed .bento-cell,
+[data-palette="sapphire"].light .bento-cell,
+[data-palette="sapphire"].mixed .bento-cell,
+[data-palette="cinematic"].light .bento-cell,
+[data-palette="cinematic"].mixed .bento-cell,
+[data-palette="teal"].light .bento-cell,
+[data-palette="teal"].mixed .bento-cell,
+[data-palette^="liquidGlass"].light .bento-cell,
+[data-palette^="liquidGlass"].mixed .bento-cell,
+[data-palette^="liquidGlass"]:not(.dark):not(.mixed) .bento-cell,
+[data-palette="clubroom"].light .bg-card,
+[data-palette="clubroom"].mixed .bg-card,
+[data-palette="neutrals"].light .bg-card,
+[data-palette="neutrals"].mixed .bg-card,
+[data-palette="sapphire"].light .bg-card,
+[data-palette="sapphire"].mixed .bg-card,
+[data-palette="cinematic"].light .bg-card,
+[data-palette="cinematic"].mixed .bg-card,
+[data-palette="teal"].light .bg-card,
+[data-palette="teal"].mixed .bg-card,
+[data-palette^="liquidGlass"].light .bg-card,
+[data-palette^="liquidGlass"].mixed .bg-card,
+[data-palette^="liquidGlass"]:not(.dark):not(.mixed) .bg-card {
+  text-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}

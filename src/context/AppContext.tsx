@@ -324,7 +324,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      if (data) toast.success('Tâche créée');
+      if (data) {
+        toast.success('Tâche créée');
+        // Sync to ZENFLOW if task has a due date
+        if (data.due_date) syncTask(data.id, 'create');
+      }
     },
     onError: (error) => {
       console.error('Failed to add task:', error);

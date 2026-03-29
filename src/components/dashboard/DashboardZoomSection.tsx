@@ -17,10 +17,8 @@ export default function DashboardZoomSection() {
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
 
-  if (!isActive('zoom')) return null;
-
   useEffect(() => {
-    if (!zoom.isConnected) { setLoading(false); return; }
+    if (!isActive('zoom') || !zoom.isConnected) { setLoading(false); return; }
     (async () => {
       try {
         // List all meetings for "project" entity type with empty id to get all

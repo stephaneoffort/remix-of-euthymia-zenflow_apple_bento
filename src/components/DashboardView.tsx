@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import DriveAttachments from '@/components/drive/DriveAttachments';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { useThemeMode } from '@/context/ThemeContext';
@@ -535,6 +536,30 @@ export default function DashboardView() {
           </CardContent>
         </Card>
       </section>
+
+      {/* Google Drive par projet */}
+      {projects.length > 0 && (
+        <section>
+          <h2 className="text-base font-semibold text-foreground mb-3 flex items-center gap-2">
+            📁 Ressources Drive
+          </h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            {projects.map(project => (
+              <Card key={project.id} className="bg-card border-border">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-foreground flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: project.color }} />
+                    {project.name}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <DriveAttachments entityType="project" entityId={project.id} compact />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

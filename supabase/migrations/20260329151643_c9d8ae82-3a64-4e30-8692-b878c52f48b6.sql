@@ -1,0 +1,1 @@
+UPDATE member_integrations SET is_enabled = true, is_connected = true, enabled_at = NOW(), connected_at = NOW() WHERE user_id = '4c217005-a0ea-416f-965e-26365fba8014' AND integration = 'zoom';

@@ -213,16 +213,17 @@ export function useCalendarSync() {
     has_meet?: boolean;
     target_calendar_id?: string | null;
   }) => {
-    // Find first active writable account, or use a specific one if target_calendar_id is set
+    // Find first active writable account (Google or CalDAV, not ICS)
     const { data: activeAccounts } = await supabase
       .from('calendar_accounts')
       .select('*')
       .eq('is_active', true)
       .neq('provider', 'ics')
-      .order('created_at', { ascending: true })
-      .limit(1);
+      .order('created_at', { ascending: true });
 
-    const account = activeAccounts?.[0];
+    // Prefer Google account for push sync
+    const googleAccount = activeAccounts?.find(a => a.provider === 'google');
+    const account = googleAccount || activeAccounts?.[0] || null;
 
     const userId = await getCurrentUserId();
 

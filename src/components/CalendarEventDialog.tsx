@@ -12,7 +12,8 @@ import ZoomMeetings from '@/components/zoom/ZoomMeetings';
 import BrevoContacts from '@/components/brevo/BrevoContacts';
 import type { CalendarEvent } from '@/hooks/useCalendarSync';
 import { toast } from 'sonner';
-import { useIntegrations } from '@/hooks/useIntegrations';
+import { useIntegrations, INTEGRATION_CONFIG } from '@/hooks/useIntegrations';
+import { useZoom } from '@/hooks/useZoom';
 
 interface Props {
   open: boolean;
@@ -42,8 +43,11 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
   const [isAllDay, setIsAllDay] = useState(false);
   const [location, setLocation] = useState('');
   const [hasMeet, setHasMeet] = useState(false);
+  const [hasZoom, setHasZoom] = useState(false);
+  const [creatingZoom, setCreatingZoom] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const zoom = useZoom();
 
   useEffect(() => {
     if (open) {
@@ -66,6 +70,7 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
         setLocation('');
         setIsAllDay(false);
         setHasMeet(false);
+        setHasZoom(false);
         setStartDate(d);
         setStartTime('09:00');
         setEndDate(d);
@@ -82,15 +87,33 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
     try {
       const start = isAllDay ? `${startDate}T00:00:00` : `${startDate}T${startTime}:00`;
       const end = isAllDay ? `${endDate || startDate}T23:59:59` : `${endDate || startDate}T${endTime}:00`;
+      const startISO = new Date(start).toISOString();
       await onSave({
         title: title.trim(),
         description: description.trim(),
-        start_time: new Date(start).toISOString(),
+        start_time: startISO,
         end_time: new Date(end).toISOString(),
         is_all_day: isAllDay,
         location: location.trim(),
         has_meet: hasMeet,
       });
+
+      if (hasZoom && zoom.isConnected) {
+        try {
+          const durationMin = Math.round((new Date(end).getTime() - new Date(start).getTime()) / 60000);
+          await zoom.createMeeting(
+            title.trim(),
+            'event',
+            '',
+            isAllDay ? undefined : startISO,
+            durationMin > 0 ? durationMin : 60
+          );
+          toast.success('Réunion Zoom créée ✅');
+        } catch {
+          toast.error('Événement créé, mais erreur Zoom');
+        }
+      }
+
       onClose();
     } finally {
       setSaving(false);
@@ -161,6 +184,22 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
                 )}
               </div>
               <Switch id="ev-meet" checked={hasMeet} onCheckedChange={setHasMeet} />
+            </div>
+          )}
+
+          {isActive('zoom') && (
+            <div className="flex items-center gap-3 p-2.5 rounded-lg border border-border bg-muted/20">
+              <img src={INTEGRATION_CONFIG.zoom.icon} alt="Zoom" className="w-4 h-4 shrink-0" />
+              <div className="flex-1">
+                <Label htmlFor="ev-zoom" className="text-sm font-medium cursor-pointer">Zoom</Label>
+                {hasZoom && !zoom.isConnected && (
+                  <p className="text-[10px] text-destructive">Connectez Zoom dans les paramètres</p>
+                )}
+                {hasZoom && zoom.isConnected && (
+                  <p className="text-[10px] text-muted-foreground">Une réunion Zoom sera créée automatiquement</p>
+                )}
+              </div>
+              <Switch id="ev-zoom" checked={hasZoom} onCheckedChange={setHasZoom} />
             </div>
           )}
 

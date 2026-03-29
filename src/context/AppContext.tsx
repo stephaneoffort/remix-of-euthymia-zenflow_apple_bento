@@ -105,6 +105,7 @@ function dbToTask(row: any, assigneeIds: string[], comments: Comment[], attachme
     recurrence: (row.recurrence as Recurrence) || null,
     recurrenceEndDate: row.recurrence_end_date || null,
     googleEventId: row.google_event_id || null,
+    targetCalendarId: (row as any).target_calendar_id || null,
     createdAt: row.created_at,
     order: row.sort_order,
   };

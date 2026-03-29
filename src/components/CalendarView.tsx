@@ -211,10 +211,10 @@ function DraggableTask({ task, onClick, members, allTasks, spanInfo }: {
           className={`text-[11px] px-1.5 py-0.5 cursor-grab transition-colors flex items-center gap-1
             ${isDragging ? 'opacity-30' : ''}
             ${isSpanning
-              ? `${spanInfo.isStart ? 'rounded-l' : ''} ${spanInfo.isEnd ? 'rounded-r' : ''} ${!spanInfo.isStart && !spanInfo.isEnd ? '' : ''} bg-primary/15 text-primary hover:bg-primary/25 border-y border-primary/20 ${spanInfo.isStart ? 'border-l' : 'border-l-0'} ${spanInfo.isEnd ? 'border-r' : 'border-r-0'} -mx-1.5`
+              ? `${spanInfo.isStart ? 'rounded-l' : ''} ${spanInfo.isEnd ? 'rounded-r' : ''} ${!spanInfo.isStart && !spanInfo.isEnd ? '' : ''} bg-primary/20 text-foreground hover:bg-primary/30 border-y border-primary/30 ${spanInfo.isStart ? 'border-l' : 'border-l-0'} ${spanInfo.isEnd ? 'border-r' : 'border-r-0'} -mx-1.5`
               : task.parentTaskId
-                ? 'rounded ml-2 bg-accent/60 text-accent-foreground hover:bg-accent/80'
-                : 'rounded bg-primary/10 text-primary hover:bg-primary/20'
+                ? 'rounded ml-2 bg-accent/70 text-accent-foreground hover:bg-accent/90'
+                : 'rounded bg-primary/15 text-foreground hover:bg-primary/25'
             }
           `}
         >

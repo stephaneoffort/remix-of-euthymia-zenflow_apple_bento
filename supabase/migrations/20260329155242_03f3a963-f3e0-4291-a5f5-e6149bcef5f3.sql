@@ -1,0 +1,1 @@
+ALTER TABLE public.zoom_meetings ADD COLUMN IF NOT EXISTS notified_at timestamp with time zone DEFAULT NULL;

@@ -1386,6 +1386,7 @@ export type Database = {
           entity_type: string
           id: string
           join_url: string
+          notified_at: string | null
           password: string | null
           start_time: string | null
           start_url: string
@@ -1401,6 +1402,7 @@ export type Database = {
           entity_type: string
           id?: string
           join_url: string
+          notified_at?: string | null
           password?: string | null
           start_time?: string | null
           start_url: string
@@ -1416,6 +1418,7 @@ export type Database = {
           entity_type?: string
           id?: string
           join_url?: string
+          notified_at?: string | null
           password?: string | null
           start_time?: string | null
           start_url?: string

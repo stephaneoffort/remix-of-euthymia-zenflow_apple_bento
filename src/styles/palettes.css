@@ -3216,7 +3216,15 @@ html body::after {
 [data-palette="cinematic"].light .bg-card,
 [data-palette="cinematic"].mixed .bg-card,
 [data-palette="teal"].light .bg-card,
-[data-palette="teal"].mixed .bg-card {
+[data-palette="teal"].mixed .bg-card,
+[data-palette="bento2026"].light .bg-card,
+[data-palette="bento2026"].mixed .bg-card,
+[data-palette="bentoOcean"].light .bg-card,
+[data-palette="bentoOcean"].mixed .bg-card,
+[data-palette="bentoRose"].light .bg-card,
+[data-palette="bentoRose"].mixed .bg-card,
+[data-palette="bentoAmber"].light .bg-card,
+[data-palette="bentoAmber"].mixed .bg-card {
   background: rgba(255,255,255,0.18) !important;
   backdrop-filter: blur(24px) saturate(180%) brightness(1.05) !important;
   -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.05) !important;
@@ -3231,7 +3239,11 @@ html body::after {
 [data-palette="neutrals"]:not(.light):not(.mixed) .bg-card,
 [data-palette="sapphire"]:not(.light):not(.mixed) .bg-card,
 [data-palette="cinematic"]:not(.light):not(.mixed) .bg-card,
-[data-palette="teal"]:not(.light):not(.mixed) .bg-card {
+[data-palette="teal"]:not(.light):not(.mixed) .bg-card,
+[data-palette="bento2026"]:not(.light):not(.mixed) .bg-card,
+[data-palette="bentoOcean"]:not(.light):not(.mixed) .bg-card,
+[data-palette="bentoRose"]:not(.light):not(.mixed) .bg-card,
+[data-palette="bentoAmber"]:not(.light):not(.mixed) .bg-card {
   background: rgba(255,255,255,0.04) !important;
   backdrop-filter: blur(24px) saturate(160%) !important;
   -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
@@ -3240,12 +3252,16 @@ html body::after {
   border-radius: 24px !important;
 }
 
-/* ─── Interactive hover lift for classic palettes ─── */
+/* ─── Interactive hover lift for all non-LG palettes ─── */
 [data-palette="clubroom"] .bento-cell:hover,
 [data-palette="neutrals"] .bento-cell:hover,
 [data-palette="sapphire"] .bento-cell:hover,
 [data-palette="cinematic"] .bento-cell:hover,
-[data-palette="teal"] .bento-cell:hover {
+[data-palette="teal"] .bento-cell:hover,
+[data-palette="bento2026"] .bento-cell:hover,
+[data-palette="bentoOcean"] .bento-cell:hover,
+[data-palette="bentoRose"] .bento-cell:hover,
+[data-palette="bentoAmber"] .bento-cell:hover {
   transform: translateY(-4px);
 }
 

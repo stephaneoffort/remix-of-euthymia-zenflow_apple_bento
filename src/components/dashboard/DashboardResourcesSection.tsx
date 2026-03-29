@@ -5,7 +5,7 @@ import { ChevronDown } from "lucide-react";
 import DriveAttachments from "@/components/drive/DriveAttachments";
 import CanvaAttachments from "@/components/canva/CanvaAttachments";
 import { Project } from "@/types";
-import { useIntegrations } from "@/hooks/useIntegrations";
+import { useIntegrations, INTEGRATION_CONFIG } from "@/hooks/useIntegrations";
 
 const VISIBLE_COUNT = 5;
 

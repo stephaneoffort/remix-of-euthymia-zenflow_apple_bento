@@ -360,7 +360,7 @@ export default function AppSidebar() {
               <button
                 onClick={() => { setSelectedView('dashboard'); setSelectedProjectId(null); setSelectedSpaceId(null); setQuickFilter('all'); }}
                 className={`p-2 rounded-md transition-colors ${
-                  selectedView === 'dashboard' ? 'bg-sidebar-active text-sidebar-fg-bright' : 'text-sidebar-fg hover:bg-sidebar-hover'
+                  selectedView === 'dashboard' ? 'bg-sidebar-active text-sidebar-active-fg' : 'text-sidebar-fg hover:bg-sidebar-hover'
                 }`}
               >
                 <Home className="w-4 h-4" />
@@ -381,7 +381,7 @@ export default function AppSidebar() {
                   }}
                   className={`relative p-2 rounded-md transition-colors ${
                     quickFilter === f.key && !selectedProjectId
-                      ? 'bg-sidebar-active text-sidebar-fg-bright'
+                      ? 'bg-sidebar-active text-sidebar-active-fg'
                       : 'text-sidebar-fg hover:bg-sidebar-hover'
                   }`}
                 >
@@ -416,7 +416,7 @@ export default function AppSidebar() {
                         }}
                         className={`w-9 h-9 rounded-md flex items-center justify-center text-sm transition-colors shrink-0 ${
                           isSpaceSelected
-                            ? 'bg-sidebar-active text-sidebar-fg-bright'
+                            ? 'bg-sidebar-active text-sidebar-active-fg'
                             : 'text-sidebar-fg hover:bg-sidebar-hover'
                         }`}
                       >
@@ -527,7 +527,7 @@ export default function AppSidebar() {
         <button
           onClick={() => { setSelectedView('dashboard'); setSelectedProjectId(null); setSelectedSpaceId(null); setQuickFilter('all'); handleNavClick(); }}
           className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm font-medium transition-colors ${
-            selectedView === 'dashboard' ? 'bg-sidebar-active text-sidebar-fg-bright' : 'text-sidebar-fg hover:bg-sidebar-hover'
+            selectedView === 'dashboard' ? 'bg-sidebar-active text-sidebar-active-fg' : 'text-sidebar-fg hover:bg-sidebar-hover'
           }`}
         >
           <Home className="w-4 h-4" />
@@ -559,7 +559,7 @@ export default function AppSidebar() {
                 }}
                 className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors ${
                   quickFilter === f.key && !selectedProjectId
-                    ? 'bg-sidebar-active text-sidebar-fg-bright'
+                    ? 'bg-sidebar-active text-sidebar-active-fg'
                     : 'text-sidebar-fg hover:bg-sidebar-hover'
                 }`}
               >
@@ -874,7 +874,7 @@ export default function AppSidebar() {
                                       dragOverProjectId === project.id
                                         ? 'bg-primary/20 ring-2 ring-primary/50 shadow-sm shadow-primary/10'
                                         : selectedProjectId === project.id
-                                          ? 'bg-sidebar-active text-sidebar-fg-bright'
+                                          ? 'bg-sidebar-active text-sidebar-active-fg'
                                           : 'text-sidebar-fg hover:bg-sidebar-hover'
                                     } ${draggingProjectId === project.id ? 'opacity-50 scale-95' : ''}`}
                                   >

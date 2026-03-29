@@ -2132,7 +2132,7 @@ html body::after {
   border-radius: 0 !important;
 }
 [data-palette^="liquidGlass"].dark .task-detail-panel {
-  background: rgba(15, 15, 30, 0.88) !important;
+  background: rgba(15, 15, 30, 0.81) !important;
   backdrop-filter: blur(40px) saturate(160%) !important;
   -webkit-backdrop-filter: blur(40px) saturate(160%) !important;
   border-left: 1px solid rgba(255, 255, 255, 0.08) !important;

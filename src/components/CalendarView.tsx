@@ -244,9 +244,9 @@ function DroppableDay({ dateStr, isCurrentMonth, isToday, dayNum, children, onAd
 }) {
   const { isOver, setNodeRef } = useDroppable({ id: dateStr });
   return (
-    <div ref={setNodeRef} className={`group min-h-[100px] p-1.5 border-b border-r border-border transition-colors ${isCurrentMonth ? 'bg-card' : 'bg-muted/20'} ${isOver ? 'bg-primary/10 ring-1 ring-inset ring-primary/30' : ''}`}>
+    <div ref={setNodeRef} className={`group min-h-[100px] p-1.5 border-b border-r border-border transition-colors ${isCurrentMonth ? 'bg-card' : 'bg-muted/40'} ${isOver ? 'bg-primary/10 ring-1 ring-inset ring-primary/30' : ''}`}>
       <div className="flex items-center justify-between">
-        <span className={`text-xs font-medium inline-flex items-center justify-center w-6 h-6 rounded-full ${isToday ? 'bg-primary text-primary-foreground' : isCurrentMonth ? 'text-foreground' : 'text-muted-foreground'}`}>{dayNum}</span>
+        <span className={`text-xs font-semibold inline-flex items-center justify-center w-6 h-6 rounded-full ${isToday ? 'bg-primary text-primary-foreground' : isCurrentMonth ? 'text-foreground' : 'text-muted-foreground'}`}>{dayNum}</span>
         {isCurrentMonth && (
           <button onClick={(e) => { e.stopPropagation(); onAddClick(); }} className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-muted transition-all" title="Ajouter une tâche"><Plus className="w-3 h-3 text-muted-foreground" /></button>
         )}
@@ -934,7 +934,7 @@ export default function CalendarView() {
           {mobileActionBar}
           <div className="grid grid-cols-7 gap-px bg-border mx-2 rounded-lg overflow-hidden">
             {DAYS_FR_SHORT.map((d, i) => (
-              <div key={i} className="py-1 text-center text-label font-semibold text-foreground/70 bg-muted/40">{d}</div>
+              <div key={i} className="py-1 text-center text-label font-semibold text-foreground bg-muted/60">{d}</div>
             ))}
             {mCalDays.map((day, i) => {
               const ds = toDateStr(day.date);
@@ -1149,7 +1149,7 @@ export default function CalendarView() {
               return (
                 <DroppableDay key={`body-${i}`} dateStr={ds} isCurrentMonth={true} isToday={isTodayCell} dayNum={d.getDate()} onAddClick={() => setAddingForDate(ds)}>
                   <div className="flex items-center gap-1 mb-1">
-                    <span className="text-[10px] font-semibold text-foreground/70 uppercase">{DAYS_FR[i]}</span>
+                    <span className="text-[10px] font-semibold text-foreground uppercase">{DAYS_FR[i]}</span>
                   </div>
                   {renderCellTasks(ds)}
                   {addingForDate === ds && (
@@ -1175,7 +1175,7 @@ export default function CalendarView() {
       <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <div className="grid grid-cols-7 border border-border rounded-lg overflow-hidden flex-1">
           {DAYS_FR.map((d, i) => (
-            <div key={i} className="py-2 text-center text-xs font-semibold text-foreground/70 bg-muted/40 border-b border-border">{d}</div>
+            <div key={i} className="py-2 text-center text-xs font-semibold text-foreground bg-muted/60 border-b border-border">{d}</div>
           ))}
           {calendarDays.map((day, i) => {
             const dateStr = toDateStr(day.date);

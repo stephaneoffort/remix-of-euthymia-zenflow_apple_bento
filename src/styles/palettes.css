@@ -71,7 +71,7 @@
   --ring: 42 56% 42%;
   --sidebar-bg: 40 18% 95%;
   --sidebar-fg: 260 6% 32%;
-  --sidebar-fg-bright: 260 10% 15%;
+  --sidebar-fg-bright: 0 0% 100%;
   --sidebar-hover: 40 14% 90%;
   --sidebar-active: 42 58% 50%;
   --sidebar-border: 40 12% 84%;
@@ -186,7 +186,7 @@
   --ring: 28 32% 40%;
   --sidebar-bg: 33 22% 95%;
   --sidebar-fg: 24 10% 32%;
-  --sidebar-fg-bright: 24 14% 15%;
+  --sidebar-fg-bright: 0 0% 100%;
   --sidebar-hover: 30 14% 90%;
   --sidebar-active: 28 32% 48%;
   --sidebar-border: 30 14% 85%;
@@ -301,7 +301,7 @@
   --ring: 173 78% 30%;
   --sidebar-bg: 214 24% 95%;
   --sidebar-fg: 222 10% 32%;
-  --sidebar-fg-bright: 222 22% 12%;
+  --sidebar-fg-bright: 0 0% 100%;
   --sidebar-hover: 214 16% 90%;
   --sidebar-active: 173 78% 38%;
   --sidebar-border: 214 14% 85%;
@@ -416,7 +416,7 @@
   --ring: 265 68% 48%;
   --sidebar-bg: 268 24% 95%;
   --sidebar-fg: 262 10% 32%;
-  --sidebar-fg-bright: 262 18% 12%;
+  --sidebar-fg-bright: 0 0% 100%;
   --sidebar-hover: 268 16% 90%;
   --sidebar-active: 265 68% 54%;
   --sidebar-border: 268 14% 85%;
@@ -531,7 +531,7 @@
   --ring: 168 74% 36%;
   --sidebar-bg: 168 24% 95%;
   --sidebar-fg: 186 10% 32%;
-  --sidebar-fg-bright: 186 18% 12%;
+  --sidebar-fg-bright: 0 0% 100%;
   --sidebar-hover: 168 16% 90%;
   --sidebar-active: 168 74% 40%;
   --sidebar-border: 168 14% 85%;
@@ -654,7 +654,7 @@
   --ring: 125 13% 24%;
   --sidebar-bg: 36 28% 91%;
   --sidebar-fg: 27 5% 32%;
-  --sidebar-fg-bright: 0 0% 10%;
+  --sidebar-fg-bright: 0 0% 100%;
   --sidebar-hover: 36 22% 87%;
   --sidebar-active: 125 13% 24%;
   --sidebar-border: 36 18% 82%;

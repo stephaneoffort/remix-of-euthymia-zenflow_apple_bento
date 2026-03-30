@@ -723,6 +723,7 @@ export default function GanttView() {
                   totalFloat={cpmResult.totalFloat[task.id]}
                   onDoubleClick={() => setSelectedTaskId(task.id)}
                   onDatesChange={handleDatesChange}
+                  onContextMenu={(e) => handleContextMenu(task.id, e)}
                 />
               ))}
 

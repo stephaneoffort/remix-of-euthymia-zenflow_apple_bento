@@ -362,11 +362,9 @@ export default function DataExportImport() {
                     ['Membres', counts!.members],
                     ['Commentaires', counts!.comments],
                     ['Checklist', counts!.checklists],
-                    ['Catégories chat', counts!.chatCategories],
+                    ['Canaux chat', counts!.chatChannels],
                     ['Messages chat', counts!.chatMessages],
                     ['Réactions chat', counts!.chatReactions],
-                    ['Messages privés', counts!.directMessages],
-                    ['Réactions DM', counts!.dmReactions],
                     ['Statuts perso.', counts!.statuses],
                   ].map(([label, count]) => (
                     <div key={label as string} className="text-xs">

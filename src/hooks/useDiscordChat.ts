@@ -20,6 +20,7 @@ export function useDiscordChat() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<ChatMessage[]>([]);
   const [searching, setSearching] = useState(false);
+  const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
   const messagesRef = useRef<ChatMessage[]>([]);
   const typingTimeouts = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 

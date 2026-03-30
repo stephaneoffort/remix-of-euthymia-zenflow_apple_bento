@@ -13,6 +13,7 @@ const CONNECT_URLS: Partial<Record<IntegrationKey, string>> = {
   google_drive: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/google-drive-oauth/authorize',
   zoom: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/zoom-oauth/authorize',
   canva: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/canva-oauth/authorize',
+  gmail: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/gmail-oauth/authorize',
 };
 
 const CONNECTION_TABLES: Partial<Record<IntegrationKey, string>> = {

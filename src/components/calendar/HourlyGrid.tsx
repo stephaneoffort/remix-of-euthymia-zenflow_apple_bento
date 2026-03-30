@@ -459,6 +459,8 @@ function EventCard({ item, onClick, widthPercent, leftPercent, isDay, maxEventHe
           <CheckCircle2 className="w-3 h-3 shrink-0 opacity-80" />
         )}
         <span className="truncate font-medium leading-tight">{t.title}</span>
+        {zoomTaskIds.has(t.id) && <img src={zoomIcon} alt="Zoom" className="w-3 h-3 shrink-0" />}
+        {t.googleEventId && meetTaskIds.has(t.googleEventId) && <img src={googleMeetIcon} alt="Meet" className="w-3 h-3 shrink-0" />}
       </div>
       {showTime && t.dueDate && hasTimeComponent(t.dueDate) && (
         <div className="opacity-60 truncate" style={{ fontSize: timeFontSize }}>

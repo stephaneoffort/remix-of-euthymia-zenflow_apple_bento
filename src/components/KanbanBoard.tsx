@@ -203,7 +203,7 @@ export default function KanbanBoard() {
         key={status}
         layout
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        className={`flex flex-col w-[75vw] sm:w-0 sm:min-w-0 sm:flex-1 shrink-0 sm:shrink rounded-lg snap-center sm:snap-align-none transition-all duration-200 ${
+        className={`flex flex-col w-[75vw] sm:w-0 sm:min-w-0 sm:flex-1 shrink-0 sm:shrink overflow-hidden rounded-lg snap-center sm:snap-align-none transition-all duration-200 ${
           draggedColumn === status ? 'opacity-40 scale-[0.97]' : ''
         } ${dropTargetColumn === status && draggedColumn ? 'ring-2 ring-primary/40 ring-offset-2 ring-offset-background' : ''}`}
         onDragOver={e => {
@@ -372,7 +372,7 @@ export default function KanbanBoard() {
       )}
 
       {/* Main kanban area */}
-      <div className={`flex gap-1.5 sm:gap-2 p-2 sm:p-3 overflow-x-auto sm:overflow-x-hidden flex-1 snap-x snap-mandatory sm:snap-none ${isMobile && collapsedStatuses.length > 0 ? 'pt-2' : ''}`}>
+      <div className={`flex gap-1.5 sm:gap-2 p-2 sm:p-3 overflow-x-auto sm:overflow-hidden flex-1 snap-x snap-mandatory sm:snap-none ${isMobile && collapsedStatuses.length > 0 ? 'pt-2' : ''}`}>
         {/* Desktop: show collapsed inline */}
         {!isMobile && collapsedStatuses.map(renderCollapsedColumn)}
         {/* Expanded columns */}

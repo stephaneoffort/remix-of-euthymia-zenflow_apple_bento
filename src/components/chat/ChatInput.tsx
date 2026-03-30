@@ -127,20 +127,20 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, 
       {/* @mention dropdown */}
       {showMentions && filteredMembers.length > 0 && (
         <div className="absolute bottom-full left-4 right-4 mb-1 bg-popover border border-border/60 rounded-xl shadow-xl p-1.5 z-30 max-h-48 overflow-y-auto">
-          {filteredMembers.map(([userId, profile]) => (
+          {filteredMembers.map((member) => (
             <button
-              key={userId}
-              onClick={() => insertMention(profile.name.split(' ')[0])}
+              key={member.id}
+              onClick={() => insertMention(member.name.split(' ')[0])}
               className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-muted/60 text-sm transition-colors"
             >
               <div
                 className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
-                style={{ backgroundColor: profile.avatar_color || '#6366f1' }}
+                style={{ backgroundColor: member.avatar_color || '#6366f1' }}
               >
-                {profile.name[0]?.toUpperCase()}
+                {member.name[0]?.toUpperCase()}
               </div>
-              <span className="font-medium text-foreground">{profile.name}</span>
-              <span className="text-muted-foreground text-xs ml-auto">{profile.role}</span>
+              <span className="font-medium text-foreground">{member.name}</span>
+              <span className="text-muted-foreground text-xs ml-auto">{member.role}</span>
             </button>
           ))}
         </div>

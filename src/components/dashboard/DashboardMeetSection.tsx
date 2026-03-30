@@ -34,6 +34,7 @@ function formatMeetDate(startTime: string): string {
 
 export default function DashboardMeetSection() {
   const { isActive } = useIntegrations();
+  const { setSelectedView } = useApp();
   const [events, setEvents] = useState<MeetEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);

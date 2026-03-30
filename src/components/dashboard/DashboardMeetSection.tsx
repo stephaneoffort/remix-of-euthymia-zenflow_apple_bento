@@ -249,6 +249,13 @@ export default function DashboardMeetSection() {
                           >
                             <Copy className="w-3.5 h-3.5" />
                           </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setDeleteTarget(ev); }}
+                            className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                            title="Supprimer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
                         </div>
                       </div>
                     </div>

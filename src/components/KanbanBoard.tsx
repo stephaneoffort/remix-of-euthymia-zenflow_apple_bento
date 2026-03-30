@@ -312,6 +312,8 @@ export default function KanbanBoard() {
                 setDraggedTaskId={setDraggedTaskId}
                 handleTaskDragStart={handleTaskDragStart}
                 getMemberById={getMemberById}
+                zoomTaskIds={zoomTaskIds}
+                meetTaskIds={meetTaskIds}
               />
             );
           })}

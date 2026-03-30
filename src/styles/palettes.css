@@ -2954,152 +2954,6 @@ html body::after {
 
 /* ─── Mesh Gradient Backgrounds per Classic Palette ─── */
 
-/* CLUBROOM */
-[data-palette="clubroom"] {
-  background:
-    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(201,168,76,0.15) 0%, transparent 70%),
-    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(180,150,60,0.12) 0%, transparent 70%),
-    radial-gradient(ellipse 75% 75% at 50% 50%, rgba(100,80,40,0.1) 0%, transparent 70%),
-    linear-gradient(135deg, #0e0d14 0%, #13121a 50%, #0e0d14 100%) !important;
-  background-size: 200% 200%, 200% 200%, 200% 200%, 100% 100% !important;
-  background-attachment: fixed !important;
-  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
-}
-[data-palette="clubroom"].light {
-  background:
-    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(201,168,76,0.2) 0%, transparent 70%),
-    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(160,130,50,0.15) 0%, transparent 70%),
-    linear-gradient(135deg, #f5f0e8 0%, #ede6d8 50%, #f5f0e8 100%) !important;
-  background-size: 200% 200%, 200% 200%, 100% 100% !important;
-  background-attachment: fixed !important;
-  animation: liquidMeshMove 25s ease-in-out infinite !important;
-}
-[data-palette="clubroom"].mixed {
-  background:
-    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(201,168,76,0.2) 0%, transparent 70%),
-    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(160,130,50,0.15) 0%, transparent 70%),
-    linear-gradient(135deg, #f5f0e8 0%, #ede6d8 50%, #f5f0e8 100%) !important;
-  background-size: 200% 200%, 200% 200%, 100% 100% !important;
-  background-attachment: fixed !important;
-  animation: liquidMeshMove 25s ease-in-out infinite !important;
-}
-
-/* NEUTRALS */
-[data-palette="neutrals"] {
-  background:
-    radial-gradient(ellipse 80% 80% at 25% 25%, rgba(160,136,104,0.15) 0%, transparent 70%),
-    radial-gradient(ellipse 70% 70% at 75% 75%, rgba(140,120,90,0.12) 0%, transparent 70%),
-    linear-gradient(135deg, #12100e 0%, #171513 50%, #12100e 100%) !important;
-  background-size: 200% 200%, 200% 200%, 100% 100% !important;
-  background-attachment: fixed !important;
-  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
-}
-[data-palette="neutrals"].light {
-  background:
-    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(160,136,104,0.2) 0%, transparent 70%),
-    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(140,120,90,0.15) 0%, transparent 70%),
-    linear-gradient(135deg, #f5f3ef 0%, #ede8df 50%, #f5f3ef 100%) !important;
-  background-size: 200% 200%, 200% 200%, 100% 100% !important;
-  background-attachment: fixed !important;
-  animation: liquidMeshMove 25s ease-in-out infinite !important;
-}
-[data-palette="neutrals"].mixed {
-  background:
-    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(160,136,104,0.2) 0%, transparent 70%),
-    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(140,120,90,0.15) 0%, transparent 70%),
-    linear-gradient(135deg, #f5f3ef 0%, #ede8df 50%, #f5f3ef 100%) !important;
-  background-size: 200% 200%, 200% 200%, 100% 100% !important;
-  background-attachment: fixed !important;
-  animation: liquidMeshMove 25s ease-in-out infinite !important;
-}
-
-/* SAPPHIRE */
-[data-palette="sapphire"] {
-  background:
-    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(45,212,191,0.15) 0%, transparent 70%),
-    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(30,80,180,0.12) 0%, transparent 70%),
-    linear-gradient(135deg, #080c14 0%, #0c1018 50%, #080c14 100%) !important;
-  background-size: 200% 200%, 200% 200%, 100% 100% !important;
-  background-attachment: fixed !important;
-  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
-}
-[data-palette="sapphire"].light {
-  background:
-    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(45,212,191,0.25) 0%, transparent 70%),
-    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(60,140,240,0.18) 0%, transparent 70%),
-    linear-gradient(135deg, #eef2f7 0%, #e4ecf4 50%, #eef2f7 100%) !important;
-  background-size: 200% 200%, 200% 200%, 100% 100% !important;
-  background-attachment: fixed !important;
-  animation: liquidMeshMove 25s ease-in-out infinite !important;
-}
-[data-palette="sapphire"].mixed {
-  background:
-    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(45,212,191,0.25) 0%, transparent 70%),
-    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(60,140,240,0.18) 0%, transparent 70%),
-    linear-gradient(135deg, #eef2f7 0%, #e4ecf4 50%, #eef2f7 100%) !important;
-  background-size: 200% 200%, 200% 200%, 100% 100% !important;
-  background-attachment: fixed !important;
-  animation: liquidMeshMove 25s ease-in-out infinite !important;
-}
-
-/* CINEMATIC */
-[data-palette="cinematic"] {
-  background:
-    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(124,92,237,0.18) 0%, transparent 70%),
-    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(236,72,153,0.12) 0%, transparent 70%),
-    linear-gradient(135deg, #0a0714 0%, #0e0a1c 50%, #0a0714 100%) !important;
-  background-size: 200% 200%, 200% 200%, 100% 100% !important;
-  background-attachment: fixed !important;
-  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
-}
-[data-palette="cinematic"].light {
-  background:
-    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(124,92,237,0.2) 0%, transparent 70%),
-    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(236,72,153,0.15) 0%, transparent 70%),
-    linear-gradient(135deg, #f5f0ff 0%, #fce7f3 50%, #f5f0ff 100%) !important;
-  background-size: 200% 200%, 200% 200%, 100% 100% !important;
-  background-attachment: fixed !important;
-  animation: liquidMeshMove 25s ease-in-out infinite !important;
-}
-[data-palette="cinematic"].mixed {
-  background:
-    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(124,92,237,0.2) 0%, transparent 70%),
-    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(236,72,153,0.15) 0%, transparent 70%),
-    linear-gradient(135deg, #f5f0ff 0%, #fce7f3 50%, #f5f0ff 100%) !important;
-  background-size: 200% 200%, 200% 200%, 100% 100% !important;
-  background-attachment: fixed !important;
-  animation: liquidMeshMove 25s ease-in-out infinite !important;
-}
-
-/* TEAL */
-[data-palette="teal"] {
-  background:
-    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(20,184,166,0.15) 0%, transparent 70%),
-    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(56,189,248,0.1) 0%, transparent 70%),
-    linear-gradient(135deg, #070f12 0%, #0a1518 50%, #070f12 100%) !important;
-  background-size: 200% 200%, 200% 200%, 100% 100% !important;
-  background-attachment: fixed !important;
-  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
-}
-[data-palette="teal"].light {
-  background:
-    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(20,184,166,0.25) 0%, transparent 70%),
-    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(56,189,248,0.18) 0%, transparent 70%),
-    linear-gradient(135deg, #e8faf5 0%, #e0f7fa 50%, #e8faf5 100%) !important;
-  background-size: 200% 200%, 200% 200%, 100% 100% !important;
-  background-attachment: fixed !important;
-  animation: liquidMeshMove 25s ease-in-out infinite !important;
-}
-[data-palette="teal"].mixed {
-  background:
-    radial-gradient(ellipse 80% 80% at 20% 30%, rgba(20,184,166,0.25) 0%, transparent 70%),
-    radial-gradient(ellipse 70% 70% at 80% 70%, rgba(56,189,248,0.18) 0%, transparent 70%),
-    linear-gradient(135deg, #e8faf5 0%, #e0f7fa 50%, #e8faf5 100%) !important;
-  background-size: 200% 200%, 200% 200%, 100% 100% !important;
-  background-attachment: fixed !important;
-  animation: liquidMeshMove 25s ease-in-out infinite !important;
-}
-
 /* BENTO 2026 */
 [data-palette="bento2026"] {
   background:
@@ -3217,11 +3071,6 @@ html body::after {
 }
 
 /* ─── Grain overlay for non-LG palettes ─── */
-[data-palette="clubroom"]::before,
-[data-palette="neutrals"]::before,
-[data-palette="sapphire"]::before,
-[data-palette="cinematic"]::before,
-[data-palette="teal"]::before,
 [data-palette="bento2026"]::before,
 [data-palette="bentoOcean"]::before,
 [data-palette="bentoRose"]::before,
@@ -3234,12 +3083,7 @@ html body::after {
   z-index: 0;
 }
 
-/* ─── Universal glass cells for classic palettes (dark) ─── */
-[data-palette="clubroom"] .bento-cell,
-[data-palette="neutrals"] .bento-cell,
-[data-palette="sapphire"] .bento-cell,
-[data-palette="cinematic"] .bento-cell,
-[data-palette="teal"] .bento-cell,
+/* ─── Universal glass cells for bento palettes (dark) ─── */
 [data-palette="bento2026"] .bento-cell,
 [data-palette="bentoOcean"] .bento-cell,
 [data-palette="bentoRose"] .bento-cell,
@@ -3257,17 +3101,7 @@ html body::after {
   overflow: hidden;
 }
 
-/* ─── Universal glass cells for classic palettes (light/mixed) ─── */
-[data-palette="clubroom"].light .bento-cell,
-[data-palette="clubroom"].mixed .bento-cell,
-[data-palette="neutrals"].light .bento-cell,
-[data-palette="neutrals"].mixed .bento-cell,
-[data-palette="sapphire"].light .bento-cell,
-[data-palette="sapphire"].mixed .bento-cell,
-[data-palette="cinematic"].light .bento-cell,
-[data-palette="cinematic"].mixed .bento-cell,
-[data-palette="teal"].light .bento-cell,
-[data-palette="teal"].mixed .bento-cell,
+/* ─── Universal glass cells for bento palettes (light/mixed) ─── */
 [data-palette="bento2026"].light .bento-cell,
 [data-palette="bento2026"].mixed .bento-cell,
 [data-palette="bentoOcean"].light .bento-cell,
@@ -3292,12 +3126,7 @@ html body::after {
   overflow: hidden;
 }
 
-/* ─── Shimmer on hover for all non-LG palettes ─── */
-[data-palette="clubroom"] .bento-cell::after,
-[data-palette="neutrals"] .bento-cell::after,
-[data-palette="sapphire"] .bento-cell::after,
-[data-palette="cinematic"] .bento-cell::after,
-[data-palette="teal"] .bento-cell::after,
+/* ─── Shimmer on hover for bento palettes ─── */
 [data-palette="bento2026"] .bento-cell::after,
 [data-palette="bentoOcean"] .bento-cell::after,
 [data-palette="bentoRose"] .bento-cell::after,
@@ -3317,11 +3146,6 @@ html body::after {
   pointer-events: none;
   z-index: 1;
 }
-[data-palette="clubroom"] .bento-cell:hover::after,
-[data-palette="neutrals"] .bento-cell:hover::after,
-[data-palette="sapphire"] .bento-cell:hover::after,
-[data-palette="cinematic"] .bento-cell:hover::after,
-[data-palette="teal"] .bento-cell:hover::after,
 [data-palette="bento2026"] .bento-cell:hover::after,
 [data-palette="bentoOcean"] .bento-cell:hover::after,
 [data-palette="bentoRose"] .bento-cell:hover::after,
@@ -3329,79 +3153,39 @@ html body::after {
   opacity: 1;
 }
 
-/* ─── Glass reveal animation for all non-LG palettes ─── */
-[data-palette="clubroom"] .bento-cell,
-[data-palette="neutrals"] .bento-cell,
-[data-palette="sapphire"] .bento-cell,
-[data-palette="cinematic"] .bento-cell,
-[data-palette="teal"] .bento-cell,
+/* ─── Glass reveal animation for bento palettes ─── */
 [data-palette="bento2026"] .bento-cell,
 [data-palette="bentoOcean"] .bento-cell,
 [data-palette="bentoRose"] .bento-cell,
 [data-palette="bentoAmber"] .bento-cell {
   animation: liquidGlassReveal 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
-[data-palette="clubroom"] .bento-cell:nth-child(1),
-[data-palette="neutrals"] .bento-cell:nth-child(1),
-[data-palette="sapphire"] .bento-cell:nth-child(1),
-[data-palette="cinematic"] .bento-cell:nth-child(1),
-[data-palette="teal"] .bento-cell:nth-child(1),
 [data-palette="bento2026"] .bento-cell:nth-child(1),
 [data-palette="bentoOcean"] .bento-cell:nth-child(1),
 [data-palette="bentoRose"] .bento-cell:nth-child(1),
 [data-palette="bentoAmber"] .bento-cell:nth-child(1) { animation-delay: 0.05s; }
-[data-palette="clubroom"] .bento-cell:nth-child(2),
-[data-palette="neutrals"] .bento-cell:nth-child(2),
-[data-palette="sapphire"] .bento-cell:nth-child(2),
-[data-palette="cinematic"] .bento-cell:nth-child(2),
-[data-palette="teal"] .bento-cell:nth-child(2),
 [data-palette="bento2026"] .bento-cell:nth-child(2),
 [data-palette="bentoOcean"] .bento-cell:nth-child(2),
 [data-palette="bentoRose"] .bento-cell:nth-child(2),
 [data-palette="bentoAmber"] .bento-cell:nth-child(2) { animation-delay: 0.10s; }
-[data-palette="clubroom"] .bento-cell:nth-child(3),
-[data-palette="neutrals"] .bento-cell:nth-child(3),
-[data-palette="sapphire"] .bento-cell:nth-child(3),
-[data-palette="cinematic"] .bento-cell:nth-child(3),
-[data-palette="teal"] .bento-cell:nth-child(3),
 [data-palette="bento2026"] .bento-cell:nth-child(3),
 [data-palette="bentoOcean"] .bento-cell:nth-child(3),
 [data-palette="bentoRose"] .bento-cell:nth-child(3),
 [data-palette="bentoAmber"] .bento-cell:nth-child(3) { animation-delay: 0.15s; }
-[data-palette="clubroom"] .bento-cell:nth-child(4),
-[data-palette="neutrals"] .bento-cell:nth-child(4),
-[data-palette="sapphire"] .bento-cell:nth-child(4),
-[data-palette="cinematic"] .bento-cell:nth-child(4),
-[data-palette="teal"] .bento-cell:nth-child(4),
 [data-palette="bento2026"] .bento-cell:nth-child(4),
 [data-palette="bentoOcean"] .bento-cell:nth-child(4),
 [data-palette="bentoRose"] .bento-cell:nth-child(4),
 [data-palette="bentoAmber"] .bento-cell:nth-child(4) { animation-delay: 0.20s; }
-[data-palette="clubroom"] .bento-cell:nth-child(5),
-[data-palette="neutrals"] .bento-cell:nth-child(5),
-[data-palette="sapphire"] .bento-cell:nth-child(5),
-[data-palette="cinematic"] .bento-cell:nth-child(5),
-[data-palette="teal"] .bento-cell:nth-child(5),
 [data-palette="bento2026"] .bento-cell:nth-child(5),
 [data-palette="bentoOcean"] .bento-cell:nth-child(5),
 [data-palette="bentoRose"] .bento-cell:nth-child(5),
 [data-palette="bentoAmber"] .bento-cell:nth-child(5) { animation-delay: 0.25s; }
-[data-palette="clubroom"] .bento-cell:nth-child(6),
-[data-palette="neutrals"] .bento-cell:nth-child(6),
-[data-palette="sapphire"] .bento-cell:nth-child(6),
-[data-palette="cinematic"] .bento-cell:nth-child(6),
-[data-palette="teal"] .bento-cell:nth-child(6),
 [data-palette="bento2026"] .bento-cell:nth-child(6),
 [data-palette="bentoOcean"] .bento-cell:nth-child(6),
 [data-palette="bentoRose"] .bento-cell:nth-child(6),
 [data-palette="bentoAmber"] .bento-cell:nth-child(6) { animation-delay: 0.30s; }
 
-/* ─── Glass sidebar for non-LG palettes ─── */
-[data-palette="clubroom"] [data-sidebar="sidebar"],
-[data-palette="neutrals"] [data-sidebar="sidebar"],
-[data-palette="sapphire"] [data-sidebar="sidebar"],
-[data-palette="cinematic"] [data-sidebar="sidebar"],
-[data-palette="teal"] [data-sidebar="sidebar"],
+/* ─── Glass sidebar for bento palettes ─── */
 [data-palette="bento2026"] [data-sidebar="sidebar"],
 [data-palette="bentoOcean"] [data-sidebar="sidebar"],
 [data-palette="bentoRose"] [data-sidebar="sidebar"],
@@ -3411,12 +3195,7 @@ html body::after {
   border-right: 1px solid rgba(255,255,255,0.06) !important;
 }
 
-/* ─── Transparent bg-background for all non-LG palettes (ALL modes) ─── */
-[data-palette="clubroom"] .bg-background,
-[data-palette="neutrals"] .bg-background,
-[data-palette="sapphire"] .bg-background,
-[data-palette="cinematic"] .bg-background,
-[data-palette="teal"] .bg-background,
+/* ─── Transparent bg-background for bento palettes (ALL modes) ─── */
 [data-palette="bento2026"] .bg-background,
 [data-palette="bentoOcean"] .bg-background,
 [data-palette="bentoRose"] .bg-background,
@@ -3424,17 +3203,7 @@ html body::after {
   background: transparent !important;
 }
 
-/* ─── Glass cards (shadcn) for classic palettes (light/mixed) ─── */
-[data-palette="clubroom"].light .bg-card,
-[data-palette="clubroom"].mixed .bg-card,
-[data-palette="neutrals"].light .bg-card,
-[data-palette="neutrals"].mixed .bg-card,
-[data-palette="sapphire"].light .bg-card,
-[data-palette="sapphire"].mixed .bg-card,
-[data-palette="cinematic"].light .bg-card,
-[data-palette="cinematic"].mixed .bg-card,
-[data-palette="teal"].light .bg-card,
-[data-palette="teal"].mixed .bg-card,
+/* ─── Glass cards (shadcn) for bento palettes (light/mixed) ─── */
 [data-palette="bento2026"].light .bg-card,
 [data-palette="bento2026"].mixed .bg-card,
 [data-palette="bentoOcean"].light .bg-card,
@@ -3452,12 +3221,7 @@ html body::after {
   border-radius: 24px !important;
 }
 
-/* ─── Glass cards for classic palettes (dark) ─── */
-[data-palette="clubroom"]:not(.light):not(.mixed) .bg-card,
-[data-palette="neutrals"]:not(.light):not(.mixed) .bg-card,
-[data-palette="sapphire"]:not(.light):not(.mixed) .bg-card,
-[data-palette="cinematic"]:not(.light):not(.mixed) .bg-card,
-[data-palette="teal"]:not(.light):not(.mixed) .bg-card,
+/* ─── Glass cards for bento palettes (dark) ─── */
 [data-palette="bento2026"]:not(.light):not(.mixed) .bg-card,
 [data-palette="bentoOcean"]:not(.light):not(.mixed) .bg-card,
 [data-palette="bentoRose"]:not(.light):not(.mixed) .bg-card,
@@ -3471,12 +3235,7 @@ html body::after {
   border-radius: 24px !important;
 }
 
-/* ─── Interactive hover lift for all non-LG palettes ─── */
-[data-palette="clubroom"] .bento-cell:hover,
-[data-palette="neutrals"] .bento-cell:hover,
-[data-palette="sapphire"] .bento-cell:hover,
-[data-palette="cinematic"] .bento-cell:hover,
-[data-palette="teal"] .bento-cell:hover,
+/* ─── Interactive hover lift for bento palettes ─── */
 [data-palette="bento2026"] .bento-cell:hover,
 [data-palette="bentoOcean"] .bento-cell:hover,
 [data-palette="bentoRose"] .bento-cell:hover,
@@ -3484,12 +3243,7 @@ html body::after {
   transform: translateY(-4px);
 }
 
-/* ─── Glass reveal on .bg-card for non-LG ─── */
-[data-palette="clubroom"] .bg-card,
-[data-palette="neutrals"] .bg-card,
-[data-palette="sapphire"] .bg-card,
-[data-palette="cinematic"] .bg-card,
-[data-palette="teal"] .bg-card,
+/* ─── Glass reveal on .bg-card for bento palettes ─── */
 [data-palette="bento2026"] .bg-card,
 [data-palette="bentoOcean"] .bg-card,
 [data-palette="bentoRose"] .bg-card,
@@ -3499,11 +3253,6 @@ html body::after {
 
 /* ─── Reduced motion ─── */
 @media (prefers-reduced-motion: reduce) {
-  [data-palette="clubroom"],
-  [data-palette="neutrals"],
-  [data-palette="sapphire"],
-  [data-palette="cinematic"],
-  [data-palette="teal"],
   [data-palette="bento2026"],
   [data-palette="bentoOcean"],
   [data-palette="bentoRose"],
@@ -3513,49 +3262,39 @@ html body::after {
 }
 
 /* ─── Text legibility on glass surfaces (dark) ─── */
-[data-palette="clubroom"]:not(.light):not(.mixed) .bento-cell,
-[data-palette="neutrals"]:not(.light):not(.mixed) .bento-cell,
-[data-palette="sapphire"]:not(.light):not(.mixed) .bento-cell,
-[data-palette="cinematic"]:not(.light):not(.mixed) .bento-cell,
-[data-palette="teal"]:not(.light):not(.mixed) .bento-cell,
 [data-palette="bento2026"]:not(.light):not(.mixed) .bento-cell,
 [data-palette="bentoOcean"]:not(.light):not(.mixed) .bento-cell,
 [data-palette="bentoRose"]:not(.light):not(.mixed) .bento-cell,
 [data-palette="bentoAmber"]:not(.light):not(.mixed) .bento-cell,
 [data-palette^="liquidGlass"].dark .bento-cell,
-[data-palette="clubroom"]:not(.light):not(.mixed) .bg-card,
-[data-palette="neutrals"]:not(.light):not(.mixed) .bg-card,
-[data-palette="sapphire"]:not(.light):not(.mixed) .bg-card,
-[data-palette="cinematic"]:not(.light):not(.mixed) .bg-card,
-[data-palette="teal"]:not(.light):not(.mixed) .bg-card,
+[data-palette="bento2026"]:not(.light):not(.mixed) .bg-card,
+[data-palette="bentoOcean"]:not(.light):not(.mixed) .bg-card,
+[data-palette="bentoRose"]:not(.light):not(.mixed) .bg-card,
+[data-palette="bentoAmber"]:not(.light):not(.mixed) .bg-card,
 [data-palette^="liquidGlass"].dark .bg-card {
   text-shadow: 0 1px 3px rgba(0,0,0,0.4);
 }
 
 /* ─── Text legibility on glass surfaces (light/mixed) ─── */
-[data-palette="clubroom"].light .bento-cell,
-[data-palette="clubroom"].mixed .bento-cell,
-[data-palette="neutrals"].light .bento-cell,
-[data-palette="neutrals"].mixed .bento-cell,
-[data-palette="sapphire"].light .bento-cell,
-[data-palette="sapphire"].mixed .bento-cell,
-[data-palette="cinematic"].light .bento-cell,
-[data-palette="cinematic"].mixed .bento-cell,
-[data-palette="teal"].light .bento-cell,
-[data-palette="teal"].mixed .bento-cell,
+[data-palette="bento2026"].light .bento-cell,
+[data-palette="bento2026"].mixed .bento-cell,
+[data-palette="bentoOcean"].light .bento-cell,
+[data-palette="bentoOcean"].mixed .bento-cell,
+[data-palette="bentoRose"].light .bento-cell,
+[data-palette="bentoRose"].mixed .bento-cell,
+[data-palette="bentoAmber"].light .bento-cell,
+[data-palette="bentoAmber"].mixed .bento-cell,
 [data-palette^="liquidGlass"].light .bento-cell,
 [data-palette^="liquidGlass"].mixed .bento-cell,
 [data-palette^="liquidGlass"]:not(.dark):not(.mixed) .bento-cell,
-[data-palette="clubroom"].light .bg-card,
-[data-palette="clubroom"].mixed .bg-card,
-[data-palette="neutrals"].light .bg-card,
-[data-palette="neutrals"].mixed .bg-card,
-[data-palette="sapphire"].light .bg-card,
-[data-palette="sapphire"].mixed .bg-card,
-[data-palette="cinematic"].light .bg-card,
-[data-palette="cinematic"].mixed .bg-card,
-[data-palette="teal"].light .bg-card,
-[data-palette="teal"].mixed .bg-card,
+[data-palette="bento2026"].light .bg-card,
+[data-palette="bento2026"].mixed .bg-card,
+[data-palette="bentoOcean"].light .bg-card,
+[data-palette="bentoOcean"].mixed .bg-card,
+[data-palette="bentoRose"].light .bg-card,
+[data-palette="bentoRose"].mixed .bg-card,
+[data-palette="bentoAmber"].light .bg-card,
+[data-palette="bentoAmber"].mixed .bg-card,
 [data-palette^="liquidGlass"].light .bg-card,
 [data-palette^="liquidGlass"].mixed .bg-card,
 [data-palette^="liquidGlass"]:not(.dark):not(.mixed) .bg-card {

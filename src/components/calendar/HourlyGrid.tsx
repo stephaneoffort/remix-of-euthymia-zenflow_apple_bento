@@ -425,7 +425,7 @@ function EventCard({ item, onClick, widthPercent, leftPercent, isDay, maxEventHe
           {(ev.has_meet || ev.conference_id) && <Video className="w-3 h-3 shrink-0 opacity-80" />}
         </div>
         {showTime && (
-          <div className="text-white/60 truncate" style={{ fontSize: timeFontSize }}>{formatTime(ev.start_time)} → {formatTime(ev.end_time)}</div>
+          <div className="opacity-60 truncate" style={{ fontSize: timeFontSize }}>{formatTime(ev.start_time)} → {formatTime(ev.end_time)}</div>
         )}
         {isDay && h >= 80 && ev.description && (
           <div className="text-white/50 line-clamp-2 mt-0.5" style={{ fontSize: '11px' }}>{ev.description}</div>

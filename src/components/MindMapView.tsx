@@ -502,7 +502,7 @@ function MindMapNodeGroup({ positioned, expandedIds, visibleDepth, toggleExpand,
 }
 
 /* ─── Individual node card ─── */
-function NodeCard({ positioned, expandedIds, visibleDepth, toggleExpand, onSelectTask, onAddSubtask }: MindMapNodeGroupProps) {
+function NodeCard({ positioned, expandedIds, visibleDepth, toggleExpand, onSelectTask, onAddSubtask, zoomTaskIds, meetTaskIds }: MindMapNodeGroupProps) {
   const { node, x, y } = positioned;
   const { task, children, progress, totalDescendants, doneDescendants, depth } = node;
   const hasChildren = children.length > 0;

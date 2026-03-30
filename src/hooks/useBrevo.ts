@@ -66,6 +66,17 @@ export function useBrevo() {
     [call]
   );
   const listTemplates = useCallback(() => call({ action: 'list_templates' }), [call]);
+  const listNewsletters = useCallback(() => call({ action: 'list_newsletters' }), [call]);
+  const linkNewsletter = useCallback(
+    (params: { entity_type: string; entity_id: string; campaign_id?: number; campaign_name?: string; campaign_url?: string; custom_url?: string; label?: string }) =>
+      call({ action: 'link_newsletter', ...params }),
+    [call]
+  );
+  const getLinkedNewsletters = useCallback(
+    (entityType: string, entityId: string) => call({ action: 'get_linked_newsletters', entity_type: entityType, entity_id: entityId }),
+    [call]
+  );
+  const unlinkNewsletter = useCallback((linkId: string) => call({ action: 'unlink_newsletter', link_id: linkId }), [call]);
 
   return {
     profile, saveApiKey, fetchProfile,
@@ -73,5 +84,6 @@ export function useBrevo() {
     attachContact, listContacts, detachContact,
     listCampaigns, campaignStats,
     sendTransactional, listTemplates,
+    listNewsletters, linkNewsletter, getLinkedNewsletters, unlinkNewsletter,
   };
 }

@@ -3825,7 +3825,7 @@ html body::after {
   --secondary: 230 12% 13%;
   --secondary-foreground: 210 18% 58%;
   --muted: 230 12% 13%;
-  --muted-foreground: 210 10% 38%;
+  --muted-foreground: 210 12% 50%;
   --accent: 205 35% 58%;
   --accent-foreground: 230 12% 6%;
   --destructive: 0 45% 50%;

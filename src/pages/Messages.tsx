@@ -41,7 +41,7 @@ function MessageCard({
 }) {
   const { getMemberById } = useApp();
   const { teamMemberId } = useAuth();
-  const member = message.type !== 'google_chat' ? getMemberById(message.authorId) : null;
+  const member = getMemberById(message.authorId);
   const preview = stripHtml(message.content);
   const [replyContent, setReplyContent] = useState('');
   const [sending, setSending] = useState(false);

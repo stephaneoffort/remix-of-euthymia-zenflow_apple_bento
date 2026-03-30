@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export type ThemeMode = 'light' | 'dark' | 'mixed';
-export type ThemePalette = 'clubroom' | 'neutrals' | 'sapphire' | 'cinematic' | 'teal' | 'bento2026' | 'bentoOcean' | 'bentoRose' | 'bentoAmber' | 'liquidGlass' | 'liquidGlassOcean' | 'liquidGlassAurora' | 'liquidGlassRose' | 'liquidGlassAmber' | 'liquidGlassViolet' | 'liquidGlassCoral' | 'liquidGlassSlate' | 'liquidGlassMidnight' | 'nmCloud' | 'nmMidnight' | 'nmSand';
+export type ThemePalette = 'clubroom' | 'neutrals' | 'sapphire' | 'cinematic' | 'teal' | 'bento2026' | 'bentoOcean' | 'bentoRose' | 'bentoAmber' | 'liquidGlass' | 'liquidGlassOcean' | 'liquidGlassAurora' | 'liquidGlassRose' | 'liquidGlassAmber' | 'liquidGlassViolet' | 'liquidGlassCoral' | 'liquidGlassSlate' | 'liquidGlassMidnight' | 'nmCloud' | 'nmMidnight' | 'nmSand' | 'nmForest';
 
 interface ThemeContextType {
   theme: ThemeMode;
@@ -117,6 +117,11 @@ export const PALETTE_META: Record<ThemePalette, { label: string; description: st
     label: 'Sand',
     description: 'Soft UI · Beige sable · Chaud',
     colors: ['#EDE8E3', '#CAC5C0', '#FFFFFF', '#A07840'],
+  },
+  nmForest: {
+    label: 'Forest',
+    description: 'Soft UI · Vert mousse · Zen',
+    colors: ['#E6EDE8', '#C3CAC5', '#FFFFFF', '#4E7A45'],
   },
 };
 

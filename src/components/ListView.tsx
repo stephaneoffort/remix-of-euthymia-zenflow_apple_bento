@@ -16,6 +16,7 @@ const PRIORITY_ORDER: Priority[] = ['urgent', 'high', 'normal', 'low'];
 export default function ListView() {
   const { getFilteredTasks, setSelectedTaskId, getMemberById, tasks, addTask, selectedProjectId, getListsForProject, lists, projects, quickFilter } = useApp();
   const { teamMemberId } = useAuth();
+  const { zoomTaskIds, meetTaskIds } = useTaskMeetings();
   const [sortKey, setSortKey] = useState<SortKey>('priority');
   const [sortAsc, setSortAsc] = useState(true);
   const [expandedTasks, setExpandedTasks] = useState<Set<string>>(new Set());

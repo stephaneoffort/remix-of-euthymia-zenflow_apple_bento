@@ -112,6 +112,7 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, 
     e.target.value = '';
   }, [onFileUpload, onSend]);
 
+  const insertFormat = (prefix: string, suffix: string) => {
     const textarea = inputRef.current;
     if (!textarea) return;
     const start = textarea.selectionStart;

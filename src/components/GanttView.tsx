@@ -968,6 +968,7 @@ function GanttBar({
           }}
           onMouseDown={handleBarMouseDown}
           onDoubleClick={onDoubleClick}
+          onContextMenu={onContextMenu}
         >
           {/* Left resize handle */}
           {!task.hasChildren && (

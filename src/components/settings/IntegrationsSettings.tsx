@@ -28,6 +28,7 @@ export default function IntegrationsSettings() {
   const [connInfo, setConnInfo] = useState<Record<string, { email?: string; display_name?: string }>>({});
   const [confirmDialog, setConfirmDialog] = useState<{ type: 'connect' | 'disconnect'; key: IntegrationKey } | null>(null);
   const [brevoFormOpen, setBrevoFormOpen] = useState(false);
+  const [connInfoVersion, setConnInfoVersion] = useState(0);
 
   // Fetch connection info for display
   useEffect(() => {
@@ -76,7 +77,7 @@ export default function IntegrationsSettings() {
         toast.success(`${INTEGRATION_CONFIG[key].label} connecté !`);
       }
     });
-  }, []);
+  }, [connInfoVersion]);
 
   const handleConnect = async (key: IntegrationKey) => {
     if (key === 'google_meet') {
@@ -288,6 +289,7 @@ export default function IntegrationsSettings() {
           <BrevoConnectionForm onConnected={() => {
             setBrevoFormOpen(false);
             refetch();
+            setConnInfoVersion(v => v + 1);
           }} />
         </DialogContent>
       </Dialog>

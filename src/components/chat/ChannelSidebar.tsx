@@ -20,9 +20,10 @@ interface Props {
   onSelectChannel: (id: string) => void;
   currentUserProfile?: MemberProfile | null;
   onChannelCreated?: () => void;
+  unreadCounts?: Record<string, number>;
 }
 
-export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, currentUserProfile, onChannelCreated }: Props) {
+export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, currentUserProfile, onChannelCreated, unreadCounts = {} }: Props) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { teamMembers } = useApp();

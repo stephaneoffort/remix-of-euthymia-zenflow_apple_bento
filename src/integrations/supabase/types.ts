@@ -1161,6 +1161,48 @@ export type Database = {
           },
         ]
       }
+      task_dependencies: {
+        Row: {
+          created_at: string | null
+          depends_on_id: string
+          id: string
+          lag_days: number | null
+          task_id: string
+          type: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          depends_on_id: string
+          id?: string
+          lag_days?: number | null
+          task_id: string
+          type?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          depends_on_id?: string
+          id?: string
+          lag_days?: number | null
+          task_id?: string
+          type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_dependencies_depends_on_id_fkey"
+            columns: ["depends_on_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_dependencies_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       task_lists: {
         Row: {
           id: string
@@ -1228,14 +1270,18 @@ export type Database = {
       tasks: {
         Row: {
           ai_summary: string | null
+          color: string | null
           created_at: string
           description: string
           due_date: string | null
+          duration_days: number | null
           google_event_id: string | null
           id: string
+          is_milestone: boolean | null
           list_id: string
           parent_task_id: string | null
           priority: string
+          progress: number | null
           recurrence: string | null
           recurrence_end_date: string | null
           sort_order: number
@@ -1247,17 +1293,22 @@ export type Database = {
           time_logged: number | null
           title: string
           updated_at: string
+          wbs: string | null
         }
         Insert: {
           ai_summary?: string | null
+          color?: string | null
           created_at?: string
           description?: string
           due_date?: string | null
+          duration_days?: number | null
           google_event_id?: string | null
           id?: string
+          is_milestone?: boolean | null
           list_id: string
           parent_task_id?: string | null
           priority?: string
+          progress?: number | null
           recurrence?: string | null
           recurrence_end_date?: string | null
           sort_order?: number
@@ -1269,17 +1320,22 @@ export type Database = {
           time_logged?: number | null
           title: string
           updated_at?: string
+          wbs?: string | null
         }
         Update: {
           ai_summary?: string | null
+          color?: string | null
           created_at?: string
           description?: string
           due_date?: string | null
+          duration_days?: number | null
           google_event_id?: string | null
           id?: string
+          is_milestone?: boolean | null
           list_id?: string
           parent_task_id?: string | null
           priority?: string
+          progress?: number | null
           recurrence?: string | null
           recurrence_end_date?: string | null
           sort_order?: number
@@ -1291,6 +1347,7 @@ export type Database = {
           time_logged?: number | null
           title?: string
           updated_at?: string
+          wbs?: string | null
         }
         Relationships: [
           {

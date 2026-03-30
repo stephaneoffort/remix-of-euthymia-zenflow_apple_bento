@@ -414,7 +414,7 @@ async function caldavPushUpdate(account: any, event: any): Promise<void> {
   const uid = event.external_id || event.id;
   const auth = btoa(`${account.caldav_username}:${account.caldav_password}`);
   const url = `${account.caldav_url.replace(/\/$/, "")}/${uid}.ics`;
-  const res = await fetch(url, {
+  const res = await fetchWithRetry(url, {
     method: "PUT",
     headers: {
       Authorization: `Basic ${auth}`,

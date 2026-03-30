@@ -113,8 +113,13 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, 
     }, 0);
   };
 
-  const filteredMembers = Object.entries(memberProfiles).filter(
-    ([, p]) => p.name.toLowerCase().includes(mentionFilter)
+  // Use allMembers for mention dropdown, fallback to memberProfiles
+  const mentionSource: { id: string; name: string; avatar_color: string; role: string }[] = allMembers.length > 0
+    ? allMembers
+    : Object.entries(memberProfiles).map(([id, p]) => ({ id, name: p.name, avatar_color: p.avatar_color, role: p.role }));
+
+  const filteredMembers = mentionSource.filter(
+    m => m.name.toLowerCase().includes(mentionFilter)
   );
 
   return (

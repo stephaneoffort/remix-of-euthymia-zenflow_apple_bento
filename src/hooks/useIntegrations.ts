@@ -106,6 +106,7 @@ export function useIntegrations() {
       { key: 'zoom', table: 'zoom_connections' },
       { key: 'canva', table: 'canva_connections' },
       { key: 'brevo', table: 'brevo_connections' },
+      { key: 'gmail', table: 'gmail_connections' },
     ];
 
     for (const { key, table } of connectionChecks) {

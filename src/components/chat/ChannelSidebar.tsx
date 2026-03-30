@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Hash, Lock, Plus, ChevronLeft, Circle, MessageCircle } from 'lucide-react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { Hash, Lock, Plus, ChevronLeft, MessageCircle, Mail } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -8,7 +8,11 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useAuth } from '@/context/AuthContext';
+import { useApp } from '@/context/AppContext';
 import type { ChatChannel, MemberProfile } from '@/types/chat';
+
+const db = supabase as any;
 
 interface Props {
   channels: ChatChannel[];
@@ -20,21 +24,73 @@ interface Props {
 
 export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, currentUserProfile, onChannelCreated }: Props) {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { teamMembers } = useApp();
   const [createOpen, setCreateOpen] = useState(false);
+  const [dmPickerOpen, setDmPickerOpen] = useState(false);
   const [newName, setNewName] = useState('');
   const [newDesc, setNewDesc] = useState('');
   const [newType, setNewType] = useState<'public' | 'private'>('public');
   const [creating, setCreating] = useState(false);
+  const [dmMembers, setDmMembers] = useState<Record<string, { name: string; avatarColor: string; userId: string }>>({});
+  const [teamMemberToAuthId, setTeamMemberToAuthId] = useState<Record<string, string>>({});
+  const [authIdToTeamMember, setAuthIdToTeamMember] = useState<Record<string, string>>({});
 
   const publicChannels = channels.filter(c => c.type === 'public');
   const privateChannels = channels.filter(c => c.type === 'private');
   const dmChannels = channels.filter(c => c.type === 'dm');
 
+  // Load mapping between team members and auth users
+  useEffect(() => {
+    const loadMapping = async () => {
+      const { data: profiles } = await supabase.from('profiles').select('id, team_member_id');
+      if (profiles) {
+        const tmToAuth: Record<string, string> = {};
+        const authToTm: Record<string, string> = {};
+        profiles.forEach(p => {
+          if (p.team_member_id) {
+            tmToAuth[p.team_member_id] = p.id;
+            authToTm[p.id] = p.team_member_id;
+          }
+        });
+        setTeamMemberToAuthId(tmToAuth);
+        setAuthIdToTeamMember(authToTm);
+      }
+    };
+    loadMapping();
+  }, []);
+
+  // Resolve DM channel partner names
+  useEffect(() => {
+    if (!user || dmChannels.length === 0 || Object.keys(authIdToTeamMember).length === 0) return;
+
+    const resolveDmPartners = async () => {
+      const newDmMembers: Record<string, { name: string; avatarColor: string; userId: string }> = {};
+
+      for (const ch of dmChannels) {
+        const { data: members } = await db.from('chat_channel_members').select('user_id').eq('channel_id', ch.id);
+        if (members) {
+          const partner = members.find((m: any) => m.user_id !== user.id);
+          if (partner) {
+            const tmId = authIdToTeamMember[partner.user_id];
+            const tm = teamMembers.find(m => m.id === tmId);
+            if (tm) {
+              newDmMembers[ch.id] = { name: tm.name, avatarColor: tm.avatarColor, userId: partner.user_id };
+            }
+          }
+        }
+      }
+      setDmMembers(newDmMembers);
+    };
+
+    resolveDmPartners();
+  }, [user, dmChannels.length, authIdToTeamMember, teamMembers]);
+
   const handleCreate = async () => {
     const name = newName.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-_àâäéèêëïîôùûüÿçœæ]/gi, '');
     if (!name) return;
     setCreating(true);
-    const { error } = await (supabase as any).from('chat_channels').insert({
+    const { error } = await db.from('chat_channels').insert({
       name, description: newDesc.trim() || null, type: newType, position: channels.length,
     });
     setCreating(false);
@@ -46,6 +102,46 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
       onChannelCreated?.();
     }
   };
+
+  const startDm = useCallback(async (targetAuthId: string, targetName: string) => {
+    if (!user) return;
+    // Check existing DM
+    const { data: existingChannels } = await db.from('chat_channels').select('id, name').eq('type', 'dm');
+    if (existingChannels) {
+      for (const ch of existingChannels) {
+        const { data: members } = await db.from('chat_channel_members').select('user_id').eq('channel_id', ch.id);
+        if (members?.length === 2) {
+          const uids = members.map((m: any) => m.user_id);
+          if (uids.includes(user.id) && uids.includes(targetAuthId)) {
+            onSelectChannel(ch.id);
+            setDmPickerOpen(false);
+            return;
+          }
+        }
+      }
+    }
+    // Create new DM
+    const { data: newChannel, error } = await db.from('chat_channels').insert({
+      name: `dm-${Date.now()}`, type: 'dm', description: null,
+    }).select().single();
+    if (error || !newChannel) { toast.error('Impossible de créer la conversation'); return; }
+    await db.from('chat_channel_members').insert([
+      { channel_id: newChannel.id, user_id: user.id },
+      { channel_id: newChannel.id, user_id: targetAuthId },
+    ]);
+    toast.success(`Conversation privée avec ${targetName}`);
+    setDmPickerOpen(false);
+    onSelectChannel(newChannel.id);
+    onChannelCreated?.();
+  }, [user, onSelectChannel, onChannelCreated]);
+
+  // Members available for new DMs
+  const availableForDm = useMemo(() => {
+    return teamMembers.filter(m => {
+      const authId = teamMemberToAuthId[m.id];
+      return authId && authId !== user?.id;
+    });
+  }, [teamMembers, teamMemberToAuthId, user]);
 
   return (
     <>
@@ -104,20 +200,40 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
             </div>
           )}
 
-          {/* DMs */}
-          {dmChannels.length > 0 && (
-            <div>
-              <div className="flex items-center justify-between px-4 mb-2">
-                <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">Messages directs</span>
-              </div>
-              <div className="space-y-0.5 px-2">
-                {dmChannels.map(ch => (
-                  <ChannelItem key={ch.id} channel={ch} isActive={activeChannelId === ch.id}
-                    onClick={() => onSelectChannel(ch.id)} icon={<Circle className="w-3 h-3 shrink-0 fill-green-500 text-green-500" />} />
-                ))}
-              </div>
+          {/* DMs section - always visible */}
+          <div>
+            <div className="flex items-center justify-between px-4 mb-2">
+              <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">Messages privés</span>
+              <button onClick={() => setDmPickerOpen(true)}
+                className="p-1 rounded-lg hover:bg-primary/10 text-muted-foreground/50 hover:text-primary transition-all" title="Nouveau message privé">
+                <Plus className="w-3.5 h-3.5" />
+              </button>
             </div>
-          )}
+            <div className="space-y-0.5 px-2">
+              {dmChannels.map(ch => {
+                const partner = dmMembers[ch.id];
+                return (
+                  <DmItem
+                    key={ch.id}
+                    channelId={ch.id}
+                    isActive={activeChannelId === ch.id}
+                    onClick={() => onSelectChannel(ch.id)}
+                    partnerName={partner?.name}
+                    partnerColor={partner?.avatarColor}
+                  />
+                );
+              })}
+              {dmChannels.length === 0 && (
+                <button
+                  onClick={() => setDmPickerOpen(true)}
+                  className="w-full flex items-center gap-2.5 px-3 py-3 rounded-xl text-sm text-muted-foreground/40 hover:bg-muted/20 hover:text-foreground transition-all border border-dashed border-border/15"
+                >
+                  <Mail className="w-4 h-4" />
+                  <span className="text-xs">Démarrer une conversation</span>
+                </button>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* User status footer */}
@@ -140,7 +256,7 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
         )}
       </div>
 
-      {/* Create dialog */}
+      {/* Create channel dialog */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="sm:max-w-md backdrop-blur-2xl bg-popover/90 border-border/25 text-popover-foreground shadow-[0_16px_48px_rgba(0,0,0,0.25)]">
           <DialogHeader>
@@ -178,6 +294,40 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* DM picker dialog */}
+      <Dialog open={dmPickerOpen} onOpenChange={setDmPickerOpen}>
+        <DialogContent className="sm:max-w-sm backdrop-blur-2xl bg-popover/90 border-border/25 text-popover-foreground shadow-[0_16px_48px_rgba(0,0,0,0.25)]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Mail className="w-5 h-5 text-primary" /> Nouveau message privé
+            </DialogTitle>
+            <DialogDescription>Choisissez un membre pour démarrer une conversation privée.</DialogDescription>
+          </DialogHeader>
+          <div className="max-h-72 overflow-y-auto space-y-1 pt-2">
+            {availableForDm.map(member => (
+              <button
+                key={member.id}
+                onClick={() => startDm(teamMemberToAuthId[member.id], member.name)}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-primary/10 transition-all text-left group"
+              >
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center text-[10px] font-bold text-white shadow-sm"
+                  style={{ backgroundColor: member.avatarColor || '#6366f1' }}>
+                  {member.name[0]?.toUpperCase()}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate">{member.name}</p>
+                  <p className="text-[10px] text-muted-foreground/50 truncate">{member.role}</p>
+                </div>
+                <Mail className="w-4 h-4 text-muted-foreground/0 group-hover:text-primary transition-all shrink-0" />
+              </button>
+            ))}
+            {availableForDm.length === 0 && (
+              <p className="text-sm text-muted-foreground/50 text-center py-6">Aucun membre disponible</p>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
@@ -195,6 +345,29 @@ function ChannelItem({ channel, isActive, onClick, icon }: {
     >
       <span className={isActive ? 'text-primary' : 'opacity-40'}>{icon}</span>
       <span className="truncate">{channel.name}</span>
+    </button>
+  );
+}
+
+function DmItem({ channelId, isActive, onClick, partnerName, partnerColor }: {
+  channelId: string; isActive: boolean; onClick: () => void; partnerName?: string; partnerColor?: string;
+}) {
+  const displayName = partnerName || 'Utilisateur';
+  const color = partnerColor || '#6366f1';
+
+  return (
+    <button onClick={onClick}
+      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all duration-200 ${
+        isActive
+          ? 'bg-primary/10 text-primary font-semibold backdrop-blur-xl border border-primary/15 shadow-[0_0_14px_hsl(var(--primary)/0.1),inset_0_1px_0_rgba(255,255,255,0.05)]'
+          : 'text-muted-foreground/60 hover:bg-muted/20 hover:text-foreground hover:backdrop-blur-sm'
+      }`}
+    >
+      <div className="w-6 h-6 rounded-lg flex items-center justify-center text-[9px] font-bold text-white shrink-0"
+        style={{ backgroundColor: color }}>
+        {displayName[0]?.toUpperCase()}
+      </div>
+      <span className="truncate">{displayName}</span>
     </button>
   );
 }

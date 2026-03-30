@@ -147,6 +147,17 @@ export default function IntegrationsSettings() {
 
   return (
     <>
+      {/* Privacy banner */}
+      <div className="flex items-start gap-3 p-4 rounded-xl border border-primary/20 bg-primary/5 mb-4">
+        <span className="text-lg mt-0.5">🔒</span>
+        <div>
+          <p className="text-sm font-semibold text-foreground">Tes intégrations sont personnelles</p>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Connecte tes propres comptes Google, Zoom, Canva etc. Tes connexions sont privées — les autres membres ne les voient pas.
+          </p>
+        </div>
+      </div>
+
       <Card>
         <CardHeader>
           <CardTitle className="text-foreground">Mes intégrations</CardTitle>

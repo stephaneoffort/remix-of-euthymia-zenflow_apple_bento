@@ -647,7 +647,7 @@ async function pushTaskForUser(userId: string, taskId: string, action: string) {
 
   if (action === "delete") {
     if (task?.google_event_id) {
-      const res = await fetch(`${baseUrl}/${task.google_event_id}`, { method: "DELETE", headers });
+      const res = await fetchWithRetry(`${baseUrl}/${task.google_event_id}`, { method: "DELETE", headers });
       await res.text();
     }
     await supabase.from("tasks").update({ google_event_id: null } as any).eq("id", taskId);

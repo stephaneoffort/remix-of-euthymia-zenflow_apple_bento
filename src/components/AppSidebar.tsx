@@ -155,14 +155,22 @@ export default function AppSidebar() {
 
   // Only auto-expand truly new spaces (never seen before), preserve user's collapsed state
   useEffect(() => {
+    if (spaces.length === 0) return;
     const currentIds = new Set(spaces.map(s => s.id));
-    const newIds = [...currentIds].filter(id => !knownSpaceIds.has(id));
+    const hadKnown = knownSpaceIds.size > 0;
+    const newIds = hadKnown
+      ? [...currentIds].filter(id => !knownSpaceIds.has(id))
+      : [];
     if (newIds.length > 0) {
       setExpandedSpaces(prev => {
         const next = new Set(prev);
         newIds.forEach(id => next.add(id));
         return next;
       });
+    }
+    // If no prior known IDs and no saved expanded state, initialize all expanded
+    if (!hadKnown && !localStorage.getItem('euthymia:expandedSpaces')) {
+      setExpandedSpaces(new Set(currentIds));
     }
     setKnownSpaceIds(currentIds);
   }, [spaces]);

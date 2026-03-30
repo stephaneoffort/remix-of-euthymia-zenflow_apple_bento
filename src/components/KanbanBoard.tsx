@@ -372,7 +372,7 @@ export default function KanbanBoard() {
       )}
 
       {/* Main kanban area */}
-      <div className={`flex gap-1.5 sm:gap-2 p-2 sm:p-3 overflow-x-auto sm:overflow-x-hidden flex-1 snap-x snap-mandatory sm:snap-none ${isMobile && collapsedStatuses.length > 0 ? 'pt-2' : ''}`}>
+      <div className={`flex gap-1.5 sm:gap-2 p-2 sm:p-3 overflow-x-auto sm:overflow-hidden flex-1 snap-x snap-mandatory sm:snap-none ${isMobile && collapsedStatuses.length > 0 ? 'pt-2' : ''}`}>
         {/* Desktop: show collapsed inline */}
         {!isMobile && collapsedStatuses.map(renderCollapsedColumn)}
         {/* Expanded columns */}

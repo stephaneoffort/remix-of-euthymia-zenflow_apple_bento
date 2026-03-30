@@ -133,7 +133,6 @@ export default function IntegrationsSettings() {
   };
 
   const allKeys: IntegrationKey[] = ['google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo'];
-  const isGmailNotReady = (key: IntegrationKey) => key === 'gmail';
 
   if (loading) {
     return (

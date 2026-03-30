@@ -22,6 +22,7 @@ import DriveAttachments from '@/components/drive/DriveAttachments';
 import CanvaAttachments from '@/components/canva/CanvaAttachments';
 import ZoomMeetings from '@/components/zoom/ZoomMeetings';
 import BrevoContacts from '@/components/brevo/BrevoContacts';
+import GmailCompose from '@/components/gmail/GmailCompose';
 import { useIntegrations, INTEGRATION_CONFIG } from '@/hooks/useIntegrations';
 import GoogleCalendarPicker from '@/components/GoogleCalendarPicker';
 // Format date for display
@@ -675,8 +676,9 @@ export default function TaskDetailPanel() {
             <CanvaAttachments entityType="task" entityId={task.id} compact defaultTitle={task.title} />
             <ZoomMeetings entityType="task" entityId={task.id} compact defaultTitle={task.title} />
             <BrevoContacts entityType="task" entityId={task.id} compact />
+            <GmailCompose entityType="task" entityId={task.id} defaultSubject={task.title} compact />
 
-            {!isActive('google_drive') && !isActive('canva') && !isActive('zoom') && !isActive('brevo') && (
+            {!isActive('google_drive') && !isActive('canva') && !isActive('zoom') && !isActive('brevo') && !isActive('gmail') && (
               <a
                 href="/settings"
                 className="flex items-center justify-center gap-2 w-full py-3 px-4 border border-dashed border-border rounded-lg text-xs text-muted-foreground hover:border-primary/50 hover:text-primary transition-colors"
@@ -685,6 +687,7 @@ export default function TaskDetailPanel() {
                 <img src={INTEGRATION_CONFIG.canva.icon} alt="" className="w-5 h-5" />
                 <img src={INTEGRATION_CONFIG.zoom.icon} alt="" className="w-5 h-5" />
                 <img src={INTEGRATION_CONFIG.brevo.icon} alt="" className="w-5 h-5" />
+                <img src={INTEGRATION_CONFIG.gmail.icon} alt="" className="w-5 h-5" />
                 <span>— Connecte des outils depuis les Settings →</span>
               </a>
             )}

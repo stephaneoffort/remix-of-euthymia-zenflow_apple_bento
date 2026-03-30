@@ -55,9 +55,9 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
 
   return (
     <>
-      <div className="w-64 bg-card/60 backdrop-blur-sm border-r border-border/50 flex flex-col shrink-0 h-full">
+      <div className="w-64 backdrop-blur-xl bg-card/20 border-r border-border/20 flex flex-col shrink-0 h-full shadow-[inset_-1px_0_0_rgba(255,255,255,0.04)]">
         {/* Header with back button */}
-        <div className="h-14 flex items-center gap-2 px-3 border-b border-border/50">
+        <div className="h-14 flex items-center gap-2 px-3 border-b border-border/20 shadow-[inset_0_-1px_0_rgba(255,255,255,0.04)]">
           <button
             onClick={() => navigate('/')}
             className="p-1.5 rounded-lg hover:bg-muted/80 text-muted-foreground hover:text-foreground transition-colors"
@@ -244,13 +244,13 @@ function ChannelItem({
   return (
     <button
       onClick={onClick}
-      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-150 ${
+      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all duration-200 ${
         isActive
-          ? 'bg-primary/15 text-primary font-semibold shadow-sm'
-          : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+          ? 'bg-primary/12 text-primary font-semibold backdrop-blur-sm border border-primary/15 shadow-[0_0_12px_hsl(var(--primary)/0.08)]'
+          : 'text-muted-foreground/70 hover:bg-muted/25 hover:text-foreground hover:backdrop-blur-sm'
       }`}
     >
-      <span className={isActive ? 'text-primary' : 'opacity-50'}>{icon}</span>
+      <span className={isActive ? 'text-primary' : 'opacity-40'}>{icon}</span>
       <span className="truncate">{channel.name}</span>
     </button>
   );

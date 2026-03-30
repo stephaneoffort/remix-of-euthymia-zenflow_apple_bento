@@ -118,6 +118,11 @@ export const PALETTE_META: Record<ThemePalette, { label: string; description: st
     description: 'Soft UI · Beige sable · Chaud',
     colors: ['#EDE8E3', '#CAC5C0', '#FFFFFF', '#A07840'],
   },
+  nmForest: {
+    label: 'Forest',
+    description: 'Soft UI · Vert mousse · Zen',
+    colors: ['#E6EDE8', '#C3CAC5', '#FFFFFF', '#4E7A45'],
+  },
 };
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {

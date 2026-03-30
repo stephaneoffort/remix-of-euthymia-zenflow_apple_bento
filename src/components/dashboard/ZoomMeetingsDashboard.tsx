@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   ChevronDown, ExternalLink, Copy, Clock, Plus, Video, Loader2,
   LinkIcon, Settings, AlertCircle, Volume2, VolumeX, CalendarDays,
-  CheckSquare, Layers,
+  CheckSquare, Layers, RefreshCw,
 } from "lucide-react";
 import { differenceInMinutes, format, parseISO, isFuture, isToday, isTomorrow, startOfMonth, endOfMonth } from "date-fns";
 import { fr } from "date-fns/locale";

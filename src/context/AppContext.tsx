@@ -359,6 +359,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (updates.recurrence !== undefined) dbUpdates.recurrence = updates.recurrence;
       if (updates.recurrenceEndDate !== undefined) dbUpdates.recurrence_end_date = updates.recurrenceEndDate;
       if (updates.targetCalendarId !== undefined) dbUpdates.target_calendar_id = updates.targetCalendarId;
+      if ((updates as any).progress !== undefined) dbUpdates.progress = (updates as any).progress;
+      if ((updates as any).isMilestone !== undefined) dbUpdates.is_milestone = (updates as any).isMilestone;
+      if ((updates as any).durationDays !== undefined) dbUpdates.duration_days = (updates as any).durationDays;
+      if ((updates as any).color !== undefined) dbUpdates.color = (updates as any).color;
+      if ((updates as any).wbs !== undefined) dbUpdates.wbs = (updates as any).wbs;
 
       if (Object.keys(dbUpdates).length > 0) {
         if (!navigator.onLine) {

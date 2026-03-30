@@ -456,107 +456,172 @@ export type Database = {
         }
         Relationships: []
       }
-      chat_categories: {
+      chat_channel_members: {
         Row: {
-          created_at: string
-          icon: string
+          channel_id: string
           id: string
-          name: string
-          sort_order: number
+          is_muted: boolean | null
+          joined_at: string | null
+          last_read_at: string | null
+          user_id: string
         }
         Insert: {
-          created_at?: string
-          icon?: string
+          channel_id: string
           id?: string
-          name: string
-          sort_order?: number
+          is_muted?: boolean | null
+          joined_at?: string | null
+          last_read_at?: string | null
+          user_id: string
         }
         Update: {
-          created_at?: string
-          icon?: string
+          channel_id?: string
           id?: string
+          is_muted?: boolean | null
+          joined_at?: string | null
+          last_read_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_channel_members_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: false
+            referencedRelation: "chat_channels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_channels: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_archived: boolean | null
+          name: string
+          position: number | null
+          space_id: string | null
+          type: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_archived?: boolean | null
+          name: string
+          position?: number | null
+          space_id?: string | null
+          type?: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_archived?: boolean | null
           name?: string
-          sort_order?: number
+          position?: number | null
+          space_id?: string | null
+          type?: string
         }
         Relationships: []
       }
       chat_messages: {
         Row: {
-          attachment_name: string | null
-          attachment_url: string | null
-          author_id: string
-          category_id: string
+          channel_id: string
           content: string
-          created_at: string
+          created_at: string | null
+          deleted_at: string | null
           id: string
+          is_deleted: boolean | null
+          is_edited: boolean | null
+          mentioned_users: string[] | null
+          metadata: Json | null
+          thread_id: string | null
+          type: string | null
+          updated_at: string | null
+          user_id: string
         }
         Insert: {
-          attachment_name?: string | null
-          attachment_url?: string | null
-          author_id: string
-          category_id: string
+          channel_id: string
           content: string
-          created_at?: string
+          created_at?: string | null
+          deleted_at?: string | null
           id?: string
+          is_deleted?: boolean | null
+          is_edited?: boolean | null
+          mentioned_users?: string[] | null
+          metadata?: Json | null
+          thread_id?: string | null
+          type?: string | null
+          updated_at?: string | null
+          user_id: string
         }
         Update: {
-          attachment_name?: string | null
-          attachment_url?: string | null
-          author_id?: string
-          category_id?: string
+          channel_id?: string
           content?: string
-          created_at?: string
+          created_at?: string | null
+          deleted_at?: string | null
           id?: string
+          is_deleted?: boolean | null
+          is_edited?: boolean | null
+          mentioned_users?: string[] | null
+          metadata?: Json | null
+          thread_id?: string | null
+          type?: string | null
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "chat_messages_author_id_fkey"
-            columns: ["author_id"]
+            foreignKeyName: "chat_messages_channel_id_fkey"
+            columns: ["channel_id"]
             isOneToOne: false
-            referencedRelation: "team_members"
+            referencedRelation: "chat_channels"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "chat_messages_category_id_fkey"
-            columns: ["category_id"]
+            foreignKeyName: "chat_messages_thread_id_fkey"
+            columns: ["thread_id"]
             isOneToOne: false
-            referencedRelation: "chat_categories"
+            referencedRelation: "chat_messages"
             referencedColumns: ["id"]
           },
         ]
       }
-      chat_reactions: {
+      chat_pinned_messages: {
         Row: {
-          created_at: string
-          emoji: string
+          channel_id: string
           id: string
-          member_id: string
           message_id: string
+          pinned_at: string | null
+          pinned_by: string | null
         }
         Insert: {
-          created_at?: string
-          emoji: string
+          channel_id: string
           id?: string
-          member_id: string
           message_id: string
+          pinned_at?: string | null
+          pinned_by?: string | null
         }
         Update: {
-          created_at?: string
-          emoji?: string
+          channel_id?: string
           id?: string
-          member_id?: string
           message_id?: string
+          pinned_at?: string | null
+          pinned_by?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "chat_reactions_member_id_fkey"
-            columns: ["member_id"]
+            foreignKeyName: "chat_pinned_messages_channel_id_fkey"
+            columns: ["channel_id"]
             isOneToOne: false
-            referencedRelation: "team_members"
+            referencedRelation: "chat_channels"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "chat_reactions_message_id_fkey"
+            foreignKeyName: "chat_pinned_messages_message_id_fkey"
             columns: ["message_id"]
             isOneToOne: false
             referencedRelation: "chat_messages"
@@ -564,35 +629,34 @@ export type Database = {
           },
         ]
       }
-      chat_read_status: {
+      chat_reactions: {
         Row: {
-          category_id: string
-          last_read_at: string
-          member_id: string
+          created_at: string | null
+          emoji: string
+          id: string
+          message_id: string
+          user_id: string
         }
         Insert: {
-          category_id: string
-          last_read_at?: string
-          member_id: string
+          created_at?: string | null
+          emoji: string
+          id?: string
+          message_id: string
+          user_id: string
         }
         Update: {
-          category_id?: string
-          last_read_at?: string
-          member_id?: string
+          created_at?: string | null
+          emoji?: string
+          id?: string
+          message_id?: string
+          user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "chat_read_status_category_id_fkey"
-            columns: ["category_id"]
+            foreignKeyName: "chat_reactions_message_id_fkey"
+            columns: ["message_id"]
             isOneToOne: false
-            referencedRelation: "chat_categories"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "chat_read_status_member_id_fkey"
-            columns: ["member_id"]
-            isOneToOne: false
-            referencedRelation: "team_members"
+            referencedRelation: "chat_messages"
             referencedColumns: ["id"]
           },
         ]
@@ -720,171 +784,6 @@ export type Database = {
           sort_order?: number
         }
         Relationships: []
-      }
-      direct_conversation_members: {
-        Row: {
-          conversation_id: string
-          member_id: string
-        }
-        Insert: {
-          conversation_id: string
-          member_id: string
-        }
-        Update: {
-          conversation_id?: string
-          member_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "direct_conversation_members_conversation_id_fkey"
-            columns: ["conversation_id"]
-            isOneToOne: false
-            referencedRelation: "direct_conversations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "direct_conversation_members_member_id_fkey"
-            columns: ["member_id"]
-            isOneToOne: false
-            referencedRelation: "team_members"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      direct_conversations: {
-        Row: {
-          created_at: string
-          id: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      direct_messages: {
-        Row: {
-          attachment_name: string | null
-          attachment_url: string | null
-          author_id: string
-          content: string
-          conversation_id: string
-          created_at: string
-          id: string
-        }
-        Insert: {
-          attachment_name?: string | null
-          attachment_url?: string | null
-          author_id: string
-          content: string
-          conversation_id: string
-          created_at?: string
-          id?: string
-        }
-        Update: {
-          attachment_name?: string | null
-          attachment_url?: string | null
-          author_id?: string
-          content?: string
-          conversation_id?: string
-          created_at?: string
-          id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "direct_messages_author_id_fkey"
-            columns: ["author_id"]
-            isOneToOne: false
-            referencedRelation: "team_members"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "direct_messages_conversation_id_fkey"
-            columns: ["conversation_id"]
-            isOneToOne: false
-            referencedRelation: "direct_conversations"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      dm_reactions: {
-        Row: {
-          created_at: string
-          emoji: string
-          id: string
-          member_id: string
-          message_id: string
-        }
-        Insert: {
-          created_at?: string
-          emoji: string
-          id?: string
-          member_id: string
-          message_id: string
-        }
-        Update: {
-          created_at?: string
-          emoji?: string
-          id?: string
-          member_id?: string
-          message_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "dm_reactions_member_id_fkey"
-            columns: ["member_id"]
-            isOneToOne: false
-            referencedRelation: "team_members"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "dm_reactions_message_id_fkey"
-            columns: ["message_id"]
-            isOneToOne: false
-            referencedRelation: "direct_messages"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      dm_read_status: {
-        Row: {
-          conversation_id: string
-          last_read_at: string
-          member_id: string
-        }
-        Insert: {
-          conversation_id: string
-          last_read_at?: string
-          member_id: string
-        }
-        Update: {
-          conversation_id?: string
-          last_read_at?: string
-          member_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "dm_read_status_conversation_id_fkey"
-            columns: ["conversation_id"]
-            isOneToOne: false
-            referencedRelation: "direct_conversations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "dm_read_status_member_id_fkey"
-            columns: ["member_id"]
-            isOneToOne: false
-            referencedRelation: "team_members"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       drive_attachments: {
         Row: {
@@ -1545,6 +1444,30 @@ export type Database = {
           id?: string
           name?: string
           role?: string
+        }
+        Relationships: []
+      }
+      user_presence: {
+        Row: {
+          custom_status: string | null
+          id: string
+          last_seen: string | null
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          custom_status?: string | null
+          id?: string
+          last_seen?: string | null
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          custom_status?: string | null
+          id?: string
+          last_seen?: string | null
+          status?: string | null
+          user_id?: string
         }
         Relationships: []
       }

@@ -59,10 +59,6 @@ function MessageCard({
           mentioned_member_ids: mentionedIds.length > 0 ? mentionedIds : [message.authorId],
         });
         toast.success('Réponse envoyée');
-      } else if (message.type === 'google_chat') {
-        window.open('https://chat.google.com', '_blank');
-        toast.info('Ouvre Google Chat pour répondre');
-      }
       setReplyContent('');
       onReplySent();
     } catch (e) {

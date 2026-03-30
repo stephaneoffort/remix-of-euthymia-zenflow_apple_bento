@@ -465,6 +465,8 @@ interface MindMapNodeGroupProps {
   toggleExpand: (id: string) => void;
   onSelectTask: (id: string) => void;
   onAddSubtask: (parentTask: Task, title: string) => void;
+  zoomTaskIds: Set<string>;
+  meetTaskIds: Set<string>;
 }
 
 function MindMapNodeGroup({ positioned, expandedIds, visibleDepth, toggleExpand, onSelectTask, onAddSubtask }: MindMapNodeGroupProps) {

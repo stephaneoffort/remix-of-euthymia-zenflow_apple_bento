@@ -821,6 +821,7 @@ function GanttBar({
   totalFloat,
   onDoubleClick,
   onDatesChange,
+  onContextMenu,
 }: {
   task: FlatTask;
   rowIndex: number;
@@ -830,6 +831,7 @@ function GanttBar({
   totalFloat?: number;
   onDoubleClick: () => void;
   onDatesChange: (taskId: string, newStart: Date, newEnd: Date) => void;
+  onContextMenu: (e: React.MouseEvent) => void;
 }) {
   const [dragState, setDragState] = useState<{
     type: "move" | "resize-right" | "resize-left";

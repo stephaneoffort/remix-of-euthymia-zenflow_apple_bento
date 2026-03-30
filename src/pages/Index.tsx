@@ -1,5 +1,6 @@
 import DashboardView from "@/components/DashboardView";
 import GanttView from "@/components/GanttView";
+import TimelineView from "@/components/TimelineView";
 import VoiceTaskCreator from "@/components/VoiceTaskCreator";
 import React, { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useApp } from "@/context/AppContext";
@@ -37,6 +38,7 @@ import {
   BarChart3,
   Network,
   GanttChart,
+  AlignHorizontalJustifyStart,
   Search,
   X,
   Keyboard,
@@ -70,6 +72,7 @@ const DEFAULT_VIEW_OPTIONS: { key: ViewType; label: string; icon: React.ReactNod
   { key: "workload", label: "Charge", icon: <BarChart3 className="w-4 h-4" /> },
   { key: "mindmap", label: "Carte mentale", icon: <Network className="w-4 h-4" /> },
   { key: "gantt", label: "Gantt", icon: <GanttChart className="w-4 h-4" /> },
+  { key: "timeline", label: "Chronologie", icon: <AlignHorizontalJustifyStart className="w-4 h-4" /> },
 ];
 
 const VIEW_MAP = Object.fromEntries(DEFAULT_VIEW_OPTIONS.map(v => [v.key, v]));
@@ -518,6 +521,7 @@ export default function Index() {
           {selectedView === "workload" && <WorkloadView />}
           {selectedView === "mindmap" && <MindMapView />}
           {selectedView === "gantt" && <GanttView />}
+          {selectedView === "timeline" && <TimelineView />}
         </main>
       </div>
 

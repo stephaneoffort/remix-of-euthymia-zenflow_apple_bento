@@ -120,6 +120,9 @@ export default function Settings() {
 
           <TabsContent value="integrations">
             <IntegrationsSettings />
+            <div className="mt-6">
+              <AdminIntegrationsPanel />
+            </div>
           </TabsContent>
 
           <TabsContent value="calendar">

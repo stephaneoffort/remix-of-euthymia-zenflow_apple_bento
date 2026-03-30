@@ -434,7 +434,7 @@ async function caldavPushUpdate(account: any, event: any): Promise<void> {
 async function caldavPushDelete(account: any, externalId: string): Promise<void> {
   const auth = btoa(`${account.caldav_username}:${account.caldav_password}`);
   const url = `${account.caldav_url.replace(/\/$/, "")}/${externalId}.ics`;
-  const res = await fetch(url, {
+  const res = await fetchWithRetry(url, {
     method: "DELETE",
     headers: { Authorization: `Basic ${auth}` },
   });

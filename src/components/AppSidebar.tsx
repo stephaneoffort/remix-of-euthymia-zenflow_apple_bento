@@ -1256,49 +1256,6 @@ export default function AppSidebar() {
   );
 }
 
-function MessagesCollapsedIcon() {
-  const navigate = useNavigate();
-  const { unreadCount } = useMessages();
-
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <button
-          onClick={() => navigate('/messages')}
-          className="relative p-2 rounded-md hover:bg-sidebar-hover text-sidebar-fg transition-colors"
-        >
-          <MessageSquare className="w-4.5 h-4.5" />
-          {unreadCount > 0 && (
-            <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 bg-destructive text-destructive-foreground rounded-full text-[10px] flex items-center justify-center font-bold px-1 animate-pulse">
-              {unreadCount > 99 ? '99+' : unreadCount}
-            </span>
-          )}
-        </button>
-      </TooltipTrigger>
-      <TooltipContent side="right">Messages{unreadCount > 0 ? ` (${unreadCount})` : ''}</TooltipContent>
-    </Tooltip>
-  );
-}
-
-function MessagesLink({ handleNavClick }: { handleNavClick: () => void }) {
-  const navigate = useNavigate();
-  const { unreadCount } = useMessages();
-
-  return (
-    <button
-      onClick={() => { navigate('/messages'); handleNavClick(); }}
-      className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors mt-1"
-    >
-      <MessageSquare className="w-4 h-4" />
-      Messages
-      {unreadCount > 0 && (
-        <span className="ml-auto text-xs bg-destructive text-destructive-foreground rounded-full px-1.5 py-0.5 min-w-[18px] text-center animate-pulse">
-          {unreadCount > 99 ? '99+' : unreadCount}
-        </span>
-      )}
-    </button>
-  );
-}
 
 function CollapsedChatIcon() {
   const navigate = useNavigate();

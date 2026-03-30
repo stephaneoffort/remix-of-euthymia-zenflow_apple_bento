@@ -24,7 +24,7 @@ interface Props {
   allMembers?: MentionableMember[];
 }
 
-export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {} }: Props) {
+export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, allMembers = [] }: Props) {
   const [content, setContent] = useState('');
   const [showMentions, setShowMentions] = useState(false);
   const [mentionFilter, setMentionFilter] = useState('');

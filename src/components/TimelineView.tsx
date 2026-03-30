@@ -16,6 +16,7 @@ import {
   isSameDay,
   isWithinInterval,
 } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
 import { fr } from "date-fns/locale";
 import {
   ChevronLeft,

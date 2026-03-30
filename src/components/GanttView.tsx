@@ -408,7 +408,7 @@ export default function GanttView() {
     if (error) {
       toast.error("Erreur : " + error.message);
     } else {
-      setDependencies(prev => [...prev, { id: crypto.randomUUID(), taskId: addingDep, dependsOnId: depTargetId, type: depType, lagDays: 0 }]);
+      setDependencies(prev => [...prev, { id: crypto.randomUUID(), taskId: addingDep, dependsOnId: depTargetId, type: depType as "FS" | "SS" | "FF" | "SF", lagDays: 0 }]);
       toast.success("Dépendance ajoutée");
     }
     setAddingDep(null);

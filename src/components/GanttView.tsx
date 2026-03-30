@@ -888,16 +888,8 @@ function GanttBar({
   const duration = Math.max(differenceInDays(end, start), 1);
   const baseWidth = duration * ppd;
 
-  // Compute effective progress: status-driven fallback when progress is 0
-  const rawProgress = task.progress ?? 0;
-  let progress = rawProgress;
-  if (rawProgress === 0 && task.status === "done") {
-    progress = 100;
-  } else if (rawProgress === 0 && task.status === "in_progress") {
-    progress = 50;
-  } else if (rawProgress === 0 && task.status === "in_review") {
-    progress = 75;
-  }
+  // Use centralized effective progress (handles status fallback + parent aggregation)
+  const progress = getEffectiveProgress(task, allTasks);
 
   const top = 12 + rowIndex * ROW_HEIGHT + (ROW_HEIGHT - 24) / 2;
 

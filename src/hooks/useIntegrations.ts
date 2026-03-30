@@ -7,7 +7,8 @@ export type IntegrationKey =
   | 'canva'
   | 'google_meet'
   | 'gmail'
-  | 'brevo';
+  | 'brevo'
+  | 'google_chat';
 
 export interface IntegrationStatus {
   key: IntegrationKey;
@@ -18,7 +19,7 @@ export interface IntegrationStatus {
 }
 
 const ALL_INTEGRATIONS: IntegrationKey[] = [
-  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo',
+  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo', 'google_chat',
 ];
 
 import googleDriveIcon from '@/assets/integrations/google-drive.png';

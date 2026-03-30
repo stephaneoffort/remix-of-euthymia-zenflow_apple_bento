@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { ChatMessage, ChatReaction, MemberProfile } from '@/types/chat';
 import { format, isToday, isYesterday, isSameDay } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { Hash, MessageSquare, Pin, MoreHorizontal, Smile } from 'lucide-react';
+import { Hash, MessageSquare, Pin, MoreHorizontal, Smile, MessageCircle } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
@@ -50,7 +50,6 @@ export function MessageList({ messages, reactions, memberProfiles, onToggleReact
     return !isSameDay(new Date(msg.created_at), new Date(messages[idx - 1].created_at));
   };
 
-  // Render formatted content with @mentions highlighted
   const renderContent = (content: string) => {
     const mentionRegex = /@(\w+)/g;
     const parts = content.split(mentionRegex);
@@ -65,7 +64,7 @@ export function MessageList({ messages, reactions, memberProfiles, onToggleReact
 
   if (loading) {
     return (
-      <div className="flex-1 flex items-center justify-center text-muted-foreground">
+      <div className="flex-1 flex items-center justify-center">
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0ms' }} />
           <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -77,19 +76,23 @@ export function MessageList({ messages, reactions, memberProfiles, onToggleReact
 
   if (messages.length === 0) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground gap-3 p-8">
-        <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center">
-          <Hash className="w-8 h-8 opacity-40" />
+      <div className="flex-1 flex flex-col items-center justify-center gap-4 p-8">
+        <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center">
+          <MessageCircle className="w-10 h-10 text-primary/60" />
         </div>
-        <p className="text-lg font-semibold text-foreground">Bienvenue dans ce canal !</p>
-        <p className="text-sm text-center max-w-md">C'est le début de la conversation. Envoie un message pour commencer.</p>
+        <div className="text-center">
+          <p className="text-lg font-semibold text-foreground mb-1">Bienvenue dans ce canal !</p>
+          <p className="text-sm text-muted-foreground max-w-sm">
+            C'est le début de la conversation. Envoie un message pour commencer à échanger avec ton équipe.
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
     <div ref={containerRef} className="flex-1 overflow-y-auto scrollbar-thin">
-      <div className="px-4 py-2">
+      <div className="px-4 py-4">
         {messages.map((msg, idx) => {
           const profile = memberProfiles[msg.user_id];
           const showHeader = shouldShowHeader(msg, idx);
@@ -97,7 +100,6 @@ export function MessageList({ messages, reactions, memberProfiles, onToggleReact
           const msgReactions = reactions[msg.id] || [];
           const isHovered = hoveredMessageId === msg.id;
 
-          // Group reactions
           const reactionGroups: Record<string, { count: number; userIds: string[] }> = {};
           msgReactions.forEach(r => {
             if (!reactionGroups[r.emoji]) reactionGroups[r.emoji] = { count: 0, userIds: [] };
@@ -108,30 +110,30 @@ export function MessageList({ messages, reactions, memberProfiles, onToggleReact
           return (
             <div key={msg.id}>
               {showDate && (
-                <div className="flex items-center gap-3 my-5">
-                  <div className="flex-1 h-px bg-border" />
-                  <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                <div className="flex items-center gap-3 my-6">
+                  <div className="flex-1 h-px bg-border/60" />
+                  <span className="text-[11px] font-semibold text-muted-foreground bg-background px-3 py-1 rounded-full border border-border/50">
                     {formatMessageDate(msg.created_at)}
                   </span>
-                  <div className="flex-1 h-px bg-border" />
+                  <div className="flex-1 h-px bg-border/60" />
                 </div>
               )}
 
               <div
-                className={`group relative rounded-md px-2 -mx-2 transition-colors ${isHovered ? 'bg-muted/40' : 'hover:bg-muted/30'} ${showHeader ? 'mt-4 pt-1' : 'py-0.5'}`}
+                className={`group relative rounded-lg px-3 -mx-1 transition-colors ${isHovered ? 'bg-muted/50' : 'hover:bg-muted/25'} ${showHeader ? 'mt-5 pt-1.5' : 'py-0.5'}`}
                 onMouseEnter={() => setHoveredMessageId(msg.id)}
                 onMouseLeave={() => setHoveredMessageId(null)}
               >
                 {/* Hover action bar */}
                 {isHovered && (
-                  <div className="absolute -top-3.5 right-2 flex items-center gap-0.5 bg-card border rounded-md shadow-md p-0.5 z-20">
+                  <div className="absolute -top-3 right-2 flex items-center gap-0.5 bg-popover border border-border/60 rounded-lg shadow-lg p-0.5 z-20">
                     <Popover>
                       <PopoverTrigger asChild>
-                        <button className="p-1.5 rounded hover:bg-muted transition-colors" title="Réagir">
+                        <button className="p-1.5 rounded-md hover:bg-muted transition-colors" title="Réagir">
                           <Smile className="w-4 h-4 text-muted-foreground" />
                         </button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-2" align="end">
+                      <PopoverContent className="w-auto p-2 bg-popover" align="end">
                         <div className="flex gap-1 flex-wrap max-w-[200px]">
                           {QUICK_EMOJIS.map(emoji => (
                             <button
@@ -145,13 +147,13 @@ export function MessageList({ messages, reactions, memberProfiles, onToggleReact
                         </div>
                       </PopoverContent>
                     </Popover>
-                    <button className="p-1.5 rounded hover:bg-muted transition-colors" title="Répondre">
+                    <button className="p-1.5 rounded-md hover:bg-muted transition-colors" title="Répondre">
                       <MessageSquare className="w-4 h-4 text-muted-foreground" />
                     </button>
-                    <button className="p-1.5 rounded hover:bg-muted transition-colors" title="Épingler">
+                    <button className="p-1.5 rounded-md hover:bg-muted transition-colors" title="Épingler">
                       <Pin className="w-4 h-4 text-muted-foreground" />
                     </button>
-                    <button className="p-1.5 rounded hover:bg-muted transition-colors" title="Plus">
+                    <button className="p-1.5 rounded-md hover:bg-muted transition-colors" title="Plus">
                       <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
                     </button>
                   </div>
@@ -160,7 +162,7 @@ export function MessageList({ messages, reactions, memberProfiles, onToggleReact
                 <div className="flex gap-3">
                   {showHeader ? (
                     <div
-                      className="w-10 h-10 rounded-full shrink-0 flex items-center justify-center text-sm font-bold text-white mt-0.5"
+                      className="w-10 h-10 rounded-full shrink-0 flex items-center justify-center text-sm font-bold text-white mt-0.5 shadow-sm"
                       style={{ backgroundColor: profile?.avatar_color || '#6366f1' }}
                     >
                       {(profile?.name || '?')[0].toUpperCase()}
@@ -179,11 +181,11 @@ export function MessageList({ messages, reactions, memberProfiles, onToggleReact
                         <span className="font-semibold text-sm text-foreground hover:underline cursor-pointer">
                           {profile?.name || 'Utilisateur'}
                         </span>
-                        <span className="text-[11px] text-muted-foreground">
+                        <span className="text-[11px] text-muted-foreground/70">
                           {format(new Date(msg.created_at), "HH:mm")}
                         </span>
                         {msg.is_edited && (
-                          <span className="text-[10px] text-muted-foreground/60">(modifié)</span>
+                          <span className="text-[10px] text-muted-foreground/50 italic">(modifié)</span>
                         )}
                       </div>
                     )}
@@ -193,17 +195,17 @@ export function MessageList({ messages, reactions, memberProfiles, onToggleReact
 
                     {/* Reactions */}
                     {Object.keys(reactionGroups).length > 0 && (
-                      <div className="flex gap-1 mt-1.5 flex-wrap">
+                      <div className="flex gap-1.5 mt-2 flex-wrap">
                         {Object.entries(reactionGroups).map(([emoji, data]) => {
                           const hasReacted = currentUserId ? data.userIds.includes(currentUserId) : false;
                           return (
                             <button
                               key={emoji}
                               onClick={() => onToggleReaction(msg.id, emoji)}
-                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs border transition-all duration-150 hover:scale-105 ${
+                              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs border transition-all duration-150 hover:scale-105 ${
                                 hasReacted
-                                  ? 'bg-primary/10 border-primary/30 text-primary'
-                                  : 'bg-muted/40 border-border/50 hover:bg-muted/70 text-foreground'
+                                  ? 'bg-primary/10 border-primary/30 text-primary font-medium'
+                                  : 'bg-muted/30 border-border/40 hover:bg-muted/60 text-foreground'
                               }`}
                             >
                               <span>{emoji}</span>
@@ -213,11 +215,11 @@ export function MessageList({ messages, reactions, memberProfiles, onToggleReact
                         })}
                         <Popover>
                           <PopoverTrigger asChild>
-                            <button className="inline-flex items-center px-2 py-0.5 rounded-full text-xs border border-dashed border-border/50 hover:bg-muted/50 text-muted-foreground transition-colors">
+                            <button className="inline-flex items-center px-2 py-1 rounded-full text-xs border border-dashed border-border/40 hover:bg-muted/40 text-muted-foreground transition-colors">
                               <Smile className="w-3 h-3" />
                             </button>
                           </PopoverTrigger>
-                          <PopoverContent className="w-auto p-2" align="start">
+                          <PopoverContent className="w-auto p-2 bg-popover" align="start">
                             <div className="flex gap-1 flex-wrap max-w-[200px]">
                               {QUICK_EMOJIS.map(e => (
                                 <button
@@ -242,14 +244,14 @@ export function MessageList({ messages, reactions, memberProfiles, onToggleReact
 
         {/* Typing indicator */}
         {typingUsers.length > 0 && (
-          <div className="flex items-center gap-2 px-2 py-2 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 px-3 py-3 text-sm text-muted-foreground">
             <div className="flex gap-0.5">
-              <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '0ms' }} />
-              <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '150ms' }} />
-              <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '300ms' }} />
+              <div className="w-1.5 h-1.5 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: '0ms' }} />
+              <div className="w-1.5 h-1.5 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: '150ms' }} />
+              <div className="w-1.5 h-1.5 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: '300ms' }} />
             </div>
             <span className="text-xs">
-              <strong>{typingUsers.join(', ')}</strong> {typingUsers.length > 1 ? 'écrivent' : 'écrit'}...
+              <strong className="text-foreground">{typingUsers.join(', ')}</strong> {typingUsers.length > 1 ? 'écrivent' : 'écrit'}...
             </span>
           </div>
         )}

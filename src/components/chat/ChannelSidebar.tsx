@@ -136,11 +136,12 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
     onChannelCreated?.();
   }, [user, onSelectChannel, onChannelCreated]);
 
-  // Members available for new DMs
+  // All team members except self for DMs
   const availableForDm = useMemo(() => {
     return teamMembers.filter(m => {
       const authId = teamMemberToAuthId[m.id];
-      return authId && authId !== user?.id;
+      // Exclude self, include everyone else (even without account)
+      return authId !== user?.id;
     });
   }, [teamMembers, teamMemberToAuthId, user]);
 

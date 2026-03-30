@@ -92,7 +92,7 @@ interface TaskGroup {
 }
 
 export default function TimelineView() {
-  const { tasks, projects, taskLists, teamMembers, setSelectedTaskId, getFilteredTasks } = useApp();
+  const { tasks, projects, lists: taskLists, teamMembers, setSelectedTaskId, getFilteredTasks } = useApp();
   const timelineRef = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState<ZoomLevel>("week");
   const [groupBy, setGroupBy] = useState<GroupBy>("none");

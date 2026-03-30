@@ -362,17 +362,15 @@ export default function KanbanBoard() {
         </button>
       </div>
 
-      {/* Mobile: collapsed columns stacked vertically */}
-      {isMobile && collapsedStatuses.length > 0 && (
-        <div className="flex flex-col gap-1.5 px-3 pt-2">
+      {/* Collapsed columns shown as horizontal chips at the top */}
+      {collapsedStatuses.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 px-3 sm:px-3 pt-2">
           {collapsedStatuses.map(renderCollapsedColumn)}
         </div>
       )}
 
       {/* Main kanban area */}
-      <div className={`flex gap-1.5 sm:gap-2 p-2 sm:p-3 overflow-x-auto sm:overflow-hidden flex-1 snap-x snap-mandatory sm:snap-none ${isMobile && collapsedStatuses.length > 0 ? 'pt-2' : ''}`}>
-        {/* Desktop: show collapsed inline */}
-        {!isMobile && collapsedStatuses.map(renderCollapsedColumn)}
+      <div className={`flex gap-1.5 sm:gap-2 p-2 sm:p-3 overflow-x-auto sm:overflow-hidden flex-1 snap-x snap-mandatory sm:snap-none ${collapsedStatuses.length > 0 ? 'pt-1' : ''}`}>
         {/* Expanded columns */}
         {expandedStatuses.map(renderExpandedColumn)}
       </div>

@@ -4,7 +4,7 @@ import { ChannelSidebar } from '@/components/chat/ChannelSidebar';
 import { MessageList } from '@/components/chat/MessageList';
 import { ChatInput } from '@/components/chat/ChatInput';
 import { MembersPanel } from '@/components/chat/MembersPanel';
-import { Hash, Users, Pin, Search, Menu } from 'lucide-react';
+import { Hash, Users, Pin, Search, Menu, X } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import MobileBottomNav from '@/components/MobileBottomNav';
 
@@ -28,39 +28,43 @@ export default function Chat() {
             if (isMobile) setShowChannels(false);
           }}
           currentUserProfile={currentUserProfile || null}
+          onChannelCreated={() => chat.loadChannels()}
         />
       )}
 
       {/* Main message area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <div className="h-12 border-b flex items-center px-4 gap-3 shrink-0 bg-background">
+        <div className="h-14 border-b border-border/50 flex items-center px-4 gap-3 shrink-0 bg-card/40 backdrop-blur-sm">
           {isMobile && (
-            <button onClick={() => setShowChannels(!showChannels)} className="p-1.5 rounded-md hover:bg-muted">
-              <Menu className="w-5 h-5 text-muted-foreground" />
+            <button onClick={() => setShowChannels(!showChannels)} className="p-1.5 rounded-lg hover:bg-muted">
+              {showChannels ? <X className="w-5 h-5 text-muted-foreground" /> : <Menu className="w-5 h-5 text-muted-foreground" />}
             </button>
           )}
-          <Hash className="w-5 h-5 text-muted-foreground shrink-0" />
-          <h2 className="font-semibold text-foreground truncate">
-            {activeChannel?.name || 'Sélectionner un canal'}
-          </h2>
-          {activeChannel?.description && !isMobile && (
-            <>
-              <div className="w-px h-5 bg-border" />
-              <span className="text-sm text-muted-foreground truncate">{activeChannel.description}</span>
-            </>
-          )}
-          <div className="ml-auto flex items-center gap-1">
-            <button className="p-2 rounded-md hover:bg-muted text-muted-foreground transition-colors" title="Rechercher">
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+              <Hash className="w-4 h-4 text-primary" />
+            </div>
+            <div className="min-w-0">
+              <h2 className="font-semibold text-foreground text-sm truncate">
+                {activeChannel?.name || 'Sélectionner un canal'}
+              </h2>
+              {activeChannel?.description && !isMobile && (
+                <p className="text-xs text-muted-foreground truncate">{activeChannel.description}</p>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-0.5 shrink-0">
+            <button className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors" title="Rechercher">
               <Search className="w-4 h-4" />
             </button>
-            <button className="p-2 rounded-md hover:bg-muted text-muted-foreground transition-colors" title="Messages épinglés">
+            <button className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors" title="Messages épinglés">
               <Pin className="w-4 h-4" />
             </button>
             {!isMobile && (
               <button
                 onClick={() => setShowMembers(!showMembers)}
-                className={`p-2 rounded-md hover:bg-muted transition-colors ${showMembers ? 'text-foreground bg-muted/50' : 'text-muted-foreground'}`}
+                className={`p-2 rounded-lg hover:bg-muted transition-colors ${showMembers ? 'text-primary bg-primary/10' : 'text-muted-foreground'}`}
                 title="Membres"
               >
                 <Users className="w-4 h-4" />

@@ -1,4 +1,4 @@
-import { useState, useRef, KeyboardEvent, useCallback, useEffect } from 'react';
+import { useState, useRef, KeyboardEvent, useCallback } from 'react';
 import { Plus, Smile, Send, Bold, Italic, Code } from 'lucide-react';
 import {
   Popover,
@@ -27,7 +27,6 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {} }
     const trimmed = content.trim();
     if (!trimmed) return;
 
-    // Extract mentioned user IDs
     const mentionRegex = /@(\w+)/g;
     const mentions: string[] = [];
     let match;
@@ -42,7 +41,6 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {} }
     onSend(trimmed, mentions.length > 0 ? mentions : undefined);
     setContent('');
 
-    // Reset textarea height
     if (inputRef.current) {
       inputRef.current.style.height = 'auto';
     }
@@ -61,7 +59,6 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {} }
   const handleChange = (value: string) => {
     setContent(value);
 
-    // Check for @mention trigger
     const lastAt = value.lastIndexOf('@');
     if (lastAt !== -1) {
       const afterAt = value.slice(lastAt + 1);
@@ -73,7 +70,6 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {} }
     }
     setShowMentions(false);
 
-    // Typing indicator
     if (onTyping) {
       if (typingTimeout.current) clearTimeout(typingTimeout.current);
       onTyping();
@@ -114,18 +110,18 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {} }
   );
 
   return (
-    <div className="px-4 pb-4 pt-1 shrink-0 relative">
+    <div className="px-4 pb-4 pt-2 shrink-0 relative">
       {/* @mention dropdown */}
       {showMentions && filteredMembers.length > 0 && (
-        <div className="absolute bottom-full left-4 right-4 mb-1 bg-card border rounded-lg shadow-lg p-1 z-30 max-h-48 overflow-y-auto">
+        <div className="absolute bottom-full left-4 right-4 mb-1 bg-popover border border-border/60 rounded-xl shadow-xl p-1.5 z-30 max-h-48 overflow-y-auto">
           {filteredMembers.map(([userId, profile]) => (
             <button
               key={userId}
               onClick={() => insertMention(profile.name.split(' ')[0])}
-              className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted text-sm transition-colors"
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-muted/60 text-sm transition-colors"
             >
               <div
-                className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
+                className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
                 style={{ backgroundColor: profile.avatar_color || '#6366f1' }}
               >
                 {profile.name[0]?.toUpperCase()}
@@ -137,34 +133,34 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {} }
         </div>
       )}
 
-      <div className="flex flex-col bg-muted/30 border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/40 transition-all">
+      <div className="flex flex-col bg-card/60 backdrop-blur-sm border border-border/50 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/40 transition-all shadow-sm">
         {/* Format toolbar */}
-        <div className="flex items-center gap-0.5 px-2 pt-1.5 pb-0">
+        <div className="flex items-center gap-0.5 px-3 pt-2 pb-0">
           <button
             onClick={() => insertFormat('**', '**')}
-            className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
             title="Gras"
           >
             <Bold className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => insertFormat('*', '*')}
-            className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
             title="Italique"
           >
             <Italic className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => insertFormat('`', '`')}
-            className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
             title="Code"
           >
             <Code className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        <div className="flex items-end gap-2 px-3 py-2">
-          <button className="p-1 rounded hover:bg-muted text-muted-foreground shrink-0 mb-0.5 transition-colors" title="Joindre un fichier">
+        <div className="flex items-end gap-2 px-3 py-2.5">
+          <button className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground shrink-0 mb-0.5 transition-colors" title="Joindre un fichier">
             <Plus className="w-5 h-5" />
           </button>
 
@@ -173,8 +169,8 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {} }
             value={content}
             onChange={e => handleChange(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={`Envoyer un message dans #${channelName}`}
-            className="flex-1 bg-transparent border-none outline-none resize-none text-sm text-foreground placeholder:text-muted-foreground/60 min-h-[24px] max-h-[120px] leading-relaxed"
+            placeholder={channelName ? `Écrire dans #${channelName}...` : 'Écrire un message...'}
+            className="flex-1 bg-transparent border-none outline-none resize-none text-sm text-foreground placeholder:text-muted-foreground/50 min-h-[24px] max-h-[120px] leading-relaxed"
             rows={1}
             onInput={e => {
               const target = e.target as HTMLTextAreaElement;
@@ -185,11 +181,11 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {} }
 
           <Popover>
             <PopoverTrigger asChild>
-              <button className="p-1 rounded hover:bg-muted text-muted-foreground shrink-0 mb-0.5 transition-colors" title="Émojis">
+              <button className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground shrink-0 mb-0.5 transition-colors" title="Émojis">
                 <Smile className="w-5 h-5" />
               </button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-2" align="end">
+            <PopoverContent className="w-auto p-2 bg-popover" align="end">
               <div className="grid grid-cols-8 gap-1">
                 {EMOJI_LIST.map(emoji => (
                   <button
@@ -207,7 +203,7 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {} }
           {content.trim() && (
             <button
               onClick={handleSend}
-              className="p-2 rounded-lg bg-primary text-primary-foreground shrink-0 mb-0.5 hover:bg-primary/90 transition-all hover:scale-105 active:scale-95 shadow-sm"
+              className="p-2 rounded-lg bg-primary text-primary-foreground shrink-0 mb-0.5 hover:bg-primary/90 transition-all hover:scale-105 active:scale-95 shadow-md"
             >
               <Send className="w-4 h-4" />
             </button>

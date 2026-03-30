@@ -22,6 +22,7 @@ const CONNECTION_TABLES: Partial<Record<IntegrationKey, string>> = {
   zoom: 'zoom_connections',
   canva: 'canva_connections',
   gmail: 'gmail_connections',
+  google_chat: 'google_chat_connections',
 };
 
 export default function IntegrationsSettings() {

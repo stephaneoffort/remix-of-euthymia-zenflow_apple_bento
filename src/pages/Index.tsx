@@ -136,6 +136,29 @@ export default function Index() {
   const [voiceAddOpen, setVoiceAddOpen] = useState(false);
   const [projectMemberIds, setProjectMemberIds] = useState<string[]>([]);
   const [todayEventCount, setTodayEventCount] = useState(0);
+  const [viewOrder, setViewOrder] = useState<ViewType[]>(loadViewOrder);
+
+  const orderedViews = useMemo(
+    () => viewOrder.map(key => VIEW_MAP[key]).filter(Boolean),
+    [viewOrder]
+  );
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor)
+  );
+
+  const handleViewDragEnd = useCallback((event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    setViewOrder(prev => {
+      const oldIndex = prev.indexOf(active.id as ViewType);
+      const newIndex = prev.indexOf(over.id as ViewType);
+      const next = arrayMove(prev, oldIndex, newIndex);
+      saveViewOrder(next);
+      return next;
+    });
+  }, []);
 
   // Fetch today's upcoming calendar events count
   useEffect(() => {

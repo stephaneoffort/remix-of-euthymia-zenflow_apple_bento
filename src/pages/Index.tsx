@@ -51,6 +51,7 @@ const VIEW_OPTIONS: { key: ViewType; label: string; icon: React.ReactNode }[] = 
   { key: "calendar", label: "Calendrier", icon: <Calendar className="w-4 h-4" /> },
   { key: "workload", label: "Charge", icon: <BarChart3 className="w-4 h-4" /> },
   { key: "mindmap", label: "Carte mentale", icon: <Network className="w-4 h-4" /> },
+  { key: "gantt", label: "Gantt", icon: <GanttChart className="w-4 h-4" /> },
 ];
 
 const QUICK_FILTER_TITLES: Record<string, string> = {

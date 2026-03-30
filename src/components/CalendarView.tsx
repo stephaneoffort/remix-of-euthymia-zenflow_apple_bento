@@ -26,6 +26,7 @@ import { useCalendarSync, type CalendarEvent } from '@/hooks/useCalendarSync';
 import CalendarAccountsManager, { getProviderMeta } from '@/components/CalendarAccountsManager';
 import SyncTargetPicker from '@/components/SyncTargetPicker';
 import CalendarEventDialog from '@/components/CalendarEventDialog';
+import HourlyGrid from '@/components/calendar/HourlyGrid';
 
 type CalendarMode = 'day' | 'week' | 'month';
 
@@ -1148,14 +1149,16 @@ export default function CalendarView() {
     return (
       <div className="p-6 h-full flex flex-col">
         {sharedHeader}
-        <div className="flex-1 overflow-y-auto max-w-2xl">
-          <AgendaExternalEvents dateStr={currentDateStr} externalEventsByDate={externalEventsByDate} accountMap={accountMap} onEditEvent={handleEditEvent} onDeleteEvent={handleDeleteEvent} />
-          <AgendaTaskList dateStr={currentDateStr} tasks={dayTasks} allTasks={allTasks} teamMembers={teamMembers} setSelectedTaskId={setSelectedTaskId}
-            addingForDate={addingForDate} setAddingForDate={setAddingForDate} newTaskTitle={newTaskTitle} setNewTaskTitle={setNewTaskTitle} handleAddTask={handleAddTask} isMobile={false} />
-          <button onClick={() => handleOpenNewEvent(currentDateStr)} className="w-full flex items-center gap-2 px-3 py-2 mt-2 rounded-lg border border-dashed border-border text-muted-foreground hover:border-primary/30 hover:text-primary transition-colors text-sm">
-            <CalendarIcon className="w-4 h-4" /> Ajouter un événement
-          </button>
-        </div>
+        <HourlyGrid
+          mode="day"
+          days={[currentDate]}
+          tasksByDate={tasksByDate}
+          externalEventsByDate={externalEventsByDate}
+          allTasks={allTasks}
+          onTaskClick={setSelectedTaskId}
+          onEventClick={handleEditEvent}
+          accountMap={accountMap}
+        />
         {eventDialogElement}
       </div>
     );
@@ -1166,29 +1169,16 @@ export default function CalendarView() {
     return (
       <div className="p-6 h-full flex flex-col">
         {sharedHeader}
-        <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-          <div className="grid grid-cols-7 border border-border rounded-lg overflow-hidden flex-1 auto-rows-fr">
-            {weekDays.map((d, i) => {
-              const ds = toDateStr(d);
-              const isTodayCell = ds === today;
-              return (
-                <DroppableDay key={`body-${i}`} dateStr={ds} isCurrentMonth={true} isToday={isTodayCell} dayNum={d.getDate()} onAddClick={() => setAddingForDate(ds)}>
-                  <div className="flex items-center gap-1 mb-1">
-                    <span className="text-[10px] font-semibold text-foreground uppercase">{DAYS_FR[i]}</span>
-                  </div>
-                  {renderCellTasks(ds)}
-                  {addingForDate === ds && (
-                    <input autoFocus value={newTaskTitle} onChange={e => setNewTaskTitle(e.target.value)}
-                      onKeyDown={e => { if (e.key === 'Enter') handleAddTask(ds); if (e.key === 'Escape') { setAddingForDate(null); setNewTaskTitle(''); } }}
-                      onBlur={() => { if (newTaskTitle.trim()) handleAddTask(ds); else { setAddingForDate(null); setNewTaskTitle(''); } }}
-                      placeholder="Tâche..." className="w-full text-[11px] px-1 py-0.5 rounded border border-primary/40 bg-background text-foreground placeholder:text-muted-foreground outline-none focus:ring-1 focus:ring-primary" />
-                  )}
-                </DroppableDay>
-              );
-            })}
-          </div>
-          <DragOverlay>{activeTask ? <div className="text-[11px] px-1.5 py-0.5 rounded bg-primary/20 text-primary shadow-lg border border-primary/30 max-w-[150px] truncate">{activeTask.title}</div> : null}</DragOverlay>
-        </DndContext>
+        <HourlyGrid
+          mode="week"
+          days={weekDays}
+          tasksByDate={tasksByDate}
+          externalEventsByDate={externalEventsByDate}
+          allTasks={allTasks}
+          onTaskClick={setSelectedTaskId}
+          onEventClick={handleEditEvent}
+          accountMap={accountMap}
+        />
         {eventDialogElement}
       </div>
     );

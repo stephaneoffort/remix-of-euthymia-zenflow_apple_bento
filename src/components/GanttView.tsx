@@ -578,6 +578,7 @@ function GanttBar({
   isCritical,
   totalFloat,
   onDoubleClick,
+  onDatesChange,
 }: {
   task: FlatTask;
   rowIndex: number;
@@ -586,17 +587,80 @@ function GanttBar({
   isCritical: boolean;
   totalFloat?: number;
   onDoubleClick: () => void;
+  onDatesChange: (taskId: string, newStart: Date, newEnd: Date) => void;
 }) {
+  const [dragState, setDragState] = useState<{
+    type: "move" | "resize-right" | "resize-left";
+    startX: number;
+    origLeft: number;
+    origWidth: number;
+  } | null>(null);
+  const [dragOffset, setDragOffset] = useState({ left: 0, width: 0 });
+  const barRef = useRef<HTMLDivElement>(null);
+
   if (!task.startDate) return null;
 
   const start = new Date(task.startDate);
   const end = task.dueDate ? new Date(task.dueDate) : addDays(start, (task.durationDays || 1));
   const ppd = getPixelsPerDay(zoom);
-  const left = differenceInDays(start, rangeStart) * ppd;
+  const baseLeft = differenceInDays(start, rangeStart) * ppd;
   const duration = Math.max(differenceInDays(end, start), 1);
-  const width = duration * ppd;
+  const baseWidth = duration * ppd;
   const progress = task.progress ?? 0;
   const top = 12 + rowIndex * ROW_HEIGHT + (ROW_HEIGHT - 24) / 2;
+
+  // Apply drag offsets
+  const displayLeft = baseLeft + dragOffset.left;
+  const displayWidth = Math.max(baseWidth + dragOffset.width, ppd);
+
+  // Mouse handlers for drag
+  useEffect(() => {
+    if (!dragState) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const dx = e.clientX - dragState.startX;
+      if (dragState.type === "move") {
+        setDragOffset({ left: dx, width: 0 });
+      } else if (dragState.type === "resize-right") {
+        setDragOffset({ left: 0, width: dx });
+      } else if (dragState.type === "resize-left") {
+        setDragOffset({ left: dx, width: -dx });
+      }
+    };
+
+    const handleMouseUp = (e: MouseEvent) => {
+      const dx = e.clientX - dragState.startX;
+      const daysDelta = Math.round(dx / ppd);
+
+      if (daysDelta !== 0) {
+        let newStart = start;
+        let newEnd = end;
+
+        if (dragState.type === "move") {
+          newStart = addDays(start, daysDelta);
+          newEnd = addDays(end, daysDelta);
+        } else if (dragState.type === "resize-right") {
+          newEnd = addDays(end, daysDelta);
+          if (newEnd <= newStart) newEnd = addDays(newStart, 1);
+        } else if (dragState.type === "resize-left") {
+          newStart = addDays(start, daysDelta);
+          if (newStart >= newEnd) newStart = addDays(newEnd, -1);
+        }
+
+        onDatesChange(task.id, newStart, newEnd);
+      }
+
+      setDragState(null);
+      setDragOffset({ left: 0, width: 0 });
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [dragState, ppd, start, end, task.id, onDatesChange]);
 
   if (task.isMilestone) {
     return (
@@ -604,7 +668,7 @@ function GanttBar({
         <TooltipTrigger asChild>
           <div
             className="absolute cursor-pointer z-[2]"
-            style={{ left: left - 8, top: top + 4, width: 16, height: 16 }}
+            style={{ left: displayLeft - 8, top: top + 4, width: 16, height: 16 }}
             onDoubleClick={onDoubleClick}
           >
             <Diamond className={`w-4 h-4 ${isCritical ? "text-destructive" : "text-primary"} fill-current`} />
@@ -621,25 +685,53 @@ function GanttBar({
   }
 
   const barColor = task.color || (task.hasChildren ? "hsl(var(--muted-foreground))" : "hsl(var(--primary))");
+  const isDragging = dragState !== null;
+
+  const handleBarMouseDown = (e: React.MouseEvent) => {
+    if (task.hasChildren) return;
+    e.preventDefault();
+    setDragState({ type: "move", startX: e.clientX, origLeft: baseLeft, origWidth: baseWidth });
+  };
+
+  const handleLeftHandleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragState({ type: "resize-left", startX: e.clientX, origLeft: baseLeft, origWidth: baseWidth });
+  };
+
+  const handleRightHandleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragState({ type: "resize-right", startX: e.clientX, origLeft: baseLeft, origWidth: baseWidth });
+  };
 
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <div
-          className={`absolute rounded z-[2] cursor-pointer transition-shadow hover:shadow-md group/bar ${
-            isCritical ? "ring-2 ring-destructive" : ""
-          } ${task.hasChildren ? "h-3" : "h-6"}`}
+          ref={barRef}
+          className={`absolute rounded z-[2] cursor-grab transition-shadow group/bar select-none ${
+            isDragging ? "shadow-lg opacity-80 cursor-grabbing z-[10]" : "hover:shadow-md"
+          } ${isCritical ? "ring-2 ring-destructive" : ""} ${task.hasChildren ? "h-3" : "h-6"}`}
           style={{
-            left,
+            left: displayLeft,
             top: task.hasChildren ? top + 6 : top,
-            width: Math.max(width, 4),
+            width: Math.max(displayWidth, 4),
             backgroundColor: `color-mix(in srgb, ${barColor} 30%, transparent)`,
           }}
+          onMouseDown={handleBarMouseDown}
           onDoubleClick={onDoubleClick}
         >
+          {/* Left resize handle */}
+          {!task.hasChildren && (
+            <div
+              className="absolute left-0 top-0 bottom-0 w-2 cursor-col-resize z-[3] hover:bg-primary/20 rounded-l"
+              onMouseDown={handleLeftHandleMouseDown}
+            />
+          )}
           {/* Progress fill */}
           <div
-            className="h-full rounded-l"
+            className="h-full rounded-l pointer-events-none"
             style={{
               width: `${progress}%`,
               backgroundColor: barColor,
@@ -647,13 +739,20 @@ function GanttBar({
             }}
           />
           {/* Label */}
-          {width > 60 && (
+          {displayWidth > 60 && (
             <span
               className="absolute inset-0 flex items-center px-2 text-[10px] font-medium truncate pointer-events-none"
               style={{ color: progress > 50 ? "white" : "hsl(var(--foreground))" }}
             >
               {task.title} {progress > 0 && `${progress}%`}
             </span>
+          )}
+          {/* Right resize handle */}
+          {!task.hasChildren && (
+            <div
+              className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize z-[3] hover:bg-primary/20 rounded-r"
+              onMouseDown={handleRightHandleMouseDown}
+            />
           )}
           {/* Parent task end markers */}
           {task.hasChildren && (

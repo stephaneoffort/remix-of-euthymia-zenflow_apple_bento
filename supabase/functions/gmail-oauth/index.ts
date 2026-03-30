@@ -4,8 +4,16 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
 }
+
+const supabase = createClient(
+  Deno.env.get("SUPABASE_URL") ?? "",
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+)
+
+const REDIRECT_URI = "https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/gmail-oauth/callback"
+const APP_URL = "https://euthymia-zenflow-bento.lovable.app"
 
 serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
@@ -15,127 +23,105 @@ serve(async (req: Request) => {
   const url = new URL(req.url)
   const path = url.pathname
 
-  const GOOGLE_CLIENT_ID = Deno.env.get("GOOGLE_CLIENT_ID") ?? ""
-  const GOOGLE_CLIENT_SECRET = Deno.env.get("GOOGLE_CLIENT_SECRET") ?? ""
-  const GMAIL_REDIRECT_URI = Deno.env.get("GMAIL_REDIRECT_URI") ?? ""
-
   if (path.endsWith("/authorize")) {
-    const token = url.searchParams.get("token") || ""
+    const token = req.headers.get("Authorization")?.replace("Bearer ", "")
+      ?? url.searchParams.get("token") ?? ""
 
-    // Validate the token to get the user id
-    const supabase = createClient(
+    const supabaseUser = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_ANON_KEY") ?? ""
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      { global: { headers: { Authorization: `Bearer ${token}` } } }
     )
-    const { data: { user }, error } = await supabase.auth.getUser(token)
-    if (error || !user) {
+    const { data: { user } } = await supabaseUser.auth.getUser()
+    if (!user) {
       return new Response("Unauthorized", { status: 401, headers: corsHeaders })
     }
 
+    const state = btoa(JSON.stringify({
+      user_id: user.id,
+      nonce: crypto.randomUUID()
+    }))
+
     const authUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth")
-    authUrl.searchParams.set("client_id", GOOGLE_CLIENT_ID)
-    authUrl.searchParams.set("redirect_uri", GMAIL_REDIRECT_URI)
+    authUrl.searchParams.set("client_id", Deno.env.get("GOOGLE_CLIENT_ID") ?? "")
+    authUrl.searchParams.set("redirect_uri", REDIRECT_URI)
     authUrl.searchParams.set("response_type", "code")
-    authUrl.searchParams.set("scope", "https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile")
+    authUrl.searchParams.set("scope", [
+      "https://www.googleapis.com/auth/gmail.readonly",
+      "https://www.googleapis.com/auth/gmail.send",
+      "https://www.googleapis.com/auth/gmail.modify",
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/userinfo.profile",
+    ].join(" "))
     authUrl.searchParams.set("access_type", "offline")
     authUrl.searchParams.set("prompt", "consent")
-    authUrl.searchParams.set("state", user.id)
+    authUrl.searchParams.set("state", state)
 
     return Response.redirect(authUrl.toString(), 302)
   }
 
   if (path.endsWith("/callback")) {
     const code = url.searchParams.get("code")
-    const userId = url.searchParams.get("state") || null
+    const stateParam = url.searchParams.get("state") ?? ""
 
-    if (!code || !userId) {
-      return new Response("Missing code or state", { status: 400, headers: corsHeaders })
+    if (!code) {
+      return new Response("Missing code", { status: 400, headers: corsHeaders })
     }
 
-    // Exchange code for tokens
+    let userId = ""
+    try {
+      const decoded = JSON.parse(atob(stateParam))
+      userId = decoded.user_id
+    } catch {
+      return new Response("Invalid state", { status: 400, headers: corsHeaders })
+    }
+
+    if (!userId) {
+      return new Response("Missing user_id", { status: 400, headers: corsHeaders })
+    }
+
     const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({
         code,
-        client_id: GOOGLE_CLIENT_ID,
-        client_secret: GOOGLE_CLIENT_SECRET,
-        redirect_uri: GMAIL_REDIRECT_URI,
+        client_id: Deno.env.get("GOOGLE_CLIENT_ID") ?? "",
+        client_secret: Deno.env.get("GOOGLE_CLIENT_SECRET") ?? "",
+        redirect_uri: REDIRECT_URI,
         grant_type: "authorization_code",
       }),
     })
 
     const tokens = await tokenRes.json()
     if (tokens.error) {
-      console.error("Gmail OAuth error:", tokens)
-      return new Response(`OAuth error: ${tokens.error_description || tokens.error}`, {
-        status: 400,
-        headers: corsHeaders,
-      })
+      return new Response(`OAuth error: ${tokens.error}`,
+        { status: 400, headers: corsHeaders })
     }
 
-    // Get user profile
-    let email = null
-    let displayName = null
-    try {
-      const profileRes = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
-        headers: { Authorization: `Bearer ${tokens.access_token}` },
-      })
-      const profile = await profileRes.json()
-      email = profile.email
-      displayName = profile.name
-    } catch (e) {
-      console.error("Failed to fetch Gmail profile:", e)
-    }
-
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+    const profileRes = await fetch(
+      "https://www.googleapis.com/oauth2/v2/userinfo",
+      { headers: { Authorization: `Bearer ${tokens.access_token}` } }
     )
-
+    const profile = await profileRes.json()
     const expiry = new Date(Date.now() + tokens.expires_in * 1000)
 
-    // Upsert gmail connection
-    const { error: upsertError } = await supabase
-      .from("gmail_connections")
-      .upsert({
-        user_id: userId,
-        access_token: tokens.access_token,
-        refresh_token: tokens.refresh_token,
-        token_expiry: expiry.toISOString(),
-        email,
-        display_name: displayName,
-      }, { onConflict: "user_id" })
+    await supabase.from("gmail_connections").upsert({
+      user_id: userId,
+      access_token: tokens.access_token,
+      refresh_token: tokens.refresh_token,
+      token_expiry: expiry.toISOString(),
+      email: profile.email,
+      display_name: profile.name ?? profile.email,
+    }, { onConflict: "user_id" })
 
-    if (upsertError) {
-      console.error("Gmail upsert error:", upsertError)
-      // Try insert if upsert fails (no unique constraint yet)
-      await supabase.from("gmail_connections").delete().eq("user_id", userId)
-      await supabase.from("gmail_connections").insert({
-        user_id: userId,
-        access_token: tokens.access_token,
-        refresh_token: tokens.refresh_token,
-        token_expiry: expiry.toISOString(),
-        email,
-        display_name: displayName,
-      })
-    }
-
-    // Auto-enable gmail integration
-    await supabase
-      .from("member_integrations")
-      .update({
-        is_enabled: true,
-        is_connected: true,
-        enabled_at: new Date().toISOString(),
-        connected_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
+    await supabase.from("member_integrations").update({
+      is_connected: true,
+      connected_at: new Date().toISOString(),
+    })
       .eq("user_id", userId)
       .eq("integration", "gmail")
 
-    const appUrl = Deno.env.get("APP_URL") ?? ""
-    return Response.redirect(`${appUrl}/settings?gmail_connected=true`, 302)
+    return Response.redirect(APP_URL + "?gmail_connected=true", 302)
   }
 
   return new Response("Not found", { status: 404, headers: corsHeaders })

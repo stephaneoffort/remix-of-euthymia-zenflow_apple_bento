@@ -107,7 +107,7 @@ export default function IntegrationsSettings() {
     const { data: { session } } = await supabase.auth.getSession();
     if (!user || !session) return;
 
-    if (key === 'zoom' || key === 'gmail' || key === 'google_chat') {
+    if (key === 'zoom' || key === 'gmail') {
       window.location.href = `${url}?token=${session.access_token}`;
     } else {
       window.location.href = `${url}?user_id=${user.id}`;

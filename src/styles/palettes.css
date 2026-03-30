@@ -3314,3 +3314,490 @@ html body::after {
 [data-palette^="liquidGlass"].dark .grid > [class*="bg-card"] {
   background: rgba(20, 20, 35, 0.5) !important;
 }
+
+/* ═══════════════════════════════════════════════════════
+   NEUMORPHISM CLOUD — Soft UI · Gris perle · Jour
+   ═══════════════════════════════════════════════════════ */
+
+/* ─── Neumorphic custom properties ─── */
+[data-palette="nmCloud"],
+[data-palette="nmCloud"].light,
+[data-palette="nmCloud"].dark,
+[data-palette="nmCloud"].mixed {
+  --nm-bg: 210 12% 91%;
+  --nm-shadow-dark: #C5C9CC;
+  --nm-shadow-light: #FFFFFF;
+  --nm-accent-h: 205;
+  --nm-accent-s: 38%;
+  --nm-accent-l: 47%;
+
+  /* Map to semantic tokens — ALL same base gray */
+  --background: 210 12% 91%;
+  --foreground: 210 25% 15%;
+  --card: 210 12% 91%;
+  --card-foreground: 210 25% 15%;
+  --popover: 210 12% 91%;
+  --popover-foreground: 210 25% 15%;
+  --primary: 205 38% 47%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 210 12% 91%;
+  --secondary-foreground: 213 18% 35%;
+  --muted: 210 12% 91%;
+  --muted-foreground: 210 12% 55%;
+  --accent: 205 38% 47%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 35% 45%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 210 8% 82%;
+  --input: 210 12% 91%;
+  --ring: 205 38% 47%;
+  --radius: 12px;
+
+  /* Sidebar — same base */
+  --sidebar-background: 210 12% 91%;
+  --sidebar-foreground: 213 18% 35%;
+  --sidebar-primary: 205 38% 47%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 210 12% 91%;
+  --sidebar-accent-foreground: 205 38% 47%;
+  --sidebar-ring: 205 38% 47%;
+  --sidebar-bg: 210 12% 91%;
+  --sidebar-fg: 213 18% 45%;
+  --sidebar-fg-bright: 210 25% 15%;
+  --sidebar-hover: 210 12% 91%;
+  --sidebar-active: 205 38% 47%;
+  --sidebar-active-fg: 0 0% 100%;
+  --sidebar-border: 210 8% 85%;
+
+  /* Priorities */
+  --priority-urgent: 0 35% 45%;
+  --priority-high: 25 45% 45%;
+  --priority-normal: 205 38% 47%;
+  --priority-low: 210 12% 55%;
+
+  /* Statuses */
+  --status-todo: 210 12% 55%;
+  --status-progress: 205 38% 47%;
+  --status-review: 38 45% 45%;
+  --status-done: 145 30% 40%;
+  --status-blocked: 0 35% 45%;
+
+  /* Bento */
+  --bento-bg: transparent;
+  --bento-bg-hover: transparent;
+  --bento-border: transparent;
+  --bento-border-h: transparent;
+  --bento-shadow: none;
+  --bento-radius: 16px;
+  --bento-gap: 16px;
+}
+
+/* ─── Neumorphic shadow utilities ─── */
+[data-palette="nmCloud"] {
+  --nm-ext-sm: 4px 4px 8px #C5C9CC, -4px -4px 8px #FFFFFF;
+  --nm-ext-md: 6px 6px 12px #C5C9CC, -6px -6px 12px #FFFFFF;
+  --nm-ext-lg: 10px 10px 20px #C5C9CC, -10px -10px 20px #FFFFFF;
+  --nm-in-sm: inset 3px 3px 6px #C5C9CC, inset -3px -3px 6px #FFFFFF;
+  --nm-in-md: inset 4px 4px 8px #C5C9CC, inset -4px -4px 8px #FFFFFF;
+  --nm-in-lg: inset 6px 6px 12px #C5C9CC, inset -6px -6px 12px #FFFFFF;
+}
+
+/* ─── Global base ─── */
+[data-palette="nmCloud"] body,
+[data-palette="nmCloud"] #root {
+  background: #E8ECEF !important;
+  font-family: 'Inter', 'Plus Jakarta Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Remove all borders — neumorphism uses shadows only ─── */
+[data-palette="nmCloud"] .border,
+[data-palette="nmCloud"] .border-border,
+[data-palette="nmCloud"] .border-input,
+[data-palette="nmCloud"] [class*="border-"] {
+  border-color: transparent !important;
+}
+
+/* ─── Cards — extruded ─── */
+[data-palette="nmCloud"] .bg-card,
+[data-palette="nmCloud"] .rounded-lg.border.bg-card {
+  background: #E8ECEF !important;
+  box-shadow: 6px 6px 12px #C5C9CC, -6px -6px 12px #FFFFFF !important;
+  border: none !important;
+  border-radius: 16px !important;
+}
+
+[data-palette="nmCloud"] .bg-card:hover {
+  box-shadow: 10px 10px 20px #C5C9CC, -10px -10px 20px #FFFFFF !important;
+}
+
+/* ─── Buttons — extruded, press = inset ─── */
+[data-palette="nmCloud"] button:not([data-state]):not(.ghost),
+[data-palette="nmCloud"] [role="button"]:not([data-state]) {
+  background: #E8ECEF;
+  border: none !important;
+  border-radius: 12px;
+}
+
+[data-palette="nmCloud"] .bg-primary {
+  background: #E8ECEF !important;
+  color: hsl(205, 38%, 47%) !important;
+  box-shadow: 6px 6px 12px #C5C9CC, -6px -6px 12px #FFFFFF;
+  border: none !important;
+}
+
+[data-palette="nmCloud"] .bg-primary:hover {
+  box-shadow: 10px 10px 20px #C5C9CC, -10px -10px 20px #FFFFFF;
+}
+
+[data-palette="nmCloud"] .bg-primary:active {
+  box-shadow: inset 4px 4px 8px #C5C9CC, inset -4px -4px 8px #FFFFFF;
+  transform: scale(0.99);
+}
+
+/* Ghost buttons */
+[data-palette="nmCloud"] .hover\:bg-accent:hover {
+  background: #E8ECEF !important;
+  box-shadow: 4px 4px 8px #C5C9CC, -4px -4px 8px #FFFFFF;
+}
+
+[data-palette="nmCloud"] .hover\:bg-accent:active {
+  box-shadow: inset 3px 3px 6px #C5C9CC, inset -3px -3px 6px #FFFFFF;
+}
+
+/* Icon buttons */
+[data-palette="nmCloud"] button.h-10.w-10,
+[data-palette="nmCloud"] button.h-9.w-9,
+[data-palette="nmCloud"] button.h-8.w-8 {
+  background: #E8ECEF !important;
+  box-shadow: 4px 4px 8px #C5C9CC, -4px -4px 8px #FFFFFF;
+  border: none !important;
+  border-radius: 9999px;
+}
+
+[data-palette="nmCloud"] button.h-10.w-10:hover,
+[data-palette="nmCloud"] button.h-9.w-9:hover,
+[data-palette="nmCloud"] button.h-8.w-8:hover {
+  box-shadow: 6px 6px 12px #C5C9CC, -6px -6px 12px #FFFFFF;
+}
+
+[data-palette="nmCloud"] button.h-10.w-10:active,
+[data-palette="nmCloud"] button.h-9.w-9:active,
+[data-palette="nmCloud"] button.h-8.w-8:active {
+  box-shadow: inset 3px 3px 6px #C5C9CC, inset -3px -3px 6px #FFFFFF;
+}
+
+/* ─── Inputs — inset (concave) ─── */
+[data-palette="nmCloud"] input,
+[data-palette="nmCloud"] textarea,
+[data-palette="nmCloud"] select,
+[data-palette="nmCloud"] .bg-background {
+  background: #E8ECEF !important;
+}
+
+[data-palette="nmCloud"] input:not([type="checkbox"]):not([type="radio"]),
+[data-palette="nmCloud"] textarea,
+[data-palette="nmCloud"] select {
+  box-shadow: inset 4px 4px 8px #C5C9CC, inset -4px -4px 8px #FFFFFF !important;
+  border: none !important;
+  border-radius: 12px !important;
+}
+
+[data-palette="nmCloud"] input:focus,
+[data-palette="nmCloud"] textarea:focus {
+  box-shadow: inset 6px 6px 12px #C5C9CC, inset -6px -6px 12px #FFFFFF,
+              0 0 0 2px rgba(74, 127, 165, 0.15) !important;
+}
+
+/* ─── Sidebar ─── */
+[data-palette="nmCloud"] [data-sidebar="sidebar"],
+[data-palette="nmCloud"] aside {
+  background: #E8ECEF !important;
+  border-right: none !important;
+}
+
+/* Sidebar menu items */
+[data-palette="nmCloud"] [data-sidebar="menu-button"] {
+  background: #E8ECEF !important;
+  border: none !important;
+  border-radius: 12px;
+  transition: box-shadow 0.2s ease;
+}
+
+[data-palette="nmCloud"] [data-sidebar="menu-button"]:hover {
+  box-shadow: 4px 4px 8px #C5C9CC, -4px -4px 8px #FFFFFF;
+}
+
+[data-palette="nmCloud"] [data-sidebar="menu-button"][data-active="true"],
+[data-palette="nmCloud"] [data-sidebar="menu-button"].active {
+  box-shadow: inset 4px 4px 8px #C5C9CC, inset -4px -4px 8px #FFFFFF !important;
+  color: hsl(205, 38%, 47%);
+  font-weight: 500;
+}
+
+/* ─── Tabs — extruded, active = inset ─── */
+[data-palette="nmCloud"] [role="tablist"] {
+  background: #E8ECEF !important;
+  box-shadow: inset 3px 3px 6px #C5C9CC, inset -3px -3px 6px #FFFFFF;
+  border-radius: 12px;
+  border: none !important;
+  padding: 4px;
+}
+
+[data-palette="nmCloud"] [role="tab"] {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 10px;
+  transition: box-shadow 0.15s ease;
+}
+
+[data-palette="nmCloud"] [role="tab"][data-state="active"] {
+  background: #E8ECEF !important;
+  box-shadow: 4px 4px 8px #C5C9CC, -4px -4px 8px #FFFFFF;
+  color: hsl(205, 38%, 47%);
+  font-weight: 500;
+}
+
+/* ─── Dialogs / Modals ─── */
+[data-palette="nmCloud"] [role="dialog"],
+[data-palette="nmCloud"] [data-radix-popper-content-wrapper] > div {
+  background: #E8ECEF !important;
+  box-shadow: 16px 16px 32px #C5C9CC, -16px -16px 32px #FFFFFF !important;
+  border: none !important;
+  border-radius: 24px !important;
+}
+
+/* Dialog overlay */
+[data-palette="nmCloud"] [data-radix-dialog-overlay] {
+  background: rgba(26, 39, 51, 0.2) !important;
+  backdrop-filter: blur(4px);
+}
+
+/* ─── Popover / Dropdown ─── */
+[data-palette="nmCloud"] [data-radix-popper-content-wrapper] > div,
+[data-palette="nmCloud"] .bg-popover {
+  background: #E8ECEF !important;
+  box-shadow: 10px 10px 20px #C5C9CC, -10px -10px 20px #FFFFFF !important;
+  border: none !important;
+  border-radius: 16px !important;
+}
+
+/* Dropdown items */
+[data-palette="nmCloud"] [role="menuitem"],
+[data-palette="nmCloud"] [role="option"],
+[data-palette="nmCloud"] [cmdk-item] {
+  border-radius: 10px;
+  transition: box-shadow 0.15s ease;
+}
+
+[data-palette="nmCloud"] [role="menuitem"]:hover,
+[data-palette="nmCloud"] [role="option"]:hover,
+[data-palette="nmCloud"] [cmdk-item]:hover,
+[data-palette="nmCloud"] [role="menuitem"][data-highlighted],
+[data-palette="nmCloud"] [role="option"][data-highlighted],
+[data-palette="nmCloud"] [cmdk-item][data-selected="true"] {
+  background: #E8ECEF !important;
+  box-shadow: inset 3px 3px 6px #C5C9CC, inset -3px -3px 6px #FFFFFF;
+}
+
+/* ─── Badges ─── */
+[data-palette="nmCloud"] .inline-flex.items-center.rounded-full,
+[data-palette="nmCloud"] .badge {
+  background: #E8ECEF !important;
+  box-shadow: 3px 3px 6px #C5C9CC, -3px -3px 6px #FFFFFF;
+  border: none !important;
+}
+
+/* ─── Checkbox / Switch — neumorphic ─── */
+[data-palette="nmCloud"] [role="checkbox"],
+[data-palette="nmCloud"] button[role="checkbox"] {
+  background: #E8ECEF !important;
+  box-shadow: inset 3px 3px 6px #C5C9CC, inset -3px -3px 6px #FFFFFF !important;
+  border: none !important;
+  border-radius: 6px;
+}
+
+[data-palette="nmCloud"] [role="checkbox"][data-state="checked"] {
+  color: hsl(205, 38%, 47%);
+}
+
+[data-palette="nmCloud"] [role="switch"] {
+  background: #E8ECEF !important;
+  box-shadow: inset 4px 4px 8px #C5C9CC, inset -4px -4px 8px #FFFFFF !important;
+  border: none !important;
+}
+
+[data-palette="nmCloud"] [role="switch"] span {
+  background: #E8ECEF !important;
+  box-shadow: 3px 3px 6px #C5C9CC, -3px -3px 6px #FFFFFF;
+}
+
+[data-palette="nmCloud"] [role="switch"][data-state="checked"] span {
+  background: hsl(205, 38%, 47%) !important;
+  box-shadow: 2px 2px 4px #C5C9CC, -1px -1px 3px rgba(255,255,255,0.5);
+}
+
+/* ─── Progress bar ─── */
+[data-palette="nmCloud"] [role="progressbar"] {
+  background: #E8ECEF !important;
+  box-shadow: inset 3px 3px 6px #C5C9CC, inset -3px -3px 6px #FFFFFF;
+  border: none !important;
+  overflow: hidden;
+}
+
+[data-palette="nmCloud"] [role="progressbar"] > div {
+  background: linear-gradient(90deg, hsl(205, 38%, 37%), hsl(205, 38%, 47%)) !important;
+  box-shadow: 2px 0 6px rgba(74, 127, 165, 0.3);
+}
+
+/* ─── Toasts ─── */
+[data-palette="nmCloud"] [data-sonner-toast],
+[data-palette="nmCloud"] li[data-sonner-toast] {
+  background: #E8ECEF !important;
+  box-shadow: 10px 10px 20px #C5C9CC, -10px -10px 20px #FFFFFF !important;
+  border: none !important;
+  border-radius: 16px !important;
+}
+
+/* ─── Separators — gradient line ─── */
+[data-palette="nmCloud"] [data-orientation="horizontal"][role="separator"],
+[data-palette="nmCloud"] hr {
+  border: none !important;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #C5C9CC 30%, #C5C9CC 70%, transparent) !important;
+  opacity: 0.5;
+}
+
+/* ─── Kanban columns — inset container ─── */
+[data-palette="nmCloud"] .bento-cell {
+  background: #E8ECEF !important;
+  box-shadow: inset 6px 6px 12px #C5C9CC, inset -6px -6px 12px #FFFFFF !important;
+  border: none !important;
+  border-radius: 20px !important;
+}
+
+/* ─── Bento dashboard widgets — extruded ─── */
+[data-palette="nmCloud"] .bento-hero,
+[data-palette="nmCloud"] .bento-urgent,
+[data-palette="nmCloud"] .bento-ai,
+[data-palette="nmCloud"] .dashboard-widget {
+  background: #E8ECEF !important;
+  box-shadow: 6px 6px 12px #C5C9CC, -6px -6px 12px #FFFFFF !important;
+  border: none !important;
+  border-radius: 20px !important;
+}
+
+[data-palette="nmCloud"] .bento-hero:hover,
+[data-palette="nmCloud"] .bento-urgent:hover,
+[data-palette="nmCloud"] .bento-ai:hover {
+  box-shadow: 10px 10px 20px #C5C9CC, -10px -10px 20px #FFFFFF !important;
+}
+
+/* ─── Scrollbars ─── */
+[data-palette="nmCloud"] ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+[data-palette="nmCloud"] ::-webkit-scrollbar-track {
+  background: #E8ECEF;
+  box-shadow: inset 2px 2px 4px #C5C9CC;
+  border-radius: 3px;
+}
+
+[data-palette="nmCloud"] ::-webkit-scrollbar-thumb {
+  background: linear-gradient(#C5C9CC, #8899AA);
+  border-radius: 3px;
+  box-shadow: 1px 1px 3px #C5C9CC;
+}
+
+/* ─── Accordion ─── */
+[data-palette="nmCloud"] [data-state="open"][data-orientation="vertical"] {
+  background: #E8ECEF;
+  box-shadow: inset 4px 4px 8px #C5C9CC, inset -4px -4px 8px #FFFFFF;
+  border-radius: 12px;
+}
+
+/* ─── Select trigger ─── */
+[data-palette="nmCloud"] button[role="combobox"],
+[data-palette="nmCloud"] [data-radix-select-trigger] {
+  background: #E8ECEF !important;
+  box-shadow: 4px 4px 8px #C5C9CC, -4px -4px 8px #FFFFFF !important;
+  border: none !important;
+  border-radius: 12px;
+}
+
+/* ─── Avatar ─── */
+[data-palette="nmCloud"] [data-radix-avatar-image],
+[data-palette="nmCloud"] span[role="img"] {
+  box-shadow: 3px 3px 6px #C5C9CC, -3px -3px 6px #FFFFFF;
+  border-radius: 9999px;
+}
+
+/* ─── Calendar day cells ─── */
+[data-palette="nmCloud"] .rdp-day {
+  background: #E8ECEF;
+  border-radius: 10px;
+  transition: box-shadow 0.15s ease;
+}
+
+[data-palette="nmCloud"] .rdp-day:hover {
+  box-shadow: inset 3px 3px 6px #C5C9CC, inset -3px -3px 6px #FFFFFF;
+}
+
+[data-palette="nmCloud"] .rdp-day_today {
+  box-shadow: inset 4px 4px 8px #C5C9CC, inset -4px -4px 8px #FFFFFF;
+  color: hsl(205, 38%, 47%);
+  font-weight: 500;
+}
+
+[data-palette="nmCloud"] .rdp-day_selected {
+  background: #E8ECEF !important;
+  box-shadow: 4px 4px 8px #C5C9CC, -4px -4px 8px #FFFFFF;
+  color: hsl(205, 38%, 47%) !important;
+}
+
+/* ─── Disable glass/mesh effects for this palette ─── */
+[data-palette="nmCloud"] body::before,
+[data-palette="nmCloud"] body::after,
+[data-palette="nmCloud"] .mesh-gradient,
+[data-palette="nmCloud"] .grain-overlay {
+  display: none !important;
+}
+
+/* ─── Ensure background is opaque everywhere ─── */
+[data-palette="nmCloud"] .bg-background,
+[data-palette="nmCloud"] main,
+[data-palette="nmCloud"] .flex-1 {
+  background: #E8ECEF !important;
+}
+
+/* ─── Sheet (slide-over panels) ─── */
+[data-palette="nmCloud"] [data-radix-dialog-content][role="dialog"][data-state] {
+  background: #E8ECEF !important;
+  box-shadow: -16px 0 32px #C5C9CC !important;
+  border: none !important;
+}
+
+/* ─── Tooltip ─── */
+[data-palette="nmCloud"] [role="tooltip"] {
+  background: #E8ECEF !important;
+  box-shadow: 6px 6px 12px #C5C9CC, -6px -6px 12px #FFFFFF !important;
+  border: none !important;
+  border-radius: 10px !important;
+  color: hsl(210, 25%, 15%);
+}
+
+/* ─── Command palette ─── */
+[data-palette="nmCloud"] [cmdk-root] {
+  background: #E8ECEF !important;
+  box-shadow: 16px 16px 32px #C5C9CC, -16px -16px 32px #FFFFFF !important;
+  border: none !important;
+  border-radius: 20px !important;
+}
+
+[data-palette="nmCloud"] [cmdk-input] {
+  background: #E8ECEF !important;
+  box-shadow: inset 4px 4px 8px #C5C9CC, inset -4px -4px 8px #FFFFFF !important;
+  border: none !important;
+}

@@ -2202,7 +2202,7 @@ html body::after {
 [data-palette^="liquidGlass"].mixed .text-foreground,
 [data-palette^="liquidGlass"].light .text-card-foreground,
 [data-palette^="liquidGlass"].mixed .text-card-foreground {
-  color: rgba(30, 30, 50, 0.78) !important;
+  color: rgba(25, 25, 45, 0.88) !important;
 }
 
 /* ─── Liquid Glass: glass reveal animation on cards ─── */

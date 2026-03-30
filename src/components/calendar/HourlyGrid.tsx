@@ -402,7 +402,7 @@ function OverflowBadge({ items, top, height, onTaskClick, onEventClick }: {
 }
 
 // ─── Event card ───
-function EventCard({ item, onClick, widthPercent, leftPercent, isDay, maxEventHeight, fontSize, padding }: {
+function EventCard({ item, onClick, widthPercent, leftPercent, isDay, maxEventHeight, fontSize, padding, zoomTaskIds, meetTaskIds }: {
   item: PositionedItem;
   onClick: () => void;
   widthPercent: number;
@@ -411,6 +411,8 @@ function EventCard({ item, onClick, widthPercent, leftPercent, isDay, maxEventHe
   maxEventHeight: number;
   fontSize: string;
   padding: string;
+  zoomTaskIds: Set<string>;
+  meetTaskIds: Set<string>;
 }) {
   const cardClasses = getCardClasses(item);
   const h = item.height;

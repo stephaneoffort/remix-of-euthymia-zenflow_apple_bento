@@ -7,8 +7,7 @@ export type IntegrationKey =
   | 'canva'
   | 'google_meet'
   | 'gmail'
-  | 'brevo'
-  | 'google_chat';
+  | 'brevo';
 
 export interface IntegrationStatus {
   key: IntegrationKey;
@@ -19,7 +18,7 @@ export interface IntegrationStatus {
 }
 
 const ALL_INTEGRATIONS: IntegrationKey[] = [
-  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo', 'google_chat',
+  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo',
 ];
 
 import googleDriveIcon from '@/assets/integrations/google-drive.png';
@@ -28,7 +27,6 @@ import canvaIcon from '@/assets/integrations/canva.png';
 import googleMeetIcon from '@/assets/integrations/google-meet.png';
 import gmailIcon from '@/assets/integrations/gmail.png';
 import brevoIcon from '@/assets/integrations/brevo.png';
-import googleChatIcon from '@/assets/integrations/google-chat.png';
 
 export const INTEGRATION_CONFIG: Record<IntegrationKey, {
   label: string;
@@ -72,12 +70,6 @@ export const INTEGRATION_CONFIG: Record<IntegrationKey, {
     icon: brevoIcon,
     color: '#0092FF',
   },
-  google_chat: {
-    label: 'Google Chat',
-    description: 'Mentions et commandes /zenflow dans Google Chat',
-    icon: googleChatIcon,
-    color: '#00897B',
-  },
 };
 
 const defaultStatus = (key: IntegrationKey): IntegrationStatus => ({
@@ -95,7 +87,6 @@ export function useIntegrations() {
   const [loading, setLoading] = useState(true);
 
   const ensureRows = useCallback(async (userId: string) => {
-    // Upsert all 5 integrations for this user (idempotent)
     const rows = ALL_INTEGRATIONS.map(integration => ({
       user_id: userId,
       integration,
@@ -108,14 +99,12 @@ export function useIntegrations() {
   }, []);
 
   const syncConnectionStatus = useCallback(async (userId: string) => {
-    // Check actual connection tables to auto-sync member_integrations
     const connectionChecks: { key: IntegrationKey; table: string }[] = [
       { key: 'google_drive', table: 'drive_connections' },
       { key: 'zoom', table: 'zoom_connections' },
       { key: 'canva', table: 'canva_connections' },
       { key: 'brevo', table: 'brevo_connections' },
       { key: 'gmail', table: 'gmail_connections' },
-      { key: 'google_chat', table: 'google_chat_connections' },
     ];
 
     for (const { key, table } of connectionChecks) {
@@ -127,7 +116,6 @@ export function useIntegrations() {
       
       const hasConnection = (data?.length ?? 0) > 0;
       if (hasConnection) {
-        // Auto-enable and mark as connected if a real connection exists
         await (supabase as any)
           .from('member_integrations')
           .update({
@@ -149,10 +137,7 @@ export function useIntegrations() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setLoading(false); return; }
 
-    // Ensure rows exist
     await ensureRows(user.id);
-
-    // Auto-sync from actual connection tables
     await syncConnectionStatus(user.id);
 
     const { data } = await (supabase as any)
@@ -163,15 +148,16 @@ export function useIntegrations() {
     if (data) {
       const map = {} as Record<IntegrationKey, IntegrationStatus>;
       (data as any[]).forEach((row) => {
-        map[row.integration as IntegrationKey] = {
-          key: row.integration,
-          is_enabled: row.is_enabled,
-          is_connected: row.is_connected,
-          enabled_at: row.enabled_at,
-          connected_at: row.connected_at,
-        };
+        if (ALL_INTEGRATIONS.includes(row.integration as IntegrationKey)) {
+          map[row.integration as IntegrationKey] = {
+            key: row.integration,
+            is_enabled: row.is_enabled,
+            is_connected: row.is_connected,
+            enabled_at: row.enabled_at,
+            connected_at: row.connected_at,
+          };
+        }
       });
-      // Fill any missing
       ALL_INTEGRATIONS.forEach(k => {
         if (!map[k]) map[k] = defaultStatus(k);
       });
@@ -234,7 +220,6 @@ export function useIntegrations() {
       canva: 'canva_connections',
       brevo: 'brevo_connections',
       gmail: 'gmail_connections',
-      google_chat: 'google_chat_connections',
     };
     const table = tableMap[key];
     if (table) {
@@ -247,9 +232,7 @@ export function useIntegrations() {
   const isActive = useCallback((key: IntegrationKey): boolean => {
     const s = integrations[key];
     if (!s) return false;
-    // Google Meet doesn't need a separate connection
     if (key === 'google_meet') return s.is_enabled;
-    // Brevo uses API key, check is_connected
     return s.is_enabled && s.is_connected;
   }, [integrations]);
 

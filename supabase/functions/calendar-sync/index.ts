@@ -637,7 +637,7 @@ async function pushTaskForUser(userId: string, taskId: string, action: string) {
   if (!isSubtask && !prefs.auto_sync_tasks) return;
   if (!task.due_date && !prefs.sync_tasks_without_date) return;
 
-  const payload = buildEventPayload(task);
+  const payload = await buildEventPayload(taskId, task);
 
   if (action === "create" || (action === "update" && !task.google_event_id)) {
     const res = await fetch(baseUrl, { method: "POST", headers, body: JSON.stringify(payload) });

@@ -23,7 +23,7 @@ async function getApiKey(userId: string): Promise<string> {
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response("ok", { headers: corsHeaders });
   }
 
   const authHeader = req.headers.get("Authorization");
@@ -34,22 +34,26 @@ Deno.serve(async (req: Request) => {
     });
   }
 
+  // Use getUser() instead of getClaims() for reliable auth
   const userClient = createClient(
     Deno.env.get("SUPABASE_URL")!,
     Deno.env.get("SUPABASE_ANON_KEY")!,
     { global: { headers: { Authorization: authHeader } } }
   );
 
-  const token = authHeader.replace("Bearer ", "");
-  const { data: claimsData, error: claimsError } =
-    await userClient.auth.getClaims(token);
-  if (claimsError || !claimsData?.claims) {
+  const {
+    data: { user },
+    error: authError,
+  } = await userClient.auth.getUser();
+
+  if (authError || !user) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
       headers: corsHeaders,
     });
   }
-  const userId = claimsData.claims.sub as string;
+
+  const userId = user.id;
 
   try {
     const body = await req.json();
@@ -77,7 +81,13 @@ Deno.serve(async (req: Request) => {
         },
         body: payload ? JSON.stringify(payload) : undefined,
       });
-      return res.json();
+      const text = await res.text();
+      try {
+        return JSON.parse(text);
+      } catch {
+        console.error("Brevo non-JSON response:", res.status, text);
+        throw new Error(`Brevo API returned ${res.status}: ${text.slice(0, 200)}`);
+      }
     };
 
     // ── SAVE API KEY ────────────────────────────────
@@ -90,13 +100,34 @@ Deno.serve(async (req: Request) => {
         });
       }
 
-      const testRes = await fetch("https://api.brevo.com/v3/account", {
-        headers: { "api-key": api_key, Accept: "application/json" },
-      });
-      const account = await testRes.json();
+      const trimmedKey = api_key.trim();
 
-      if (!account.email) {
-        return new Response(JSON.stringify({ error: "Clé API invalide" }), {
+      // Validate key via Brevo API - read as text first to handle non-JSON
+      const testRes = await fetch("https://api.brevo.com/v3/account", {
+        method: "GET",
+        headers: {
+          "api-key": trimmedKey,
+          Accept: "application/json",
+        },
+      });
+
+      const responseBody = await testRes.text();
+      console.log("Brevo API test status:", testRes.status);
+      console.log("Brevo API test body:", responseBody);
+
+      let account: any;
+      try {
+        account = JSON.parse(responseBody);
+      } catch {
+        return new Response(
+          JSON.stringify({ error: "Invalid response from Brevo API" }),
+          { status: 500, headers: corsHeaders }
+        );
+      }
+
+      if (!testRes.ok || !account.email) {
+        const errorMessage = account.message || "Clé API Brevo invalide";
+        return new Response(JSON.stringify({ error: errorMessage }), {
           status: 400,
           headers: corsHeaders,
         });
@@ -105,7 +136,7 @@ Deno.serve(async (req: Request) => {
       await supabase.from("brevo_connections").upsert(
         {
           user_id: userId,
-          api_key,
+          api_key: trimmedKey,
           account_email: account.email,
           account_name: account.companyName ?? account.firstName ?? "",
           plan: account.plan?.[0]?.type ?? "free",
@@ -155,26 +186,18 @@ Deno.serve(async (req: Request) => {
     // ── LIST LISTS ──────────────────────────────────
     if (action === "list_lists") {
       const data = await brevoFetch("GET", "/contacts/lists?limit=50", apiKey);
-      return new Response(JSON.stringify(data.lists ?? []), {
-        headers: corsHeaders,
-      });
+      return new Response(JSON.stringify(data.lists ?? []), { headers: corsHeaders });
     }
 
     // ── SEARCH CONTACTS ─────────────────────────────
     if (action === "search_contacts") {
       const { query } = body;
-      const data = await brevoFetch(
-        "GET",
-        `/contacts?limit=20&sort=desc`,
-        apiKey
-      );
+      const data = await brevoFetch("GET", "/contacts?limit=20&sort=desc", apiKey);
       const contacts = (data.contacts ?? []).filter(
         (c: any) =>
           !query ||
           c.email?.toLowerCase().includes(query.toLowerCase()) ||
-          c.attributes?.FIRSTNAME?.toLowerCase().includes(
-            query.toLowerCase()
-          ) ||
+          c.attributes?.FIRSTNAME?.toLowerCase().includes(query.toLowerCase()) ||
           c.attributes?.LASTNAME?.toLowerCase().includes(query.toLowerCase())
       );
       return new Response(JSON.stringify(contacts), { headers: corsHeaders });
@@ -182,32 +205,16 @@ Deno.serve(async (req: Request) => {
 
     // ── ATTACH CONTACT ──────────────────────────────
     if (action === "attach_contact") {
-      const {
-        email,
-        first_name,
-        last_name,
-        entity_type,
-        entity_id,
-        list_ids,
-        attributes,
-      } = body;
+      const { email, first_name, last_name, entity_type, entity_id, list_ids, attributes } = body;
 
       await brevoFetch("POST", "/contacts", apiKey, {
         email,
-        attributes: {
-          FIRSTNAME: first_name ?? "",
-          LASTNAME: last_name ?? "",
-          ...attributes,
-        },
+        attributes: { FIRSTNAME: first_name ?? "", LASTNAME: last_name ?? "", ...attributes },
         listIds: list_ids ?? [],
         updateEnabled: true,
       });
 
-      const contact = await brevoFetch(
-        "GET",
-        `/contacts/${encodeURIComponent(email)}`,
-        apiKey
-      );
+      const contact = await brevoFetch("GET", `/contacts/${encodeURIComponent(email)}`, apiKey);
 
       const { data, error } = await supabase
         .from("brevo_contacts")
@@ -239,51 +246,32 @@ Deno.serve(async (req: Request) => {
         .eq("entity_type", entity_type)
         .eq("entity_id", entity_id)
         .order("created_at", { ascending: false });
-      return new Response(JSON.stringify(data ?? []), {
-        headers: corsHeaders,
-      });
+      return new Response(JSON.stringify(data ?? []), { headers: corsHeaders });
     }
 
     // ── DETACH CONTACT ──────────────────────────────
     if (action === "detach_contact") {
       const { contact_id } = body;
-      await supabase
-        .from("brevo_contacts")
-        .delete()
-        .eq("id", contact_id)
-        .eq("user_id", userId);
-      return new Response(JSON.stringify({ success: true }), {
-        headers: corsHeaders,
-      });
+      await supabase.from("brevo_contacts").delete().eq("id", contact_id).eq("user_id", userId);
+      return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
     }
 
     // ── LIST CAMPAIGNS ──────────────────────────────
     if (action === "list_campaigns") {
-      const data = await brevoFetch(
-        "GET",
-        "/emailCampaigns?limit=20&sort=desc",
-        apiKey
-      );
-      return new Response(JSON.stringify(data.campaigns ?? []), {
-        headers: corsHeaders,
-      });
+      const data = await brevoFetch("GET", "/emailCampaigns?limit=20&sort=desc", apiKey);
+      return new Response(JSON.stringify(data.campaigns ?? []), { headers: corsHeaders });
     }
 
     // ── CAMPAIGN STATS ──────────────────────────────
     if (action === "campaign_stats") {
       const { campaign_id } = body;
-      const data = await brevoFetch(
-        "GET",
-        `/emailCampaigns/${campaign_id}`,
-        apiKey
-      );
+      const data = await brevoFetch("GET", `/emailCampaigns/${campaign_id}`, apiKey);
       return new Response(JSON.stringify(data), { headers: corsHeaders });
     }
 
     // ── SEND TRANSACTIONAL ──────────────────────────
     if (action === "send_transactional") {
-      const { to_email, to_name, subject, html_content, template_id, params } =
-        body;
+      const { to_email, to_name, subject, html_content, template_id, params } = body;
       const payload: any = {
         to: [{ email: to_email, name: to_name ?? "" }],
         sender: { name: "Euthymia", email: "no-reply@euthymia.fr" },
@@ -301,14 +289,8 @@ Deno.serve(async (req: Request) => {
 
     // ── LIST TEMPLATES ──────────────────────────────
     if (action === "list_templates") {
-      const data = await brevoFetch(
-        "GET",
-        "/smtp/templates?limit=20&templateStatus=true",
-        apiKey
-      );
-      return new Response(JSON.stringify(data.templates ?? []), {
-        headers: corsHeaders,
-      });
+      const data = await brevoFetch("GET", "/smtp/templates?limit=20&templateStatus=true", apiKey);
+      return new Response(JSON.stringify(data.templates ?? []), { headers: corsHeaders });
     }
 
     return new Response(JSON.stringify({ error: "Unknown action" }), {

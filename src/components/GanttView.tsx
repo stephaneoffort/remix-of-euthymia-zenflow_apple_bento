@@ -184,6 +184,23 @@ interface FlatTask extends Task {
   hasChildren: boolean;
 }
 
+// ── Compute effective progress (status-aware + parent aggregation) ──
+function getEffectiveProgress(task: Task | FlatTask, allTasks: Task[]): number {
+  const children = allTasks.filter(t => t.parentTaskId === task.id);
+  if (children.length > 0) {
+    // Aggregate from children
+    const total = children.reduce((sum, c) => sum + getEffectiveProgress(c, allTasks), 0);
+    return Math.round(total / children.length);
+  }
+  const raw = task.progress ?? 0;
+  if (raw > 0) return raw;
+  // Fallback from status
+  if (task.status === "done") return 100;
+  if (task.status === "in_review") return 75;
+  if (task.status === "in_progress") return 50;
+  return 0;
+}
+
 export default function GanttView() {
   const { tasks, setSelectedTaskId, updateTask } = useApp();
   const [zoom, setZoom] = useState<ZoomLevel>("week");
@@ -326,8 +343,18 @@ export default function GanttView() {
 
   // Update progress
   const handleProgressChange = async (taskId: string, progress: number) => {
-    updateTask(taskId, { progress } as any);
-    await supabase.from("tasks").update({ progress }).eq("id", taskId);
+    // Auto-sync status with progress
+    const task = tasks.find(t => t.id === taskId);
+    const statusUpdate: Record<string, any> = { progress };
+    if (progress === 100 && task?.status !== "done") {
+      statusUpdate.status = "done";
+    } else if (progress > 0 && progress < 100 && task?.status === "done") {
+      statusUpdate.status = "in_progress";
+    } else if (progress === 0 && task?.status === "done") {
+      statusUpdate.status = "todo";
+    }
+    updateTask(taskId, statusUpdate as any);
+    await supabase.from("tasks").update(statusUpdate).eq("id", taskId);
   };
 
   // Update dates via drag
@@ -663,18 +690,24 @@ export default function GanttView() {
                         className="w-14 text-right text-muted-foreground hover:text-foreground shrink-0"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        {task.progress ?? 0}%
+                        {getEffectiveProgress(task, tasks)}%
                       </button>
                     </PopoverTrigger>
                     <PopoverContent className="w-48 p-3" align="end">
                       <div className="text-xs font-medium mb-2">Progression</div>
-                      <Slider
-                        value={[task.progress ?? 0]}
-                        max={100}
-                        step={5}
-                        onValueChange={([v]) => handleProgressChange(task.id, v)}
-                      />
-                      <div className="text-xs text-muted-foreground text-center mt-1">{task.progress ?? 0}%</div>
+                      {task.hasChildren ? (
+                        <div className="text-xs text-muted-foreground">Calculée automatiquement depuis les sous-tâches</div>
+                      ) : (
+                        <>
+                          <Slider
+                            value={[task.progress ?? 0]}
+                            max={100}
+                            step={5}
+                            onValueChange={([v]) => handleProgressChange(task.id, v)}
+                          />
+                          <div className="text-xs text-muted-foreground text-center mt-1">{task.progress ?? 0}%</div>
+                        </>
+                      )}
                     </PopoverContent>
                   </Popover>
                 )}
@@ -716,6 +749,7 @@ export default function GanttView() {
                 <GanttBar
                   key={task.id}
                   task={task}
+                  allTasks={tasks}
                   rowIndex={rowIndex}
                   rangeStart={rangeStart}
                   zoom={zoom}
@@ -814,6 +848,7 @@ function generateColumns(start: Date, end: Date, zoom: ZoomLevel): { label: stri
 // ── Gantt Bar ──
 function GanttBar({
   task,
+  allTasks,
   rowIndex,
   rangeStart,
   zoom,
@@ -824,6 +859,7 @@ function GanttBar({
   onContextMenu,
 }: {
   task: FlatTask;
+  allTasks: Task[];
   rowIndex: number;
   rangeStart: Date;
   zoom: ZoomLevel;
@@ -851,7 +887,10 @@ function GanttBar({
   const baseLeft = differenceInDays(start, rangeStart) * ppd;
   const duration = Math.max(differenceInDays(end, start), 1);
   const baseWidth = duration * ppd;
-  const progress = task.progress ?? 0;
+
+  // Use centralized effective progress (handles status fallback + parent aggregation)
+  const progress = getEffectiveProgress(task, allTasks);
+
   const top = 12 + rowIndex * ROW_HEIGHT + (ROW_HEIGHT - 24) / 2;
 
   // Apply drag offsets

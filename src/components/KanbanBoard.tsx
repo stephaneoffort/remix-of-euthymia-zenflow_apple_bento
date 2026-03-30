@@ -398,10 +398,19 @@ export default function KanbanBoard() {
       </AnimatePresence>
 
       {/* Main kanban area */}
-      <div className={`grid p-2 sm:p-3 overflow-x-auto sm:overflow-hidden flex-1 snap-x snap-mandatory sm:snap-none ${collapsedStatuses.length > 0 ? 'pt-1' : ''}`} style={{ gridTemplateColumns: `repeat(${expandedStatuses.length}, minmax(0, 1fr))`, gap: '0.5rem' }}>
-        {/* Expanded columns */}
-        {expandedStatuses.map(renderExpandedColumn)}
-      </div>
+      {isMobile ? (
+        <div className={`flex p-2 overflow-x-auto flex-1 snap-x snap-mandatory gap-2 ${collapsedStatuses.length > 0 ? 'pt-1' : ''}`}>
+          {expandedStatuses.map(status => (
+            <div key={status} className="snap-center shrink-0 w-[85vw] min-w-[260px] max-w-[320px]">
+              {renderExpandedColumn(status)}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className={`grid p-3 overflow-hidden flex-1 ${collapsedStatuses.length > 0 ? 'pt-1' : ''}`} style={{ gridTemplateColumns: `repeat(${expandedStatuses.length}, minmax(0, 1fr))`, gap: '0.5rem' }}>
+          {expandedStatuses.map(renderExpandedColumn)}
+        </div>
+      )}
     </div>
   );
 }

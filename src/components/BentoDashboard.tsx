@@ -6,10 +6,10 @@ import { Sparkles, Flame, Clock, CheckCircle2, AlertCircle, ArrowRight, Zap, Use
 import { ViewType, QuickFilter } from "@/types";
 
 const PRIORITY_COLOR: Record<string, string> = {
-  urgent: "#f87171",
-  high: "#fb923c",
-  normal: "#60a5fa",
-  low: "#6b7280",
+  urgent: "hsl(var(--priority-urgent))",
+  high: "hsl(var(--priority-high))",
+  normal: "hsl(var(--priority-normal))",
+  low: "hsl(var(--priority-low))",
 };
 
 const STATUS_LABEL: Record<string, string> = {

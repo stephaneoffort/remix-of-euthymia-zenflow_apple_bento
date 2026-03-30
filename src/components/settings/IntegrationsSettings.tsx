@@ -78,6 +78,7 @@ export default function IntegrationsSettings() {
       ['zoom_connected', 'zoom'],
       ['canva_connected', 'canva'],
       ['gmail_connected', 'gmail'],
+      ['google_chat_connected', 'google_chat'],
     ];
     callbacks.forEach(([param, key]) => {
       if (params.get(param) === 'true') {

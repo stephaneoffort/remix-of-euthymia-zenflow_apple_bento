@@ -106,6 +106,7 @@ export default function Chat() {
           {showMembers && !isMobile && (
             <MembersPanel
               memberProfiles={chat.memberProfiles}
+              onlineTeamMemberIds={onlineMembers}
               onDmCreated={(channelId) => {
                 chat.setActiveChannelId(channelId);
                 chat.loadChannels();

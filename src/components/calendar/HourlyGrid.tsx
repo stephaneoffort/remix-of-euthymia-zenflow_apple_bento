@@ -4,6 +4,9 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import type { Task } from '@/types';
 import type { CalendarEvent } from '@/hooks/useCalendarSync';
+import { useTaskMeetings } from '@/hooks/useTaskMeetings';
+import zoomIcon from '@/assets/integrations/zoom.png';
+import googleMeetIcon from '@/assets/integrations/google-meet.png';
 
 // ─── Constants ───
 const HOURS = Array.from({ length: 24 }, (_, i) => i);

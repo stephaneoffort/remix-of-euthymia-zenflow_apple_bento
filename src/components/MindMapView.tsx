@@ -449,6 +449,8 @@ export default function MindMapView() {
               toggleExpand={toggleExpand}
               onSelectTask={setSelectedTaskId}
               onAddSubtask={handleAddSubtask}
+              zoomTaskIds={zoomTaskIds}
+              meetTaskIds={meetTaskIds}
             />
           ))}
         </div>

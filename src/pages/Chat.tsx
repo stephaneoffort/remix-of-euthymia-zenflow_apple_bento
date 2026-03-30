@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useDiscordChat } from '@/hooks/useDiscordChat';
 import { ChannelSidebar } from '@/components/chat/ChannelSidebar';
 import { MessageList } from '@/components/chat/MessageList';
@@ -7,7 +7,8 @@ import { MembersPanel } from '@/components/chat/MembersPanel';
 import { ThreadPanel } from '@/components/chat/ThreadPanel';
 import { SearchPanel } from '@/components/chat/SearchPanel';
 import { PinnedMessagesPanel } from '@/components/chat/PinnedMessagesPanel';
-import { Hash, Users, Pin, Search, Menu, X } from 'lucide-react';
+import { Hash, Users, Pin, Search, Menu, X, MessageCircle } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import { useIsMobile } from '@/hooks/use-mobile';
 import MobileBottomNav from '@/components/MobileBottomNav';
 import { useApp } from '@/context/AppContext';
@@ -25,6 +26,27 @@ export default function Chat() {
   const isMobile = useIsMobile();
   const activeChannel = chat.channels.find(c => c.id === chat.activeChannelId);
   const currentUserProfile = chat.user ? chat.memberProfiles[chat.user.id] : undefined;
+  const db = supabase as any;
+
+  // Resolve DM partner display name
+  const [dmPartnerInfo, setDmPartnerInfo] = useState<{ name: string; color: string } | null>(null);
+  useEffect(() => {
+    if (!activeChannel || activeChannel.type !== 'dm' || !chat.user) {
+      setDmPartnerInfo(null);
+      return;
+    }
+    const resolve = async () => {
+      const { data: members } = await db.from('chat_channel_members').select('user_id').eq('channel_id', activeChannel.id);
+      if (!members) return;
+      const partner = members.find((m: any) => m.user_id !== chat.user!.id);
+      if (!partner) return;
+      const { data: profile } = await supabase.from('profiles').select('team_member_id').eq('id', partner.user_id).maybeSingle();
+      if (!profile?.team_member_id) return;
+      const tm = teamMembers.find(m => m.id === profile.team_member_id);
+      if (tm) setDmPartnerInfo({ name: tm.name, color: tm.avatarColor });
+    };
+    resolve();
+  }, [activeChannel?.id, chat.user]);
 
   const allMentionableMembers = useMemo(() =>
     teamMembers.map(m => ({ id: m.id, name: m.name, avatar_color: m.avatarColor, role: m.role })),
@@ -96,17 +118,34 @@ export default function Chat() {
             </button>
           )}
           <div className="flex items-center gap-2.5 min-w-0 flex-1">
-            <div className="w-8 h-8 rounded-xl bg-primary/10 backdrop-blur-sm border border-primary/20 flex items-center justify-center shrink-0 shadow-[0_0_16px_hsl(var(--primary)/0.15)]">
-              <Hash className="w-4 h-4 text-primary" />
-            </div>
-            <div className="min-w-0">
-              <h2 className="font-semibold text-foreground text-sm truncate" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
-                {activeChannel?.name || 'Sélectionner un canal'}
-              </h2>
-              {activeChannel?.description && !isMobile && (
-                <p className="text-[11px] text-muted-foreground/60 truncate">{activeChannel.description}</p>
-              )}
-            </div>
+            {activeChannel?.type === 'dm' && dmPartnerInfo ? (
+              <>
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center text-[11px] font-bold text-white shrink-0 shadow-[0_0_16px_rgba(0,0,0,0.15)]"
+                  style={{ backgroundColor: dmPartnerInfo.color }}>
+                  {dmPartnerInfo.name[0]?.toUpperCase()}
+                </div>
+                <div className="min-w-0">
+                  <h2 className="font-semibold text-foreground text-sm truncate" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                    {dmPartnerInfo.name}
+                  </h2>
+                  <p className="text-[11px] text-muted-foreground/60 truncate">Message privé</p>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="w-8 h-8 rounded-xl bg-primary/10 backdrop-blur-sm border border-primary/20 flex items-center justify-center shrink-0 shadow-[0_0_16px_hsl(var(--primary)/0.15)]">
+                  <Hash className="w-4 h-4 text-primary" />
+                </div>
+                <div className="min-w-0">
+                  <h2 className="font-semibold text-foreground text-sm truncate" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                    {activeChannel?.name || 'Sélectionner un canal'}
+                  </h2>
+                  {activeChannel?.description && !isMobile && (
+                    <p className="text-[11px] text-muted-foreground/60 truncate">{activeChannel.description}</p>
+                  )}
+                </div>
+              </>
+            )}
           </div>
           <div className="flex items-center gap-0.5 shrink-0">
             <button

@@ -1030,7 +1030,7 @@ function GanttBar({
           {displayWidth > 60 && (
             <span
               className="absolute inset-0 flex items-center px-2 text-[10px] font-medium truncate pointer-events-none"
-              style={{ color: progress > 50 ? "white" : "hsl(var(--foreground))" }}
+              style={{ color: progress > 50 ? "hsl(var(--primary-foreground))" : "hsl(var(--foreground))" }}
             >
               {task.title} {progress > 0 && `${progress}%`}
             </span>

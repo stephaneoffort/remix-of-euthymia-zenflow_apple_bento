@@ -6,10 +6,10 @@ import { Sparkles, Flame, Clock, CheckCircle2, AlertCircle, ArrowRight, Zap, Use
 import { ViewType, QuickFilter } from "@/types";
 
 const PRIORITY_COLOR: Record<string, string> = {
-  urgent: "#f87171",
-  high: "#fb923c",
-  normal: "#60a5fa",
-  low: "#6b7280",
+  urgent: "hsl(var(--priority-urgent))",
+  high: "hsl(var(--priority-high))",
+  normal: "hsl(var(--priority-normal))",
+  low: "hsl(var(--priority-low))",
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -93,10 +93,10 @@ export default function BentoDashboard() {
 
           <div className="bento-stats-row">
             {[
-              { n: doneTasks.length, l: "Terminées", c: "#10b981" },
-              { n: openTasks.length, l: "En cours", c: "#60a5fa" },
-              { n: overdueTasks.length, l: "En retard", c: overdueTasks.length > 0 ? "#f87171" : "#374151" },
-              { n: `${completionPct}%`, l: "Complété", c: "#a78bfa" },
+              { n: doneTasks.length, l: "Terminées", c: "hsl(var(--status-done))" },
+              { n: openTasks.length, l: "En cours", c: "hsl(var(--status-progress))" },
+              { n: overdueTasks.length, l: "En retard", c: overdueTasks.length > 0 ? "hsl(var(--priority-urgent))" : "hsl(var(--muted-foreground))" },
+              { n: `${completionPct}%`, l: "Complété", c: "hsl(var(--primary))" },
             ].map(({ n, l, c }) => (
               <div key={l} className="bento-stat">
                 <span className="bento-stat-n" style={{ color: c }}>

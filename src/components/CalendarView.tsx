@@ -361,13 +361,13 @@ function AgendaExternalEvents({ dateStr, externalEventsByDate, accountMap, onEdi
         return (
           <div key={ev.id} className="group flex items-center gap-2 p-3 rounded-lg border border-border bg-muted/30 hover:border-primary/30 transition-colors cursor-pointer" onClick={() => onEditEvent(ev)}>
             {isGoogle ? (
-              <span className="w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center shrink-0">G</span>
+              <span className="w-5 h-5 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center shrink-0">G</span>
             ) : (
               <span className={`w-2 h-2 rounded-full shrink-0 ${meta.dot}`} />
             )}
             <span className="text-sm font-medium text-foreground flex-1 truncate">{ev.title}</span>
             {ev.has_meet && (
-              <span className="inline-flex items-center gap-0.5 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-[hsl(174,60%,30%)]/10 text-[hsl(174,60%,30%)]">
+              <span className="inline-flex items-center gap-0.5 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-primary/10 text-primary">
                 Meet
               </span>
             )}
@@ -757,7 +757,7 @@ export default function CalendarView() {
           <TooltipTrigger asChild>
             <div className="text-[11px] px-1.5 py-0.5 rounded bg-muted/80 text-foreground hover:bg-muted transition-colors flex items-center gap-1 cursor-default">
               {isGoogle ? (
-                <span className="w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center shrink-0">G</span>
+                <span className="w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center shrink-0">G</span>
               ) : (
                 <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${meta.dot}`} />
               )}
@@ -816,7 +816,7 @@ export default function CalendarView() {
               <TooltipTrigger asChild>
                 <div className="text-[11px] px-1.5 py-0.5 rounded bg-muted/80 text-foreground hover:bg-muted transition-colors flex items-center gap-1 cursor-default">
                   {isGoogle ? (
-                    <span className="w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center shrink-0">G</span>
+                    <span className="w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center shrink-0">G</span>
                   ) : (
                     <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${meta.dot}`} />
                   )}
@@ -867,7 +867,7 @@ export default function CalendarView() {
                   return (
                     <div key={ev.id} className="flex items-center gap-2 px-2 py-1.5 rounded-md w-full">
                       {isGoogle ? (
-                        <span className="w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center shrink-0">G</span>
+                        <span className="w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center shrink-0">G</span>
                       ) : (
                         <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${meta.dot}`} />
                       )}

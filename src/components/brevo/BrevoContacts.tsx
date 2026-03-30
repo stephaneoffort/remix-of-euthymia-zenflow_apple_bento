@@ -110,7 +110,7 @@ export default function BrevoContacts({ entityType, entityId, compact }: Props) 
 
       {contacts.map(c => (
         <div key={c.id} className="flex items-center gap-2 p-2 rounded-lg bg-muted/30 border border-border">
-          <div className="w-7 h-7 rounded-full bg-[#0092FF]/15 text-[#0092FF] flex items-center justify-center text-[10px] font-bold shrink-0">
+          <div className="w-7 h-7 rounded-full bg-primary/15 text-primary flex items-center justify-center text-[10px] font-bold shrink-0">
             {initials(c)}
           </div>
           <div className="flex-1 min-w-0">

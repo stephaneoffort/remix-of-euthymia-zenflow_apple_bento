@@ -197,11 +197,13 @@ function TaskHoverContent({ task, assignees }: { task: Task; assignees: { id: st
 
 // ─── Desktop Draggable Task ───
 
-function DraggableTask({ task, onClick, members, allTasks, spanInfo }: {
+function DraggableTask({ task, onClick, members, allTasks, spanInfo, zoomTaskIds, meetTaskIds }: {
   task: Task; onClick: () => void;
   members: { id: string; name: string; avatarColor: string }[];
   allTasks: Task[];
   spanInfo?: { isStart: boolean; isEnd: boolean; totalDays: number };
+  zoomTaskIds?: Set<string>;
+  meetTaskIds?: Set<string>;
 }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: task.id });
   const assignees = members.filter(m => task.assigneeIds.includes(m.id));

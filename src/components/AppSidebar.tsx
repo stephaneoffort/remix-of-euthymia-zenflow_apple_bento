@@ -3,7 +3,7 @@ import { toast } from '@/hooks/use-toast';
 import { ToastAction } from '@/components/ui/toast';
 import logoEuthymia from '@/assets/logo-euthymia.png';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
-import { ChevronRight, ChevronDown, ChevronUp, LayoutGrid, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle, Shield, Crown, Lock, Sun, Moon, SunMoon, MoreHorizontal, Pencil, Home, FolderInput, ArrowDownToLine, MoveHorizontal, Copy, Archive, Users } from 'lucide-react';
+import { ChevronRight, ChevronDown, ChevronUp, LayoutGrid, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle, MessageSquare, Shield, Crown, Lock, Sun, Moon, SunMoon, MoreHorizontal, Pencil, Home, FolderInput, ArrowDownToLine, MoveHorizontal, Copy, Archive, Users } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent,

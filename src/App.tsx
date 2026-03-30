@@ -25,7 +25,7 @@ const Chat = lazyRetry(() => import("./pages/Chat.tsx"));
 const NotFound = lazyRetry(() => import("./pages/NotFound.tsx"));
 const Install = lazyRetry(() => import("./pages/Install.tsx"));
 const ResetPassword = lazyRetry(() => import("./pages/ResetPassword.tsx"));
-const Messages = lazyRetry(() => import("./pages/Messages.tsx"));
+
 
 const PageLoader = () => (
   <div className="flex h-screen bg-background">

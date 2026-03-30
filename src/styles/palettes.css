@@ -2186,7 +2186,7 @@ html body::after {
 /* ─── Liquid Glass: Label text color ─── */
 [data-palette^="liquidGlass"].light label,
 [data-palette^="liquidGlass"].mixed label {
-  color: rgba(30, 30, 50, 0.65) !important;
+  color: rgba(25, 25, 45, 0.72) !important;
   font-weight: 500 !important;
   letter-spacing: 0.01em !important;
 }

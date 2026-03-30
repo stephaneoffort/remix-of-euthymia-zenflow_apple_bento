@@ -580,7 +580,7 @@ export default function AppSidebar() {
                 )}
               </button>
             ))}
-            <MessagesLink handleNavClick={handleNavClick} />
+            
             <ChatLink handleNavClick={handleNavClick} />
           </>
         )}

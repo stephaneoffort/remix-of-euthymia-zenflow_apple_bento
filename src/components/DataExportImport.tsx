@@ -265,34 +265,22 @@ export default function DataExportImport() {
         const { error } = await supabase.from('custom_statuses').upsert(d.custom_statuses, { onConflict: 'id' });
         if (error) throw new Error(`custom_statuses: ${error.message}`);
       }
-      if (d.chat_categories.length) {
-        const { error } = await supabase.from('chat_categories').upsert(d.chat_categories, { onConflict: 'id' });
-        if (error) throw new Error(`chat_categories: ${error.message}`);
+      if (d.chat_channels?.length) {
+        const { error } = await supabase.from('chat_channels').upsert(d.chat_channels as any[], { onConflict: 'id' });
+        if (error) throw new Error(`chat_channels: ${error.message}`);
       }
-      if (d.chat_messages.length) {
-        const { error } = await supabase.from('chat_messages').upsert(d.chat_messages, { onConflict: 'id' });
+      if (d.chat_channel_members?.length) {
+        await supabase.from('chat_channel_members').delete().neq('channel_id', '___none___');
+        const { error } = await supabase.from('chat_channel_members').insert(d.chat_channel_members as any[]);
+        if (error) throw new Error(`chat_channel_members: ${error.message}`);
+      }
+      if (d.chat_messages?.length) {
+        const { error } = await supabase.from('chat_messages').upsert(d.chat_messages as any[], { onConflict: 'id' });
         if (error) throw new Error(`chat_messages: ${error.message}`);
       }
       if (d.chat_reactions?.length) {
-        const { error } = await supabase.from('chat_reactions').upsert(d.chat_reactions, { onConflict: 'id' });
+        const { error } = await supabase.from('chat_reactions').upsert(d.chat_reactions as any[], { onConflict: 'id' });
         if (error) throw new Error(`chat_reactions: ${error.message}`);
-      }
-      if (d.direct_conversations?.length) {
-        const { error } = await supabase.from('direct_conversations').upsert(d.direct_conversations, { onConflict: 'id' });
-        if (error) throw new Error(`direct_conversations: ${error.message}`);
-      }
-      if (d.direct_conversation_members?.length) {
-        await supabase.from('direct_conversation_members').delete().neq('conversation_id', '___none___');
-        const { error } = await supabase.from('direct_conversation_members').insert(d.direct_conversation_members);
-        if (error) throw new Error(`direct_conversation_members: ${error.message}`);
-      }
-      if (d.direct_messages?.length) {
-        const { error } = await supabase.from('direct_messages').upsert(d.direct_messages, { onConflict: 'id' });
-        if (error) throw new Error(`direct_messages: ${error.message}`);
-      }
-      if (d.dm_reactions?.length) {
-        const { error } = await supabase.from('dm_reactions').upsert(d.dm_reactions, { onConflict: 'id' });
-        if (error) throw new Error(`dm_reactions: ${error.message}`);
       }
 
       toast.success('Import terminé — rechargez la page pour voir les changements');

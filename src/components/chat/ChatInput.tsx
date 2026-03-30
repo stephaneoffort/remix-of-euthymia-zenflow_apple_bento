@@ -25,7 +25,7 @@ interface Props {
   onFileUpload?: (file: File) => void;
 }
 
-export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, allMembers = [] }: Props) {
+export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, allMembers = [], onFileUpload }: Props) {
   const [content, setContent] = useState('');
   const [showMentions, setShowMentions] = useState(false);
   const [mentionFilter, setMentionFilter] = useState('');

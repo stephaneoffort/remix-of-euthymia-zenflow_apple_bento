@@ -848,6 +848,7 @@ function generateColumns(start: Date, end: Date, zoom: ZoomLevel): { label: stri
 // ── Gantt Bar ──
 function GanttBar({
   task,
+  allTasks,
   rowIndex,
   rangeStart,
   zoom,
@@ -858,6 +859,7 @@ function GanttBar({
   onContextMenu,
 }: {
   task: FlatTask;
+  allTasks: Task[];
   rowIndex: number;
   rangeStart: Date;
   zoom: ZoomLevel;

@@ -229,7 +229,20 @@ export default function ZoomMeetingsDashboard() {
     setCreating(false);
   };
 
-  const handleItemClick = (m: ZoomMeetingRow) => {
+  const handleDeleteZoom = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      await zoom.deleteMeeting(deleteTarget.id, deleteTarget.zoom_meeting_id);
+      toast.success("Réunion supprimée ✅");
+      setDeleteTarget(null);
+      await fetchMeetings();
+    } catch (e: any) {
+      toast.error(e?.message || "Erreur lors de la suppression");
+    }
+    setDeleting(false);
+  };
+
     if (m.entity_type === "task" || m.entity_type === "subtask") {
       setSelectedTaskId(m.entity_id);
     } else if (m.entity_type === "event") {

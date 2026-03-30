@@ -16,51 +16,95 @@ serve(async (req: Request) => {
     return new Response("ok", { headers: corsHeaders })
   }
 
+  // Logger toute requête entrante pour debug
+  console.log("Method:", req.method)
+  console.log("Headers:", Object.fromEntries(req.headers.entries()))
+
   try {
-    // Vérifier que la requête vient bien de Google Chat
-    const contentType = req.headers.get("content-type") ?? ""
-    if (!contentType.includes("application/json")) {
-      return new Response(JSON.stringify({ error: "Invalid request" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } })
+    // Lire le body de façon robuste
+    const rawBody = await req.text()
+    console.log("Raw body:", rawBody)
+
+    // Parser le JSON de façon sécurisée
+    let body: any = {}
+    try {
+      body = JSON.parse(rawBody)
+    } catch {
+      // Si pas du JSON → retourner OK pour les requêtes de vérification Google
+      console.log("Non-JSON body received, returning OK")
+      return new Response(
+        JSON.stringify({ text: "" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      )
     }
 
-    const body = await req.json()
     const { type, message, user } = body
+    console.log("Event type:", type)
+    console.log("Message:", JSON.stringify(message))
 
-    // MESSAGE event from Google Chat
+    // ── MESSAGE ──────────────────────────────────────────
     if (type === "MESSAGE") {
-      const text = message?.text ?? ""
-      const senderEmail = user?.email ?? ""
+      // Google Chat peut mettre le texte dans message.text OU message.argumentText
+      const text = (
+        message?.text ??
+        message?.argumentText ??
+        ""
+      ).trim()
 
-      // Find ZenFlow user by email
-      const { data: profiles } = await supabase
-        .from("team_members")
-        .select("id, email")
-        .eq("email", senderEmail)
-        .limit(1)
+      const senderEmail = (
+        user?.email ??
+        message?.sender?.email ??
+        ""
+      )
 
-      // Also try auth users
-      const { data: { users: authUsers } } = await supabase.auth.admin.listUsers()
-      const authUser = authUsers?.find((u: any) => u.email === senderEmail)
+      console.log("Text:", text)
+      console.log("Sender:", senderEmail)
 
-      if (!authUser) {
+      // Trouver l'utilisateur ZenFlow par email via la fonction SQL
+      const { data: authUsers } = await supabase
+        .rpc("get_user_by_email", { p_email: senderEmail })
+
+      const userId = authUsers?.[0]?.id
+
+      if (!userId) {
         return new Response(JSON.stringify({
-          text: "❌ Ton compte Google n'est pas lié à ZenFlow. Connecte-toi sur euthymia-zenflow-bento.lovable.app"
+          text: `❌ Ton compte *${senderEmail}* n'est pas lié à ZenFlow.\n👉 Connecte-toi sur https://euthymia-zenflow-bento.lovable.app`
         }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
       }
 
-      const userId = authUser.id
+      // ── /zenflow help ──
+      if (text.toLowerCase().includes("help") ||
+          text.toLowerCase().includes("/zenflow help") ||
+          text.toLowerCase().includes("/zth")) {
+        return new Response(JSON.stringify({
+          text: [
+            "🤖 *ZenFlow Bot — Commandes :*",
+            "",
+            "`/zenflow task [titre]` — Créer une tâche",
+            "`/zt [titre]` — Raccourci créer une tâche",
+            "`/zenflow done [titre]` — Marquer terminée",
+            "`/zenflow list` — Voir tes tâches",
+            "`/ztl` — Raccourci liste des tâches",
+            "`/zenflow help` — Cette aide",
+          ].join("\n")
+        }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
+      }
 
-      // /zenflow task [title]
-      if (text.startsWith("/zenflow task ") || text.startsWith("/zt ")) {
-        const taskTitle = text.replace("/zenflow task ", "").replace("/zt ", "").trim()
+      // ── /zenflow task [title] ──
+      if (text.toLowerCase().startsWith("/zenflow task ") ||
+          text.toLowerCase().startsWith("/zt ")) {
+        const taskTitle = text
+          .replace(/^\/zenflow task /i, "")
+          .replace(/^\/zt /i, "")
+          .trim()
+
         if (!taskTitle) {
           return new Response(JSON.stringify({
-            text: "⚠️ Usage : `/zenflow task [titre de la tâche]`"
+            text: "⚠️ Usage : `/zenflow task [titre]`"
           }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
         }
 
-        // Get the first available list for this user
+        // Get the first available list for task creation
         const { data: lists } = await supabase
           .from("task_lists")
           .select("id")
@@ -91,46 +135,16 @@ serve(async (req: Request) => {
         })
 
         return new Response(JSON.stringify({
-          text: `✅ Tâche créée dans ZenFlow : *${taskTitle}*\n👉 https://euthymia-zenflow-bento.lovable.app`
+          text: `✅ Tâche créée : *${taskTitle}*\n👉 https://euthymia-zenflow-bento.lovable.app`
         }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
       }
 
-      // /zenflow done [title]
-      if (text.startsWith("/zenflow done ")) {
-        const taskRef = text.replace("/zenflow done ", "").trim()
-        const { data: task } = await supabase
-          .from("tasks")
-          .select("id, title")
-          .ilike("title", `%${taskRef}%`)
-          .neq("status", "done")
-          .limit(1)
-          .single()
-
-        if (!task) {
-          return new Response(JSON.stringify({
-            text: `❌ Tâche "${taskRef}" non trouvée dans ZenFlow`
-          }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
-        }
-
-        await supabase.from("tasks").update({ status: "done" }).eq("id", task.id)
-
-        await supabase.from("chat_bot_commands").insert({
-          user_id: userId,
-          command: "done",
-          payload: { title: taskRef },
-          result: { task_id: task.id },
-        })
-
-        return new Response(JSON.stringify({
-          text: `✅ Tâche marquée comme terminée : *${task.title}*`
-        }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
-      }
-
-      // /zenflow list
-      if (text.includes("/zenflow list") || text.includes("/ztl")) {
+      // ── /zenflow list ──
+      if (text.toLowerCase().includes("/zenflow list") ||
+          text.toLowerCase().includes("/ztl")) {
         const { data: tasks } = await supabase
           .from("tasks")
-          .select("title, status, due_date")
+          .select("title, status")
           .neq("status", "done")
           .order("created_at", { ascending: false })
           .limit(5)
@@ -156,44 +170,61 @@ serve(async (req: Request) => {
         }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
       }
 
-      // /zenflow help
-      if (text.includes("/zenflow help") || text.includes("/zth")) {
+      // ── /zenflow done [title] ──
+      if (text.toLowerCase().startsWith("/zenflow done ")) {
+        const taskRef = text.replace(/^\/zenflow done /i, "").trim()
+
+        const { data: task } = await supabase
+          .from("tasks")
+          .select("id, title")
+          .ilike("title", `%${taskRef}%`)
+          .neq("status", "done")
+          .limit(1)
+          .single()
+
+        if (!task) {
+          return new Response(JSON.stringify({
+            text: `❌ Tâche "${taskRef}" non trouvée`
+          }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
+        }
+
+        await supabase.from("tasks").update({ status: "done" }).eq("id", task.id)
+
+        await supabase.from("chat_bot_commands").insert({
+          user_id: userId,
+          command: "done",
+          payload: { title: taskRef },
+          result: { task_id: task.id },
+        })
+
         return new Response(JSON.stringify({
-          text: [
-            "🤖 *ZenFlow Bot — Commandes disponibles :*",
-            "",
-            "`/zenflow task [titre]` — Créer une tâche",
-            "`/zt [titre]` — Raccourci créer une tâche",
-            "`/zenflow done [titre]` — Marquer comme terminée",
-            "`/zenflow list` — Voir tes tâches en cours",
-            "`/ztl` — Raccourci liste des tâches",
-            "`/zenflow help` — Afficher cette aide",
-          ].join("\n")
+          text: `✅ *${task.title}* marquée comme terminée !`
         }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
       }
 
-      return new Response(JSON.stringify({ text: "" }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } })
-    }
-
-    // ADDED_TO_SPACE
-    if (type === "ADDED_TO_SPACE") {
+      // Message non reconnu
       return new Response(JSON.stringify({
-        text: [
-          "👋 Bonjour ! Je suis le bot *ZenFlow* d'Euthymia.",
-          "",
-          "Je peux créer et gérer tes tâches directement depuis Google Chat.",
-          "",
-          "Tape `/zenflow help` pour voir les commandes disponibles.",
-        ].join("\n")
+        text: "Tape `/zenflow help` pour voir les commandes disponibles."
       }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
     }
 
-    return new Response(JSON.stringify({ text: "" }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } })
+    // ── BOT AJOUTÉ ────────────────────────────────────────
+    if (type === "ADDED_TO_SPACE") {
+      return new Response(JSON.stringify({
+        text: "👋 Bonjour ! Je suis *ZenFlow Bot*.\nTape `/zenflow help` pour voir ce que je peux faire."
+      }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
+    }
+
+    // Autres types → OK silencieux
+    return new Response(
+      JSON.stringify({ text: "" }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    )
   } catch (err) {
     console.error("Chat bot error:", err)
-    return new Response(JSON.stringify({ error: err.message }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } })
+    return new Response(
+      JSON.stringify({ text: "" }),
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    )
   }
 })

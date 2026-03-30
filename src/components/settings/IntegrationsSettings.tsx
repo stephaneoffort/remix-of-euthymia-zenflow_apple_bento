@@ -195,7 +195,7 @@ export default function IntegrationsSettings() {
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">
-                  {enabled && !connected && key !== 'google_meet' && !isGmailNotReady && (
+                  {enabled && !connected && key !== 'google_meet' && (
                     <Button size="sm" variant="outline" onClick={() => handleConnect(key)} className="text-xs gap-1.5">
                       Connecter
                     </Button>

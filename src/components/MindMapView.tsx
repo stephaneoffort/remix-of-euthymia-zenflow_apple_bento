@@ -469,7 +469,7 @@ interface MindMapNodeGroupProps {
   meetTaskIds: Set<string>;
 }
 
-function MindMapNodeGroup({ positioned, expandedIds, visibleDepth, toggleExpand, onSelectTask, onAddSubtask }: MindMapNodeGroupProps) {
+function MindMapNodeGroup({ positioned, expandedIds, visibleDepth, toggleExpand, onSelectTask, onAddSubtask, zoomTaskIds, meetTaskIds }: MindMapNodeGroupProps) {
   return (
     <>
       <NodeCard
@@ -479,6 +479,8 @@ function MindMapNodeGroup({ positioned, expandedIds, visibleDepth, toggleExpand,
         toggleExpand={toggleExpand}
         onSelectTask={onSelectTask}
         onAddSubtask={onAddSubtask}
+        zoomTaskIds={zoomTaskIds}
+        meetTaskIds={meetTaskIds}
       />
       {positioned.children.map(child => (
         <MindMapNodeGroup
@@ -489,6 +491,8 @@ function MindMapNodeGroup({ positioned, expandedIds, visibleDepth, toggleExpand,
           toggleExpand={toggleExpand}
           onSelectTask={onSelectTask}
           onAddSubtask={onAddSubtask}
+          zoomTaskIds={zoomTaskIds}
+          meetTaskIds={meetTaskIds}
         />
       ))}
     </>

@@ -264,7 +264,7 @@ function DroppableDay({ dateStr, isCurrentMonth, isToday, dayNum, children, onAd
 
 // ─── Mobile Task Card ───
 
-function MobileTaskCard({ task, onClick, members, allTasks }: { task: Task; onClick: () => void; members: { id: string; name: string; avatarColor: string }[]; allTasks: Task[] }) {
+function MobileTaskCard({ task, onClick, members, allTasks, zoomTaskIds, meetTaskIds }: { task: Task; onClick: () => void; members: { id: string; name: string; avatarColor: string }[]; allTasks: Task[]; zoomTaskIds?: Set<string>; meetTaskIds?: Set<string> }) {
   const assignees = members.filter(m => task.assigneeIds.includes(m.id));
   const multi = isMultiDay(task);
   return (

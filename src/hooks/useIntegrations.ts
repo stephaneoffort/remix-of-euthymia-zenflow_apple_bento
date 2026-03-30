@@ -114,6 +114,7 @@ export function useIntegrations() {
       { key: 'canva', table: 'canva_connections' },
       { key: 'brevo', table: 'brevo_connections' },
       { key: 'gmail', table: 'gmail_connections' },
+      { key: 'google_chat', table: 'google_chat_connections' },
     ];
 
     for (const { key, table } of connectionChecks) {

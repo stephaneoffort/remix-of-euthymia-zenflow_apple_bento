@@ -240,7 +240,7 @@ export default function CalendarAccountsManager({ accounts, syncing, visibleAcco
 
               {/* Apple iCal */}
               <button onClick={handleStartIcloud}
-                className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-border hover:border-gray-400 hover:bg-gray-50 dark:hover:bg-gray-950/20 transition-all text-center group">
+                className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-border hover:border-border/80 hover:bg-muted/50 transition-all text-center group">
                 <span className="text-3xl">🍎</span>
                 <span className="text-sm font-semibold text-foreground">Apple iCal</span>
                 <span className="text-[11px] text-muted-foreground">iCloud CalDAV</span>

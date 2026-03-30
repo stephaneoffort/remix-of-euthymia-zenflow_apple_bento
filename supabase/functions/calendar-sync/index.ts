@@ -93,9 +93,30 @@ async function googlePull(account: any): Promise<number> {
 async function googlePushCreate(account: any, event: any): Promise<string> {
   const token = await refreshGoogleToken(account);
   const calId = encodeURIComponent(account.calendar_id || "primary");
+
+  // Look up associated Zoom meeting
+  const { data: zoomMeeting } = await supabase
+    .from("zoom_meetings")
+    .select("join_url, password, topic")
+    .eq("entity_id", event.id)
+    .limit(1)
+    .maybeSingle();
+
+  // Build description with Zoom link if exists
+  let description = event.description || "";
+  if (zoomMeeting?.join_url && !description.includes(zoomMeeting.join_url)) {
+    description += [
+      "",
+      "",
+      "── Session Zoom ──",
+      `Rejoindre : ${zoomMeeting.join_url}`,
+      zoomMeeting.password ? `Mot de passe : ${zoomMeeting.password}` : "",
+    ].filter(Boolean).join("\n");
+  }
+
   const payload: any = {
     summary: event.title,
-    description: event.description,
+    description,
     location: event.location,
     ...(event.is_all_day
       ? { start: { date: event.start_time.split("T")[0] }, end: { date: event.end_time.split("T")[0] } }

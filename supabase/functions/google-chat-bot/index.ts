@@ -83,6 +83,7 @@ serve(async (req: Request) => {
             "`/zenflow task [titre]` — Créer une tâche",
             "`/zt [titre]` — Raccourci créer une tâche",
             "`/zenflow done [titre]` — Marquer terminée",
+            "`/zenflow assign [titre] @membre` — Assigner une tâche",
             "`/zenflow list` — Voir tes tâches",
             "`/ztl` — Raccourci liste des tâches",
             "`/zenflow help` — Cette aide",

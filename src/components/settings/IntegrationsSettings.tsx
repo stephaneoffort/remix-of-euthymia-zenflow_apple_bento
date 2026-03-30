@@ -66,11 +66,6 @@ export default function IntegrationsSettings() {
         info.google_meet = { display_name: calLabel };
       }
 
-      // Google Chat
-      const { data: gchatData } = await (supabase as any)
-        .from('google_chat_connections').select('email').eq('user_id', user.id).limit(1);
-      if (gchatData?.[0]) info.google_chat = { email: gchatData[0].email };
-
       setConnInfo(info);
     })();
 
@@ -81,7 +76,6 @@ export default function IntegrationsSettings() {
       ['zoom_connected', 'zoom'],
       ['canva_connected', 'canva'],
       ['gmail_connected', 'gmail'],
-      ['google_chat_connected', 'google_chat'],
     ];
     callbacks.forEach(([param, key]) => {
       if (params.get(param) === 'true') {

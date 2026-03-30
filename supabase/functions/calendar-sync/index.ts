@@ -699,7 +699,7 @@ async function pushTaskToZenflow(account: any, taskId: string, action: string) {
   }
 
   if (!task) throw new Error("Task not found");
-  const payload = buildEventPayload(task);
+  const payload = await buildEventPayload(taskId, task);
 
   if (action === "create" || (action === "update" && !task.google_event_id)) {
     const res = await fetch(baseUrl, { method: "POST", headers, body: JSON.stringify(payload) });

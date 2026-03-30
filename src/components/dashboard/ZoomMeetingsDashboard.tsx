@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   ChevronDown, ExternalLink, Copy, Clock, Plus, Video, Loader2,
   LinkIcon, Settings, AlertCircle, Volume2, VolumeX, CalendarDays,
-  CheckSquare, Layers, RefreshCw,
+  CheckSquare, Layers, RefreshCw, Trash2,
 } from "lucide-react";
 import { differenceInMinutes, format, parseISO, isFuture, isToday, isTomorrow, startOfMonth, endOfMonth } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -18,6 +18,10 @@ import { useIntegrations, INTEGRATION_CONFIG } from "@/hooks/useIntegrations";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -89,6 +93,8 @@ export default function ZoomMeetingsDashboard() {
   const [soundEnabled, setSoundEnabled] = useState(() => {
     try { return localStorage.getItem("zoom_alert_sound") !== "off"; } catch { return true; }
   });
+  const [deleteTarget, setDeleteTarget] = useState<ZoomMeetingRow | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const alertedMeetingsRef = useRef<Set<string>>(new Set());
 
   const zoomEnabled = integrations.zoom?.is_enabled ?? false;
@@ -221,6 +227,20 @@ export default function ZoomMeetingsDashboard() {
       toast.error(e?.message || "Erreur lors de la création");
     }
     setCreating(false);
+  };
+
+  const handleDeleteZoom = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      await zoom.deleteMeeting(deleteTarget.id, deleteTarget.zoom_meeting_id);
+      toast.success("Réunion supprimée ✅");
+      setDeleteTarget(null);
+      await fetchMeetings();
+    } catch (e: any) {
+      toast.error(e?.message || "Erreur lors de la suppression");
+    }
+    setDeleting(false);
   };
 
   const handleItemClick = (m: ZoomMeetingRow) => {
@@ -382,6 +402,10 @@ export default function ZoomMeetingsDashboard() {
                               className="p-1.5 rounded-md hover:bg-muted text-muted-foreground transition-colors" title="Copier le lien">
                               <Copy className="w-3.5 h-3.5" />
                             </button>
+                            <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(m); }}
+                              className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Supprimer">
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -434,6 +458,24 @@ export default function ZoomMeetingsDashboard() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete confirmation */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Supprimer cette réunion Zoom ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              La réunion « {deleteTarget?.topic} » sera supprimée définitivement de Zoom et de l'application.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteZoom} disabled={deleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />} Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

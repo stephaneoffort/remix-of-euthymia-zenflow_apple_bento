@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  ChevronDown, Clock, ExternalLink, Copy, Video, AlertCircle, RefreshCw,
+  ChevronDown, Clock, ExternalLink, Copy, Video, AlertCircle, RefreshCw, Trash2, Loader2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -14,6 +14,10 @@ import {
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
 import { useIntegrations, INTEGRATION_CONFIG } from "@/hooks/useIntegrations";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface MeetEvent {
   id: string;
@@ -38,6 +42,8 @@ export default function DashboardMeetSection() {
   const [events, setEvents] = useState<MeetEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<MeetEvent | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const meetActive = isActive("google_meet");
 
@@ -87,6 +93,24 @@ export default function DashboardMeetSection() {
 
   if (!meetActive) return null;
 
+  const handleDeleteMeet = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      const { error } = await supabase
+        .from("calendar_events")
+        .delete()
+        .eq("id", deleteTarget.id);
+      if (error) throw error;
+      toast.success("Session Meet supprimée ✅");
+      setDeleteTarget(null);
+      await fetchEvents();
+    } catch (e: any) {
+      toast.error(e?.message || "Erreur lors de la suppression");
+    }
+    setDeleting(false);
+  };
+
   const now = new Date();
   const monthStart = startOfMonth(now);
   const monthEnd = endOfMonth(now);
@@ -102,6 +126,7 @@ export default function DashboardMeetSection() {
   const remaining = events.length - MAX_VISIBLE;
 
   return (
+    <>
     <Card className="bg-card border-border">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium text-foreground flex items-center gap-2">
@@ -225,6 +250,13 @@ export default function DashboardMeetSection() {
                           >
                             <Copy className="w-3.5 h-3.5" />
                           </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setDeleteTarget(ev); }}
+                            className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                            title="Supprimer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -248,5 +280,23 @@ export default function DashboardMeetSection() {
         )}
       </CardContent>
     </Card>
+
+      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Supprimer cet événement Meet ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              L'événement « {deleteTarget?.title} » sera supprimé définitivement du calendrier.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteMeet} disabled={deleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />} Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

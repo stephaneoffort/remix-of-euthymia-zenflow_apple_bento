@@ -23,6 +23,7 @@ import CanvaAttachments from '@/components/canva/CanvaAttachments';
 import ZoomMeetings from '@/components/zoom/ZoomMeetings';
 import BrevoContacts from '@/components/brevo/BrevoContacts';
 import GmailCompose from '@/components/gmail/GmailCompose';
+import GmailInbox from '@/components/gmail/GmailInbox';
 import { useIntegrations, INTEGRATION_CONFIG } from '@/hooks/useIntegrations';
 import GoogleCalendarPicker from '@/components/GoogleCalendarPicker';
 // Format date for display
@@ -677,6 +678,7 @@ export default function TaskDetailPanel() {
             <ZoomMeetings entityType="task" entityId={task.id} compact defaultTitle={task.title} />
             <BrevoContacts entityType="task" entityId={task.id} compact />
             <GmailCompose entityType="task" entityId={task.id} defaultSubject={task.title} compact />
+            <GmailInbox compact />
 
             {!isActive('google_drive') && !isActive('canva') && !isActive('zoom') && !isActive('brevo') && !isActive('gmail') && (
               <a

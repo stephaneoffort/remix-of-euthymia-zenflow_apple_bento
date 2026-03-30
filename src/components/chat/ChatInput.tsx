@@ -173,9 +173,30 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, 
         </div>
 
         <div className="flex items-end gap-2 px-3 py-2.5">
-          <button className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground shrink-0 mb-0.5 transition-colors" title="Joindre un fichier">
-            <Plus className="w-5 h-5" />
-          </button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground shrink-0 mb-0.5 transition-colors" title="Joindre">
+                <Plus className="w-5 h-5" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-48 p-1.5 bg-popover" side="top" align="start">
+              <label className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-muted/60 text-sm cursor-pointer transition-colors">
+                <Image className="w-4 h-4 text-muted-foreground" />
+                <span className="text-foreground">Image</span>
+                <input type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
+              </label>
+              <label className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-muted/60 text-sm cursor-pointer transition-colors">
+                <FileText className="w-4 h-4 text-muted-foreground" />
+                <span className="text-foreground">Document</span>
+                <input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv,.zip" className="hidden" onChange={handleFileSelect} />
+              </label>
+              <label className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-muted/60 text-sm cursor-pointer transition-colors">
+                <Paperclip className="w-4 h-4 text-muted-foreground" />
+                <span className="text-foreground">Fichier</span>
+                <input type="file" className="hidden" onChange={handleFileSelect} />
+              </label>
+            </PopoverContent>
+          </Popover>
 
           <textarea
             ref={inputRef}

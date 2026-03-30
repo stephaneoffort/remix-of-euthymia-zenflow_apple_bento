@@ -455,7 +455,7 @@ function EventCard({ item, onClick, widthPercent, leftPercent, isDay, maxEventHe
         <span className="truncate font-medium leading-tight">{t.title}</span>
       </div>
       {showTime && t.dueDate && hasTimeComponent(t.dueDate) && (
-        <div className="text-white/60 truncate" style={{ fontSize: timeFontSize }}>
+        <div className="opacity-60 truncate" style={{ fontSize: timeFontSize }}>
           {formatTime(t.dueDate)}{t.timeEstimate ? ` · ${t.timeEstimate}min` : ''}
         </div>
       )}

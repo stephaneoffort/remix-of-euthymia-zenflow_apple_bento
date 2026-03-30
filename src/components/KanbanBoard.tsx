@@ -457,7 +457,7 @@ function KanbanCard({
       onTouchEnd={isMobile ? handleTouchEnd : undefined}
       onTouchMove={isMobile ? handleTouchMove : undefined}
       onContextMenu={isMobile ? e => e.preventDefault() : undefined}
-      className={`relative overflow-hidden bg-card rounded-lg border p-2.5 sm:p-3 cursor-pointer group transition-shadow duration-200 hover:shadow-lg hover:shadow-primary/5 ${
+      className={`relative overflow-hidden bg-card rounded-md border p-1.5 sm:p-2 cursor-pointer group transition-shadow duration-200 hover:shadow-lg hover:shadow-primary/5 ${
         draggedTaskId === task.id ? 'opacity-50' : ''
       } ${isOverdue ? 'border-l-2 border-l-priority-urgent' : ''} ${moveOpen ? 'ring-2 ring-primary/40' : ''} ${pressing ? 'shadow-lg ring-2 ring-primary/30' : ''}`}
       style={{ willChange: 'transform' }}

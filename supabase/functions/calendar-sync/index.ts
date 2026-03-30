@@ -504,7 +504,7 @@ async function getOrCreateZenflowCalendar(token: string, accountId: string): Pro
     await checkRes.text();
   }
 
-  const listRes = await fetch(
+  const listRes = await fetchWithRetry(
     "https://www.googleapis.com/calendar/v3/users/me/calendarList",
     { headers: { Authorization: `Bearer ${token}` } },
   );

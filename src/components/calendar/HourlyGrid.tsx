@@ -350,10 +350,10 @@ function CurrentTimeLine({ dateStr, hourHeight }: { dateStr: string; hourHeight:
   return (
     <div className="absolute left-0 right-0 z-40 pointer-events-none" style={{ top }}>
       <div className="flex items-center">
-        <div className="w-[10px] h-[10px] rounded-full bg-[#EF4444] -ml-[5px] shrink-0 shadow-sm" />
-        <div className="flex-1 h-[2px] bg-[#EF4444] shadow-sm" />
+        <div className="w-[10px] h-[10px] rounded-full bg-destructive -ml-[5px] shrink-0 shadow-sm" />
+        <div className="flex-1 h-[2px] bg-destructive shadow-sm" />
       </div>
-      <span className="absolute -left-0 -top-4 text-[9px] font-bold text-[#EF4444] ml-2">{timeLabel}</span>
+      <span className="absolute -left-0 -top-4 text-[9px] font-bold text-destructive ml-2">{timeLabel}</span>
     </div>
   );
 }

@@ -20,6 +20,7 @@ const CONNECTION_TABLES: Partial<Record<IntegrationKey, string>> = {
   google_drive: 'drive_connections',
   zoom: 'zoom_connections',
   canva: 'canva_connections',
+  gmail: 'gmail_connections',
 };
 
 export default function IntegrationsSettings() {

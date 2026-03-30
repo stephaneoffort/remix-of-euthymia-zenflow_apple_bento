@@ -328,6 +328,11 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
               <p className="text-sm text-muted-foreground/50 text-center py-6">Aucun membre disponible</p>
             )}
           </div>
+          {teamMembers.length > availableForDm.length + 1 && (
+            <p className="text-[11px] text-muted-foreground/50 px-1 pt-2 border-t border-border/15">
+              💡 Seuls les membres ayant créé un compte apparaissent ici. Les autres doivent d'abord se connecter à l'application.
+            </p>
+          )}
         </DialogContent>
       </Dialog>
     </>

@@ -605,12 +605,42 @@ export type Database = {
           },
         ]
       }
+      comment_reads: {
+        Row: {
+          comment_id: string
+          id: string
+          member_id: string
+          read_at: string | null
+        }
+        Insert: {
+          comment_id: string
+          id?: string
+          member_id: string
+          read_at?: string | null
+        }
+        Update: {
+          comment_id?: string
+          id?: string
+          member_id?: string
+          read_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comment_reads_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comments: {
         Row: {
           author_id: string
           content: string
           created_at: string
           id: string
+          mentioned_member_ids: string[] | null
           task_id: string
         }
         Insert: {
@@ -618,6 +648,7 @@ export type Database = {
           content: string
           created_at?: string
           id?: string
+          mentioned_member_ids?: string[] | null
           task_id: string
         }
         Update: {
@@ -625,6 +656,7 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          mentioned_member_ids?: string[] | null
           task_id?: string
         }
         Relationships: [

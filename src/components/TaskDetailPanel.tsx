@@ -8,6 +8,8 @@ import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Cl
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { generateGoogleCalendarUrl, generateOutlookCalendarUrl, generateYahooCalendarUrl } from '@/lib/calendarLinks';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/context/AuthContext';
+import MentionCommentInput from '@/components/MentionCommentInput';
 import TaskChecklist from '@/components/TaskChecklist';
 import RichTextEditor, { RichTextDisplay } from '@/components/RichTextEditor';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -149,6 +151,7 @@ function DateTimeField({ value, onChange }: { value: string | null | undefined; 
 export default function TaskDetailPanel() {
   const { selectedTaskId, setSelectedTaskId, setSelectedProjectId, getTaskById, updateTask, deleteTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks, teamMembers, allStatuses, getStatusLabel, addAttachment, deleteAttachment, projects, spaces, getListsForProject, convertTaskToProject } = useApp();
   const { isActive } = useIntegrations();
+  const { teamMemberId } = useAuth();
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [addingSubtaskFor, setAddingSubtaskFor] = useState<string | null>(null);
   const [newComment, setNewComment] = useState('');
@@ -209,16 +212,24 @@ export default function TaskDetailPanel() {
     setAddingSubtaskFor(null);
   };
 
-  const handleAddComment = () => {
-    if (!newComment.trim()) return;
+  const handleAddComment = (content: string, mentionedIds: string[]) => {
+    if (!content.trim()) return;
+    const commentId = `c_${Date.now()}`;
     updateTask(task.id, {
       comments: [...task.comments, {
-        id: `c_${Date.now()}`,
-        authorId: 'tm1',
-        content: newComment.trim(),
+        id: commentId,
+        authorId: teamMemberId || 'tm1',
+        content: content.trim(),
         createdAt: new Date().toISOString(),
       }],
     });
+    // Save mentioned_member_ids to the comment in DB
+    if (mentionedIds.length > 0) {
+      supabase.from('comments')
+        .update({ mentioned_member_ids: mentionedIds })
+        .eq('id', commentId)
+        .then(() => {});
+    }
     setNewComment('');
   };
 
@@ -858,24 +869,12 @@ export default function TaskDetailPanel() {
                   );
                 })}
               </div>
-              <div className="space-y-2">
-                <RichTextEditor
-                  content={newComment}
-                  onChange={setNewComment}
-                  placeholder="Écrire un commentaire..."
-                  className="text-sm"
-                  editorClassName="min-h-[38px]"
-                />
-                <div className="flex justify-end">
-                  <button
-                    onClick={handleAddComment}
-                    disabled={!newComment.trim() || newComment === '<p></p>'}
-                    className="px-3 py-1.5 bg-primary text-primary-foreground text-xs font-medium rounded-md hover:opacity-90 disabled:opacity-50 shrink-0"
-                  >
-                    Envoyer
-                  </button>
-                </div>
-              </div>
+              <MentionCommentInput
+                value={newComment}
+                onChange={setNewComment}
+                onSubmit={handleAddComment}
+                placeholder="Écrire un commentaire... Tapez @ pour mentionner"
+              />
             </div>
           </div>
 

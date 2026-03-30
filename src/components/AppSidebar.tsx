@@ -3,7 +3,7 @@ import { toast } from '@/hooks/use-toast';
 import { ToastAction } from '@/components/ui/toast';
 import logoEuthymia from '@/assets/logo-euthymia.png';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
-import { ChevronRight, ChevronDown, ChevronUp, LayoutGrid, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle, Shield, Crown, Lock, Sun, Moon, SunMoon, MoreHorizontal, Pencil, Home, FolderInput, ArrowDownToLine, MoveHorizontal, Copy, Archive, Users } from 'lucide-react';
+import { ChevronRight, ChevronDown, ChevronUp, LayoutGrid, AlertCircle, Clock, User, Flame, PanelLeftClose, PanelLeft, LogOut, Plus, Settings, Trash2, GripVertical, MessageCircle, MessageSquare, Shield, Crown, Lock, Sun, Moon, SunMoon, MoreHorizontal, Pencil, Home, FolderInput, ArrowDownToLine, MoveHorizontal, Copy, Archive, Users } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent,
@@ -18,6 +18,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
 import { QuickFilter } from '@/types';
 import { useChatNotifications } from '@/hooks/useChatNotifications';
+import { useMessages } from '@/hooks/useMessages';
 import { usePresence } from '@/hooks/usePresence';
 import SpaceAccessDialog from '@/components/SpaceAccessDialog';
 import ProjectMembersDialog from '@/components/ProjectMembersDialog';
@@ -405,6 +406,9 @@ export default function AppSidebar() {
             </Tooltip>
           ))}
 
+          {/* Messages */}
+          <MessagesCollapsedIcon />
+
           <div className="w-6 border-t border-sidebar-border-color my-1.5" />
 
           {/* Spaces & Projects */}
@@ -578,6 +582,7 @@ export default function AppSidebar() {
                 )}
               </button>
             ))}
+            <MessagesLink handleNavClick={handleNavClick} />
             <ChatLink handleNavClick={handleNavClick} />
           </>
         )}
@@ -1250,6 +1255,50 @@ export default function AppSidebar() {
       )}
     </div>
     </>
+  );
+}
+
+function MessagesCollapsedIcon() {
+  const navigate = useNavigate();
+  const { unreadCount } = useMessages();
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          onClick={() => navigate('/messages')}
+          className="relative p-2 rounded-md hover:bg-sidebar-hover text-sidebar-fg transition-colors"
+        >
+          <MessageSquare className="w-4.5 h-4.5" />
+          {unreadCount > 0 && (
+            <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 bg-destructive text-destructive-foreground rounded-full text-[10px] flex items-center justify-center font-bold px-1 animate-pulse">
+              {unreadCount > 99 ? '99+' : unreadCount}
+            </span>
+          )}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="right">Messages{unreadCount > 0 ? ` (${unreadCount})` : ''}</TooltipContent>
+    </Tooltip>
+  );
+}
+
+function MessagesLink({ handleNavClick }: { handleNavClick: () => void }) {
+  const navigate = useNavigate();
+  const { unreadCount } = useMessages();
+
+  return (
+    <button
+      onClick={() => { navigate('/messages'); handleNavClick(); }}
+      className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors mt-1"
+    >
+      <MessageSquare className="w-4 h-4" />
+      Messages
+      {unreadCount > 0 && (
+        <span className="ml-auto text-xs bg-destructive text-destructive-foreground rounded-full px-1.5 py-0.5 min-w-[18px] text-center animate-pulse">
+          {unreadCount > 99 ? '99+' : unreadCount}
+        </span>
+      )}
+    </button>
   );
 }
 

@@ -175,15 +175,16 @@ export default function KanbanBoard() {
           draggedColumn === status ? 'opacity-40 scale-[0.97]' : ''
         } ${dropTargetColumn === status && draggedColumn ? 'ring-2 ring-primary/40' : ''}`}
         draggable
-        onDragStart={e => handleColumnDragStart(e, status)}
+        onDragStart={e => handleColumnDragStart(e as unknown as React.DragEvent, status)}
         onDragEnd={handleColumnDragEnd}
         onDragOver={e => {
           e.preventDefault();
-          if (draggedColumn) handleColumnDragOver(e, status);
+          if (draggedColumn) handleColumnDragOver(e as unknown as React.DragEvent, status);
         }}
         onDrop={e => {
-          if (draggedColumn) handleColumnDrop(e, status);
-          else handleTaskDrop(e, status);
+          const de = e as unknown as React.DragEvent;
+          if (draggedColumn) handleColumnDrop(de, status);
+          else handleTaskDrop(de, status);
         }}
         onDragLeave={() => { if (dropTargetColumn === status) setDropTargetColumn(null); }}
         onClick={() => toggleColumnCollapse(status)}

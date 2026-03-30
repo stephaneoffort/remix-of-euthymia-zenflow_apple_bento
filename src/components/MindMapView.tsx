@@ -586,6 +586,8 @@ function NodeCard({ positioned, expandedIds, visibleDepth, toggleExpand, onSelec
             <div className="flex items-center gap-1.5 mt-1">
               <StatusBadge status={task.status} />
               <PriorityBadge priority={task.priority} />
+              <ZoomSessionBadge hasZoom={zoomTaskIds.has(task.id)} />
+              <MeetSessionBadge hasMeet={!!task.googleEventId && meetTaskIds.has(task.googleEventId)} />
             </div>
 
             {/* Progress bar for parents */}

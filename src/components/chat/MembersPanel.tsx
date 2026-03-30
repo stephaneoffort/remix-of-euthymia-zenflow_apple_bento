@@ -87,8 +87,11 @@ export function MembersPanel({ memberProfiles, onDmCreated, onlineTeamMemberIds 
   const handleMemberClick = (member: typeof teamMembers[0]) => {
     const authId = teamMemberToAuthId[member.id];
     const isSelf = authId === user?.id;
-    if (!isSelf && authId) {
+    if (isSelf) return;
+    if (authId) {
       startDm(authId, member.name);
+    } else {
+      toast.info(`${member.name} n'a pas encore créé de compte. Le message sera disponible dès sa connexion.`);
     }
   };
 

@@ -17,6 +17,13 @@ serve(async (req: Request) => {
   }
 
   try {
+    // Vérifier que la requête vient bien de Google Chat
+    const contentType = req.headers.get("content-type") ?? ""
+    if (!contentType.includes("application/json")) {
+      return new Response(JSON.stringify({ error: "Invalid request" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } })
+    }
+
     const body = await req.json()
     const { type, message, user } = body
 

@@ -165,12 +165,11 @@ export default function KanbanBoard() {
   const renderCollapsedColumn = (status: string) => {
     const count = tasksByStatus[status]?.length || 0;
     return (
-      <div
+      <button
         key={status}
-        className={`shrink-0 rounded-lg cursor-pointer transition-all duration-200 hover:bg-muted/50 ${
+        className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md cursor-pointer transition-all duration-200 hover:bg-muted/60 bg-muted/30 border border-border text-xs ${
           draggedColumn === status ? 'opacity-40 scale-[0.97]' : ''
-        } ${dropTargetColumn === status && draggedColumn ? 'ring-2 ring-primary/40 ring-offset-2 ring-offset-background' : ''
-        } sm:flex sm:flex-col sm:items-center sm:py-3 sm:px-2 flex flex-row items-center gap-2 px-3 py-2.5 bg-muted/30 border border-border`}
+        } ${dropTargetColumn === status && draggedColumn ? 'ring-2 ring-primary/40' : ''}`}
         draggable
         onDragStart={e => handleColumnDragStart(e, status)}
         onDragEnd={handleColumnDragEnd}
@@ -185,13 +184,12 @@ export default function KanbanBoard() {
         onDragLeave={() => { if (dropTargetColumn === status) setDropTargetColumn(null); }}
         onClick={() => toggleColumnCollapse(status)}
       >
-        <div className={`w-2.5 h-2.5 rounded-full ${getStatusColor(status)} sm:mb-2 shrink-0`} />
-        <span className="text-xs font-semibold text-foreground select-none sm:[writing-mode:vertical-lr] sm:rotate-180">
+        <div className={`w-2 h-2 rounded-full ${getStatusColor(status)} shrink-0`} />
+        <span className="font-semibold text-foreground select-none whitespace-nowrap">
           {getStatusLabel(status)}
         </span>
-        <span className="text-label text-muted-foreground sm:mt-2 ml-auto sm:ml-0">{count}</span>
-        <ChevronRight className="w-3.5 h-3.5 text-muted-foreground sm:hidden shrink-0" />
-      </div>
+        <span className="text-muted-foreground">{count}</span>
+      </button>
     );
   };
 

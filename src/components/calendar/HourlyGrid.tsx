@@ -1,22 +1,36 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
-import { CornerDownRight, Video, ExternalLink } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { CornerDownRight, Video, ExternalLink, CheckCircle2 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import type { Task } from '@/types';
 import { PRIORITY_LABELS } from '@/types';
 import type { CalendarEvent } from '@/hooks/useCalendarSync';
 import { getProviderMeta } from '@/components/CalendarAccountsManager';
 
-const HOUR_HEIGHT = 60; // px per hour
-const MIN_EVENT_HEIGHT = 30;
+// ─── Constants ───
+const HOUR_HEIGHT = 64;
+const MIN_EVENT_HEIGHT = 44;
+const MAX_EVENT_HEIGHT = 240;
+const MAX_VISIBLE_OVERLAPS = 3;
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
 
-const PRIORITY_COLORS: Record<string, string> = {
-  urgent: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-  high: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
-  normal: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-  low: 'bg-muted text-muted-foreground',
+// ─── Card colors by type ───
+const CARD_COLORS = {
+  event: 'bg-[#2D8CFF] text-white border-[#2D8CFF]/60',
+  task: 'bg-[#7C3AED] text-white border-[#7C3AED]/60',
+  subtask: 'bg-[#A78BFA] text-white border-[#A78BFA]/60',
+  done: 'bg-[#6B7280] text-white border-[#6B7280]/60',
+  overdue: 'bg-[#EF4444] text-white border-[#EF4444]/60',
 };
+
+function getCardColor(item: PositionedItem): string {
+  if (item.type === 'event') return CARD_COLORS.event;
+  const t = item.task!;
+  if (t.status === 'done') return CARD_COLORS.done;
+  if (t.dueDate && t.dueDate < new Date().toISOString().split('T')[0] && t.status !== 'done') return CARD_COLORS.overdue;
+  if (item.type === 'subtask') return CARD_COLORS.subtask;
+  return CARD_COLORS.task;
+}
 
 // ─── Helpers ───
 
@@ -33,7 +47,12 @@ function formatTime(dateStr: string): string {
   return new Date(dateStr).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 }
 
-// ─── Event positioning with overlap handling ───
+function hasTimeComponent(dateStr: string): boolean {
+  const d = new Date(dateStr);
+  return d.getHours() !== 0 || d.getMinutes() !== 0;
+}
+
+// ─── Positioned item type ───
 
 interface PositionedItem {
   id: string;
@@ -43,72 +62,84 @@ interface PositionedItem {
   task?: Task;
   event?: CalendarEvent;
   parentTitle?: string;
-  // Layout columns for overlaps
   col: number;
   totalCols: number;
+  hidden?: boolean; // overflow items
 }
+
+// ─── Compute positions with max 3 overlap ───
 
 function computePositions(
   tasks: Task[],
   events: CalendarEvent[],
-  dateStr: string,
   allTasks: Task[],
-): PositionedItem[] {
-  const items: PositionedItem[] = [];
+): { timed: PositionedItem[]; allDay: PositionedItem[] } {
+  const timed: PositionedItem[] = [];
+  const allDay: PositionedItem[] = [];
 
-  // Add tasks
   tasks.forEach(t => {
-    const dueDate = t.dueDate;
-    if (!dueDate) return;
-    // Use due date time, default to 9:00 if no time component
-    const dueDateObj = new Date(dueDate);
-    const hasTime = dueDateObj.getHours() !== 0 || dueDateObj.getMinutes() !== 0;
-    const startMin = hasTime ? dueDateObj.getHours() * 60 + dueDateObj.getMinutes() : 9 * 60;
-    const duration = t.timeEstimate || 60;
+    if (!t.dueDate) return;
+    const dueDateObj = new Date(t.dueDate);
+    const hasTime = hasTimeComponent(t.dueDate);
 
     const parentTitle = t.parentTaskId
       ? allTasks.find(p => p.id === t.parentTaskId)?.title ?? 'Tâche parente'
       : undefined;
 
-    items.push({
+    if (!hasTime) {
+      allDay.push({
+        id: t.id, top: 0, height: 28,
+        type: t.parentTaskId ? 'subtask' : 'task',
+        task: t, parentTitle, col: 0, totalCols: 1,
+      });
+      return;
+    }
+
+    const startMin = dueDateObj.getHours() * 60 + dueDateObj.getMinutes();
+    const duration = t.timeEstimate || 60;
+    const rawHeight = (duration / 60) * HOUR_HEIGHT;
+    const height = Math.min(MAX_EVENT_HEIGHT, Math.max(MIN_EVENT_HEIGHT, rawHeight));
+
+    timed.push({
       id: t.id,
       top: (startMin / 60) * HOUR_HEIGHT,
-      height: Math.max(MIN_EVENT_HEIGHT, (duration / 60) * HOUR_HEIGHT),
+      height,
       type: t.parentTaskId ? 'subtask' : 'task',
-      task: t,
-      parentTitle,
-      col: 0,
-      totalCols: 1,
+      task: t, parentTitle, col: 0, totalCols: 1,
     });
   });
 
-  // Add external events
   events.forEach(ev => {
-    if (ev.is_all_day) return;
+    if (ev.is_all_day) {
+      allDay.push({
+        id: ev.id, top: 0, height: 28,
+        type: 'event', event: ev, col: 0, totalCols: 1,
+      });
+      return;
+    }
+
     const startMin = getMinutesFromMidnight(ev.start_time);
     const endMin = getMinutesFromMidnight(ev.end_time);
-    const duration = Math.max(30, endMin - startMin);
+    const duration = Math.max(0, endMin - startMin);
+    const rawHeight = duration === 0 ? MIN_EVENT_HEIGHT : (duration / 60) * HOUR_HEIGHT;
+    const height = Math.min(MAX_EVENT_HEIGHT, Math.max(MIN_EVENT_HEIGHT, rawHeight));
 
-    items.push({
+    timed.push({
       id: ev.id,
       top: (startMin / 60) * HOUR_HEIGHT,
-      height: Math.max(MIN_EVENT_HEIGHT, (duration / 60) * HOUR_HEIGHT),
-      type: 'event',
-      event: ev,
-      col: 0,
-      totalCols: 1,
+      height,
+      type: 'event', event: ev, col: 0, totalCols: 1,
     });
   });
 
-  // Sort by top position
-  items.sort((a, b) => a.top - b.top || a.height - b.height);
+  // Sort and handle overlaps
+  timed.sort((a, b) => a.top - b.top || a.height - b.height);
 
-  // Handle overlaps: group items that overlap vertically
   const groups: PositionedItem[][] = [];
   let currentGroup: PositionedItem[] = [];
   let groupEnd = 0;
 
-  items.forEach(item => {
+  timed.forEach(item => {
     if (currentGroup.length === 0 || item.top < groupEnd) {
       currentGroup.push(item);
       groupEnd = Math.max(groupEnd, item.top + item.height);
@@ -120,53 +151,70 @@ function computePositions(
   });
   if (currentGroup.length > 0) groups.push(currentGroup);
 
-  // Assign columns within each group
   groups.forEach(group => {
-    const totalCols = group.length;
+    const visibleCount = Math.min(group.length, MAX_VISIBLE_OVERLAPS);
     group.forEach((item, i) => {
-      item.col = i;
-      item.totalCols = totalCols;
+      if (i < MAX_VISIBLE_OVERLAPS) {
+        item.col = i;
+        item.totalCols = visibleCount;
+        item.hidden = false;
+      } else {
+        item.col = MAX_VISIBLE_OVERLAPS - 1;
+        item.totalCols = visibleCount;
+        item.hidden = true;
+      }
     });
   });
 
-  return items;
+  return { timed, allDay };
 }
 
-// ─── All-day items bar ───
+// ─── All-day zone ───
 
-function AllDayBar({ tasks, events, onTaskClick, onEventClick, allTasks }: {
-  tasks: Task[];
-  events: CalendarEvent[];
+function AllDayZone({ items, onTaskClick, onEventClick }: {
+  items: PositionedItem[];
   onTaskClick: (id: string) => void;
   onEventClick: (ev: CalendarEvent) => void;
-  allTasks: Task[];
 }) {
-  const allDayEvents = events.filter(ev => ev.is_all_day);
-  if (tasks.length === 0 && allDayEvents.length === 0) return null;
+  if (items.length === 0) return null;
 
   return (
-    <div className="border-b border-border px-2 py-1.5 bg-muted/30 flex flex-wrap gap-1">
-      <span className="text-[10px] text-muted-foreground font-medium shrink-0 leading-6">Journée :</span>
-      {allDayEvents.map(ev => {
-        const meta = getProviderMeta(ev.provider);
-        const isGoogle = ev.provider === 'google';
-        return (
-          <button key={ev.id} onClick={() => onEventClick(ev)}
-            className="text-[11px] px-2 py-0.5 rounded bg-muted text-foreground hover:bg-accent transition-colors flex items-center gap-1">
-            {isGoogle ? (
-              <span className="w-3.5 h-3.5 rounded-full bg-red-500 text-white text-[8px] font-bold flex items-center justify-center shrink-0">G</span>
-            ) : (
-              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${meta.dot}`} />
-            )}
-            {ev.title}
-          </button>
-        );
-      })}
+    <div className="border-b border-border bg-muted/20 shrink-0">
+      <div className="flex items-center gap-2 px-3 py-1.5">
+        <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider shrink-0">Toute la journée</span>
+        <span className="text-[10px] text-muted-foreground">{items.length}</span>
+      </div>
+      <div className="px-3 pb-2 flex flex-wrap gap-1 max-h-[120px] overflow-y-auto">
+        {items.map(item => {
+          const color = getCardColor(item);
+          const title = item.task?.title || item.event?.title || '';
+          const truncated = title.length > 20 ? title.slice(0, 20) + '…' : title;
+
+          return (
+            <Tooltip key={item.id}>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => item.task ? onTaskClick(item.task.id) : item.event && onEventClick(item.event)}
+                  className={`h-7 px-2.5 rounded-md text-[11px] font-medium border transition-opacity hover:opacity-80 truncate max-w-[200px] ${color}`}
+                >
+                  {item.type === 'subtask' && '↳ '}
+                  {item.type === 'task' && '✓ '}
+                  {truncated}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="text-xs max-w-[250px]">
+                <p className="font-medium">{title}</p>
+                {item.parentTitle && <p className="text-muted-foreground italic">↑ {item.parentTitle}</p>}
+              </TooltipContent>
+            </Tooltip>
+          );
+        })}
+      </div>
     </div>
   );
 }
 
-// ─── Current time indicator ───
+// ─── Current time line ───
 
 function CurrentTimeLine({ dateStr }: { dateStr: string }) {
   const [now, setNow] = useState(new Date());
@@ -183,177 +231,133 @@ function CurrentTimeLine({ dateStr }: { dateStr: string }) {
 
   const minutes = now.getHours() * 60 + now.getMinutes();
   const top = (minutes / 60) * HOUR_HEIGHT;
+  const timeLabel = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 
   return (
-    <div className="absolute left-0 right-0 z-30 pointer-events-none" style={{ top }}>
+    <div className="absolute left-0 right-0 z-40 pointer-events-none" style={{ top }}>
       <div className="flex items-center">
-        <div className="w-2 h-2 rounded-full bg-red-500 -ml-1 shrink-0" />
-        <div className="flex-1 h-[2px] bg-red-500" />
+        <div className="w-[10px] h-[10px] rounded-full bg-[#EF4444] -ml-[5px] shrink-0 shadow-sm" />
+        <div className="flex-1 h-[2px] bg-[#EF4444] shadow-sm" />
       </div>
+      <span className="absolute -left-0 -top-4 text-[9px] font-bold text-[#EF4444] ml-3">{timeLabel}</span>
     </div>
   );
 }
 
-// ─── Event card for Week view (compact) ───
+// ─── Overflow badge "+N" ───
 
-function WeekEventCard({ item, onClick, widthPercent, leftPercent }: {
-  item: PositionedItem;
-  onClick: () => void;
-  widthPercent: number;
-  leftPercent: number;
+function OverflowBadge({ items, top, height, onTaskClick, onEventClick }: {
+  items: PositionedItem[];
+  top: number;
+  height: number;
+  onTaskClick: (id: string) => void;
+  onEventClick: (ev: CalendarEvent) => void;
 }) {
-  if (item.type === 'event' && item.event) {
-    const ev = item.event;
-    const meta = getProviderMeta(ev.provider);
-    const isGoogle = ev.provider === 'google';
-    return (
-      <button onClick={onClick}
-        className="absolute rounded px-1.5 py-0.5 text-[10px] leading-tight overflow-hidden bg-muted/90 hover:bg-accent border border-border/50 transition-colors text-left cursor-pointer z-10"
-        style={{ top: item.top, height: item.height, width: `${widthPercent}%`, left: `${leftPercent}%` }}>
-        <div className="flex items-center gap-1">
-          {isGoogle ? (
-            <span className="w-3 h-3 rounded-full bg-red-500 text-white text-[7px] font-bold flex items-center justify-center shrink-0">G</span>
-          ) : (
-            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${meta.dot}`} />
-          )}
-          <span className="truncate font-medium text-foreground">{ev.title}</span>
-        </div>
-        <div className="text-muted-foreground truncate">{formatTime(ev.start_time)}</div>
-        {ev.has_meet && ev.meet_link && (
-          <span className="text-[9px] text-[hsl(174,60%,30%)]">Meet</span>
-        )}
-      </button>
-    );
-  }
-
-  const t = item.task!;
-  const priorityColor = PRIORITY_COLORS[t.priority] || PRIORITY_COLORS.normal;
-
   return (
-    <button onClick={onClick}
-      className={`absolute rounded px-1.5 py-0.5 text-[10px] leading-tight overflow-hidden border transition-colors text-left cursor-pointer z-10 ${
-        item.type === 'subtask'
-          ? 'bg-accent/80 hover:bg-accent border-accent/50'
-          : 'bg-primary/15 hover:bg-primary/25 border-primary/20'
-      }`}
-      style={{ top: item.top, height: item.height, width: `${widthPercent}%`, left: `${leftPercent}%` }}>
-      <div className="flex items-center gap-1">
-        {item.type === 'subtask' ? (
-          <CornerDownRight className="w-2.5 h-2.5 shrink-0 text-muted-foreground" />
-        ) : (
-          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${priorityColor.split(' ')[0].replace('bg-', 'bg-')}`} />
-        )}
-        <span className="truncate font-medium text-foreground">{t.title}</span>
-      </div>
-      {item.type === 'subtask' && item.parentTitle && (
-        <div className="text-[9px] text-muted-foreground italic truncate">↑ {item.parentTitle}</div>
-      )}
-      {item.type === 'task' && (
-        <span className={`inline-block px-1 py-0 rounded text-[9px] font-medium ${priorityColor} mt-0.5`}>
-          {PRIORITY_LABELS[t.priority]}
-        </span>
-      )}
-    </button>
+    <Popover>
+      <PopoverTrigger asChild>
+        <button
+          className="absolute z-20 rounded px-1.5 py-0.5 text-[10px] font-bold bg-muted text-foreground border border-border hover:bg-accent transition-colors cursor-pointer"
+          style={{ top: top + 2, right: 4, height: Math.min(24, height - 4) }}
+          onClick={e => e.stopPropagation()}
+        >
+          +{items.length}
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-56 p-1.5" align="end">
+        <p className="text-xs font-semibold text-muted-foreground px-2 py-1">{items.length} autres</p>
+        {items.map(item => {
+          const title = item.task?.title || item.event?.title || '';
+          const color = getCardColor(item);
+          return (
+            <button
+              key={item.id}
+              onClick={() => item.task ? onTaskClick(item.task.id) : item.event && onEventClick(item.event)}
+              className={`w-full text-left flex items-center gap-2 px-2 py-1.5 rounded text-xs hover:opacity-80 transition-opacity mb-0.5 ${color}`}
+            >
+              <span className="truncate">{title}</span>
+            </button>
+          );
+        })}
+      </PopoverContent>
+    </Popover>
   );
 }
 
-// ─── Event card for Day view (detailed) ───
+// ─── Event card (unified, adapts to size) ───
 
-function DayEventCard({ item, onClick, widthPercent, leftPercent }: {
+function EventCard({ item, onClick, widthPercent, leftPercent, isDay }: {
   item: PositionedItem;
   onClick: () => void;
   widthPercent: number;
   leftPercent: number;
+  isDay: boolean;
 }) {
+  const color = getCardColor(item);
+  const h = item.height;
+  const showTime = h >= 50;
+  const showParent = h >= 60;
+
   if (item.type === 'event' && item.event) {
     const ev = item.event;
-    const meta = getProviderMeta(ev.provider);
-    const isGoogle = ev.provider === 'google';
     return (
       <button onClick={onClick}
-        className="absolute rounded-lg px-2.5 py-1.5 text-xs leading-tight overflow-hidden bg-muted/90 hover:bg-accent border border-border/50 transition-colors text-left cursor-pointer z-10"
-        style={{ top: item.top, height: item.height, width: `${widthPercent}%`, left: `${leftPercent}%` }}>
-        <div className="flex items-center gap-1.5">
-          {isGoogle ? (
-            <span className="w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center shrink-0">G</span>
-          ) : (
-            <span className={`w-2 h-2 rounded-full shrink-0 ${meta.dot}`} />
-          )}
-          <span className="font-semibold text-foreground">{ev.title}</span>
-          <Badge variant="secondary" className="text-[9px] px-1 py-0 ml-auto shrink-0">Événement</Badge>
+        className={`absolute rounded-md px-2 py-1 text-left cursor-pointer z-10 border overflow-hidden transition-opacity hover:opacity-90 ${color}`}
+        style={{ top: item.top, height: h, width: `${widthPercent}%`, left: `${leftPercent}%` }}>
+        <div className="flex items-center gap-1 min-w-0">
+          <span className="truncate text-[12px] font-medium leading-tight">{ev.title}</span>
+          {(ev.has_meet || ev.conference_id) && <Video className="w-3 h-3 shrink-0 opacity-80" />}
         </div>
-        <div className="text-muted-foreground mt-0.5">{formatTime(ev.start_time)} → {formatTime(ev.end_time)}</div>
-        {ev.description && (
-          <div className="text-muted-foreground mt-0.5 line-clamp-2">{ev.description}</div>
+        {showTime && (
+          <div className="text-[11px] opacity-70 truncate">{formatTime(ev.start_time)} → {formatTime(ev.end_time)}</div>
         )}
-        <div className="flex items-center gap-1.5 mt-1">
-          {ev.has_meet && ev.meet_link && (
-            <a href={ev.meet_link} target="_blank" rel="noopener noreferrer"
-              onClick={e => e.stopPropagation()}
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[hsl(174,60%,30%)]/10 text-[hsl(174,60%,30%)] text-[10px] font-medium hover:bg-[hsl(174,60%,30%)]/20 transition-colors">
-              <Video className="w-3 h-3" /> Meet
-            </a>
-          )}
-          {ev.conference_id && !ev.meet_link && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-blue-500/10 text-blue-600 text-[10px] font-medium">
-              <Video className="w-3 h-3" /> Zoom
-            </span>
-          )}
-        </div>
+        {isDay && h >= 80 && ev.description && (
+          <div className="text-[11px] opacity-60 line-clamp-2 mt-0.5">{ev.description}</div>
+        )}
+        {isDay && h >= 80 && ev.has_meet && ev.meet_link && (
+          <a href={ev.meet_link} target="_blank" rel="noopener noreferrer"
+            onClick={e => e.stopPropagation()}
+            className="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded bg-white/20 text-[10px] font-medium hover:bg-white/30 transition-colors">
+            <Video className="w-3 h-3" /> Rejoindre
+          </a>
+        )}
       </button>
     );
   }
 
   const t = item.task!;
-  const priorityColor = PRIORITY_COLORS[t.priority] || PRIORITY_COLORS.normal;
-
   return (
     <button onClick={onClick}
-      className={`absolute rounded-lg px-2.5 py-1.5 text-xs leading-tight overflow-hidden border transition-colors text-left cursor-pointer z-10 ${
-        item.type === 'subtask'
-          ? 'bg-accent/80 hover:bg-accent border-accent/50'
-          : 'bg-primary/15 hover:bg-primary/25 border-primary/20'
-      }`}
-      style={{ top: item.top, height: item.height, width: `${widthPercent}%`, left: `${leftPercent}%` }}>
-      <div className="flex items-center gap-1.5">
+      className={`absolute rounded-md px-2 py-1 text-left cursor-pointer z-10 border overflow-hidden transition-opacity hover:opacity-90 ${color}`}
+      style={{ top: item.top, height: h, width: `${widthPercent}%`, left: `${leftPercent}%`, maxHeight: MAX_EVENT_HEIGHT, overflowY: h >= MAX_EVENT_HEIGHT ? 'auto' : 'hidden' }}>
+      <div className="flex items-center gap-1 min-w-0">
         {item.type === 'subtask' ? (
-          <CornerDownRight className="w-3 h-3 shrink-0 text-muted-foreground" />
+          <CornerDownRight className="w-3 h-3 shrink-0 opacity-80" />
         ) : (
-          <span className="text-foreground">✓</span>
+          <CheckCircle2 className="w-3 h-3 shrink-0 opacity-80" />
         )}
-        <span className="font-semibold text-foreground">{t.title}</span>
-        <Badge variant="secondary" className="text-[9px] px-1 py-0 ml-auto shrink-0">
-          {item.type === 'subtask' ? 'Sous-tâche' : 'Tâche'}
-        </Badge>
+        <span className="truncate text-[12px] font-medium leading-tight">{t.title}</span>
       </div>
-      {item.type === 'subtask' && item.parentTitle && (
-        <div className="text-[11px] text-muted-foreground italic mt-0.5 truncate">↑ {item.parentTitle}</div>
-      )}
-      {t.dueDate && (
-        <div className="text-muted-foreground mt-0.5">
+      {showTime && t.dueDate && hasTimeComponent(t.dueDate) && (
+        <div className="text-[11px] opacity-70 truncate">
           {formatTime(t.dueDate)}{t.timeEstimate ? ` · ${t.timeEstimate}min` : ''}
         </div>
       )}
-      {t.description && (
-        <div className="text-muted-foreground mt-0.5 line-clamp-2">{t.description}</div>
+      {showParent && item.type === 'subtask' && item.parentTitle && (
+        <div className="text-[11px] opacity-60 italic truncate">↑ {item.parentTitle}</div>
       )}
-      <div className="flex items-center gap-1.5 mt-1">
-        <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-medium ${priorityColor}`}>
-          {PRIORITY_LABELS[t.priority]}
-        </span>
-        {t.googleEventId && (
-          <span className="text-[10px] text-muted-foreground">ZENFLOW</span>
-        )}
-      </div>
+      {isDay && h >= 80 && t.description && (
+        <div className="text-[11px] opacity-60 line-clamp-2 mt-0.5">{t.description}</div>
+      )}
     </button>
   );
 }
 
-// ─── Main HourlyGrid component ───
+// ─── Main HourlyGrid ───
 
 interface HourlyGridProps {
   mode: 'day' | 'week';
-  days: Date[]; // 1 for day, 7 for week
+  days: Date[];
   tasksByDate: Map<string, { task: Task; isStart: boolean; isEnd: boolean; totalDays: number }[]>;
   externalEventsByDate: Map<string, CalendarEvent[]>;
   allTasks: Task[];
@@ -363,33 +367,32 @@ interface HourlyGridProps {
 }
 
 export default function HourlyGrid({
-  mode, days, tasksByDate, externalEventsByDate, allTasks, onTaskClick, onEventClick, accountMap,
+  mode, days, tasksByDate, externalEventsByDate, allTasks, onTaskClick, onEventClick,
 }: HourlyGridProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const hasScrolled = useRef(false);
 
-  // Auto-scroll to current hour on mount
   useEffect(() => {
     if (hasScrolled.current) return;
     const now = new Date();
-    const scrollTarget = Math.max(0, (now.getHours() - 1) * HOUR_HEIGHT);
+    const scrollTarget = Math.max(0, (now.getHours() - 2) * HOUR_HEIGHT);
     setTimeout(() => {
       scrollRef.current?.scrollTo({ top: scrollTarget, behavior: 'smooth' });
       hasScrolled.current = true;
     }, 100);
   }, []);
 
-  // Reset scroll flag when days change
   useEffect(() => {
     hasScrolled.current = false;
   }, [days.map(d => toDateStr(d)).join(',')]);
 
   const todayStr = toDateStr(new Date());
   const DAYS_FR = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+  const isDay = mode === 'day';
 
   // Compute positioned items per day
-  const positionedByDay = useMemo(() => {
-    const map = new Map<string, PositionedItem[]>();
+  const dataByDay = useMemo(() => {
+    const map = new Map<string, { timed: PositionedItem[]; allDay: PositionedItem[] }>();
     days.forEach(d => {
       const ds = toDateStr(d);
       const entries = tasksByDate.get(ds) || [];
@@ -401,19 +404,27 @@ export default function HourlyGrid({
       }).map(e => e.task);
 
       const dayEvents = externalEventsByDate.get(ds) || [];
-      map.set(ds, computePositions(dayTasks, dayEvents, ds, allTasks));
+      map.set(ds, computePositions(dayTasks, dayEvents, allTasks));
     });
     return map;
   }, [days, tasksByDate, externalEventsByDate, allTasks]);
 
-  const isWeek = mode === 'week';
-  const colWidth = isWeek ? `${100 / 7}%` : '100%';
+  // Collect all-day items across days
+  const allDayItems = useMemo(() => {
+    const items: PositionedItem[] = [];
+    days.forEach(d => {
+      const ds = toDateStr(d);
+      const data = dataByDay.get(ds);
+      if (data) items.push(...data.allDay);
+    });
+    return items;
+  }, [days, dataByDay]);
 
   return (
     <div className="flex flex-col flex-1 min-h-0 border border-border rounded-lg overflow-hidden">
-      {/* Header row */}
+      {/* Header */}
       <div className="flex border-b border-border bg-muted/40 shrink-0">
-        <div className="w-12 shrink-0 border-r border-border" />
+        <div className="w-14 shrink-0 border-r border-border" />
         {days.map((d, i) => {
           const ds = toDateStr(d);
           const isToday = ds === todayStr;
@@ -431,20 +442,14 @@ export default function HourlyGrid({
         })}
       </div>
 
-      {/* All-day events bar */}
-      {days.map(d => {
-        const ds = toDateStr(d);
-        const events = externalEventsByDate.get(ds) || [];
-        const allDay = events.filter(e => e.is_all_day);
-        if (allDay.length === 0) return null;
-        return null; // Handled in a combined bar below
-      })}
+      {/* All-day zone */}
+      <AllDayZone items={allDayItems} onTaskClick={onTaskClick} onEventClick={onEventClick} />
 
-      {/* Scrollable grid body */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden relative">
+      {/* Scrollable grid */}
+      <div ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden relative" style={{ height: 'calc(100vh - 220px)' }}>
         <div className="flex" style={{ height: 24 * HOUR_HEIGHT }}>
-          {/* Hour labels column */}
-          <div className="w-12 shrink-0 relative border-r border-border">
+          {/* Hour labels */}
+          <div className="w-14 shrink-0 relative border-r border-border">
             {HOURS.map(h => (
               <div key={h} className="absolute w-full text-right pr-2 text-[10px] text-muted-foreground font-medium"
                 style={{ top: h * HOUR_HEIGHT - 6 }}>
@@ -456,50 +461,63 @@ export default function HourlyGrid({
           {/* Day columns */}
           {days.map((d, dayIdx) => {
             const ds = toDateStr(d);
-            const items = positionedByDay.get(ds) || [];
+            const data = dataByDay.get(ds);
+            const timedItems = data?.timed || [];
             const isToday = ds === todayStr;
+
+            // Separate visible & hidden items per overlap group
+            const visible = timedItems.filter(i => !i.hidden);
+            const hiddenGroups = new Map<number, PositionedItem[]>();
+            timedItems.filter(i => i.hidden).forEach(i => {
+              const key = Math.round(i.top);
+              if (!hiddenGroups.has(key)) hiddenGroups.set(key, []);
+              hiddenGroups.get(key)!.push(i);
+            });
 
             return (
               <div key={dayIdx} className={`flex-1 relative border-r border-border last:border-r-0 ${isToday ? 'bg-primary/[0.03]' : ''}`}>
-                {/* Hour grid lines */}
+                {/* Hour lines */}
                 {HOURS.map(h => (
                   <div key={h} className="absolute w-full border-t border-border/50" style={{ top: h * HOUR_HEIGHT }} />
                 ))}
-
-                {/* Half-hour lines */}
                 {HOURS.map(h => (
                   <div key={`half-${h}`} className="absolute w-full border-t border-border/20" style={{ top: h * HOUR_HEIGHT + HOUR_HEIGHT / 2 }} />
                 ))}
 
-                {/* Current time line */}
                 <CurrentTimeLine dateStr={ds} />
 
-                {/* Events */}
-                {items.map(item => {
-                  const widthPercent = (90 / item.totalCols);
-                  const leftPercent = 5 + (item.col * widthPercent);
+                {/* Visible cards */}
+                {visible.map(item => {
+                  let widthPercent: number;
+                  if (item.totalCols === 1) widthPercent = 95;
+                  else if (item.totalCols === 2) widthPercent = 47;
+                  else widthPercent = 30;
+                  const gap = 1;
+                  const leftPercent = 2.5 + item.col * (widthPercent + gap);
 
-                  if (isWeek) {
-                    return (
-                      <WeekEventCard
-                        key={item.id}
-                        item={item}
-                        onClick={() => item.task ? onTaskClick(item.task.id) : item.event && onEventClick(item.event)}
-                        widthPercent={widthPercent}
-                        leftPercent={leftPercent}
-                      />
-                    );
-                  }
                   return (
-                    <DayEventCard
+                    <EventCard
                       key={item.id}
                       item={item}
+                      isDay={isDay}
                       onClick={() => item.task ? onTaskClick(item.task.id) : item.event && onEventClick(item.event)}
-                      widthPercent={isWeek ? widthPercent : 90 / item.totalCols}
-                      leftPercent={isWeek ? leftPercent : 5 + (item.col * (90 / item.totalCols))}
+                      widthPercent={widthPercent}
+                      leftPercent={leftPercent}
                     />
                   );
                 })}
+
+                {/* Overflow badges */}
+                {Array.from(hiddenGroups.entries()).map(([key, items]) => (
+                  <OverflowBadge
+                    key={`overflow-${key}`}
+                    items={items}
+                    top={items[0].top}
+                    height={items[0].height}
+                    onTaskClick={onTaskClick}
+                    onEventClick={onEventClick}
+                  />
+                ))}
               </div>
             );
           })}

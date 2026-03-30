@@ -20,6 +20,8 @@ interface Props {
 }
 
 function DriveCard({ projects }: Props) {
+  const { setSelectedProjectId, setSelectedView } = useApp();
+  const onProjectClick = (id: string) => { setSelectedProjectId(id); setSelectedView("kanban"); };
   const [projectsWithFiles, setProjectsWithFiles] = useState<Project[]>([]);
   const [fileCounts, setFileCounts] = useState<Record<string, number>>({});
   const [totalFiles, setTotalFiles] = useState(0);

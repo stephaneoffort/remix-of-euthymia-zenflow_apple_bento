@@ -12,6 +12,7 @@ import ZoomMeetings from '@/components/zoom/ZoomMeetings';
 import BrevoContacts from '@/components/brevo/BrevoContacts';
 import GoogleCalendarPicker from '@/components/GoogleCalendarPicker';
 import type { CalendarEvent } from '@/hooks/useCalendarSync';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useIntegrations, INTEGRATION_CONFIG } from '@/hooks/useIntegrations';
 import { useZoom } from '@/hooks/useZoom';

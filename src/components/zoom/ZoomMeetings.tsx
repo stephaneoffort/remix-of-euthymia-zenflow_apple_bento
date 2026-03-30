@@ -11,6 +11,8 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { useIntegrations, INTEGRATION_CONFIG } from '@/hooks/useIntegrations';
+import { supabase } from '@/integrations/supabase/client';
+import { useTaskSync } from '@/hooks/useTaskSync';
 
 interface Props {
   entityType: 'task' | 'event' | 'project';

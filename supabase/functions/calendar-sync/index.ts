@@ -676,7 +676,7 @@ async function pushTaskForUser(userId: string, taskId: string, action: string) {
   const payload = await buildEventPayload(taskId, task);
 
   if (action === "create" || (action === "update" && !task.google_event_id)) {
-    const res = await fetch(baseUrl, { method: "POST", headers, body: JSON.stringify(payload) });
+    const res = await fetchWithRetry(baseUrl, { method: "POST", headers, body: JSON.stringify(payload) });
     const created = await res.json();
     if (created.error) throw new Error("Google error: " + created.error.message);
     await supabase.from("tasks").update({ google_event_id: created.id } as any).eq("id", taskId);

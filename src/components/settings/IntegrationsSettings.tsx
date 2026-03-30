@@ -28,6 +28,7 @@ export default function IntegrationsSettings() {
   const [connInfo, setConnInfo] = useState<Record<string, { email?: string; display_name?: string }>>({});
   const [confirmDialog, setConfirmDialog] = useState<{ type: 'connect' | 'disconnect'; key: IntegrationKey } | null>(null);
   const [brevoFormOpen, setBrevoFormOpen] = useState(false);
+  const [connInfoVersion, setConnInfoVersion] = useState(0);
 
   // Fetch connection info for display
   useEffect(() => {

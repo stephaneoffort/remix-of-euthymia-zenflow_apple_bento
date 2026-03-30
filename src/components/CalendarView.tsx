@@ -285,6 +285,8 @@ function MobileTaskCard({ task, onClick, members, allTasks, zoomTaskIds, meetTas
             {new Date(task.startDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })} → {new Date(task.dueDate!).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
           </span>
         )}
+        {zoomTaskIds?.has(task.id) && <img src={zoomIcon} alt="Zoom" className="w-3.5 h-3.5 shrink-0" />}
+        {task.googleEventId && meetTaskIds?.has(task.googleEventId) && <img src={googleMeetIcon} alt="Meet" className="w-3.5 h-3.5 shrink-0" />}
         {assignees.length > 0 && (<div className="flex -space-x-1">{assignees.slice(0, 3).map(a => (<span key={a.id} className="w-5 h-5 rounded-full text-label font-bold text-white flex items-center justify-center border-2 border-card" style={{ backgroundColor: a.avatarColor }}>{a.name.charAt(0).toUpperCase()}</span>))}</div>)}
         {task.tags.length > 0 && (<div className="flex gap-1 overflow-hidden flex-1">{task.tags.slice(0, 2).map(tag => (<Badge key={tag} variant="secondary" className="text-label px-1 py-0 shrink-0">{tag}</Badge>))}</div>)}
       </div>

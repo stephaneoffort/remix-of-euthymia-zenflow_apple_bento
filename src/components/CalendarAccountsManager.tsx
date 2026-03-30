@@ -13,7 +13,7 @@ import type { CalendarAccount } from '@/hooks/useCalendarSync';
 const PROVIDER_META: Record<string, { label: string; icon: string; color: string; dot: string }> = {
   google: { label: 'Google Calendar', icon: '📅', color: 'text-red-500', dot: 'bg-[#EA4335]' },
   caldav: { label: 'CalDAV', icon: '🔗', color: 'text-purple-500', dot: 'bg-[#8B5CF6]' },
-  icloud: { label: 'Apple iCal', icon: '🍎', color: 'text-gray-600', dot: 'bg-[#8B5CF6]' },
+  icloud: { label: 'Apple iCal', icon: '🍎', color: 'text-muted-foreground', dot: 'bg-[#8B5CF6]' },
   nextcloud: { label: 'Nextcloud', icon: '☁️', color: 'text-blue-500', dot: 'bg-[#8B5CF6]' },
   proton: { label: 'Proton Calendar', icon: '🔒', color: 'text-purple-500', dot: 'bg-[#8B5CF6]' },
   fastmail: { label: 'Fastmail', icon: '✉️', color: 'text-purple-500', dot: 'bg-[#8B5CF6]' },

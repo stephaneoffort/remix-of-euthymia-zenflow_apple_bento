@@ -75,10 +75,6 @@ export default function Settings() {
                 <ListChecks className="w-4 h-4 shrink-0" />
                 <span className="hidden xs:inline sm:inline">Avancements</span>
               </TabsTrigger>
-              <TabsTrigger value="chat" className="gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm data-[state=active]:shadow-sm">
-                <MessageCircle className="w-4 h-4 shrink-0" />
-                <span className="hidden xs:inline sm:inline">Chat</span>
-              </TabsTrigger>
               <TabsTrigger value="theme" className="gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm data-[state=active]:shadow-sm">
                 <Palette className="w-4 h-4 shrink-0" />
                 <span className="hidden xs:inline sm:inline">Thème</span>

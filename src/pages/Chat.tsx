@@ -26,6 +26,27 @@ export default function Chat() {
   const isMobile = useIsMobile();
   const activeChannel = chat.channels.find(c => c.id === chat.activeChannelId);
   const currentUserProfile = chat.user ? chat.memberProfiles[chat.user.id] : undefined;
+  const db = supabase as any;
+
+  // Resolve DM partner display name
+  const [dmPartnerInfo, setDmPartnerInfo] = useState<{ name: string; color: string } | null>(null);
+  useEffect(() => {
+    if (!activeChannel || activeChannel.type !== 'dm' || !chat.user) {
+      setDmPartnerInfo(null);
+      return;
+    }
+    const resolve = async () => {
+      const { data: members } = await db.from('chat_channel_members').select('user_id').eq('channel_id', activeChannel.id);
+      if (!members) return;
+      const partner = members.find((m: any) => m.user_id !== chat.user!.id);
+      if (!partner) return;
+      const { data: profile } = await supabase.from('profiles').select('team_member_id').eq('id', partner.user_id).maybeSingle();
+      if (!profile?.team_member_id) return;
+      const tm = teamMembers.find(m => m.id === profile.team_member_id);
+      if (tm) setDmPartnerInfo({ name: tm.name, color: tm.avatarColor });
+    };
+    resolve();
+  }, [activeChannel?.id, chat.user]);
 
   const allMentionableMembers = useMemo(() =>
     teamMembers.map(m => ({ id: m.id, name: m.name, avatar_color: m.avatarColor, role: m.role })),

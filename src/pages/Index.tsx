@@ -638,3 +638,93 @@ function TaskPanelAnimated({ taskId, onClose }: { taskId: string | null; onClose
     </>
   );
 }
+
+// ── Sortable View Tab (Desktop) ──
+interface SortableViewTabProps {
+  viewKey: ViewType;
+  label: string;
+  icon: React.ReactNode;
+  isActive: boolean;
+  onClick: () => void;
+  todayEventCount: number;
+}
+
+function SortableViewTab({ viewKey, label, icon, isActive, onClick, todayEventCount }: SortableViewTabProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: viewKey });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 10 : undefined,
+  };
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          ref={setNodeRef}
+          style={style}
+          {...attributes}
+          {...listeners}
+          onClick={onClick}
+          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors cursor-grab active:cursor-grabbing ${
+            isActive
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <span className="relative">
+            {icon}
+            {todayEventCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-bold leading-none">
+                {todayEventCount > 99 ? '99+' : todayEventCount}
+              </span>
+            )}
+          </span>
+          <span className="hidden lg:inline">{label}</span>
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="bottom" className="lg:hidden">
+        {label}
+      </TooltipContent>
+    </Tooltip>
+  );
+}
+
+// ── Sortable View Tab (Mobile) ──
+function SortableViewTabMobile({ viewKey, label, icon, isActive, onClick, todayEventCount }: SortableViewTabProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: viewKey });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 10 : undefined,
+  };
+
+  return (
+    <button
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      onClick={onClick}
+      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-colors shrink-0 cursor-grab active:cursor-grabbing ${
+        isActive
+          ? "bg-primary/15 text-primary"
+          : "text-muted-foreground hover:text-foreground"
+      }`}
+    >
+      <span className="relative">
+        {icon}
+        {todayEventCount > 0 && (
+          <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-bold leading-none">
+            {todayEventCount > 99 ? '99+' : todayEventCount}
+          </span>
+        )}
+      </span>
+      {label}
+    </button>
+  );
+}

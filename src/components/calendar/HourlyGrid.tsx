@@ -554,7 +554,7 @@ export default function HourlyGrid({
             <div key={i} className={`flex-1 text-center py-1.5 border-r border-border/30 last:border-r-0 ${isToday ? 'bg-primary/10' : ''}`} style={{ minWidth: isDay ? undefined : 120 }}>
               <div className="text-[10px] font-medium text-muted-foreground/60 uppercase">{DAYS_FR[frIdx]}</div>
               <div className={`text-sm font-medium ${isToday ? 'text-primary' : 'text-foreground'}`}>
-                <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full ${isToday ? 'bg-[#3B82F6] text-white' : ''}`}>
+                <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full ${isToday ? 'bg-primary text-primary-foreground' : ''}`}>
                   {d.getDate()}
                 </span>
               </div>

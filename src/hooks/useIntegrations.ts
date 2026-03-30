@@ -224,6 +224,7 @@ export function useIntegrations() {
       zoom: 'zoom_connections',
       canva: 'canva_connections',
       brevo: 'brevo_connections',
+      gmail: 'gmail_connections',
     };
     const table = tableMap[key];
     if (table) {

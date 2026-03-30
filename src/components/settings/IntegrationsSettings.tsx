@@ -58,6 +58,14 @@ export default function IntegrationsSettings() {
         .from('gmail_connections').select('email, display_name').eq('user_id', user.id).limit(1);
       if (gmailData?.[0]) info.gmail = { email: gmailData[0].email, display_name: gmailData[0].display_name };
 
+      // Google Calendar / Meet uses calendar_accounts
+      const { data: calData } = await (supabase as any)
+        .from('calendar_accounts').select('label, calendar_id').eq('user_id', user.id).eq('provider', 'google').eq('is_active', true).limit(1);
+      if (calData?.[0]) {
+        const calLabel = calData[0].label || calData[0].calendar_id || 'Google Calendar';
+        info.google_meet = { display_name: calLabel };
+      }
+
       setConnInfo(info);
     })();
 

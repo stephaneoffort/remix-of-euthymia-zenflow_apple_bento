@@ -408,7 +408,7 @@ function EventCard({ item, onClick, widthPercent, leftPercent, isDay, maxEventHe
   fontSize: string;
   padding: string;
 }) {
-  const style = getCardStyle(item);
+  const cardClasses = getCardClasses(item);
   const h = item.height;
   const showTime = h >= 44;
   const showParent = h >= 56;

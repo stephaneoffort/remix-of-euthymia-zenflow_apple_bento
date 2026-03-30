@@ -3853,7 +3853,7 @@ html body::after {
   --priority-urgent: 0 45% 50%;
   --priority-high: 25 50% 50%;
   --priority-normal: 205 35% 58%;
-  --priority-low: 210 10% 38%;
+  --priority-low: 210 12% 50%;
   --status-todo: 210 10% 38%;
   --status-progress: 205 35% 58%;
   --status-review: 38 50% 50%;

@@ -206,7 +206,7 @@ export default function KanbanBoard() {
         key={status}
         layout
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        className={`flex flex-col w-[65vw] sm:w-0 sm:min-w-0 sm:flex-1 sm:basis-0 shrink-0 sm:shrink overflow-hidden rounded-lg snap-center sm:snap-align-none transition-all duration-200 ${
+        className={`flex flex-col min-w-0 overflow-hidden rounded-lg snap-center sm:snap-align-none transition-all duration-200 ${
           draggedColumn === status ? 'opacity-40 scale-[0.97]' : ''
         } ${dropTargetColumn === status && draggedColumn ? 'ring-2 ring-primary/40 ring-offset-2 ring-offset-background' : ''}`}
         onDragOver={e => {
@@ -385,7 +385,7 @@ export default function KanbanBoard() {
       </AnimatePresence>
 
       {/* Main kanban area */}
-      <div className={`flex gap-1.5 sm:gap-2 p-2 sm:p-3 overflow-x-auto sm:overflow-hidden flex-1 snap-x snap-mandatory sm:snap-none ${collapsedStatuses.length > 0 ? 'pt-1' : ''}`}>
+      <div className={`grid p-2 sm:p-3 overflow-x-auto sm:overflow-hidden flex-1 snap-x snap-mandatory sm:snap-none ${collapsedStatuses.length > 0 ? 'pt-1' : ''}`} style={{ gridTemplateColumns: `repeat(${expandedStatuses.length}, minmax(0, 1fr))`, gap: '0.5rem' }}>
         {/* Expanded columns */}
         {expandedStatuses.map(renderExpandedColumn)}
       </div>

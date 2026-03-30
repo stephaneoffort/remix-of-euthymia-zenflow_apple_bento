@@ -236,6 +236,8 @@ function DraggableTask({ task, onClick, members, allTasks, spanInfo, zoomTaskIds
             <span className="truncate">{task.title}</span>
           )}
           {isSpanning && spanInfo.isStart && !spanInfo.isEnd && <ArrowRight className="w-2.5 h-2.5 shrink-0 opacity-50" />}
+          {zoomTaskIds?.has(task.id) && <img src={zoomIcon} alt="Zoom" className="w-3 h-3 shrink-0" />}
+          {task.googleEventId && meetTaskIds?.has(task.googleEventId) && <img src={googleMeetIcon} alt="Meet" className="w-3 h-3 shrink-0" />}
         </div>
       </HoverCardTrigger>
       <TaskHoverContent task={task} assignees={assignees} />

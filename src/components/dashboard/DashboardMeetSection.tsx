@@ -42,6 +42,8 @@ export default function DashboardMeetSection() {
   const [events, setEvents] = useState<MeetEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<MeetEvent | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const meetActive = isActive("google_meet");
 

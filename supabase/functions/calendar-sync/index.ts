@@ -496,7 +496,7 @@ async function getOrCreateZenflowCalendar(token: string, accountId: string): Pro
     .from("calendar_accounts").select("zenflow_calendar_id").eq("id", accountId).single();
 
   if (account?.zenflow_calendar_id) {
-    const checkRes = await fetch(
+    const checkRes = await fetchWithRetry(
       `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(account.zenflow_calendar_id)}`,
       { headers: { Authorization: `Bearer ${token}` } },
     );

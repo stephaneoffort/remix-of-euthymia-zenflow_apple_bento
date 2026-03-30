@@ -184,6 +184,45 @@ export type Database = {
         }
         Relationships: []
       }
+      brevo_entity_campaigns: {
+        Row: {
+          campaign_id: number | null
+          campaign_name: string | null
+          campaign_url: string | null
+          created_at: string | null
+          custom_url: string | null
+          entity_id: string
+          entity_type: string
+          id: string
+          label: string | null
+          user_id: string
+        }
+        Insert: {
+          campaign_id?: number | null
+          campaign_name?: string | null
+          campaign_url?: string | null
+          created_at?: string | null
+          custom_url?: string | null
+          entity_id: string
+          entity_type: string
+          id?: string
+          label?: string | null
+          user_id: string
+        }
+        Update: {
+          campaign_id?: number | null
+          campaign_name?: string | null
+          campaign_url?: string | null
+          created_at?: string | null
+          custom_url?: string | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          label?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       calendar_accounts: {
         Row: {
           access_token: string | null

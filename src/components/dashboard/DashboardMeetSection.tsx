@@ -93,6 +93,24 @@ export default function DashboardMeetSection() {
 
   if (!meetActive) return null;
 
+  const handleDeleteMeet = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      const { error } = await supabase
+        .from("calendar_events")
+        .delete()
+        .eq("id", deleteTarget.id);
+      if (error) throw error;
+      toast.success("Session Meet supprimée ✅");
+      setDeleteTarget(null);
+      await fetchEvents();
+    } catch (e: any) {
+      toast.error(e?.message || "Erreur lors de la suppression");
+    }
+    setDeleting(false);
+  };
+
   const now = new Date();
   const monthStart = startOfMonth(now);
   const monthEnd = endOfMonth(now);

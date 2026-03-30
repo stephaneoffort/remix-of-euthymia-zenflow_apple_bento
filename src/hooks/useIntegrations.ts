@@ -71,6 +71,12 @@ export const INTEGRATION_CONFIG: Record<IntegrationKey, {
     icon: brevoIcon,
     color: '#0092FF',
   },
+  google_chat: {
+    label: 'Google Chat',
+    description: 'Mentions et commandes /zenflow dans Google Chat',
+    icon: googleChatIcon,
+    color: '#00897B',
+  },
 };
 
 const defaultStatus = (key: IntegrationKey): IntegrationStatus => ({

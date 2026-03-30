@@ -243,11 +243,13 @@ export default function ZoomMeetingsDashboard() {
     setDeleting(false);
   };
 
+  const handleItemClick = (m: ZoomMeetingRow) => {
     if (m.entity_type === "task" || m.entity_type === "subtask") {
       setSelectedTaskId(m.entity_id);
     } else if (m.entity_type === "event") {
       setSelectedView("calendar");
     }
+  };
   };
 
   if (!zoomEnabled && !zoomActive) return null;

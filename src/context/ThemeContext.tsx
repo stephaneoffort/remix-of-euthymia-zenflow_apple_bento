@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export type ThemeMode = 'light' | 'dark' | 'mixed';
-export type ThemePalette = 'clubroom' | 'neutrals' | 'sapphire' | 'cinematic' | 'teal' | 'bento2026' | 'bentoOcean' | 'bentoRose' | 'bentoAmber' | 'liquidGlass' | 'liquidGlassOcean' | 'liquidGlassAurora' | 'liquidGlassRose' | 'liquidGlassAmber' | 'liquidGlassViolet' | 'liquidGlassCoral' | 'liquidGlassSlate' | 'liquidGlassMidnight' | 'nmCloud';
+export type ThemePalette = 'clubroom' | 'neutrals' | 'sapphire' | 'cinematic' | 'teal' | 'bento2026' | 'bentoOcean' | 'bentoRose' | 'bentoAmber' | 'liquidGlass' | 'liquidGlassOcean' | 'liquidGlassAurora' | 'liquidGlassRose' | 'liquidGlassAmber' | 'liquidGlassViolet' | 'liquidGlassCoral' | 'liquidGlassSlate' | 'liquidGlassMidnight' | 'nmCloud' | 'nmMidnight';
 
 interface ThemeContextType {
   theme: ThemeMode;
@@ -107,6 +107,11 @@ export const PALETTE_META: Record<ThemePalette, { label: string; description: st
     label: 'Cloud',
     description: 'Soft UI · Gris perle · Jour',
     colors: ['#E8ECEF', '#C5C9CC', '#FFFFFF', '#4A7FA5'],
+  },
+  nmMidnight: {
+    label: 'Midnight',
+    description: 'Soft UI · Charbon · Nuit',
+    colors: ['#1E2028', '#12141A', '#2A2D38', '#6B9BC0'],
   },
 };
 

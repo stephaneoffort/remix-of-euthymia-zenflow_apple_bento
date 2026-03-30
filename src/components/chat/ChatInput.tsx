@@ -1,5 +1,5 @@
-import { useState, useRef, KeyboardEvent, useCallback } from 'react';
-import { Plus, Smile, Send, Bold, Italic, Code } from 'lucide-react';
+import { useState, useRef, KeyboardEvent, useCallback, ChangeEvent } from 'react';
+import { Plus, Smile, Send, Bold, Italic, Code, Paperclip, Image, FileText } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
@@ -22,9 +22,10 @@ interface Props {
   onTyping?: () => void;
   memberProfiles?: Record<string, MemberProfile>;
   allMembers?: MentionableMember[];
+  onFileUpload?: (file: File) => void;
 }
 
-export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, allMembers = [] }: Props) {
+export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, allMembers = [], onFileUpload }: Props) {
   const [content, setContent] = useState('');
   const [showMentions, setShowMentions] = useState(false);
   const [mentionFilter, setMentionFilter] = useState('');
@@ -98,6 +99,18 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, 
     setContent(prev => prev + emoji);
     inputRef.current?.focus();
   };
+
+  const handleFileSelect = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (onFileUpload) {
+      onFileUpload(file);
+    } else {
+      // Default: insert file name as message
+      onSend(`📎 ${file.name}`);
+    }
+    e.target.value = '';
+  }, [onFileUpload, onSend]);
 
   const insertFormat = (prefix: string, suffix: string) => {
     const textarea = inputRef.current;
@@ -173,9 +186,30 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, 
         </div>
 
         <div className="flex items-end gap-2 px-3 py-2.5">
-          <button className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground shrink-0 mb-0.5 transition-colors" title="Joindre un fichier">
-            <Plus className="w-5 h-5" />
-          </button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground shrink-0 mb-0.5 transition-colors" title="Joindre">
+                <Plus className="w-5 h-5" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-48 p-1.5 bg-popover" side="top" align="start">
+              <label className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-muted/60 text-sm cursor-pointer transition-colors">
+                <Image className="w-4 h-4 text-muted-foreground" />
+                <span className="text-foreground">Image</span>
+                <input type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
+              </label>
+              <label className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-muted/60 text-sm cursor-pointer transition-colors">
+                <FileText className="w-4 h-4 text-muted-foreground" />
+                <span className="text-foreground">Document</span>
+                <input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv,.zip" className="hidden" onChange={handleFileSelect} />
+              </label>
+              <label className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-muted/60 text-sm cursor-pointer transition-colors">
+                <Paperclip className="w-4 h-4 text-muted-foreground" />
+                <span className="text-foreground">Fichier</span>
+                <input type="file" className="hidden" onChange={handleFileSelect} />
+              </label>
+            </PopoverContent>
+          </Popover>
 
           <textarea
             ref={inputRef}

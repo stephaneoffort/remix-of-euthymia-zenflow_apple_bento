@@ -385,7 +385,7 @@ export default function KanbanBoard() {
       </AnimatePresence>
 
       {/* Main kanban area */}
-      <div className={`flex gap-1.5 sm:gap-2 p-2 sm:p-3 overflow-x-auto sm:overflow-hidden flex-1 snap-x snap-mandatory sm:snap-none ${collapsedStatuses.length > 0 ? 'pt-1' : ''}`}>
+      <div className={`grid p-2 sm:p-3 overflow-x-auto sm:overflow-hidden flex-1 snap-x snap-mandatory sm:snap-none ${collapsedStatuses.length > 0 ? 'pt-1' : ''}`} style={{ gridTemplateColumns: `repeat(${expandedStatuses.length}, minmax(0, 1fr))`, gap: '0.5rem' }}>
         {/* Expanded columns */}
         {expandedStatuses.map(renderExpandedColumn)}
       </div>

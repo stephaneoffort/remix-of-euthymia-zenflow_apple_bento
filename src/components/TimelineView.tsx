@@ -592,7 +592,7 @@ export default function TimelineView() {
           {/* Empty state */}
           {timelineTasks.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-              <Calendar className="w-12 h-12 mb-3 opacity-40" />
+              <CalendarIcon className="w-12 h-12 mb-3 opacity-40" />
               <p className="text-sm font-medium">Aucune tâche avec des dates</p>
               <p className="text-xs mt-1">Ajoutez des dates de début/fin à vos tâches pour les voir ici</p>
             </div>

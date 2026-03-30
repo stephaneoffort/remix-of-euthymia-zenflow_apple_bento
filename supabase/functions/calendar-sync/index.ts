@@ -516,7 +516,7 @@ async function getOrCreateZenflowCalendar(token: string, accountId: string): Pro
     return existing.id;
   }
 
-  const createRes = await fetch(
+  const createRes = await fetchWithRetry(
     "https://www.googleapis.com/calendar/v3/calendars",
     {
       method: "POST",

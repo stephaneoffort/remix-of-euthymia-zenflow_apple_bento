@@ -197,7 +197,7 @@ export function MembersPanel({ memberProfiles, onDmCreated, onlineTeamMemberIds 
   };
 
   return (
-    <div className="w-60 border-l border-border/50 bg-card/30 backdrop-blur-sm shrink-0 overflow-y-auto hidden lg:block">
+    <div className="w-60 border-l border-border/50 bg-card/30 backdrop-blur-sm shrink-0 overflow-y-auto hidden md:block">
       <div className="p-3">
         <div className="flex items-center justify-between mb-3 px-2">
           <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">

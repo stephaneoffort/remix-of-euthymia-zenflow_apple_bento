@@ -26,6 +26,7 @@ import { useCalendarSync, type CalendarEvent } from '@/hooks/useCalendarSync';
 import CalendarAccountsManager, { getProviderMeta } from '@/components/CalendarAccountsManager';
 import SyncTargetPicker from '@/components/SyncTargetPicker';
 import CalendarEventDialog from '@/components/CalendarEventDialog';
+import HourlyGrid from '@/components/calendar/HourlyGrid';
 
 type CalendarMode = 'day' | 'week' | 'month';
 

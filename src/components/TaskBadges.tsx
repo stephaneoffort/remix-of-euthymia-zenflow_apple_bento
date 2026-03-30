@@ -1,6 +1,8 @@
 import React from 'react';
 import { Priority } from '@/types';
 import { AlertCircle, ArrowUp, Minus, ArrowDown, Circle, Loader, Eye, CheckCircle, Ban, CalendarSync } from 'lucide-react';
+import zoomIcon from '@/assets/integrations/zoom.png';
+import googleMeetIcon from '@/assets/integrations/google-meet.png';
 
 export const PriorityBadge = React.forwardRef<HTMLSpanElement, { priority: Priority }>(({ priority }, ref) => {
   const config: Record<Priority, { label: string; className: string; icon: React.ReactNode }> = {

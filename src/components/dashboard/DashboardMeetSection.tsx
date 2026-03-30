@@ -14,6 +14,10 @@ import {
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
 import { useIntegrations, INTEGRATION_CONFIG } from "@/hooks/useIntegrations";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface MeetEvent {
   id: string;

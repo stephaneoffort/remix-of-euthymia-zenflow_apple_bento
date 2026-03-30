@@ -244,13 +244,13 @@ function ChannelItem({
   return (
     <button
       onClick={onClick}
-      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-150 ${
+      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all duration-200 ${
         isActive
-          ? 'bg-primary/15 text-primary font-semibold shadow-sm'
-          : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+          ? 'bg-primary/12 text-primary font-semibold backdrop-blur-sm border border-primary/15 shadow-[0_0_12px_hsl(var(--primary)/0.08)]'
+          : 'text-muted-foreground/70 hover:bg-muted/25 hover:text-foreground hover:backdrop-blur-sm'
       }`}
     >
-      <span className={isActive ? 'text-primary' : 'opacity-50'}>{icon}</span>
+      <span className={isActive ? 'text-primary' : 'opacity-40'}>{icon}</span>
       <span className="truncate">{channel.name}</span>
     </button>
   );

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useMessages, AppMessage } from '@/hooks/useMessages';
 import { useApp } from '@/context/AppContext';
-import { AppSidebar } from '@/components/AppSidebar';
+import AppSidebar from '@/components/AppSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';

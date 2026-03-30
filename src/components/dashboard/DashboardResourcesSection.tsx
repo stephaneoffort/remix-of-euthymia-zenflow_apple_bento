@@ -135,6 +135,8 @@ function DriveCard({ projects }: Props) {
 }
 
 function CanvaCard({ projects }: Props) {
+  const { setSelectedProjectId, setSelectedView } = useApp();
+  const onProjectClick = (id: string) => { setSelectedProjectId(id); setSelectedView("kanban"); };
   const [projectsWithDesigns, setProjectsWithDesigns] = useState<Project[]>([]);
   const [designCounts, setDesignCounts] = useState<Record<string, number>>({});
   const [totalDesigns, setTotalDesigns] = useState(0);

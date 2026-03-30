@@ -1,4 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { useTaskMeetings } from '@/hooks/useTaskMeetings';
+import zoomIcon from '@/assets/integrations/zoom.png';
+import googleMeetIcon from '@/assets/integrations/google-meet.png';
 import { useSearchParams } from 'react-router-dom';
 import EmptyState from '@/components/EmptyState';
 import { useApp } from '@/context/AppContext';
@@ -194,11 +197,13 @@ function TaskHoverContent({ task, assignees }: { task: Task; assignees: { id: st
 
 // ─── Desktop Draggable Task ───
 
-function DraggableTask({ task, onClick, members, allTasks, spanInfo }: {
+function DraggableTask({ task, onClick, members, allTasks, spanInfo, zoomTaskIds, meetTaskIds }: {
   task: Task; onClick: () => void;
   members: { id: string; name: string; avatarColor: string }[];
   allTasks: Task[];
   spanInfo?: { isStart: boolean; isEnd: boolean; totalDays: number };
+  zoomTaskIds?: Set<string>;
+  meetTaskIds?: Set<string>;
 }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: task.id });
   const assignees = members.filter(m => task.assigneeIds.includes(m.id));
@@ -231,6 +236,8 @@ function DraggableTask({ task, onClick, members, allTasks, spanInfo }: {
             <span className="truncate">{task.title}</span>
           )}
           {isSpanning && spanInfo.isStart && !spanInfo.isEnd && <ArrowRight className="w-2.5 h-2.5 shrink-0 opacity-50" />}
+          {zoomTaskIds?.has(task.id) && <img src={zoomIcon} alt="Zoom" className="w-3 h-3 shrink-0" />}
+          {task.googleEventId && meetTaskIds?.has(task.googleEventId) && <img src={googleMeetIcon} alt="Meet" className="w-3 h-3 shrink-0" />}
         </div>
       </HoverCardTrigger>
       <TaskHoverContent task={task} assignees={assignees} />
@@ -259,7 +266,7 @@ function DroppableDay({ dateStr, isCurrentMonth, isToday, dayNum, children, onAd
 
 // ─── Mobile Task Card ───
 
-function MobileTaskCard({ task, onClick, members, allTasks }: { task: Task; onClick: () => void; members: { id: string; name: string; avatarColor: string }[]; allTasks: Task[] }) {
+function MobileTaskCard({ task, onClick, members, allTasks, zoomTaskIds, meetTaskIds }: { task: Task; onClick: () => void; members: { id: string; name: string; avatarColor: string }[]; allTasks: Task[]; zoomTaskIds?: Set<string>; meetTaskIds?: Set<string> }) {
   const assignees = members.filter(m => task.assigneeIds.includes(m.id));
   const multi = isMultiDay(task);
   return (
@@ -278,6 +285,8 @@ function MobileTaskCard({ task, onClick, members, allTasks }: { task: Task; onCl
             {new Date(task.startDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })} → {new Date(task.dueDate!).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
           </span>
         )}
+        {zoomTaskIds?.has(task.id) && <img src={zoomIcon} alt="Zoom" className="w-3.5 h-3.5 shrink-0" />}
+        {task.googleEventId && meetTaskIds?.has(task.googleEventId) && <img src={googleMeetIcon} alt="Meet" className="w-3.5 h-3.5 shrink-0" />}
         {assignees.length > 0 && (<div className="flex -space-x-1">{assignees.slice(0, 3).map(a => (<span key={a.id} className="w-5 h-5 rounded-full text-label font-bold text-white flex items-center justify-center border-2 border-card" style={{ backgroundColor: a.avatarColor }}>{a.name.charAt(0).toUpperCase()}</span>))}</div>)}
         {task.tags.length > 0 && (<div className="flex gap-1 overflow-hidden flex-1">{task.tags.slice(0, 2).map(tag => (<Badge key={tag} variant="secondary" className="text-label px-1 py-0 shrink-0">{tag}</Badge>))}</div>)}
       </div>
@@ -376,6 +385,7 @@ function AgendaExternalEvents({ dateStr, externalEventsByDate, accountMap, onEdi
 export default function CalendarView() {
   const { getFilteredTasks, setSelectedTaskId, addTask, updateTask, selectedProjectId, getListsForProject, teamMembers, tasks: allTasks } = useApp();
   const calSync = useCalendarSync();
+  const { zoomTaskIds, meetTaskIds } = useTaskMeetings();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState(new Date());
   const [addingForDate, setAddingForDate] = useState<string | null>(null);
@@ -792,6 +802,8 @@ export default function CalendarView() {
             members={teamMembers}
             allTasks={allTasks}
             spanInfo={entry.totalDays > 1 ? { isStart: entry.isStart, isEnd: entry.isEnd, totalDays: entry.totalDays } : undefined}
+            zoomTaskIds={zoomTaskIds}
+            meetTaskIds={meetTaskIds}
           />
         ))}
         {visibleExts.map(ev => {

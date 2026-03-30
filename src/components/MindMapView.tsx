@@ -2,7 +2,8 @@ import React, { useMemo, useState, useRef, useCallback, useEffect, useLayoutEffe
 import EmptyState from '@/components/EmptyState';
 import { useApp } from '@/context/AppContext';
 import { Task } from '@/types';
-import { StatusBadge, PriorityBadge } from '@/components/TaskBadges';
+import { StatusBadge, PriorityBadge, ZoomSessionBadge, MeetSessionBadge } from '@/components/TaskBadges';
+import { useTaskMeetings } from '@/hooks/useTaskMeetings';
 import {
   ChevronDown, ChevronRight, ZoomIn, ZoomOut, Maximize2,
   Plus, X, Check, Layers, Repeat, Minus as MinusIcon,
@@ -173,6 +174,7 @@ function collectConnectors(items: Positioned[]): { from: Positioned; to: Positio
 export default function MindMapView() {
   const { getFilteredTasks, setSelectedTaskId, addTask, tasks: allTasks, getSubtasks } = useApp();
   const rootTasks = getFilteredTasks();
+  const { zoomTaskIds, meetTaskIds } = useTaskMeetings();
   const isMobile = useIsMobile();
 
   // Build full task list: filtered root tasks + all their descendants
@@ -447,6 +449,8 @@ export default function MindMapView() {
               toggleExpand={toggleExpand}
               onSelectTask={setSelectedTaskId}
               onAddSubtask={handleAddSubtask}
+              zoomTaskIds={zoomTaskIds}
+              meetTaskIds={meetTaskIds}
             />
           ))}
         </div>
@@ -463,9 +467,11 @@ interface MindMapNodeGroupProps {
   toggleExpand: (id: string) => void;
   onSelectTask: (id: string) => void;
   onAddSubtask: (parentTask: Task, title: string) => void;
+  zoomTaskIds: Set<string>;
+  meetTaskIds: Set<string>;
 }
 
-function MindMapNodeGroup({ positioned, expandedIds, visibleDepth, toggleExpand, onSelectTask, onAddSubtask }: MindMapNodeGroupProps) {
+function MindMapNodeGroup({ positioned, expandedIds, visibleDepth, toggleExpand, onSelectTask, onAddSubtask, zoomTaskIds, meetTaskIds }: MindMapNodeGroupProps) {
   return (
     <>
       <NodeCard
@@ -475,6 +481,8 @@ function MindMapNodeGroup({ positioned, expandedIds, visibleDepth, toggleExpand,
         toggleExpand={toggleExpand}
         onSelectTask={onSelectTask}
         onAddSubtask={onAddSubtask}
+        zoomTaskIds={zoomTaskIds}
+        meetTaskIds={meetTaskIds}
       />
       {positioned.children.map(child => (
         <MindMapNodeGroup
@@ -485,6 +493,8 @@ function MindMapNodeGroup({ positioned, expandedIds, visibleDepth, toggleExpand,
           toggleExpand={toggleExpand}
           onSelectTask={onSelectTask}
           onAddSubtask={onAddSubtask}
+          zoomTaskIds={zoomTaskIds}
+          meetTaskIds={meetTaskIds}
         />
       ))}
     </>
@@ -492,7 +502,7 @@ function MindMapNodeGroup({ positioned, expandedIds, visibleDepth, toggleExpand,
 }
 
 /* ─── Individual node card ─── */
-function NodeCard({ positioned, expandedIds, visibleDepth, toggleExpand, onSelectTask, onAddSubtask }: MindMapNodeGroupProps) {
+function NodeCard({ positioned, expandedIds, visibleDepth, toggleExpand, onSelectTask, onAddSubtask, zoomTaskIds, meetTaskIds }: MindMapNodeGroupProps) {
   const { node, x, y } = positioned;
   const { task, children, progress, totalDescendants, doneDescendants, depth } = node;
   const hasChildren = children.length > 0;
@@ -576,6 +586,8 @@ function NodeCard({ positioned, expandedIds, visibleDepth, toggleExpand, onSelec
             <div className="flex items-center gap-1.5 mt-1">
               <StatusBadge status={task.status} />
               <PriorityBadge priority={task.priority} />
+              <ZoomSessionBadge hasZoom={zoomTaskIds.has(task.id)} />
+              <MeetSessionBadge hasMeet={!!task.googleEventId && meetTaskIds.has(task.googleEventId)} />
             </div>
 
             {/* Progress bar for parents */}

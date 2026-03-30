@@ -457,7 +457,7 @@ async function caldavTest(account: any): Promise<boolean> {
 
 // ─── ICS (read-only) ───
 async function icsPull(account: any): Promise<number> {
-  const res = await fetch(account.ics_url);
+  const res = await fetchWithRetry(account.ics_url, {});
   if (!res.ok) throw new Error(`ICS fetch failed: ${res.status}`);
   const text = await res.text();
 

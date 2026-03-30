@@ -1,5 +1,5 @@
-import { useState, useRef, KeyboardEvent, useCallback } from 'react';
-import { Plus, Smile, Send, Bold, Italic, Code } from 'lucide-react';
+import { useState, useRef, KeyboardEvent, useCallback, ChangeEvent } from 'react';
+import { Plus, Smile, Send, Bold, Italic, Code, Paperclip, Image, FileText } from 'lucide-react';
 import {
   Popover,
   PopoverContent,

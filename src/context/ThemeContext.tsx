@@ -103,6 +103,11 @@ export const PALETTE_META: Record<ThemePalette, { label: string; description: st
     description: 'Nuit profonde · indigo sombre',
     colors: ['#1e1b4b', '#6366f1', '#818cf8', '#0f172a'],
   },
+  nmCloud: {
+    label: 'Cloud',
+    description: 'Soft UI · Gris perle · Jour',
+    colors: ['#E8ECEF', '#C5C9CC', '#FFFFFF', '#4A7FA5'],
+  },
 };
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {

@@ -680,6 +680,8 @@ function GanttBar({
     };
   }, [dragState, ppd, start, end, task.id, onDatesChange]);
 
+  if (!hasStartDate) return null;
+
   if (task.isMilestone) {
     return (
       <Tooltip>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useDiscordChat } from '@/hooks/useDiscordChat';
 import { ChannelSidebar } from '@/components/chat/ChannelSidebar';
 import { MessageList } from '@/components/chat/MessageList';
@@ -7,14 +7,22 @@ import { MembersPanel } from '@/components/chat/MembersPanel';
 import { Hash, Users, Pin, Search, Menu, X } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import MobileBottomNav from '@/components/MobileBottomNav';
+import { useApp } from '@/context/AppContext';
+import type { MemberProfile } from '@/types/chat';
 
 export default function Chat() {
   const chat = useDiscordChat();
+  const { teamMembers } = useApp();
   const [showMembers, setShowMembers] = useState(true);
   const [showChannels, setShowChannels] = useState(true);
   const isMobile = useIsMobile();
   const activeChannel = chat.channels.find(c => c.id === chat.activeChannelId);
   const currentUserProfile = chat.user ? chat.memberProfiles[chat.user.id] : undefined;
+
+  const allMentionableMembers = useMemo(() =>
+    teamMembers.map(m => ({ id: m.id, name: m.name, avatar_color: m.avatarColor, role: m.role })),
+    [teamMembers]
+  );
 
   return (
     <div className="flex h-[100dvh] bg-background">
@@ -90,6 +98,7 @@ export default function Chat() {
               channelName={activeChannel?.name || ''}
               onTyping={chat.sendTyping}
               memberProfiles={chat.memberProfiles}
+              allMembers={allMentionableMembers}
             />
           </div>
           {showMembers && !isMobile && (

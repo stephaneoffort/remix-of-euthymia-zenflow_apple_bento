@@ -9,14 +9,22 @@ import type { MemberProfile } from '@/types/chat';
 
 const EMOJI_LIST = ['😊', '😂', '❤️', '👍', '🎉', '🔥', '🤔', '👀', '✅', '💯', '🙏', '😍', '🚀', '💪', '👏', '😭'];
 
+interface MentionableMember {
+  id: string;
+  name: string;
+  avatar_color: string;
+  role: string;
+}
+
 interface Props {
   onSend: (content: string, mentionedUsers?: string[]) => void;
   channelName: string;
   onTyping?: () => void;
   memberProfiles?: Record<string, MemberProfile>;
+  allMembers?: MentionableMember[];
 }
 
-export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {} }: Props) {
+export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, allMembers = [] }: Props) {
   const [content, setContent] = useState('');
   const [showMentions, setShowMentions] = useState(false);
   const [mentionFilter, setMentionFilter] = useState('');
@@ -105,8 +113,13 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {} }
     }, 0);
   };
 
-  const filteredMembers = Object.entries(memberProfiles).filter(
-    ([, p]) => p.name.toLowerCase().includes(mentionFilter)
+  // Use allMembers for mention dropdown, fallback to memberProfiles
+  const mentionSource: { id: string; name: string; avatar_color: string; role: string }[] = allMembers.length > 0
+    ? allMembers
+    : Object.entries(memberProfiles).map(([id, p]) => ({ id, name: p.name, avatar_color: p.avatar_color, role: p.role }));
+
+  const filteredMembers = mentionSource.filter(
+    m => m.name.toLowerCase().includes(mentionFilter)
   );
 
   return (
@@ -114,20 +127,20 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {} }
       {/* @mention dropdown */}
       {showMentions && filteredMembers.length > 0 && (
         <div className="absolute bottom-full left-4 right-4 mb-1 bg-popover border border-border/60 rounded-xl shadow-xl p-1.5 z-30 max-h-48 overflow-y-auto">
-          {filteredMembers.map(([userId, profile]) => (
+          {filteredMembers.map((member) => (
             <button
-              key={userId}
-              onClick={() => insertMention(profile.name.split(' ')[0])}
+              key={member.id}
+              onClick={() => insertMention(member.name.split(' ')[0])}
               className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-muted/60 text-sm transition-colors"
             >
               <div
                 className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
-                style={{ backgroundColor: profile.avatar_color || '#6366f1' }}
+                style={{ backgroundColor: member.avatar_color || '#6366f1' }}
               >
-                {profile.name[0]?.toUpperCase()}
+                {member.name[0]?.toUpperCase()}
               </div>
-              <span className="font-medium text-foreground">{profile.name}</span>
-              <span className="text-muted-foreground text-xs ml-auto">{profile.role}</span>
+              <span className="font-medium text-foreground">{member.name}</span>
+              <span className="text-muted-foreground text-xs ml-auto">{member.role}</span>
             </button>
           ))}
         </div>

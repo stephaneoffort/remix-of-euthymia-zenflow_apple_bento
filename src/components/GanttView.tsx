@@ -673,18 +673,24 @@ export default function GanttView() {
                         className="w-14 text-right text-muted-foreground hover:text-foreground shrink-0"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        {task.progress ?? 0}%
+                        {getEffectiveProgress(task, tasks)}%
                       </button>
                     </PopoverTrigger>
                     <PopoverContent className="w-48 p-3" align="end">
                       <div className="text-xs font-medium mb-2">Progression</div>
-                      <Slider
-                        value={[task.progress ?? 0]}
-                        max={100}
-                        step={5}
-                        onValueChange={([v]) => handleProgressChange(task.id, v)}
-                      />
-                      <div className="text-xs text-muted-foreground text-center mt-1">{task.progress ?? 0}%</div>
+                      {task.hasChildren ? (
+                        <div className="text-xs text-muted-foreground">Calculée automatiquement depuis les sous-tâches</div>
+                      ) : (
+                        <>
+                          <Slider
+                            value={[task.progress ?? 0]}
+                            max={100}
+                            step={5}
+                            onValueChange={([v]) => handleProgressChange(task.id, v)}
+                          />
+                          <div className="text-xs text-muted-foreground text-center mt-1">{task.progress ?? 0}%</div>
+                        </>
+                      )}
                     </PopoverContent>
                   </Popover>
                 )}

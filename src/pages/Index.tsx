@@ -41,10 +41,28 @@ import {
   X,
   Keyboard,
   Mic,
+  GripVertical,
 } from "lucide-react";
 import NotificationsDropdown from "@/components/NotificationsDropdown";
 
-const VIEW_OPTIONS: { key: ViewType; label: string; icon: React.ReactNode }[] = [
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  horizontalListSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
+const DEFAULT_VIEW_OPTIONS: { key: ViewType; label: string; icon: React.ReactNode }[] = [
   { key: "dashboard", label: "Dashboard", icon: <LayoutDashboard className="w-4 h-4" /> },
   { key: "kanban", label: "Kanban", icon: <LayoutGrid className="w-4 h-4" /> },
   { key: "list", label: "Liste", icon: <List className="w-4 h-4" /> },
@@ -53,6 +71,29 @@ const VIEW_OPTIONS: { key: ViewType; label: string; icon: React.ReactNode }[] = 
   { key: "mindmap", label: "Carte mentale", icon: <Network className="w-4 h-4" /> },
   { key: "gantt", label: "Gantt", icon: <GanttChart className="w-4 h-4" /> },
 ];
+
+const VIEW_MAP = Object.fromEntries(DEFAULT_VIEW_OPTIONS.map(v => [v.key, v]));
+
+const STORAGE_KEY = "euthymia:viewOrder";
+
+function loadViewOrder(): ViewType[] {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored) as ViewType[];
+      // Ensure all views present (handles new views added later)
+      const allKeys = DEFAULT_VIEW_OPTIONS.map(v => v.key);
+      const valid = parsed.filter(k => allKeys.includes(k));
+      const missing = allKeys.filter(k => !valid.includes(k));
+      return [...valid, ...missing];
+    }
+  } catch {}
+  return DEFAULT_VIEW_OPTIONS.map(v => v.key);
+}
+
+function saveViewOrder(order: ViewType[]) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(order));
+}
 
 const QUICK_FILTER_TITLES: Record<string, string> = {
   all: "",

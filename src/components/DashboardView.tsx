@@ -542,7 +542,7 @@ export default function DashboardView() {
 
       {/* ═══ SECTION 4 : INTÉGRATIONS ═══ */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <DashboardZoomSection />
+        <ZoomMeetingsDashboard />
         <DashboardMeetSection />
         <BrevoStats />
         <DashboardResourcesSection projects={projects} />

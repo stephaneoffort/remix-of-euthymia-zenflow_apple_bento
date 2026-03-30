@@ -247,7 +247,7 @@ async function googlePushUpdate(account: any, event: any): Promise<void> {
 async function googlePushDelete(account: any, externalId: string): Promise<void> {
   const token = await refreshGoogleToken(account);
   const calId = encodeURIComponent(account.calendar_id || "primary");
-  const res = await fetch(
+  const res = await fetchWithRetry(
     `https://www.googleapis.com/calendar/v3/calendars/${calId}/events/${externalId}`,
     { method: "DELETE", headers: { Authorization: `Bearer ${token}` } },
   );

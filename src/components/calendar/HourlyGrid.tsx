@@ -428,7 +428,7 @@ function EventCard({ item, onClick, widthPercent, leftPercent, isDay, maxEventHe
           <div className="opacity-60 truncate" style={{ fontSize: timeFontSize }}>{formatTime(ev.start_time)} → {formatTime(ev.end_time)}</div>
         )}
         {isDay && h >= 80 && ev.description && (
-          <div className="text-white/50 line-clamp-2 mt-0.5" style={{ fontSize: '11px' }}>{ev.description}</div>
+          <div className="opacity-50 line-clamp-2 mt-0.5" style={{ fontSize: '11px' }}>{ev.description}</div>
         )}
         {isDay && h >= 80 && ev.has_meet && ev.meet_link && (
           <a href={ev.meet_link} target="_blank" rel="noopener noreferrer"

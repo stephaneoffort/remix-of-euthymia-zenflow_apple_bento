@@ -1,4 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { useTaskMeetings } from '@/hooks/useTaskMeetings';
+import zoomIcon from '@/assets/integrations/zoom.png';
+import googleMeetIcon from '@/assets/integrations/google-meet.png';
 import { useSearchParams } from 'react-router-dom';
 import EmptyState from '@/components/EmptyState';
 import { useApp } from '@/context/AppContext';

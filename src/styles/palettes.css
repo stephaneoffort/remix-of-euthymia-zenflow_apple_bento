@@ -2194,7 +2194,7 @@ html body::after {
 /* ─── Liquid Glass: Muted-foreground in glass context ─── */
 [data-palette^="liquidGlass"].light .text-muted-foreground,
 [data-palette^="liquidGlass"].mixed .text-muted-foreground {
-  color: rgba(40, 40, 65, 0.55) !important;
+  color: rgba(35, 35, 60, 0.65) !important;
 }
 
 /* ─── Liquid Glass: Card foreground text ─── */

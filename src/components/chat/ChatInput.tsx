@@ -139,46 +139,46 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, 
     <div className="px-4 pb-4 pt-2 shrink-0 relative">
       {/* @mention dropdown */}
       {showMentions && filteredMembers.length > 0 && (
-        <div className="absolute bottom-full left-4 right-4 mb-1 bg-popover border border-border/60 rounded-xl shadow-xl p-1.5 z-30 max-h-48 overflow-y-auto">
+        <div className="absolute bottom-full left-4 right-4 mb-2 backdrop-blur-xl bg-card/70 border border-border/30 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.06)] p-1.5 z-30 max-h-48 overflow-y-auto">
           {filteredMembers.map((member) => (
             <button
               key={member.id}
               onClick={() => insertMention(member.name.split(' ')[0])}
-              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-muted/60 text-sm transition-colors"
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-muted/40 text-sm transition-all"
             >
               <div
-                className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
+                className="w-7 h-7 rounded-xl flex items-center justify-center text-[10px] font-bold text-white shadow-sm"
                 style={{ backgroundColor: member.avatar_color || '#6366f1' }}
               >
                 {member.name[0]?.toUpperCase()}
               </div>
               <span className="font-medium text-foreground">{member.name}</span>
-              <span className="text-muted-foreground text-xs ml-auto">{member.role}</span>
+              <span className="text-muted-foreground/60 text-xs ml-auto">{member.role}</span>
             </button>
           ))}
         </div>
       )}
 
-      <div className="flex flex-col bg-card/60 backdrop-blur-sm border border-border/50 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/40 transition-all shadow-sm">
+      <div className="flex flex-col backdrop-blur-xl bg-card/30 border border-border/30 rounded-2xl overflow-hidden focus-within:ring-2 focus-within:ring-primary/15 focus-within:border-primary/30 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.05)]">
         {/* Format toolbar */}
-        <div className="flex items-center gap-0.5 px-3 pt-2 pb-0">
+        <div className="flex items-center gap-0.5 px-3 pt-2.5 pb-0">
           <button
             onClick={() => insertFormat('**', '**')}
-            className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            className="p-1.5 rounded-lg hover:bg-muted/40 text-muted-foreground/60 hover:text-foreground transition-all"
             title="Gras"
           >
             <Bold className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => insertFormat('*', '*')}
-            className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            className="p-1.5 rounded-lg hover:bg-muted/40 text-muted-foreground/60 hover:text-foreground transition-all"
             title="Italique"
           >
             <Italic className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => insertFormat('`', '`')}
-            className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            className="p-1.5 rounded-lg hover:bg-muted/40 text-muted-foreground/60 hover:text-foreground transition-all"
             title="Code"
           >
             <Code className="w-3.5 h-3.5" />
@@ -188,22 +188,22 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, 
         <div className="flex items-end gap-2 px-3 py-2.5">
           <Popover>
             <PopoverTrigger asChild>
-              <button className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground shrink-0 mb-0.5 transition-colors" title="Joindre">
+              <button className="p-1.5 rounded-xl hover:bg-muted/40 text-muted-foreground/60 shrink-0 mb-0.5 transition-all" title="Joindre">
                 <Plus className="w-5 h-5" />
               </button>
             </PopoverTrigger>
-            <PopoverContent className="w-48 p-1.5 bg-popover" side="top" align="start">
-              <label className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-muted/60 text-sm cursor-pointer transition-colors">
+            <PopoverContent className="w-48 p-1.5 backdrop-blur-xl bg-card/80 border-border/30" side="top" align="start">
+              <label className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-muted/40 text-sm cursor-pointer transition-all">
                 <Image className="w-4 h-4 text-muted-foreground" />
                 <span className="text-foreground">Image</span>
                 <input type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
               </label>
-              <label className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-muted/60 text-sm cursor-pointer transition-colors">
+              <label className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-muted/40 text-sm cursor-pointer transition-all">
                 <FileText className="w-4 h-4 text-muted-foreground" />
                 <span className="text-foreground">Document</span>
                 <input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv,.zip" className="hidden" onChange={handleFileSelect} />
               </label>
-              <label className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-muted/60 text-sm cursor-pointer transition-colors">
+              <label className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-muted/40 text-sm cursor-pointer transition-all">
                 <Paperclip className="w-4 h-4 text-muted-foreground" />
                 <span className="text-foreground">Fichier</span>
                 <input type="file" className="hidden" onChange={handleFileSelect} />
@@ -217,7 +217,7 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, 
             onChange={e => handleChange(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={channelName ? `Écrire dans #${channelName}...` : 'Écrire un message...'}
-            className="flex-1 bg-transparent border-none outline-none resize-none text-sm text-foreground placeholder:text-muted-foreground/50 min-h-[24px] max-h-[120px] leading-relaxed"
+            className="flex-1 bg-transparent border-none outline-none resize-none text-sm text-foreground placeholder:text-muted-foreground/40 min-h-[24px] max-h-[120px] leading-relaxed"
             rows={1}
             onInput={e => {
               const target = e.target as HTMLTextAreaElement;
@@ -228,17 +228,17 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, 
 
           <Popover>
             <PopoverTrigger asChild>
-              <button className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground shrink-0 mb-0.5 transition-colors" title="Émojis">
+              <button className="p-1.5 rounded-xl hover:bg-muted/40 text-muted-foreground/60 shrink-0 mb-0.5 transition-all" title="Émojis">
                 <Smile className="w-5 h-5" />
               </button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-2 bg-popover" align="end">
+            <PopoverContent className="w-auto p-2 backdrop-blur-xl bg-card/80 border-border/30" align="end">
               <div className="grid grid-cols-8 gap-1">
                 {EMOJI_LIST.map(emoji => (
                   <button
                     key={emoji}
                     onClick={() => insertEmoji(emoji)}
-                    className="p-1.5 rounded hover:bg-muted text-lg transition-transform hover:scale-125"
+                    className="p-1.5 rounded-lg hover:bg-muted/40 text-lg transition-transform hover:scale-125 active:scale-95"
                   >
                     {emoji}
                   </button>
@@ -250,7 +250,7 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, 
           {content.trim() && (
             <button
               onClick={handleSend}
-              className="p-2 rounded-lg bg-primary text-primary-foreground shrink-0 mb-0.5 hover:bg-primary/90 transition-all hover:scale-105 active:scale-95 shadow-md"
+              className="p-2.5 rounded-xl bg-primary text-primary-foreground shrink-0 mb-0.5 hover:bg-primary/90 transition-all hover:scale-105 active:scale-95 shadow-[0_4px_16px_hsl(var(--primary)/0.3)]"
             >
               <Send className="w-4 h-4" />
             </button>

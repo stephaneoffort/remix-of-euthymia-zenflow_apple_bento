@@ -1,8 +1,10 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 import { useLocation } from 'react-router-dom';
+
+const db = supabase as any;
 
 function playNotificationSound() {
   try {
@@ -11,14 +13,11 @@ function playNotificationSound() {
     const gain = ctx.createGain();
     osc.connect(gain);
     gain.connect(ctx.destination);
-
     osc.type = 'sine';
     osc.frequency.setValueAtTime(880, ctx.currentTime);
     osc.frequency.setValueAtTime(1100, ctx.currentTime + 0.1);
-
     gain.gain.setValueAtTime(0.3, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-
     osc.start(ctx.currentTime);
     osc.stop(ctx.currentTime + 0.3);
   } catch {
@@ -31,50 +30,40 @@ interface UnreadCounts {
 }
 
 export function useChatNotifications() {
-  const { teamMemberId } = useAuth();
+  const { user } = useAuth();
   const [unreadCounts, setUnreadCounts] = useState<UnreadCounts>({});
-  const [dmUnreadCounts, setDmUnreadCounts] = useState<UnreadCounts>({});
   const location = useLocation();
   const isOnChatPage = location.pathname === '/chat';
-  const membersCache = useRef<Record<string, string>>({});
 
   const totalUnread = Object.values(unreadCounts).reduce((sum, c) => sum + c, 0);
-  const totalDmUnread = Object.values(dmUnreadCounts).reduce((sum, c) => sum + c, 0);
+  const totalDmUnread = 0;
+  const dmUnreadCounts: UnreadCounts = {};
 
-  // Fetch team members once for name lookup
-  useEffect(() => {
-    supabase.from('team_members').select('id, name').then(({ data }) => {
-      if (data) {
-        data.forEach(m => { membersCache.current[m.id] = m.name; });
-      }
-    });
-  }, []);
-
-  // Compute unread counts for channels
   const refreshUnreadCounts = useCallback(async () => {
-    if (!teamMemberId) return;
+    if (!user) return;
 
-    const { data: categories } = await supabase.from('chat_categories').select('id');
-    if (!categories) return;
+    const { data: channels } = await db.from('chat_channels').select('id');
+    if (!channels) return;
 
-    const { data: readStatuses } = await supabase
-      .from('chat_read_status')
-      .select('category_id, last_read_at')
-      .eq('member_id', teamMemberId);
+    const { data: memberships } = await db
+      .from('chat_channel_members')
+      .select('channel_id, last_read_at')
+      .eq('user_id', user.id);
 
     const readMap: Record<string, string> = {};
-    readStatuses?.forEach(rs => {
-      readMap[rs.category_id] = rs.last_read_at;
+    memberships?.forEach((m: any) => {
+      readMap[m.channel_id] = m.last_read_at;
     });
 
     const counts: UnreadCounts = {};
-    for (const cat of categories) {
-      const lastRead = readMap[cat.id];
-      let query = supabase
+    for (const ch of channels) {
+      const lastRead = readMap[ch.id];
+      let query = db
         .from('chat_messages')
         .select('id', { count: 'exact', head: true })
-        .eq('category_id', cat.id)
-        .neq('author_id', teamMemberId);
+        .eq('channel_id', ch.id)
+        .eq('is_deleted', false)
+        .neq('user_id', user.id);
 
       if (lastRead) {
         query = query.gt('created_at', lastRead);
@@ -82,178 +71,83 @@ export function useChatNotifications() {
 
       const { count } = await query;
       if (count && count > 0) {
-        counts[cat.id] = count;
+        counts[ch.id] = count;
       }
     }
 
     setUnreadCounts(counts);
-  }, [teamMemberId]);
+  }, [user]);
 
-  // Compute unread counts for DMs
   const refreshDmUnreadCounts = useCallback(async () => {
-    if (!teamMemberId) return;
+    // DMs will use same channel system with type='dm'
+  }, []);
 
-    // Get conversations this member is in
-    const { data: myConvos } = await supabase
-      .from('direct_conversation_members')
-      .select('conversation_id')
-      .eq('member_id', teamMemberId);
-    if (!myConvos || myConvos.length === 0) { setDmUnreadCounts({}); return; }
-
-    // Get read statuses
-    const convoIds = myConvos.map(c => c.conversation_id);
-    const { data: readStatuses } = await supabase
-      .from('dm_read_status')
-      .select('conversation_id, last_read_at')
-      .eq('member_id', teamMemberId)
-      .in('conversation_id', convoIds);
-
-    const readMap: Record<string, string> = {};
-    readStatuses?.forEach(rs => {
-      readMap[rs.conversation_id] = rs.last_read_at;
-    });
-
-    const counts: UnreadCounts = {};
-    for (const convoId of convoIds) {
-      const lastRead = readMap[convoId];
-      let query = supabase
-        .from('direct_messages')
-        .select('id', { count: 'exact', head: true })
-        .eq('conversation_id', convoId)
-        .neq('author_id', teamMemberId);
-
-      if (lastRead) {
-        query = query.gt('created_at', lastRead);
-      }
-
-      const { count } = await query;
-      if (count && count > 0) {
-        counts[convoId] = count;
-      }
-    }
-
-    setDmUnreadCounts(counts);
-  }, [teamMemberId]);
-
-  // Initial fetch
   useEffect(() => {
     refreshUnreadCounts();
-    refreshDmUnreadCounts();
-  }, [refreshUnreadCounts, refreshDmUnreadCounts]);
+  }, [refreshUnreadCounts]);
 
-  // Mark a category as read
-  const markCategoryRead = useCallback(async (categoryId: string) => {
-    if (!teamMemberId) return;
-
-    await supabase
-      .from('chat_read_status')
-      .upsert(
-        { member_id: teamMemberId, category_id: categoryId, last_read_at: new Date().toISOString() },
-        { onConflict: 'member_id,category_id' }
-      );
+  const markCategoryRead = useCallback(async (channelId: string) => {
+    if (!user) return;
+    await db.from('chat_channel_members').upsert({
+      channel_id: channelId,
+      user_id: user.id,
+      last_read_at: new Date().toISOString(),
+    }, { onConflict: 'channel_id,user_id' });
 
     setUnreadCounts(prev => {
       const next = { ...prev };
-      delete next[categoryId];
+      delete next[channelId];
       return next;
     });
-  }, [teamMemberId]);
+  }, [user]);
 
-  // Mark a DM conversation as read
-  const markConversationRead = useCallback(async (conversationId: string) => {
-    if (!teamMemberId) return;
+  const markDmRead = useCallback(async (_conversationId: string) => {
+    // Will use markCategoryRead with DM channel ID
+  }, []);
 
-    await supabase
-      .from('dm_read_status')
-      .upsert(
-        { member_id: teamMemberId, conversation_id: conversationId, last_read_at: new Date().toISOString() },
-        { onConflict: 'member_id,conversation_id' }
-      );
-
-    setDmUnreadCounts(prev => {
-      const next = { ...prev };
-      delete next[conversationId];
-      return next;
-    });
-  }, [teamMemberId]);
-
-  // Subscribe to new chat messages for toast notifications
+  // Realtime subscription for new messages notification
   useEffect(() => {
     const channel = supabase
       .channel('chat-notifications')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'chat_messages' },
-        (payload) => {
-          const msg = payload.new as { author_id: string; content: string; category_id: string };
-          if (msg.author_id === teamMemberId) return;
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'chat_messages',
+      }, (payload) => {
+        const msg = payload.new as any;
+        if (msg.user_id === user?.id) return;
 
-          setUnreadCounts(prev => ({
-            ...prev,
-            [msg.category_id]: (prev[msg.category_id] || 0) + 1,
-          }));
-
+        // If not on chat page, show toast
+        if (!isOnChatPage) {
           playNotificationSound();
-
-          if (!isOnChatPage) {
-            const authorName = membersCache.current[msg.author_id] || 'Quelqu\'un';
-            const preview = msg.content.length > 60 ? msg.content.slice(0, 60) + '…' : msg.content;
-
-            toast(authorName, {
-              description: preview,
-              duration: 4000,
-              action: {
-                label: 'Voir',
-                onClick: () => { window.location.href = '/chat'; },
-              },
-            });
-          }
+          toast('💬 Nouveau message', {
+            description: msg.content?.slice(0, 80),
+            action: {
+              label: 'Voir',
+              onClick: () => { window.location.href = '/chat'; },
+            },
+          });
         }
-      )
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'direct_messages' },
-        (payload) => {
-          const msg = payload.new as { author_id: string; content: string; conversation_id: string };
-          if (msg.author_id === teamMemberId) return;
 
-          setDmUnreadCounts(prev => ({
-            ...prev,
-            [msg.conversation_id]: (prev[msg.conversation_id] || 0) + 1,
-          }));
-
-          playNotificationSound();
-
-          if (!isOnChatPage) {
-            const authorName = membersCache.current[msg.author_id] || 'Quelqu\'un';
-            const preview = msg.content.length > 60 ? msg.content.slice(0, 60) + '…' : msg.content;
-
-            toast(`✉️ ${authorName}`, {
-              description: preview,
-              duration: 4000,
-              action: {
-                label: 'Voir',
-                onClick: () => { window.location.href = '/chat'; },
-              },
-            });
-          }
-        }
-      )
+        // Increment unread
+        setUnreadCounts(prev => ({
+          ...prev,
+          [msg.channel_id]: (prev[msg.channel_id] || 0) + 1,
+        }));
+      })
       .subscribe();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [teamMemberId, isOnChatPage]);
+    return () => { supabase.removeChannel(channel); };
+  }, [user, isOnChatPage]);
 
   return {
     unreadCounts,
     dmUnreadCounts,
-    totalUnread: totalUnread + totalDmUnread,
+    totalUnread,
     totalDmUnread,
-    markCategoryRead,
-    markConversationRead,
     refreshUnreadCounts,
     refreshDmUnreadCounts,
+    markCategoryRead,
+    markDmRead,
   };
 }

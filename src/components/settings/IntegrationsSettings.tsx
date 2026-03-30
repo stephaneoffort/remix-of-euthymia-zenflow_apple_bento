@@ -53,6 +53,10 @@ export default function IntegrationsSettings() {
         .from('brevo_connections').select('account_email, account_name, plan').eq('user_id', user.id).limit(1);
       if (brevoData?.[0]) info.brevo = { email: brevoData[0].account_email, display_name: `${brevoData[0].account_name ?? ''} (${brevoData[0].plan ?? 'free'})` };
 
+      const { data: gmailData } = await (supabase as any)
+        .from('gmail_connections').select('email, display_name').eq('user_id', user.id).limit(1);
+      if (gmailData?.[0]) info.gmail = { email: gmailData[0].email, display_name: gmailData[0].display_name };
+
       setConnInfo(info);
     })();
 

@@ -18,6 +18,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
 import { QuickFilter } from '@/types';
 import { useChatNotifications } from '@/hooks/useChatNotifications';
+import { useMessages } from '@/hooks/useMessages';
 import { usePresence } from '@/hooks/usePresence';
 import SpaceAccessDialog from '@/components/SpaceAccessDialog';
 import ProjectMembersDialog from '@/components/ProjectMembersDialog';

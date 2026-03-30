@@ -57,7 +57,7 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
     <>
       <div className="w-64 backdrop-blur-xl bg-card/20 border-r border-border/20 flex flex-col shrink-0 h-full shadow-[inset_-1px_0_0_rgba(255,255,255,0.04)]">
         {/* Header with back button */}
-        <div className="h-14 flex items-center gap-2 px-3 border-b border-border/50">
+        <div className="h-14 flex items-center gap-2 px-3 border-b border-border/20 shadow-[inset_0_-1px_0_rgba(255,255,255,0.04)]">
           <button
             onClick={() => navigate('/')}
             className="p-1.5 rounded-lg hover:bg-muted/80 text-muted-foreground hover:text-foreground transition-colors"

@@ -6,9 +6,6 @@ import { useAuth } from '@/context/AuthContext';
 import { useApp } from '@/context/AppContext';
 import type { MemberProfile } from '@/types/chat';
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -87,39 +84,47 @@ export function MembersPanel({ memberProfiles, onDmCreated, onlineTeamMemberIds 
   const onlineList = teamMembers.filter(m => onlineTeamMemberIds.has(m.id));
   const offlineList = teamMembers.filter(m => !onlineTeamMemberIds.has(m.id));
 
+  const handleMemberClick = (member: typeof teamMembers[0]) => {
+    const authId = teamMemberToAuthId[member.id];
+    const isSelf = authId === user?.id;
+    if (!isSelf && authId) {
+      startDm(authId, member.name);
+    }
+  };
+
   const renderMember = (member: typeof teamMembers[0], isOnline: boolean) => {
     const authId = teamMemberToAuthId[member.id];
     const isSelf = authId === user?.id;
+    const canDm = !isSelf && !!authId;
 
     return (
-      <DropdownMenu key={member.id}>
-        <DropdownMenuTrigger asChild>
-          <button className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl hover:bg-muted/20 hover:backdrop-blur-sm transition-all cursor-pointer text-left">
-            <div className="relative">
-              <div className="w-8 h-8 rounded-xl flex items-center justify-center text-[10px] font-bold text-white shadow-sm"
-                style={{ backgroundColor: member.avatarColor || '#6366f1' }}>
-                {(member.name || '?')[0].toUpperCase()}
-              </div>
-              <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-card ${
-                isOnline ? 'bg-green-500 shadow-[0_0_6px_rgba(34,197,94,0.4)]' : 'bg-muted-foreground/30'
-              }`} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className={`text-[13px] truncate font-medium ${isOnline ? 'text-foreground' : 'text-muted-foreground/60'}`}>
-                {member.name}
-              </p>
-              <p className="text-[10px] text-muted-foreground/40 truncate">{member.role}</p>
-            </div>
-          </button>
-        </DropdownMenuTrigger>
-        {!isSelf && authId && (
-          <DropdownMenuContent align="start" side="left" className="w-48 backdrop-blur-2xl bg-card/80 border-border/25">
-            <DropdownMenuItem onClick={() => startDm(authId, member.name)}>
-              <MessageSquare className="w-4 h-4 mr-2" /> Message privé
-            </DropdownMenuItem>
-          </DropdownMenuContent>
+      <button
+        key={member.id}
+        onClick={() => handleMemberClick(member)}
+        className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl transition-all text-left group ${
+          canDm ? 'hover:bg-primary/10 cursor-pointer' : 'cursor-default hover:bg-muted/10'
+        }`}
+      >
+        <div className="relative">
+          <div className="w-8 h-8 rounded-xl flex items-center justify-center text-[10px] font-bold text-white shadow-sm"
+            style={{ backgroundColor: member.avatarColor || '#6366f1' }}>
+            {(member.name || '?')[0].toUpperCase()}
+          </div>
+          <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-card ${
+            isOnline ? 'bg-green-500 shadow-[0_0_6px_rgba(34,197,94,0.4)]' : 'bg-muted-foreground/30'
+          }`} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className={`text-[13px] truncate font-medium ${isOnline ? 'text-foreground' : 'text-muted-foreground/60'}`}>
+            {member.name}
+            {isSelf && <span className="text-[10px] text-muted-foreground/40 ml-1">(vous)</span>}
+          </p>
+          <p className="text-[10px] text-muted-foreground/40 truncate">{member.role}</p>
+        </div>
+        {canDm && (
+          <MessageSquare className="w-3.5 h-3.5 text-muted-foreground/0 group-hover:text-primary transition-all shrink-0" />
         )}
-      </DropdownMenu>
+      </button>
     );
   };
 

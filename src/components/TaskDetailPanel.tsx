@@ -8,6 +8,8 @@ import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Cl
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { generateGoogleCalendarUrl, generateOutlookCalendarUrl, generateYahooCalendarUrl } from '@/lib/calendarLinks';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/context/AuthContext';
+import MentionCommentInput from '@/components/MentionCommentInput';
 import TaskChecklist from '@/components/TaskChecklist';
 import RichTextEditor, { RichTextDisplay } from '@/components/RichTextEditor';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';

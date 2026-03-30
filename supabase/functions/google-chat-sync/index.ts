@@ -50,29 +50,114 @@ serve(async (req: Request) => {
     return new Response("ok", { headers: corsHeaders })
   }
 
-  const authHeader = req.headers.get("Authorization")
-  if (!authHeader) {
-    return new Response(JSON.stringify({ error: "Missing authorization" }),
-      { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } })
-  }
-
-  const supabaseUser = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-    { global: { headers: { Authorization: authHeader } } }
-  )
-
-  const { data: { user }, error: authError } = await supabaseUser.auth.getUser()
-  if (authError || !user) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }),
-      { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } })
-  }
-
-  const userId = user.id
-
   try {
     const body = await req.json()
     const { action } = body
+
+    // ── CRON: sync all connected users ──────────────────
+    if (action === "sync_all_users") {
+      const { data: connections } = await supabaseAdmin
+        .from("google_chat_connections")
+        .select("user_id")
+
+      if (!connections?.length) {
+        return new Response(JSON.stringify({ synced: 0, users: 0 }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } })
+      }
+
+      let totalSynced = 0
+      for (const conn of connections) {
+        try {
+          const token = await getValidGoogleToken(conn.user_id)
+          if (!token) continue
+
+          const { data: connData } = await supabaseAdmin
+            .from("google_chat_connections")
+            .select("email")
+            .eq("user_id", conn.user_id)
+            .single()
+          const userEmail = connData?.email ?? ""
+
+          const spacesRes = await fetch("https://chat.googleapis.com/v1/spaces", {
+            headers: { Authorization: `Bearer ${token}` }
+          })
+          const spacesData = await spacesRes.json()
+          const spaces = spacesData.spaces ?? []
+
+          for (const space of spaces.slice(0, 5)) {
+            try {
+              const msgsRes = await fetch(
+                `https://chat.googleapis.com/v1/${space.name}/messages?pageSize=25`,
+                { headers: { Authorization: `Bearer ${token}` } }
+              )
+              const msgsData = await msgsRes.json()
+              const messages = msgsData.messages ?? []
+
+              const mentions = messages.filter((msg: any) => {
+                const text = msg.text ?? ""
+                const annotations = msg.annotations ?? []
+                return (
+                  text.toLowerCase().includes(`@${userEmail.toLowerCase()}`) ||
+                  annotations.some((a: any) =>
+                    a.type === "USER_MENTION" &&
+                    a.userMention?.user?.email?.toLowerCase() === userEmail.toLowerCase()
+                  )
+                )
+              })
+
+              if (mentions.length > 0) {
+                const rows = mentions.map((msg: any) => ({
+                  user_id: conn.user_id,
+                  message_id: msg.name,
+                  space_id: space.name,
+                  sender_name: msg.sender?.displayName ?? "Membre",
+                  sender_email: msg.sender?.name ?? "",
+                  content: msg.text ?? "",
+                  thread_id: msg.thread?.name ?? null,
+                  is_mention: true,
+                  is_read: false,
+                  created_at: msg.createTime ?? new Date().toISOString(),
+                }))
+
+                await supabaseAdmin
+                  .from("google_chat_messages")
+                  .upsert(rows, { onConflict: "user_id,message_id" })
+
+                totalSynced += mentions.length
+              }
+            } catch (e) {
+              console.error(`Error syncing space ${space.name}:`, e)
+            }
+          }
+        } catch (e) {
+          console.error(`Error syncing user ${conn.user_id}:`, e)
+        }
+      }
+
+      return new Response(JSON.stringify({ synced: totalSynced, users: connections.length }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } })
+    }
+
+    // ── Authenticated user actions ──────────────────────
+    const authHeader = req.headers.get("Authorization")
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "Missing authorization" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } })
+    }
+
+    const supabaseUser = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      { global: { headers: { Authorization: authHeader } } }
+    )
+
+    const { data: { user }, error: authError } = await supabaseUser.auth.getUser()
+    if (authError || !user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } })
+    }
+
+    const userId = user.id
 
     // LIST SPACES
     if (action === "list_spaces") {

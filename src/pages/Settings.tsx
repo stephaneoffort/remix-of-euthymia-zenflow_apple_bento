@@ -106,9 +106,6 @@ export default function Settings() {
             <StatusesPanel />
           </TabsContent>
 
-          <TabsContent value="chat">
-            <ChatCategoriesPanel />
-          </TabsContent>
 
           <TabsContent value="theme">
             <ThemePalettePanel />

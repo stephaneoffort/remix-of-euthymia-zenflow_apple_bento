@@ -348,7 +348,7 @@ async function caldavPull(account: any): Promise<number> {
 </C:calendar-query>`;
 
   const auth = btoa(`${account.caldav_username}:${account.caldav_password}`);
-  const res = await fetch(account.caldav_url, {
+  const res = await fetchWithRetry(account.caldav_url, {
     method: "REPORT",
     headers: {
       Authorization: `Basic ${auth}`,

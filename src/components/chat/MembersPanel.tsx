@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { MessageSquare, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -9,7 +9,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
@@ -26,33 +25,48 @@ const db = supabase as any;
 interface Props {
   memberProfiles: Record<string, MemberProfile>;
   onDmCreated?: (channelId: string) => void;
+  onlineTeamMemberIds?: Set<string>;
 }
 
-export function MembersPanel({ memberProfiles, onDmCreated }: Props) {
-  const members = Object.entries(memberProfiles);
+export function MembersPanel({ memberProfiles, onDmCreated, onlineTeamMemberIds = new Set() }: Props) {
   const { user } = useAuth();
   const { teamMembers } = useApp();
   const [showGroupDm, setShowGroupDm] = useState(false);
   const [selectedForGroup, setSelectedForGroup] = useState<string[]>([]);
   const [creating, setCreating] = useState(false);
+  const [teamMemberToAuthId, setTeamMemberToAuthId] = useState<Record<string, string>>({});
 
-  const startDm = async (targetUserId: string, targetName: string) => {
+  // Build mapping team_member_id -> auth user id
+  useEffect(() => {
+    const loadMapping = async () => {
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, team_member_id');
+      if (profiles) {
+        const map: Record<string, string> = {};
+        profiles.forEach(p => {
+          if (p.team_member_id) map[p.team_member_id] = p.id;
+        });
+        setTeamMemberToAuthId(map);
+      }
+    };
+    loadMapping();
+  }, []);
+
+  const startDm = useCallback(async (targetUserId: string, targetName: string) => {
     if (!user) return;
 
-    // Check if a DM channel already exists between these two users
     const { data: existingChannels } = await db
       .from('chat_channels')
       .select('id, name')
       .eq('type', 'dm');
 
-    // Look for existing DM with this user pair
     if (existingChannels) {
       for (const ch of existingChannels) {
         const { data: members } = await db
           .from('chat_channel_members')
           .select('user_id')
           .eq('channel_id', ch.id);
-        
         if (members?.length === 2) {
           const userIds = members.map((m: any) => m.user_id);
           if (userIds.includes(user.id) && userIds.includes(targetUserId)) {
@@ -63,14 +77,9 @@ export function MembersPanel({ memberProfiles, onDmCreated }: Props) {
       }
     }
 
-    // Create new DM channel
     const { data: newChannel, error } = await db
       .from('chat_channels')
-      .insert({
-        name: `dm-${Date.now()}`,
-        type: 'dm',
-        description: null,
-      })
+      .insert({ name: `dm-${Date.now()}`, type: 'dm', description: null })
       .select()
       .single();
 
@@ -79,7 +88,6 @@ export function MembersPanel({ memberProfiles, onDmCreated }: Props) {
       return;
     }
 
-    // Add both users as members
     await db.from('chat_channel_members').insert([
       { channel_id: newChannel.id, user_id: user.id },
       { channel_id: newChannel.id, user_id: targetUserId },
@@ -87,7 +95,7 @@ export function MembersPanel({ memberProfiles, onDmCreated }: Props) {
 
     toast.success(`Conversation privée avec ${targetName}`);
     onDmCreated?.(newChannel.id);
-  };
+  }, [user, onDmCreated]);
 
   const startGroupDm = async () => {
     if (!user || selectedForGroup.length === 0) return;
@@ -98,13 +106,9 @@ export function MembersPanel({ memberProfiles, onDmCreated }: Props) {
       return tm?.name || 'Utilisateur';
     });
 
-    // Find auth user IDs from team member IDs
-    const { data: profiles } = await supabase
-      .from('profiles')
-      .select('id, team_member_id')
-      .in('team_member_id', selectedForGroup);
-
-    const authUserIds = profiles?.map(p => p.id).filter(Boolean) || [];
+    const authUserIds = selectedForGroup
+      .map(tmId => teamMemberToAuthId[tmId])
+      .filter(Boolean);
 
     if (authUserIds.length === 0) {
       toast.error('Membres introuvables');
@@ -118,11 +122,7 @@ export function MembersPanel({ memberProfiles, onDmCreated }: Props) {
 
     const { data: newChannel, error } = await db
       .from('chat_channels')
-      .insert({
-        name: channelName,
-        type: 'private',
-        description: `Groupe privé: ${names.join(', ')}`,
-      })
+      .insert({ name: channelName, type: 'private', description: `Groupe privé: ${names.join(', ')}` })
       .select()
       .single();
 
@@ -132,7 +132,6 @@ export function MembersPanel({ memberProfiles, onDmCreated }: Props) {
       return;
     }
 
-    // Add all selected users + current user
     const memberInserts = [
       { channel_id: newChannel.id, user_id: user.id },
       ...authUserIds.map((uid: string) => ({ channel_id: newChannel.id, user_id: uid })),
@@ -146,12 +145,54 @@ export function MembersPanel({ memberProfiles, onDmCreated }: Props) {
     onDmCreated?.(newChannel.id);
   };
 
-  // Get current user's team_member_id to exclude from list
-  const currentProfile = user ? memberProfiles[user.id] : null;
-
   const toggleGroupMember = (memberId: string) => {
     setSelectedForGroup(prev =>
       prev.includes(memberId) ? prev.filter(id => id !== memberId) : [...prev, memberId]
+    );
+  };
+
+  // Build full member list from teamMembers (all members, regardless of presence)
+  const onlineList = teamMembers.filter(m => onlineTeamMemberIds.has(m.id));
+  const offlineList = teamMembers.filter(m => !onlineTeamMemberIds.has(m.id));
+
+  const renderMember = (member: typeof teamMembers[0], isOnline: boolean) => {
+    const authId = teamMemberToAuthId[member.id];
+    const isSelf = authId === user?.id;
+
+    return (
+      <DropdownMenu key={member.id}>
+        <DropdownMenuTrigger asChild>
+          <button className="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-muted/40 transition-colors cursor-pointer text-left">
+            <div className="relative">
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm"
+                style={{ backgroundColor: member.avatarColor || '#6366f1' }}
+              >
+                {(member.name || '?')[0].toUpperCase()}
+              </div>
+              <div
+                className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-card ${
+                  isOnline ? 'bg-green-500' : 'bg-muted-foreground/40'
+                }`}
+              />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className={`text-sm truncate font-medium ${isOnline ? 'text-foreground' : 'text-muted-foreground'}`}>
+                {member.name}
+              </p>
+              <p className="text-[10px] text-muted-foreground truncate">{member.role}</p>
+            </div>
+          </button>
+        </DropdownMenuTrigger>
+        {!isSelf && authId && (
+          <DropdownMenuContent align="start" side="left" className="w-48">
+            <DropdownMenuItem onClick={() => startDm(authId, member.name)}>
+              <MessageSquare className="w-4 h-4 mr-2" />
+              Message privé
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        )}
+      </DropdownMenu>
     );
   };
 
@@ -160,7 +201,7 @@ export function MembersPanel({ memberProfiles, onDmCreated }: Props) {
       <div className="p-3">
         <div className="flex items-center justify-between mb-3 px-2">
           <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-            Membres — {members.length}
+            Membres — {teamMembers.length}
           </h4>
           <button
             onClick={() => setShowGroupDm(true)}
@@ -170,43 +211,34 @@ export function MembersPanel({ memberProfiles, onDmCreated }: Props) {
             <Users className="w-3.5 h-3.5" />
           </button>
         </div>
-        <div className="space-y-0.5">
-          {members.map(([userId, profile]) => (
-            <DropdownMenu key={userId}>
-              <DropdownMenuTrigger asChild>
-                <button
-                  className="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-muted/40 transition-colors group cursor-pointer text-left"
-                >
-                  <div className="relative">
-                    <div
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm"
-                      style={{ backgroundColor: profile.avatar_color || '#6366f1' }}
-                    >
-                      {(profile.name || '?')[0].toUpperCase()}
-                    </div>
-                    <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-500 border-2 border-card" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-foreground truncate font-medium">{profile.name}</p>
-                    <p className="text-[10px] text-muted-foreground truncate">{profile.role}</p>
-                  </div>
-                </button>
-              </DropdownMenuTrigger>
-              {userId !== user?.id && (
-                <DropdownMenuContent align="start" side="left" className="w-48">
-                  <DropdownMenuItem onClick={() => startDm(userId, profile.name)}>
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    Message privé
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              )}
-            </DropdownMenu>
-          ))}
-        </div>
 
-        {members.length === 0 && (
+        {/* Online members */}
+        {onlineList.length > 0 && (
+          <>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider px-2 mb-1 mt-2">
+              En ligne — {onlineList.length}
+            </p>
+            <div className="space-y-0.5">
+              {onlineList.map(m => renderMember(m, true))}
+            </div>
+          </>
+        )}
+
+        {/* Offline members */}
+        {offlineList.length > 0 && (
+          <>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider px-2 mb-1 mt-3">
+              Hors ligne — {offlineList.length}
+            </p>
+            <div className="space-y-0.5">
+              {offlineList.map(m => renderMember(m, false))}
+            </div>
+          </>
+        )}
+
+        {teamMembers.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-xs text-muted-foreground">Aucun membre en ligne</p>
+            <p className="text-xs text-muted-foreground">Aucun membre</p>
           </div>
         )}
       </div>
@@ -219,29 +251,34 @@ export function MembersPanel({ memberProfiles, onDmCreated }: Props) {
           </DialogHeader>
           <p className="text-sm text-muted-foreground">Sélectionnez les membres à inclure :</p>
           <div className="max-h-64 overflow-y-auto space-y-1">
-            {teamMembers
-              .filter(m => m.id !== currentProfile?.id)
-              .map(member => (
-                <label
-                  key={member.id}
-                  className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
-                >
-                  <Checkbox
-                    checked={selectedForGroup.includes(member.id)}
-                    onCheckedChange={() => toggleGroupMember(member.id)}
-                  />
+            {teamMembers.map(member => (
+              <label
+                key={member.id}
+                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+              >
+                <Checkbox
+                  checked={selectedForGroup.includes(member.id)}
+                  onCheckedChange={() => toggleGroupMember(member.id)}
+                />
+                <div className="relative">
                   <div
                     className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0"
                     style={{ backgroundColor: member.avatarColor || '#6366f1' }}
                   >
                     {member.name[0]?.toUpperCase()}
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium truncate">{member.name}</p>
-                    <p className="text-[10px] text-muted-foreground">{member.role}</p>
-                  </div>
-                </label>
-              ))}
+                  <div
+                    className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-background ${
+                      onlineTeamMemberIds.has(member.id) ? 'bg-green-500' : 'bg-muted-foreground/40'
+                    }`}
+                  />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium truncate">{member.name}</p>
+                  <p className="text-[10px] text-muted-foreground">{member.role}</p>
+                </div>
+              </label>
+            ))}
           </div>
           <div className="flex justify-end gap-2 pt-2">
             <Button variant="outline" size="sm" onClick={() => setShowGroupDm(false)}>

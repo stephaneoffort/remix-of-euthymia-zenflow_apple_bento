@@ -8,11 +8,13 @@ import { Hash, Users, Pin, Search, Menu, X } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import MobileBottomNav from '@/components/MobileBottomNav';
 import { useApp } from '@/context/AppContext';
+import { usePresence } from '@/hooks/usePresence';
 import type { MemberProfile } from '@/types/chat';
 
 export default function Chat() {
   const chat = useDiscordChat();
   const { teamMembers } = useApp();
+  const { onlineMembers } = usePresence();
   const [showMembers, setShowMembers] = useState(true);
   const [showChannels, setShowChannels] = useState(true);
   const isMobile = useIsMobile();
@@ -104,6 +106,7 @@ export default function Chat() {
           {showMembers && !isMobile && (
             <MembersPanel
               memberProfiles={chat.memberProfiles}
+              onlineTeamMemberIds={onlineMembers}
               onDmCreated={(channelId) => {
                 chat.setActiveChannelId(channelId);
                 chat.loadChannels();

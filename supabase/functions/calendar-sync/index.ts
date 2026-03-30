@@ -38,6 +38,22 @@ async function refreshGoogleToken(account: any): Promise<string> {
   return data.access_token;
 }
 
+// ─── RESILIENT FETCH WITH RETRY ───
+async function fetchWithRetry(url: string, options: RequestInit, retries = 3): Promise<Response> {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      return await fetch(url, options);
+    } catch (err) {
+      const msg = String(err);
+      const isTransient = msg.includes("close_notify") || msg.includes("tls handshake eof") || msg.includes("connection error");
+      if (!isTransient || attempt === retries) throw err;
+      console.warn(`Fetch attempt ${attempt} failed (transient), retrying in ${attempt * 500}ms...`);
+      await new Promise(r => setTimeout(r, attempt * 500));
+    }
+  }
+  throw new Error("fetchWithRetry: unreachable");
+}
+
 // ─── GOOGLE ───
 async function googlePull(account: any): Promise<number> {
   const token = await refreshGoogleToken(account);
@@ -50,7 +66,7 @@ async function googlePull(account: any): Promise<number> {
     singleEvents: "true",
     maxResults: "250",
   });
-  const res = await fetch(
+  const res = await fetchWithRetry(
     `https://www.googleapis.com/calendar/v3/calendars/${calId}/events?${params}`,
     { headers: { Authorization: `Bearer ${token}` } },
   );
@@ -134,7 +150,7 @@ async function googlePushCreate(account: any, event: any): Promise<string> {
   }
 
   const meetParam = event.has_meet ? "?conferenceDataVersion=1" : "";
-  const res = await fetch(
+  const res = await fetchWithRetry(
     `https://www.googleapis.com/calendar/v3/calendars/${calId}/events${meetParam}`,
     {
       method: "POST",
@@ -203,7 +219,7 @@ async function googlePushUpdate(account: any, event: any): Promise<void> {
   }
 
   const meetParam = event.has_meet ? "?conferenceDataVersion=1" : "";
-  const res = await fetch(
+  const res = await fetchWithRetry(
     `https://www.googleapis.com/calendar/v3/calendars/${calId}/events/${event.external_id}${meetParam}`,
     {
       method: "PUT",
@@ -231,7 +247,7 @@ async function googlePushUpdate(account: any, event: any): Promise<void> {
 async function googlePushDelete(account: any, externalId: string): Promise<void> {
   const token = await refreshGoogleToken(account);
   const calId = encodeURIComponent(account.calendar_id || "primary");
-  const res = await fetch(
+  const res = await fetchWithRetry(
     `https://www.googleapis.com/calendar/v3/calendars/${calId}/events/${externalId}`,
     { method: "DELETE", headers: { Authorization: `Bearer ${token}` } },
   );
@@ -242,7 +258,7 @@ async function googlePushDelete(account: any, externalId: string): Promise<void>
 async function googleTest(account: any): Promise<boolean> {
   try {
     const token = await refreshGoogleToken(account);
-    const res = await fetch(
+    const res = await fetchWithRetry(
       "https://www.googleapis.com/calendar/v3/users/me/calendarList?maxResults=1",
       { headers: { Authorization: `Bearer ${token}` } },
     );
@@ -480,7 +496,7 @@ async function getOrCreateZenflowCalendar(token: string, accountId: string): Pro
     .from("calendar_accounts").select("zenflow_calendar_id").eq("id", accountId).single();
 
   if (account?.zenflow_calendar_id) {
-    const checkRes = await fetch(
+    const checkRes = await fetchWithRetry(
       `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(account.zenflow_calendar_id)}`,
       { headers: { Authorization: `Bearer ${token}` } },
     );
@@ -488,7 +504,7 @@ async function getOrCreateZenflowCalendar(token: string, accountId: string): Pro
     await checkRes.text();
   }
 
-  const listRes = await fetch(
+  const listRes = await fetchWithRetry(
     "https://www.googleapis.com/calendar/v3/users/me/calendarList",
     { headers: { Authorization: `Bearer ${token}` } },
   );
@@ -500,7 +516,7 @@ async function getOrCreateZenflowCalendar(token: string, accountId: string): Pro
     return existing.id;
   }
 
-  const createRes = await fetch(
+  const createRes = await fetchWithRetry(
     "https://www.googleapis.com/calendar/v3/calendars",
     {
       method: "POST",
@@ -515,7 +531,7 @@ async function getOrCreateZenflowCalendar(token: string, accountId: string): Pro
   const created = await createRes.json();
 
   // Set color
-  await fetch(
+  await fetchWithRetry(
     `https://www.googleapis.com/calendar/v3/users/me/calendarList/${encodeURIComponent(created.id)}`,
     {
       method: "PATCH",
@@ -631,7 +647,7 @@ async function pushTaskForUser(userId: string, taskId: string, action: string) {
 
   if (action === "delete") {
     if (task?.google_event_id) {
-      const res = await fetch(`${baseUrl}/${task.google_event_id}`, { method: "DELETE", headers });
+      const res = await fetchWithRetry(`${baseUrl}/${task.google_event_id}`, { method: "DELETE", headers });
       await res.text();
     }
     await supabase.from("tasks").update({ google_event_id: null } as any).eq("id", taskId);
@@ -643,7 +659,7 @@ async function pushTaskForUser(userId: string, taskId: string, action: string) {
   // If task is done, delete from calendar instead of syncing
   if (task.status === "done") {
     if (task.google_event_id) {
-      const res = await fetch(`${baseUrl}/${task.google_event_id}`, { method: "DELETE", headers });
+      const res = await fetchWithRetry(`${baseUrl}/${task.google_event_id}`, { method: "DELETE", headers });
       await res.text();
       await supabase.from("tasks").update({ google_event_id: null } as any).eq("id", taskId);
     }
@@ -660,12 +676,12 @@ async function pushTaskForUser(userId: string, taskId: string, action: string) {
   const payload = await buildEventPayload(taskId, task);
 
   if (action === "create" || (action === "update" && !task.google_event_id)) {
-    const res = await fetch(baseUrl, { method: "POST", headers, body: JSON.stringify(payload) });
+    const res = await fetchWithRetry(baseUrl, { method: "POST", headers, body: JSON.stringify(payload) });
     const created = await res.json();
     if (created.error) throw new Error("Google error: " + created.error.message);
     await supabase.from("tasks").update({ google_event_id: created.id } as any).eq("id", taskId);
   } else if (action === "update" && task.google_event_id) {
-    const res = await fetch(`${baseUrl}/${task.google_event_id}`, { method: "PUT", headers, body: JSON.stringify(payload) });
+    const res = await fetchWithRetry(`${baseUrl}/${task.google_event_id}`, { method: "PUT", headers, body: JSON.stringify(payload) });
     const updated = await res.json();
     if (updated.error) throw new Error("Google error: " + updated.error.message);
   }

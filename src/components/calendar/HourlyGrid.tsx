@@ -493,6 +493,7 @@ export default function HourlyGrid({
   const config = getModeConfig(mode);
   const { hourHeight, minEventHeight, maxEventHeight, maxOverlaps, labelWidth } = config;
   const isDay = mode === 'day';
+  const { zoomTaskIds, meetTaskIds } = useTaskMeetings();
 
   useEffect(() => {
     if (hasScrolled.current) return;

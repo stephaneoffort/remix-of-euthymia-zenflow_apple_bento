@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { useApp } from "@/context/AppContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,7 @@ function formatMeetDate(startTime: string): string {
 
 export default function DashboardMeetSection() {
   const { isActive } = useIntegrations();
+  const { setSelectedView } = useApp();
   const [events, setEvents] = useState<MeetEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
@@ -159,7 +161,8 @@ export default function DashboardMeetSection() {
                   return (
                     <div
                       key={ev.id}
-                      className={`w-full text-left py-2.5 hover:bg-muted/50 transition-colors flex items-center gap-3 px-2 rounded-md group ${
+                      onClick={() => setSelectedView("calendar")}
+                      className={`w-full text-left py-2.5 hover:bg-muted/50 transition-colors flex items-center gap-3 px-2 rounded-md group cursor-pointer ${
                         isSoon ? "bg-destructive/10 border border-destructive/20 animate-pulse" : ""
                       }`}
                     >

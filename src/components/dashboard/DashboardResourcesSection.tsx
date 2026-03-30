@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useApp } from "@/context/AppContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +20,8 @@ interface Props {
 }
 
 function DriveCard({ projects }: Props) {
+  const { setSelectedProjectId, setSelectedView } = useApp();
+  const onProjectClick = (id: string) => { setSelectedProjectId(id); setSelectedView("kanban"); };
   const [projectsWithFiles, setProjectsWithFiles] = useState<Project[]>([]);
   const [fileCounts, setFileCounts] = useState<Record<string, number>>({});
   const [totalFiles, setTotalFiles] = useState(0);
@@ -101,7 +104,7 @@ function DriveCard({ projects }: Props) {
             ) : (
               <div className="space-y-1">
                 {visible.map((project) => (
-                  <div key={project.id} className="py-2.5 px-2 rounded-md hover:bg-muted/50 transition-colors group">
+                  <div key={project.id} onClick={() => onProjectClick(project.id)} className="py-2.5 px-2 rounded-md hover:bg-muted/50 transition-colors group cursor-pointer">
                     <div className="flex items-center gap-2 mb-1.5">
                       <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: project.color }} />
                       <p className="text-sm font-medium text-foreground truncate">{project.name}</p>
@@ -132,6 +135,8 @@ function DriveCard({ projects }: Props) {
 }
 
 function CanvaCard({ projects }: Props) {
+  const { setSelectedProjectId, setSelectedView } = useApp();
+  const onProjectClick = (id: string) => { setSelectedProjectId(id); setSelectedView("kanban"); };
   const [projectsWithDesigns, setProjectsWithDesigns] = useState<Project[]>([]);
   const [designCounts, setDesignCounts] = useState<Record<string, number>>({});
   const [totalDesigns, setTotalDesigns] = useState(0);
@@ -214,7 +219,7 @@ function CanvaCard({ projects }: Props) {
             ) : (
               <div className="space-y-1">
                 {visible.map((project) => (
-                  <div key={project.id} className="py-2.5 px-2 rounded-md hover:bg-muted/50 transition-colors group">
+                  <div key={project.id} onClick={() => onProjectClick(project.id)} className="py-2.5 px-2 rounded-md hover:bg-muted/50 transition-colors group cursor-pointer">
                     <div className="flex items-center gap-2 mb-1.5">
                       <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: project.color }} />
                       <p className="text-sm font-medium text-foreground truncate">{project.name}</p>

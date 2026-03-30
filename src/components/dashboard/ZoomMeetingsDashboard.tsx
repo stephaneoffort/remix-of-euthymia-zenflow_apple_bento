@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useApp } from "@/context/AppContext";
 import { useZoom } from "@/hooks/useZoom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -72,6 +73,7 @@ function formatMeetingDate(startTime: string): string {
 }
 
 export default function ZoomMeetingsDashboard() {
+  const { setSelectedTaskId, setSelectedView } = useApp();
   const { isActive, integrations } = useIntegrations();
   const navigate = useNavigate();
   const zoom = useZoom();
@@ -221,6 +223,14 @@ export default function ZoomMeetingsDashboard() {
     setCreating(false);
   };
 
+  const handleItemClick = (m: ZoomMeetingRow) => {
+    if (m.entity_type === "task" || m.entity_type === "subtask") {
+      setSelectedTaskId(m.entity_id);
+    } else if (m.entity_type === "event") {
+      setSelectedView("calendar");
+    }
+  };
+
   if (!zoomEnabled && !zoomActive) return null;
 
   // Stats
@@ -324,7 +334,8 @@ export default function ZoomMeetingsDashboard() {
                     const b = badge(m.entity_type);
                     return (
                       <div key={m.id}
-                        className={`w-full text-left py-2.5 hover:bg-muted/50 transition-colors flex items-center gap-3 px-2 rounded-md group ${isSoon ? "bg-destructive/10 border border-destructive/20 animate-pulse" : ""}`}>
+                        onClick={() => handleItemClick(m)}
+                        className={`w-full text-left py-2.5 hover:bg-muted/50 transition-colors flex items-center gap-3 px-2 rounded-md group cursor-pointer ${isSoon ? "bg-destructive/10 border border-destructive/20 animate-pulse" : ""}`}>
                         <div className={`p-1.5 rounded-md shrink-0 ${isSoon ? "bg-destructive/20" : "bg-muted/50"}`}>
                           {isSoon ? <AlertCircle className="w-4 h-4 text-destructive" /> : <img src={INTEGRATION_CONFIG.zoom.icon} alt="" className="w-4 h-4" />}
                         </div>

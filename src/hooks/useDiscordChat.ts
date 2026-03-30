@@ -112,14 +112,52 @@ export function useDiscordChat() {
     setLoading(false);
   }, [loadProfiles]);
 
+  // Mark channel as read & load messages
+  const markChannelRead = useCallback(async (channelId: string) => {
+    if (!user) return;
+    await db.from('chat_channel_members')
+      .update({ last_read_at: new Date().toISOString() })
+      .eq('channel_id', channelId)
+      .eq('user_id', user.id);
+    setUnreadCounts(prev => ({ ...prev, [channelId]: 0 }));
+  }, [user]);
+
   useEffect(() => {
     if (activeChannelId) {
       loadMessages(activeChannelId);
       loadPinnedMessages(activeChannelId);
+      markChannelRead(activeChannelId);
     }
     setThreadParent(null);
     setThreadMessages([]);
   }, [activeChannelId]);
+
+  // Load unread counts for all channels
+  const loadUnreadCounts = useCallback(async () => {
+    if (!user) return;
+    const { data: memberships } = await db
+      .from('chat_channel_members')
+      .select('channel_id, last_read_at')
+      .eq('user_id', user.id);
+    if (!memberships) return;
+
+    const counts: Record<string, number> = {};
+    for (const m of memberships) {
+      const { count } = await db
+        .from('chat_messages')
+        .select('*', { count: 'exact', head: true })
+        .eq('channel_id', m.channel_id)
+        .eq('is_deleted', false)
+        .neq('user_id', user.id)
+        .gt('created_at', m.last_read_at || '1970-01-01');
+      counts[m.channel_id] = count || 0;
+    }
+    setUnreadCounts(counts);
+  }, [user]);
+
+  useEffect(() => {
+    if (channels.length > 0 && user) loadUnreadCounts();
+  }, [channels, user]);
 
   // Load pinned messages
   const loadPinnedMessages = useCallback(async (channelId: string) => {

@@ -184,6 +184,23 @@ interface FlatTask extends Task {
   hasChildren: boolean;
 }
 
+// ── Compute effective progress (status-aware + parent aggregation) ──
+function getEffectiveProgress(task: Task | FlatTask, allTasks: Task[]): number {
+  const children = allTasks.filter(t => t.parentTaskId === task.id);
+  if (children.length > 0) {
+    // Aggregate from children
+    const total = children.reduce((sum, c) => sum + getEffectiveProgress(c, allTasks), 0);
+    return Math.round(total / children.length);
+  }
+  const raw = task.progress ?? 0;
+  if (raw > 0) return raw;
+  // Fallback from status
+  if (task.status === "done") return 100;
+  if (task.status === "in_review") return 75;
+  if (task.status === "in_progress") return 50;
+  return 0;
+}
+
 export default function GanttView() {
   const { tasks, setSelectedTaskId, updateTask } = useApp();
   const [zoom, setZoom] = useState<ZoomLevel>("week");

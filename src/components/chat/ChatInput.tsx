@@ -22,6 +22,7 @@ interface Props {
   onTyping?: () => void;
   memberProfiles?: Record<string, MemberProfile>;
   allMembers?: MentionableMember[];
+  onFileUpload?: (file: File) => void;
 }
 
 export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, allMembers = [] }: Props) {

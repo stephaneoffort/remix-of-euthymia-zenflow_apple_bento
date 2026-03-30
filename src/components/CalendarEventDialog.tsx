@@ -103,22 +103,6 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
         target_calendar_id: targetCalendarId,
       });
 
-      if (hasZoom && zoom.isConnected) {
-        try {
-          const durationMin = Math.round((new Date(end).getTime() - new Date(start).getTime()) / 60000);
-          await zoom.createMeeting(
-            title.trim(),
-            'event',
-            '',
-            isAllDay ? undefined : startISO,
-            durationMin > 0 ? durationMin : 60
-          );
-          toast.success('Réunion Zoom créée ✅');
-        } catch {
-          toast.error('Événement créé, mais erreur Zoom');
-        }
-      }
-
       onClose();
     } finally {
       setSaving(false);

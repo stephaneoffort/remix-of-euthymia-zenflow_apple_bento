@@ -614,10 +614,11 @@ function GanttBar({
   const [dragOffset, setDragOffset] = useState({ left: 0, width: 0 });
   const barRef = useRef<HTMLDivElement>(null);
 
-  if (!task.startDate) return null;
-
-  const start = new Date(task.startDate);
-  const end = task.dueDate ? new Date(task.dueDate) : addDays(start, (task.durationDays || 1));
+  const hasStartDate = !!task.startDate;
+  const start = hasStartDate ? new Date(task.startDate!) : new Date();
+  const end = hasStartDate
+    ? (task.dueDate ? new Date(task.dueDate) : addDays(start, (task.durationDays || 1)))
+    : addDays(start, 1);
   const ppd = getPixelsPerDay(zoom);
   const baseLeft = differenceInDays(start, rangeStart) * ppd;
   const duration = Math.max(differenceInDays(end, start), 1);

@@ -200,14 +200,6 @@ export default function Messages() {
               <TabsTrigger value="all">Tous</TabsTrigger>
               <TabsTrigger value="comment">Commentaires</TabsTrigger>
               <TabsTrigger value="chat">Chat</TabsTrigger>
-              <TabsTrigger value="google_chat" className="gap-1">
-                Google Chat
-                {messages.filter(m => m.type === 'google_chat' && !m.isRead).length > 0 && (
-                  <span className="ml-1 w-4 h-4 rounded-full bg-emerald-500 text-white text-[10px] flex items-center justify-center">
-                    {messages.filter(m => m.type === 'google_chat' && !m.isRead).length}
-                  </span>
-                )}
-              </TabsTrigger>
             </TabsList>
 
             <TabsContent value={tab} className="mt-4">

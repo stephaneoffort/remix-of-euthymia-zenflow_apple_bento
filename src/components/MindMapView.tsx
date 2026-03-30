@@ -2,7 +2,8 @@ import React, { useMemo, useState, useRef, useCallback, useEffect, useLayoutEffe
 import EmptyState from '@/components/EmptyState';
 import { useApp } from '@/context/AppContext';
 import { Task } from '@/types';
-import { StatusBadge, PriorityBadge } from '@/components/TaskBadges';
+import { StatusBadge, PriorityBadge, ZoomSessionBadge, MeetSessionBadge } from '@/components/TaskBadges';
+import { useTaskMeetings } from '@/hooks/useTaskMeetings';
 import {
   ChevronDown, ChevronRight, ZoomIn, ZoomOut, Maximize2,
   Plus, X, Check, Layers, Repeat, Minus as MinusIcon,

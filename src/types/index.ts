@@ -77,6 +77,20 @@ export interface Task {
   targetCalendarId?: string | null;
   createdAt: string;
   order: number;
+  // Gantt fields
+  durationDays?: number | null;
+  progress?: number;
+  isMilestone?: boolean;
+  color?: string | null;
+  wbs?: string | null;
+}
+
+export interface TaskDependency {
+  id: string;
+  taskId: string;
+  dependsOnId: string;
+  type: 'FS' | 'SS' | 'FF' | 'SF';
+  lagDays: number;
 }
 
 export interface TaskList {

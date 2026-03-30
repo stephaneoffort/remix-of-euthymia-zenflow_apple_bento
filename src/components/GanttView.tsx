@@ -324,6 +324,22 @@ export default function GanttView() {
     await supabase.from("tasks").update({ progress }).eq("id", taskId);
   };
 
+  // Update dates via drag
+  const handleDatesChange = useCallback(async (taskId: string, newStart: Date, newEnd: Date) => {
+    const durationDays = differenceInDays(newEnd, newStart);
+    updateTask(taskId, {
+      startDate: newStart.toISOString(),
+      dueDate: newEnd.toISOString(),
+      durationDays,
+    } as any);
+    await supabase.from("tasks").update({
+      start_date: newStart.toISOString(),
+      due_date: newEnd.toISOString(),
+      duration_days: durationDays,
+    }).eq("id", taskId);
+    toast.success("Dates mises à jour");
+  }, [updateTask]);
+
   const totalWidth = useMemo(() => {
     const days = differenceInDays(rangeEnd, rangeStart);
     return days * getPixelsPerDay(zoom);

@@ -77,7 +77,7 @@ export default function IntegrationsSettings() {
         toast.success(`${INTEGRATION_CONFIG[key].label} connecté !`);
       }
     });
-  }, []);
+  }, [connInfoVersion]);
 
   const handleConnect = async (key: IntegrationKey) => {
     if (key === 'google_meet') {

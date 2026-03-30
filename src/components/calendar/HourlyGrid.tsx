@@ -463,7 +463,7 @@ function EventCard({ item, onClick, widthPercent, leftPercent, isDay, maxEventHe
         <div className="opacity-50 italic truncate" style={{ fontSize: timeFontSize }}>↑ {item.parentTitle}</div>
       )}
       {isDay && h >= 80 && t.description && (
-        <div className="text-white/50 line-clamp-2 mt-0.5" style={{ fontSize: '11px' }}>{t.description}</div>
+        <div className="opacity-50 line-clamp-2 mt-0.5" style={{ fontSize: '11px' }}>{t.description}</div>
       )}
     </button>
   );

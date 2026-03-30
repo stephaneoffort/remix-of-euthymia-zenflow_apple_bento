@@ -670,7 +670,7 @@
   --ring: 125 13% 24%;
   --sidebar-bg: 36 28% 91%;
   --sidebar-fg: 27 5% 32%;
-  --sidebar-fg-bright: 0 0% 100%;
+  --sidebar-fg-bright: 0 0% 10%;
   --sidebar-hover: 36 22% 87%;
   --sidebar-active: 125 13% 24%;
   --sidebar-active-fg: 0 0% 100%;
@@ -977,7 +977,7 @@
   --muted: 210 14% 94%;
   --muted-foreground: 210 10% 42%;
   --accent: 12 70% 55%;
-  --accent-foreground: 0 0% 100%;
+  --accent-foreground: 12 80% 18%;
   --destructive: 0 68% 48%;
   --destructive-foreground: 0 0% 100%;
   --border: 210 18% 88%;
@@ -992,7 +992,7 @@
   --sidebar-ring: 210 55% 30%;
   --sidebar-bg: 210 25% 97%;
   --sidebar-fg: 210 15% 32%;
-  --sidebar-fg-bright: 0 0% 100%;
+  --sidebar-fg-bright: 210 30% 10%;
   --sidebar-hover: 210 20% 93%;
   --sidebar-active: 210 55% 30%;
   --sidebar-active-fg: 0 0% 100%;
@@ -1027,7 +1027,7 @@
   --muted: 210 14% 94%;
   --muted-foreground: 210 10% 42%;
   --accent: 12 70% 55%;
-  --accent-foreground: 0 0% 100%;
+  --accent-foreground: 12 80% 18%;
   --destructive: 0 68% 48%;
   --destructive-foreground: 0 0% 100%;
   --border: 210 18% 88%;

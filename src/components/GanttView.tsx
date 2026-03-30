@@ -351,8 +351,226 @@ export default function GanttView() {
     return days * getPixelsPerDay(zoom);
   }, [rangeStart, rangeEnd, zoom]);
 
+  // Context menu state
+  const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number; taskId: string } | null>(null);
+  const [editingDates, setEditingDates] = useState<{ taskId: string; start: string; end: string } | null>(null);
+  const [editingColor, setEditingColor] = useState<string | null>(null);
+  const [addingDep, setAddingDep] = useState<string | null>(null);
+  const [depTargetId, setDepTargetId] = useState("");
+  const [depType, setDepType] = useState<string>("FS");
+
+  const handleContextMenu = useCallback((taskId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    setCtxMenu({ x: e.clientX, y: e.clientY, taskId });
+  }, []);
+
+  const closeCtxMenu = () => setCtxMenu(null);
+
+  const handleToggleMilestone = async (taskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
+    const newVal = !task.isMilestone;
+    updateTask(taskId, { isMilestone: newVal } as any);
+    await supabase.from("tasks").update({ is_milestone: newVal }).eq("id", taskId);
+    toast.success(newVal ? "Marqué comme milestone" : "Milestone retiré");
+    closeCtxMenu();
+  };
+
+  const handleColorChange = async (taskId: string, color: string) => {
+    updateTask(taskId, { color } as any);
+    await supabase.from("tasks").update({ color }).eq("id", taskId);
+    toast.success("Couleur mise à jour");
+    setEditingColor(null);
+    closeCtxMenu();
+  };
+
+  const handleSaveDates = async () => {
+    if (!editingDates) return;
+    const newStart = new Date(editingDates.start);
+    const newEnd = new Date(editingDates.end);
+    if (isNaN(newStart.getTime()) || isNaN(newEnd.getTime()) || newEnd <= newStart) {
+      toast.error("Dates invalides");
+      return;
+    }
+    await handleDatesChange(editingDates.taskId, newStart, newEnd);
+    setEditingDates(null);
+    closeCtxMenu();
+  };
+
+  const handleAddDependency = async () => {
+    if (!addingDep || !depTargetId) return;
+    const { error } = await supabase.from("task_dependencies").insert({
+      task_id: addingDep,
+      depends_on_id: depTargetId,
+      type: depType,
+      lag_days: 0,
+    });
+    if (error) {
+      toast.error("Erreur : " + error.message);
+    } else {
+      setDependencies(prev => [...prev, { id: crypto.randomUUID(), taskId: addingDep, dependsOnId: depTargetId, type: depType, lagDays: 0 }]);
+      toast.success("Dépendance ajoutée");
+    }
+    setAddingDep(null);
+    setDepTargetId("");
+    setDepType("FS");
+    closeCtxMenu();
+  };
+
+  const handleDeleteTask = async (taskId: string) => {
+    await supabase.from("tasks").delete().eq("id", taskId);
+    toast.success("Tâche supprimée");
+    closeCtxMenu();
+    // Reload would happen via realtime or refresh
+  };
+
+  // Close context menu on click outside
+  useEffect(() => {
+    if (!ctxMenu) return;
+    const close = () => setCtxMenu(null);
+    document.addEventListener("click", close);
+    return () => document.removeEventListener("click", close);
+  }, [ctxMenu]);
+
+  const COLORS = ["#5A9A6A", "#4A7FA5", "#B06060", "#B09A50", "#7B5EA7", "#D97706", "#0EA5E9", "#EC4899", "#8B5CF6", "#14B8A6"];
+
   return (
     <div className="flex flex-col h-full overflow-hidden bg-background">
+      {/* Context Menu */}
+      {ctxMenu && (
+        <div
+          className="fixed z-50 bg-popover border border-border rounded-lg shadow-xl py-1 min-w-[200px] text-sm"
+          style={{ left: ctxMenu.x, top: ctxMenu.y }}
+          onClick={e => e.stopPropagation()}
+        >
+          <button
+            className="flex items-center gap-2 w-full px-3 py-2 hover:bg-muted text-foreground text-left"
+            onClick={() => {
+              const task = tasks.find(t => t.id === ctxMenu.taskId);
+              if (task) {
+                setEditingDates({
+                  taskId: ctxMenu.taskId,
+                  start: task.startDate ? format(new Date(task.startDate), "yyyy-MM-dd") : "",
+                  end: task.dueDate ? format(new Date(task.dueDate), "yyyy-MM-dd") : "",
+                });
+              }
+            }}
+          >
+            <CalendarDays className="w-4 h-4 text-muted-foreground" /> Modifier les dates
+          </button>
+          <button
+            className="flex items-center gap-2 w-full px-3 py-2 hover:bg-muted text-foreground text-left"
+            onClick={() => setAddingDep(ctxMenu.taskId)}
+          >
+            <Link2 className="w-4 h-4 text-muted-foreground" /> Ajouter une dépendance
+          </button>
+          <button
+            className="flex items-center gap-2 w-full px-3 py-2 hover:bg-muted text-foreground text-left"
+            onClick={() => handleToggleMilestone(ctxMenu.taskId)}
+          >
+            <Diamond className="w-4 h-4 text-muted-foreground" />
+            {tasks.find(t => t.id === ctxMenu.taskId)?.isMilestone ? "Retirer milestone" : "Marquer comme milestone"}
+          </button>
+          <button
+            className="flex items-center gap-2 w-full px-3 py-2 hover:bg-muted text-foreground text-left"
+            onClick={() => setEditingColor(ctxMenu.taskId)}
+          >
+            <Palette className="w-4 h-4 text-muted-foreground" /> Changer la couleur
+          </button>
+          <button
+            className="flex items-center gap-2 w-full px-3 py-2 hover:bg-muted text-foreground text-left"
+            onClick={() => { setSelectedTaskId(ctxMenu.taskId); closeCtxMenu(); }}
+          >
+            <Percent className="w-4 h-4 text-muted-foreground" /> Modifier la progression
+          </button>
+          <div className="h-px bg-border my-1" />
+          <button
+            className="flex items-center gap-2 w-full px-3 py-2 hover:bg-destructive/10 text-destructive text-left"
+            onClick={() => handleDeleteTask(ctxMenu.taskId)}
+          >
+            <Trash2 className="w-4 h-4" /> Supprimer
+          </button>
+        </div>
+      )}
+
+      {/* Edit Dates Dialog */}
+      {editingDates && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm" onClick={() => setEditingDates(null)}>
+          <div className="bg-popover border border-border rounded-xl shadow-xl p-5 w-80 space-y-3" onClick={e => e.stopPropagation()}>
+            <h3 className="text-sm font-medium text-foreground">Modifier les dates</h3>
+            <div className="space-y-2">
+              <label className="text-xs text-muted-foreground">Début</label>
+              <input type="date" value={editingDates.start} onChange={e => setEditingDates(p => p ? { ...p, start: e.target.value } : p)} className="w-full px-3 py-1.5 rounded-md border border-border bg-background text-foreground text-xs" />
+              <label className="text-xs text-muted-foreground">Fin</label>
+              <input type="date" value={editingDates.end} onChange={e => setEditingDates(p => p ? { ...p, end: e.target.value } : p)} className="w-full px-3 py-1.5 rounded-md border border-border bg-background text-foreground text-xs" />
+            </div>
+            <div className="flex gap-2 justify-end">
+              <button onClick={() => setEditingDates(null)} className="px-3 py-1.5 text-xs rounded-md hover:bg-muted text-muted-foreground">Annuler</button>
+              <button onClick={handleSaveDates} className="px-3 py-1.5 text-xs rounded-md bg-primary text-primary-foreground hover:bg-primary/90">Enregistrer</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Color Picker Dialog */}
+      {editingColor && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm" onClick={() => setEditingColor(null)}>
+          <div className="bg-popover border border-border rounded-xl shadow-xl p-5 w-64 space-y-3" onClick={e => e.stopPropagation()}>
+            <h3 className="text-sm font-medium text-foreground">Choisir une couleur</h3>
+            <div className="grid grid-cols-5 gap-2">
+              {COLORS.map(c => (
+                <button
+                  key={c}
+                  className="w-8 h-8 rounded-full border-2 border-transparent hover:border-foreground/30 transition-colors"
+                  style={{ backgroundColor: c }}
+                  onClick={() => handleColorChange(editingColor, c)}
+                />
+              ))}
+            </div>
+            <button onClick={() => { handleColorChange(editingColor, ""); }} className="text-xs text-muted-foreground hover:text-foreground">
+              Réinitialiser la couleur
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Add Dependency Dialog */}
+      {addingDep && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm" onClick={() => setAddingDep(null)}>
+          <div className="bg-popover border border-border rounded-xl shadow-xl p-5 w-80 space-y-3" onClick={e => e.stopPropagation()}>
+            <h3 className="text-sm font-medium text-foreground">Ajouter une dépendance</h3>
+            <div className="space-y-2">
+              <label className="text-xs text-muted-foreground">Dépend de</label>
+              <select
+                value={depTargetId}
+                onChange={e => setDepTargetId(e.target.value)}
+                className="w-full px-3 py-1.5 rounded-md border border-border bg-background text-foreground text-xs"
+              >
+                <option value="">Sélectionner une tâche...</option>
+                {tasks.filter(t => t.id !== addingDep).map(t => (
+                  <option key={t.id} value={t.id}>{t.title}</option>
+                ))}
+              </select>
+              <label className="text-xs text-muted-foreground">Type</label>
+              <select
+                value={depType}
+                onChange={e => setDepType(e.target.value)}
+                className="w-full px-3 py-1.5 rounded-md border border-border bg-background text-foreground text-xs"
+              >
+                <option value="FS">Finish → Start (FS)</option>
+                <option value="SS">Start → Start (SS)</option>
+                <option value="FF">Finish → Finish (FF)</option>
+                <option value="SF">Start → Finish (SF)</option>
+              </select>
+            </div>
+            <div className="flex gap-2 justify-end">
+              <button onClick={() => setAddingDep(null)} className="px-3 py-1.5 text-xs rounded-md hover:bg-muted text-muted-foreground">Annuler</button>
+              <button onClick={handleAddDependency} disabled={!depTargetId} className="px-3 py-1.5 text-xs rounded-md bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50">Ajouter</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Toolbar */}
       <div className="flex items-center gap-2 px-4 py-2 border-b border-border shrink-0 flex-wrap">
         <div className="flex items-center gap-1">

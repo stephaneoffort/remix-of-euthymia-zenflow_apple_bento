@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useBrevo } from '@/hooks/useBrevo';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Loader2, Eye, EyeOff, ExternalLink } from 'lucide-react';
 
@@ -10,8 +10,9 @@ interface Props {
   onConnected?: () => void;
 }
 
+const BREVO_URL = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/brevo-api`;
+
 const BrevoConnectionForm = React.forwardRef<HTMLFormElement, Props>(function BrevoConnectionForm({ onConnected }, ref) {
-  const { saveApiKey } = useBrevo();
   const [apiKey, setApiKey] = useState('');
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -21,14 +22,40 @@ const BrevoConnectionForm = React.forwardRef<HTMLFormElement, Props>(function Br
     if (!apiKey.trim()) return;
     setLoading(true);
     try {
-      const result = await saveApiKey(apiKey.trim());
-      if (result.success) {
-        toast.success(`Brevo connecté ✅ — ${result.account?.email ?? ''}`);
+      console.log("API key entered:", apiKey);
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        toast.error("Non authentifié. Reconnectez-vous.");
+        return;
+      }
+
+      const res = await fetch(BREVO_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          action: "save_api_key",
+          api_key: apiKey.trim(),
+        }),
+      });
+
+      console.log("Response status:", res.status);
+      const data = await res.json();
+      console.log("Brevo response:", data);
+
+      if (data.error) {
+        toast.error(`Erreur : ${data.error}`);
+      } else if (data.success) {
+        toast.success(`Brevo connecté ✅ — ${data.account?.email ?? ''}`);
         onConnected?.();
       } else {
-        toast.error(result.error || 'Clé API invalide');
+        toast.error("Réponse inattendue du serveur");
       }
     } catch (err: any) {
+      console.error("Brevo connect error:", err);
       toast.error(err.message || 'Erreur de connexion');
     } finally {
       setLoading(false);

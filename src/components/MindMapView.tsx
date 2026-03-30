@@ -174,6 +174,7 @@ function collectConnectors(items: Positioned[]): { from: Positioned; to: Positio
 export default function MindMapView() {
   const { getFilteredTasks, setSelectedTaskId, addTask, tasks: allTasks, getSubtasks } = useApp();
   const rootTasks = getFilteredTasks();
+  const { zoomTaskIds, meetTaskIds } = useTaskMeetings();
   const isMobile = useIsMobile();
 
   // Build full task list: filtered root tasks + all their descendants

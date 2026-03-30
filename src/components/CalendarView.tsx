@@ -379,6 +379,7 @@ function AgendaExternalEvents({ dateStr, externalEventsByDate, accountMap, onEdi
 export default function CalendarView() {
   const { getFilteredTasks, setSelectedTaskId, addTask, updateTask, selectedProjectId, getListsForProject, teamMembers, tasks: allTasks } = useApp();
   const calSync = useCalendarSync();
+  const { zoomTaskIds, meetTaskIds } = useTaskMeetings();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState(new Date());
   const [addingForDate, setAddingForDate] = useState<string | null>(null);

@@ -369,34 +369,38 @@ export default function KanbanBoard() {
         );
       })()}
 
-      {/* Toggle all button */}
-      <div className="flex justify-end px-3 sm:px-6 pt-2 sm:pt-4">
-        <button
-          onClick={toggleAll}
-          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
-          title={allExpanded ? 'Tout réduire' : 'Tout déplier'}
-        >
-          {allExpanded ? <ChevronsRightLeft className="w-3.5 h-3.5" /> : <ChevronsLeftRight className="w-3.5 h-3.5" />}
-          {allExpanded ? 'Tout réduire' : 'Tout déplier'}
-        </button>
-      </div>
-
-      {/* Collapsed columns shown as horizontal chips at the top */}
-      <AnimatePresence>
-        {collapsedStatuses.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-            className="flex flex-wrap gap-1.5 px-3 sm:px-3 pt-2 overflow-hidden"
+      {/* Toggle all button – desktop only */}
+      {!isMobile && (
+        <div className="flex justify-end px-6 pt-4">
+          <button
+            onClick={toggleAll}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
+            title={allExpanded ? 'Tout réduire' : 'Tout déplier'}
           >
-            <AnimatePresence mode="popLayout">
-              {collapsedStatuses.map(renderCollapsedColumn)}
-            </AnimatePresence>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            {allExpanded ? <ChevronsRightLeft className="w-3.5 h-3.5" /> : <ChevronsLeftRight className="w-3.5 h-3.5" />}
+            {allExpanded ? 'Tout réduire' : 'Tout déplier'}
+          </button>
+        </div>
+      )}
+
+      {/* Collapsed columns shown as horizontal chips – desktop only */}
+      {!isMobile && (
+        <AnimatePresence>
+          {collapsedStatuses.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+              className="flex flex-wrap gap-1.5 px-3 pt-2 overflow-hidden"
+            >
+              <AnimatePresence mode="popLayout">
+                {collapsedStatuses.map(renderCollapsedColumn)}
+              </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
 
       {/* Main kanban area */}
       {isMobile ? (

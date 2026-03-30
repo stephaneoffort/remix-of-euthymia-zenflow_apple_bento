@@ -35,68 +35,56 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
     if (!name) return;
     setCreating(true);
     const { error } = await (supabase as any).from('chat_channels').insert({
-      name,
-      description: newDesc.trim() || null,
-      type: newType,
-      position: channels.length,
+      name, description: newDesc.trim() || null, type: newType, position: channels.length,
     });
     setCreating(false);
     if (error) {
       toast.error('Erreur lors de la création du canal');
     } else {
       toast.success(`Canal #${name} créé !`);
-      setCreateOpen(false);
-      setNewName('');
-      setNewDesc('');
-      setNewType('public');
+      setCreateOpen(false); setNewName(''); setNewDesc(''); setNewType('public');
       onChannelCreated?.();
     }
   };
 
   return (
     <>
-      <div className="w-64 backdrop-blur-xl bg-card/20 border-r border-border/20 flex flex-col shrink-0 h-full shadow-[inset_-1px_0_0_rgba(255,255,255,0.04)]">
-        {/* Header with back button */}
-        <div className="h-14 flex items-center gap-2 px-3 border-b border-border/20 shadow-[inset_0_-1px_0_rgba(255,255,255,0.04)]">
-          <button
-            onClick={() => navigate('/')}
-            className="p-1.5 rounded-lg hover:bg-muted/80 text-muted-foreground hover:text-foreground transition-colors"
-            title="Retour à l'accueil"
-          >
+      <div className="w-64 backdrop-blur-2xl bg-card/15 border-r border-border/15 flex flex-col shrink-0 h-full shadow-[inset_-1px_0_0_rgba(255,255,255,0.03)]">
+        {/* Header */}
+        <div className="h-14 flex items-center gap-2 px-3 border-b border-border/15 bg-card/20">
+          <button onClick={() => navigate('/')}
+            className="p-1.5 rounded-xl hover:bg-muted/40 text-muted-foreground hover:text-foreground transition-all backdrop-blur-sm"
+            title="Retour à l'accueil">
             <ChevronLeft className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-2 flex-1 min-w-0">
-            <MessageCircle className="w-5 h-5 text-primary shrink-0" />
-            <h3 className="font-bold text-foreground text-sm truncate">Chat d'équipe</h3>
+            <div className="w-7 h-7 rounded-xl bg-primary/10 border border-primary/15 flex items-center justify-center shadow-[0_0_10px_hsl(var(--primary)/0.1)]">
+              <MessageCircle className="w-4 h-4 text-primary" />
+            </div>
+            <h3 className="font-bold text-foreground text-sm truncate" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.15)' }}>
+              Chat d'équipe
+            </h3>
           </div>
         </div>
 
         {/* Channel list */}
-        <div className="flex-1 overflow-y-auto py-3 scrollbar-thin space-y-4">
+        <div className="flex-1 overflow-y-auto py-3 scrollbar-thin space-y-5">
           {/* Public channels */}
           <div>
-            <div className="flex items-center justify-between px-4 mb-1.5">
-              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Canaux</span>
-              <button
-                onClick={() => setCreateOpen(true)}
-                className="p-1 rounded-md hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
-                title="Créer un canal"
-              >
-                <Plus className="w-4 h-4" />
+            <div className="flex items-center justify-between px-4 mb-2">
+              <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">Canaux</span>
+              <button onClick={() => setCreateOpen(true)}
+                className="p-1 rounded-lg hover:bg-primary/10 text-muted-foreground/50 hover:text-primary transition-all" title="Créer un canal">
+                <Plus className="w-3.5 h-3.5" />
               </button>
             </div>
             <div className="space-y-0.5 px-2">
-              {publicChannels.map(channel => (
-                <ChannelItem
-                  key={channel.id}
-                  channel={channel}
-                  isActive={activeChannelId === channel.id}
-                  onClick={() => onSelectChannel(channel.id)}
-                  icon={<Hash className="w-4 h-4 shrink-0" />}
-                />
+              {publicChannels.map(ch => (
+                <ChannelItem key={ch.id} channel={ch} isActive={activeChannelId === ch.id}
+                  onClick={() => onSelectChannel(ch.id)} icon={<Hash className="w-4 h-4 shrink-0" />} />
               ))}
               {publicChannels.length === 0 && (
-                <p className="text-xs text-muted-foreground/60 px-3 py-2 italic">Aucun canal</p>
+                <p className="text-[11px] text-muted-foreground/40 px-3 py-2 italic">Aucun canal</p>
               )}
             </div>
           </div>
@@ -104,41 +92,28 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
           {/* Private channels */}
           {privateChannels.length > 0 && (
             <div>
-              <div className="flex items-center px-4 mb-1.5">
-                <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Privés</span>
+              <div className="flex items-center px-4 mb-2">
+                <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">Privés</span>
               </div>
               <div className="space-y-0.5 px-2">
-                {privateChannels.map(channel => (
-                  <ChannelItem
-                    key={channel.id}
-                    channel={channel}
-                    isActive={activeChannelId === channel.id}
-                    onClick={() => onSelectChannel(channel.id)}
-                    icon={<Lock className="w-4 h-4 shrink-0" />}
-                  />
+                {privateChannels.map(ch => (
+                  <ChannelItem key={ch.id} channel={ch} isActive={activeChannelId === ch.id}
+                    onClick={() => onSelectChannel(ch.id)} icon={<Lock className="w-4 h-4 shrink-0" />} />
                 ))}
               </div>
             </div>
           )}
 
-          {/* DM channels */}
+          {/* DMs */}
           {dmChannels.length > 0 && (
             <div>
-              <div className="flex items-center justify-between px-4 mb-1.5">
-                <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Messages directs</span>
-                <button className="p-1 rounded-md hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors">
-                  <Plus className="w-4 h-4" />
-                </button>
+              <div className="flex items-center justify-between px-4 mb-2">
+                <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">Messages directs</span>
               </div>
               <div className="space-y-0.5 px-2">
-                {dmChannels.map(channel => (
-                  <ChannelItem
-                    key={channel.id}
-                    channel={channel}
-                    isActive={activeChannelId === channel.id}
-                    onClick={() => onSelectChannel(channel.id)}
-                    icon={<Circle className="w-3 h-3 shrink-0 fill-green-500 text-green-500" />}
-                  />
+                {dmChannels.map(ch => (
+                  <ChannelItem key={ch.id} channel={ch} isActive={activeChannelId === ch.id}
+                    onClick={() => onSelectChannel(ch.id)} icon={<Circle className="w-3 h-3 shrink-0 fill-green-500 text-green-500" />} />
                 ))}
               </div>
             </div>
@@ -147,78 +122,55 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
 
         {/* User status footer */}
         {currentUserProfile && (
-          <div className="border-t border-border/50 p-2.5">
-            <div className="flex items-center gap-2.5 px-2 py-2 rounded-lg bg-muted/30">
+          <div className="border-t border-border/15 p-2.5">
+            <div className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl backdrop-blur-xl bg-card/20 border border-border/15">
               <div className="relative">
-                <div
-                  className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm"
-                  style={{ backgroundColor: currentUserProfile.avatar_color || '#6366f1' }}
-                >
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-white shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+                  style={{ backgroundColor: currentUserProfile.avatar_color || '#6366f1' }}>
                   {currentUserProfile.name[0]?.toUpperCase()}
                 </div>
                 <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-500 border-2 border-card ring-1 ring-green-500/20" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-foreground truncate">{currentUserProfile.name}</p>
-                <p className="text-[10px] text-green-600 dark:text-green-400 font-medium">En ligne</p>
+                <p className="text-[10px] text-green-500 font-medium">En ligne</p>
               </div>
             </div>
           </div>
         )}
       </div>
 
-      {/* Create channel dialog */}
+      {/* Create dialog */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent className="sm:max-w-md bg-popover text-popover-foreground">
+        <DialogContent className="sm:max-w-md backdrop-blur-2xl bg-popover/90 border-border/25 text-popover-foreground shadow-[0_16px_48px_rgba(0,0,0,0.25)]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Hash className="w-5 h-5 text-primary" />
-              Créer un canal
+              <Hash className="w-5 h-5 text-primary" /> Créer un canal
             </DialogTitle>
-            <DialogDescription>
-              Les canaux servent à organiser les conversations par sujet.
-            </DialogDescription>
+            <DialogDescription>Les canaux servent à organiser les conversations par sujet.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 pt-2">
             <div className="space-y-2">
               <Label htmlFor="channel-name">Nom du canal</Label>
-              <Input
-                id="channel-name"
-                placeholder="ex: design, marketing, dev..."
-                value={newName}
-                onChange={e => setNewName(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleCreate()}
-              />
+              <Input id="channel-name" placeholder="ex: design, marketing, dev..." value={newName}
+                onChange={e => setNewName(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleCreate()} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="channel-desc">Description (optionnel)</Label>
-              <Input
-                id="channel-desc"
-                placeholder="De quoi parle ce canal ?"
-                value={newDesc}
-                onChange={e => setNewDesc(e.target.value)}
-              />
+              <Input id="channel-desc" placeholder="De quoi parle ce canal ?" value={newDesc} onChange={e => setNewDesc(e.target.value)} />
             </div>
             <div className="space-y-2">
               <Label>Type</Label>
               <Select value={newType} onValueChange={v => setNewType(v as 'public' | 'private')}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
+                <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="public">
-                    <span className="flex items-center gap-2"><Hash className="w-4 h-4" /> Public — visible par tous</span>
-                  </SelectItem>
-                  <SelectItem value="private">
-                    <span className="flex items-center gap-2"><Lock className="w-4 h-4" /> Privé — sur invitation</span>
-                  </SelectItem>
+                  <SelectItem value="public"><span className="flex items-center gap-2"><Hash className="w-4 h-4" /> Public — visible par tous</span></SelectItem>
+                  <SelectItem value="private"><span className="flex items-center gap-2"><Lock className="w-4 h-4" /> Privé — sur invitation</span></SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="flex gap-2 pt-2">
-              <Button variant="ghost" onClick={() => setCreateOpen(false)} className="flex-1">
-                Annuler
-              </Button>
+              <Button variant="ghost" onClick={() => setCreateOpen(false)} className="flex-1">Annuler</Button>
               <Button onClick={handleCreate} disabled={!newName.trim() || creating} className="flex-1">
                 {creating ? 'Création...' : 'Créer le canal'}
               </Button>
@@ -230,24 +182,15 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
   );
 }
 
-function ChannelItem({
-  channel,
-  isActive,
-  onClick,
-  icon,
-}: {
-  channel: ChatChannel;
-  isActive: boolean;
-  onClick: () => void;
-  icon: React.ReactNode;
+function ChannelItem({ channel, isActive, onClick, icon }: {
+  channel: ChatChannel; isActive: boolean; onClick: () => void; icon: React.ReactNode;
 }) {
   return (
-    <button
-      onClick={onClick}
+    <button onClick={onClick}
       className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all duration-200 ${
         isActive
-          ? 'bg-primary/12 text-primary font-semibold backdrop-blur-sm border border-primary/15 shadow-[0_0_12px_hsl(var(--primary)/0.08)]'
-          : 'text-muted-foreground/70 hover:bg-muted/25 hover:text-foreground hover:backdrop-blur-sm'
+          ? 'bg-primary/10 text-primary font-semibold backdrop-blur-xl border border-primary/15 shadow-[0_0_14px_hsl(var(--primary)/0.1),inset_0_1px_0_rgba(255,255,255,0.05)]'
+          : 'text-muted-foreground/60 hover:bg-muted/20 hover:text-foreground hover:backdrop-blur-sm'
       }`}
     >
       <span className={isActive ? 'text-primary' : 'opacity-40'}>{icon}</span>

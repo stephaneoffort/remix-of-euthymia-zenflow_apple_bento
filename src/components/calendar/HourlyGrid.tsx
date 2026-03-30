@@ -33,36 +33,37 @@ function getModeConfig(mode: 'day' | 'week') {
   };
 }
 
-// ─── Card colors using design system tokens ───
+// ─── Card colors using theme tokens ───
 function getCardClasses(item: PositionedItem): string {
+  const base = 'border-l-[3px]';
   if (item.type === 'event') {
-    return 'bg-[hsl(var(--cal-event-bg))] border-l-[3px] border-l-[hsl(var(--cal-event-border))] text-[hsl(var(--cal-card-fg))]';
+    return `${base} bg-primary/80 border-l-primary text-primary-foreground`;
   }
   const t = item.task!;
   if (t.status === 'done') {
-    return 'bg-[hsl(var(--cal-done-bg))] border-l-[3px] border-l-[hsl(var(--cal-done-border))] text-[hsl(var(--cal-card-fg))]';
+    return `${base} bg-muted border-l-[hsl(var(--status-done))] text-muted-foreground`;
   }
   if (t.dueDate && t.dueDate < new Date().toISOString().split('T')[0] && t.status !== 'done') {
-    return 'bg-[hsl(var(--cal-overdue-bg))] border-l-[3px] border-l-[hsl(var(--cal-overdue-border))] text-[hsl(var(--cal-card-fg))]';
+    return `${base} bg-destructive/80 border-l-destructive text-destructive-foreground`;
   }
   if (t.status === 'in_progress') {
-    return 'bg-[hsl(var(--cal-inprogress-bg))] border-l-[3px] border-l-[hsl(var(--cal-inprogress-border))] text-[hsl(var(--cal-card-fg))]';
+    return `${base} bg-[hsl(var(--status-progress))]/20 border-l-[hsl(var(--status-progress))] text-foreground`;
   }
   if (item.type === 'subtask') {
-    return 'bg-[hsl(var(--cal-subtask-bg))] border-l-[3px] border-l-[hsl(var(--cal-subtask-border))] text-[hsl(var(--cal-card-fg))]';
+    return `${base} bg-accent border-l-accent-foreground text-accent-foreground`;
   }
-  return 'bg-[hsl(var(--cal-task-bg))] border-l-[3px] border-l-[hsl(var(--cal-task-border))] text-[hsl(var(--cal-card-fg))]';
+  return `${base} bg-secondary border-l-[hsl(var(--status-todo))] text-secondary-foreground`;
 }
 
 // Chip color for all-day zone
 function getChipColor(item: PositionedItem): string {
-  if (item.type === 'event') return 'bg-[hsl(var(--cal-event-border))] text-[hsl(var(--cal-card-fg))]';
+  if (item.type === 'event') return 'bg-primary text-primary-foreground';
   const t = item.task!;
-  if (t.status === 'done') return 'bg-[hsl(var(--cal-done-border))] text-[hsl(var(--cal-card-fg))]';
-  if (t.dueDate && t.dueDate < new Date().toISOString().split('T')[0]) return 'bg-[hsl(var(--cal-overdue-border))] text-[hsl(var(--cal-card-fg))]';
-  if (t.status === 'in_progress') return 'bg-[hsl(var(--cal-inprogress-border))] text-[hsl(var(--cal-card-fg))]';
-  if (item.type === 'subtask') return 'bg-[hsl(var(--cal-subtask-border))] text-[hsl(var(--cal-card-fg))]';
-  return 'bg-[hsl(var(--cal-task-border))] text-[hsl(var(--cal-card-fg))]';
+  if (t.status === 'done') return 'bg-[hsl(var(--status-done))] text-primary-foreground';
+  if (t.dueDate && t.dueDate < new Date().toISOString().split('T')[0]) return 'bg-destructive text-destructive-foreground';
+  if (t.status === 'in_progress') return 'bg-[hsl(var(--status-progress))] text-primary-foreground';
+  if (item.type === 'subtask') return 'bg-accent text-accent-foreground';
+  return 'bg-secondary text-secondary-foreground';
 }
 
 // ─── Helpers ───

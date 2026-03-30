@@ -118,17 +118,34 @@ export default function Chat() {
             </button>
           )}
           <div className="flex items-center gap-2.5 min-w-0 flex-1">
-            <div className="w-8 h-8 rounded-xl bg-primary/10 backdrop-blur-sm border border-primary/20 flex items-center justify-center shrink-0 shadow-[0_0_16px_hsl(var(--primary)/0.15)]">
-              <Hash className="w-4 h-4 text-primary" />
-            </div>
-            <div className="min-w-0">
-              <h2 className="font-semibold text-foreground text-sm truncate" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
-                {activeChannel?.name || 'Sélectionner un canal'}
-              </h2>
-              {activeChannel?.description && !isMobile && (
-                <p className="text-[11px] text-muted-foreground/60 truncate">{activeChannel.description}</p>
-              )}
-            </div>
+            {activeChannel?.type === 'dm' && dmPartnerInfo ? (
+              <>
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center text-[11px] font-bold text-white shrink-0 shadow-[0_0_16px_rgba(0,0,0,0.15)]"
+                  style={{ backgroundColor: dmPartnerInfo.color }}>
+                  {dmPartnerInfo.name[0]?.toUpperCase()}
+                </div>
+                <div className="min-w-0">
+                  <h2 className="font-semibold text-foreground text-sm truncate" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                    {dmPartnerInfo.name}
+                  </h2>
+                  <p className="text-[11px] text-muted-foreground/60 truncate">Message privé</p>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="w-8 h-8 rounded-xl bg-primary/10 backdrop-blur-sm border border-primary/20 flex items-center justify-center shrink-0 shadow-[0_0_16px_hsl(var(--primary)/0.15)]">
+                  <Hash className="w-4 h-4 text-primary" />
+                </div>
+                <div className="min-w-0">
+                  <h2 className="font-semibold text-foreground text-sm truncate" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                    {activeChannel?.name || 'Sélectionner un canal'}
+                  </h2>
+                  {activeChannel?.description && !isMobile && (
+                    <p className="text-[11px] text-muted-foreground/60 truncate">{activeChannel.description}</p>
+                  )}
+                </div>
+              </>
+            )}
           </div>
           <div className="flex items-center gap-0.5 shrink-0">
             <button

@@ -165,8 +165,6 @@ export default function Messages() {
     if (msg.type === 'comment' && msg.entityId) {
       setSelectedTaskId(msg.entityId);
       navigate('/');
-    } else if (msg.type === 'google_chat') {
-      window.open('https://chat.google.com', '_blank');
     } else {
       navigate('/chat');
     }

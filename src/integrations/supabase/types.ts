@@ -429,6 +429,33 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_bot_commands: {
+        Row: {
+          command: string
+          executed_at: string | null
+          id: string
+          payload: Json | null
+          result: Json | null
+          user_id: string
+        }
+        Insert: {
+          command: string
+          executed_at?: string | null
+          id?: string
+          payload?: Json | null
+          result?: Json | null
+          user_id: string
+        }
+        Update: {
+          command?: string
+          executed_at?: string | null
+          id?: string
+          payload?: Json | null
+          result?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       chat_categories: {
         Row: {
           created_at: string
@@ -984,6 +1011,90 @@ export type Database = {
           id?: string
           refresh_token?: string
           token_expiry?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      google_chat_connections: {
+        Row: {
+          access_token: string
+          created_at: string | null
+          email: string
+          id: string
+          refresh_token: string
+          space_id: string | null
+          space_name: string | null
+          token_expiry: string
+          user_id: string
+          webhook_url: string | null
+        }
+        Insert: {
+          access_token: string
+          created_at?: string | null
+          email: string
+          id?: string
+          refresh_token: string
+          space_id?: string | null
+          space_name?: string | null
+          token_expiry: string
+          user_id: string
+          webhook_url?: string | null
+        }
+        Update: {
+          access_token?: string
+          created_at?: string | null
+          email?: string
+          id?: string
+          refresh_token?: string
+          space_id?: string | null
+          space_name?: string | null
+          token_expiry?: string
+          user_id?: string
+          webhook_url?: string | null
+        }
+        Relationships: []
+      }
+      google_chat_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_mention: boolean | null
+          is_read: boolean | null
+          message_id: string
+          sender_email: string | null
+          sender_name: string | null
+          space_id: string | null
+          synced_at: string | null
+          thread_id: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          is_mention?: boolean | null
+          is_read?: boolean | null
+          message_id: string
+          sender_email?: string | null
+          sender_name?: string | null
+          space_id?: string | null
+          synced_at?: string | null
+          thread_id?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_mention?: boolean | null
+          is_read?: boolean | null
+          message_id?: string
+          sender_email?: string | null
+          sender_name?: string | null
+          space_id?: string | null
+          synced_at?: string | null
+          thread_id?: string | null
           user_id?: string
         }
         Relationships: []

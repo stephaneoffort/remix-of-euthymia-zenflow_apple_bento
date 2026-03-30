@@ -7,7 +7,8 @@ export type IntegrationKey =
   | 'canva'
   | 'google_meet'
   | 'gmail'
-  | 'brevo';
+  | 'brevo'
+  | 'google_chat';
 
 export interface IntegrationStatus {
   key: IntegrationKey;
@@ -18,7 +19,7 @@ export interface IntegrationStatus {
 }
 
 const ALL_INTEGRATIONS: IntegrationKey[] = [
-  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo',
+  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo', 'google_chat',
 ];
 
 import googleDriveIcon from '@/assets/integrations/google-drive.png';
@@ -27,6 +28,7 @@ import canvaIcon from '@/assets/integrations/canva.png';
 import googleMeetIcon from '@/assets/integrations/google-meet.png';
 import gmailIcon from '@/assets/integrations/gmail.png';
 import brevoIcon from '@/assets/integrations/brevo.png';
+import googleChatIcon from '@/assets/integrations/google-chat.png';
 
 export const INTEGRATION_CONFIG: Record<IntegrationKey, {
   label: string;
@@ -70,6 +72,12 @@ export const INTEGRATION_CONFIG: Record<IntegrationKey, {
     icon: brevoIcon,
     color: '#0092FF',
   },
+  google_chat: {
+    label: 'Google Chat',
+    description: 'Mentions et commandes /zenflow dans Google Chat',
+    icon: googleChatIcon,
+    color: '#00897B',
+  },
 };
 
 const defaultStatus = (key: IntegrationKey): IntegrationStatus => ({
@@ -107,6 +115,7 @@ export function useIntegrations() {
       { key: 'canva', table: 'canva_connections' },
       { key: 'brevo', table: 'brevo_connections' },
       { key: 'gmail', table: 'gmail_connections' },
+      { key: 'google_chat', table: 'google_chat_connections' },
     ];
 
     for (const { key, table } of connectionChecks) {
@@ -225,6 +234,7 @@ export function useIntegrations() {
       canva: 'canva_connections',
       brevo: 'brevo_connections',
       gmail: 'gmail_connections',
+      google_chat: 'google_chat_connections',
     };
     const table = tableMap[key];
     if (table) {

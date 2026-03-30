@@ -108,6 +108,11 @@ function dbToTask(row: any, assigneeIds: string[], comments: Comment[], attachme
     targetCalendarId: (row as any).target_calendar_id || null,
     createdAt: row.created_at,
     order: row.sort_order,
+    durationDays: (row as any).duration_days ?? null,
+    progress: (row as any).progress ?? 0,
+    isMilestone: (row as any).is_milestone ?? false,
+    color: (row as any).color ?? null,
+    wbs: (row as any).wbs ?? null,
   };
 }
 

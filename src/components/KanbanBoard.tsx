@@ -24,6 +24,7 @@ const STATUS_COLORS: Record<string, string> = {
 export default function KanbanBoard() {
   const { getFilteredTasks, moveTask, setSelectedTaskId, getMemberById, addTask, selectedProjectId, selectedSpaceId, getListsForProject, tasks, allStatuses, getStatusLabel, getTasksForProject, projects, lists, quickFilter } = useApp();
   const { teamMemberId } = useAuth();
+  const { zoomTaskIds, meetTaskIds } = useTaskMeetings();
 
   const getProjectName = useCallback((listId: string) => {
     const list = lists.find(l => l.id === listId);

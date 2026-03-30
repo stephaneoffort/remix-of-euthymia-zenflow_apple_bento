@@ -129,6 +129,6 @@ export interface SpaceManager {
   memberId: string;
 }
 
-export type ViewType = "dashboard" | "kanban" | "list" | "calendar" | "workload" | "mindmap";
+export type ViewType = "dashboard" | "kanban" | "list" | "calendar" | "workload" | "mindmap" | "gantt";
 
 export type QuickFilter = "all" | "my_tasks" | "urgent" | "today" | "overdue";

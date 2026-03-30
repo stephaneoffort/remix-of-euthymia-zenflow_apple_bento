@@ -579,7 +579,7 @@ async function buildEventPayload(taskId: string, task: any) {
   // Look up associated Zoom meeting
   const { data: zoomMeeting } = await supabase
     .from("zoom_meetings")
-    .select("join_url, password, topic")
+    .select("join_url, start_url, password, topic")
     .eq("entity_id", taskId)
     .limit(1)
     .maybeSingle();
@@ -596,13 +596,14 @@ async function buildEventPayload(taskId: string, task: any) {
 
   if (zoomMeeting?.join_url) {
     descParts.push("", "── Session Zoom ──", `Rejoindre : ${zoomMeeting.join_url}`);
+    if (zoomMeeting.start_url) descParts.push(`Démarrer (hôte) : ${zoomMeeting.start_url}`);
     if (zoomMeeting.password) descParts.push(`Mot de passe : ${zoomMeeting.password}`);
   }
 
   descParts.push("", "https://euthymia-zenflow-bento.lovable.app");
 
   const colorId: Record<string, string> = { todo: "9", in_progress: "5", in_review: "6", done: "10", blocked: "11" };
-  return {
+  const payload: any = {
     summary: eventTitle,
     description: descParts.join("\n"),
     start: { dateTime: startDate.toISOString(), timeZone: "Europe/Paris" },
@@ -610,7 +611,25 @@ async function buildEventPayload(taskId: string, task: any) {
     colorId: colorId[task.status] ?? "9",
     source: { title: "Euthymia ZenFlow", url: "https://euthymia-zenflow-bento.lovable.app" },
   };
-}
+
+  // Add Zoom as native conference in Google Calendar
+  if (zoomMeeting?.join_url) {
+    payload.conferenceData = {
+      conferenceSolution: {
+        name: "Zoom Meeting",
+        key: { type: "addOn" },
+      },
+      entryPoints: [
+        {
+          entryPointType: "video",
+          uri: zoomMeeting.join_url,
+          label: "Rejoindre Zoom",
+        },
+      ],
+    };
+  }
+
+  return payload;
 
 // ── Push a task to a specific user's Google Calendar ──
 async function pushTaskForUser(userId: string, taskId: string, action: string) {

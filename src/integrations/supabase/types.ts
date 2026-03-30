@@ -884,6 +884,39 @@ export type Database = {
         }
         Relationships: []
       }
+      gmail_connections: {
+        Row: {
+          access_token: string
+          created_at: string | null
+          display_name: string | null
+          email: string | null
+          id: string
+          refresh_token: string
+          token_expiry: string
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          created_at?: string | null
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          refresh_token: string
+          token_expiry: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          created_at?: string | null
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          refresh_token?: string
+          token_expiry?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       member_integrations: {
         Row: {
           connected_at: string | null

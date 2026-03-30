@@ -1,0 +1,1 @@
+ALTER TABLE public.gmail_connections ADD CONSTRAINT gmail_connections_user_id_key UNIQUE (user_id);

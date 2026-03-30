@@ -13,12 +13,14 @@ const CONNECT_URLS: Partial<Record<IntegrationKey, string>> = {
   google_drive: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/google-drive-oauth/authorize',
   zoom: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/zoom-oauth/authorize',
   canva: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/canva-oauth/authorize',
+  gmail: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/gmail-oauth/authorize',
 };
 
 const CONNECTION_TABLES: Partial<Record<IntegrationKey, string>> = {
   google_drive: 'drive_connections',
   zoom: 'zoom_connections',
   canva: 'canva_connections',
+  gmail: 'gmail_connections',
 };
 
 export default function IntegrationsSettings() {
@@ -51,6 +53,10 @@ export default function IntegrationsSettings() {
         .from('brevo_connections').select('account_email, account_name, plan').eq('user_id', user.id).limit(1);
       if (brevoData?.[0]) info.brevo = { email: brevoData[0].account_email, display_name: `${brevoData[0].account_name ?? ''} (${brevoData[0].plan ?? 'free'})` };
 
+      const { data: gmailData } = await (supabase as any)
+        .from('gmail_connections').select('email, display_name').eq('user_id', user.id).limit(1);
+      if (gmailData?.[0]) info.gmail = { email: gmailData[0].email, display_name: gmailData[0].display_name };
+
       setConnInfo(info);
     })();
 
@@ -60,6 +66,7 @@ export default function IntegrationsSettings() {
       ['drive_connected', 'google_drive'],
       ['zoom_connected', 'zoom'],
       ['canva_connected', 'canva'],
+      ['gmail_connected', 'gmail'],
     ];
     callbacks.forEach(([param, key]) => {
       if (params.get(param) === 'true') {
@@ -91,7 +98,7 @@ export default function IntegrationsSettings() {
     const { data: { session } } = await supabase.auth.getSession();
     if (!user || !session) return;
 
-    if (key === 'zoom') {
+    if (key === 'zoom' || key === 'gmail') {
       window.location.href = `${url}?token=${session.access_token}`;
     } else {
       window.location.href = `${url}?user_id=${user.id}`;
@@ -126,7 +133,6 @@ export default function IntegrationsSettings() {
   };
 
   const allKeys: IntegrationKey[] = ['google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo'];
-  const isGmailNotReady = (key: IntegrationKey) => key === 'gmail';
 
   if (loading) {
     return (
@@ -154,7 +160,6 @@ export default function IntegrationsSettings() {
             const info = connInfo[key];
             const enabled = status?.is_enabled ?? false;
             const connected = status?.is_connected ?? false;
-            const isGmailNotReady = key === 'gmail'; // Gmail OAuth not implemented yet
 
             return (
               <div
@@ -190,7 +195,7 @@ export default function IntegrationsSettings() {
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">
-                  {enabled && !connected && key !== 'google_meet' && !isGmailNotReady && (
+                  {enabled && !connected && key !== 'google_meet' && (
                     <Button size="sm" variant="outline" onClick={() => handleConnect(key)} className="text-xs gap-1.5">
                       Connecter
                     </Button>
@@ -208,16 +213,11 @@ export default function IntegrationsSettings() {
                   <Switch
                     checked={enabled}
                     onCheckedChange={(v) => handleToggle(key, v)}
-                    disabled={isGmailNotReady}
                   />
                 </div>
               </div>
             );
           })}
-
-          <p className="text-[11px] text-muted-foreground pt-2">
-            💡 Gmail sera disponible prochainement.
-          </p>
         </CardContent>
       </Card>
 

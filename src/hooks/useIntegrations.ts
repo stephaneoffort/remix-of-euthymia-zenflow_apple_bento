@@ -106,6 +106,7 @@ export function useIntegrations() {
       { key: 'zoom', table: 'zoom_connections' },
       { key: 'canva', table: 'canva_connections' },
       { key: 'brevo', table: 'brevo_connections' },
+      { key: 'gmail', table: 'gmail_connections' },
     ];
 
     for (const { key, table } of connectionChecks) {
@@ -223,6 +224,7 @@ export function useIntegrations() {
       zoom: 'zoom_connections',
       canva: 'canva_connections',
       brevo: 'brevo_connections',
+      gmail: 'gmail_connections',
     };
     const table = tableMap[key];
     if (table) {

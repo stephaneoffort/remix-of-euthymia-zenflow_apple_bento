@@ -75,6 +75,21 @@
     --status-done: 142 71% 48%;
     --status-blocked: 0 80% 62%;
 
+    /* Calendar card tokens */
+    --cal-event-bg: 217 71% 40%;
+    --cal-event-border: 217 91% 60%;
+    --cal-task-bg: 263 70% 35%;
+    --cal-task-border: 263 70% 55%;
+    --cal-subtask-bg: 245 58% 30%;
+    --cal-subtask-border: 263 70% 72%;
+    --cal-done-bg: 220 13% 18%;
+    --cal-done-border: 220 9% 46%;
+    --cal-overdue-bg: 0 63% 20%;
+    --cal-overdue-border: 0 84% 60%;
+    --cal-inprogress-bg: 33 68% 20%;
+    --cal-inprogress-border: 38 92% 55%;
+    --cal-card-fg: 0 0% 100%;
+
     /* Bento tokens */
     --bento-gap: 13px;
     --bento-radius: 20px;

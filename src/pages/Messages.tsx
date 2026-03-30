@@ -6,7 +6,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MessageSquare, CheckCheck, Mail, ArrowLeft } from 'lucide-react';
+import { MessageSquare, CheckCheck, Mail, ArrowLeft, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -17,9 +17,15 @@ function stripHtml(html: string): string {
   return div.textContent || div.innerText || '';
 }
 
+const TYPE_LABELS: Record<string, string> = {
+  comment: 'Commentaire',
+  chat: 'Chat',
+  google_chat: 'Google Chat',
+};
+
 function MessageCard({ message, onClick }: { message: AppMessage; onClick: () => void }) {
   const { getMemberById } = useApp();
-  const member = getMemberById(message.authorId);
+  const member = message.type !== 'google_chat' ? getMemberById(message.authorId) : null;
   const preview = stripHtml(message.content);
 
   return (
@@ -32,10 +38,12 @@ function MessageCard({ message, onClick }: { message: AppMessage; onClick: () =>
       <div className="flex items-start gap-3">
         {/* Avatar */}
         <div
-          className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0"
-          style={{ backgroundColor: member?.avatarColor || '#888' }}
+          className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0 ${
+            message.type === 'google_chat' ? 'bg-emerald-600' : ''
+          }`}
+          style={message.type !== 'google_chat' ? { backgroundColor: member?.avatarColor || '#888' } : undefined}
         >
-          {(member?.name || 'M').charAt(0).toUpperCase()}
+          {message.type === 'google_chat' ? 'G' : (member?.name || 'M').charAt(0).toUpperCase()}
         </div>
 
         <div className="flex-1 min-w-0">
@@ -52,17 +60,29 @@ function MessageCard({ message, onClick }: { message: AppMessage; onClick: () =>
           </div>
 
           <div className="mt-1 flex items-center gap-2">
-            <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-              {message.type === 'comment' ? 'Commentaire' : 'Chat'}
+            <Badge
+              variant="secondary"
+              className={`text-[10px] px-1.5 py-0 ${
+                message.type === 'google_chat' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : ''
+              }`}
+            >
+              {TYPE_LABELS[message.type] || 'Message'}
             </Badge>
             {message.entityTitle && (
               <span className="text-xs text-muted-foreground truncate">
-                sur : {message.entityTitle}
+                {message.type === 'google_chat' ? '' : 'sur : '}{message.entityTitle}
               </span>
             )}
           </div>
 
           <p className="text-sm text-muted-foreground mt-1.5 line-clamp-2">{preview}</p>
+
+          {message.type === 'google_chat' && (
+            <span className="inline-flex items-center gap-1 text-xs text-emerald-600 mt-1">
+              <ExternalLink className="w-3 h-3" />
+              Ouvrir dans Google Chat
+            </span>
+          )}
         </div>
       </div>
     </button>
@@ -78,10 +98,12 @@ export default function Messages() {
   const filtered = tab === 'all' ? messages : messages.filter(m => m.type === tab);
 
   const handleClick = (msg: AppMessage) => {
-    if (!msg.isRead) markAsRead(msg.id);
+    if (!msg.isRead) markAsRead(msg.id, msg.type);
     if (msg.type === 'comment' && msg.entityId) {
       setSelectedTaskId(msg.entityId);
       navigate('/');
+    } else if (msg.type === 'google_chat') {
+      window.open('https://chat.google.com', '_blank');
     } else {
       navigate('/chat');
     }
@@ -117,6 +139,14 @@ export default function Messages() {
               <TabsTrigger value="all">Tous</TabsTrigger>
               <TabsTrigger value="comment">Commentaires</TabsTrigger>
               <TabsTrigger value="chat">Chat</TabsTrigger>
+              <TabsTrigger value="google_chat" className="gap-1">
+                Google Chat
+                {messages.filter(m => m.type === 'google_chat' && !m.isRead).length > 0 && (
+                  <span className="ml-1 w-4 h-4 rounded-full bg-emerald-500 text-white text-[10px] flex items-center justify-center">
+                    {messages.filter(m => m.type === 'google_chat' && !m.isRead).length}
+                  </span>
+                )}
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value={tab} className="mt-4">

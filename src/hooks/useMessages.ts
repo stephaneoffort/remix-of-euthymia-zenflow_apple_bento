@@ -4,7 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 
 export interface AppMessage {
   id: string;
-  type: 'comment' | 'chat' | 'dm';
+  type: 'comment' | 'chat' | 'dm' | 'google_chat';
   content: string;
   authorId: string;
   authorName: string;
@@ -13,6 +13,7 @@ export interface AppMessage {
   entityTitle?: string;
   isRead: boolean;
   createdAt: string;
+  source?: string;
 }
 
 export function useMessages() {
@@ -61,7 +62,7 @@ export function useMessages() {
       if (tasks) tasks.forEach(t => { taskTitleMap[t.id] = t.title; });
     }
 
-    const allMessages: AppMessage[] = (comments ?? []).map(c => ({
+    const commentMessages: AppMessage[] = (comments ?? []).map(c => ({
       id: c.id,
       type: 'comment' as const,
       content: c.content,
@@ -74,7 +75,40 @@ export function useMessages() {
       createdAt: c.created_at,
     }));
 
-    allMessages.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    // 2. Google Chat mentions
+    let gchatMessages: AppMessage[] = [];
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: gchatMentions } = await (supabase as any)
+          .from('google_chat_messages')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('is_mention', true)
+          .order('created_at', { ascending: false })
+          .limit(30);
+
+        gchatMessages = (gchatMentions ?? []).map((m: any) => ({
+          id: m.id,
+          type: 'google_chat' as const,
+          content: m.content,
+          authorId: m.sender_email || '',
+          authorName: m.sender_name || 'Membre',
+          entityType: 'chat',
+          entityId: m.space_id || '',
+          entityTitle: 'Google Chat',
+          isRead: m.is_read,
+          createdAt: m.created_at,
+          source: 'google_chat',
+        }));
+      }
+    } catch (e) {
+      // Google Chat table might not exist yet
+    }
+
+    const allMessages = [...commentMessages, ...gchatMessages]
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
     setMessages(allMessages);
     setUnreadCount(allMessages.filter(m => !m.isRead).length);
     setLoading(false);
@@ -84,7 +118,7 @@ export function useMessages() {
     fetchMessages();
   }, [fetchMessages]);
 
-  // Realtime subscription for new comments
+  // Realtime subscription for new comments + google chat messages
   useEffect(() => {
     if (!teamMemberId) return;
     const channel = supabase
@@ -92,17 +126,33 @@ export function useMessages() {
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'comments' }, () => {
         fetchMessages();
       })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'google_chat_messages' }, () => {
+        fetchMessages();
+      })
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
   }, [teamMemberId, fetchMessages]);
 
-  const markAsRead = useCallback(async (messageId: string) => {
+  const markAsRead = useCallback(async (messageId: string, type?: string) => {
     if (!teamMemberId) return;
-    await supabase.from('comment_reads').upsert(
-      { member_id: teamMemberId, comment_id: messageId },
-      { onConflict: 'member_id,comment_id' }
-    );
+
+    if (type === 'google_chat') {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await (supabase as any)
+          .from('google_chat_messages')
+          .update({ is_read: true })
+          .eq('id', messageId)
+          .eq('user_id', user.id);
+      }
+    } else {
+      await supabase.from('comment_reads').upsert(
+        { member_id: teamMemberId, comment_id: messageId },
+        { onConflict: 'member_id,comment_id' }
+      );
+    }
+
     setMessages(prev => prev.map(m => m.id === messageId ? { ...m, isRead: true } : m));
     setUnreadCount(prev => Math.max(0, prev - 1));
   }, [teamMemberId]);
@@ -111,8 +161,28 @@ export function useMessages() {
     if (!teamMemberId) return;
     const unread = messages.filter(m => !m.isRead);
     if (unread.length === 0) return;
-    const inserts = unread.map(m => ({ member_id: teamMemberId, comment_id: m.id }));
-    await supabase.from('comment_reads').upsert(inserts, { onConflict: 'member_id,comment_id' });
+
+    const commentUnread = unread.filter(m => m.type !== 'google_chat');
+    const gchatUnread = unread.filter(m => m.type === 'google_chat');
+
+    if (commentUnread.length > 0) {
+      const inserts = commentUnread.map(m => ({ member_id: teamMemberId, comment_id: m.id }));
+      await supabase.from('comment_reads').upsert(inserts, { onConflict: 'member_id,comment_id' });
+    }
+
+    if (gchatUnread.length > 0) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        for (const m of gchatUnread) {
+          await (supabase as any)
+            .from('google_chat_messages')
+            .update({ is_read: true })
+            .eq('id', m.id)
+            .eq('user_id', user.id);
+        }
+      }
+    }
+
     setMessages(prev => prev.map(m => ({ ...m, isRead: true })));
     setUnreadCount(0);
   }, [teamMemberId, messages]);

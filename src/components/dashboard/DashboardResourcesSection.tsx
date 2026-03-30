@@ -102,7 +102,7 @@ function DriveCard({ projects }: Props) {
             ) : (
               <div className="space-y-1">
                 {visible.map((project) => (
-                  <div key={project.id} className="py-2.5 px-2 rounded-md hover:bg-muted/50 transition-colors group">
+                  <div key={project.id} onClick={() => onProjectClick(project.id)} className="py-2.5 px-2 rounded-md hover:bg-muted/50 transition-colors group cursor-pointer">
                     <div className="flex items-center gap-2 mb-1.5">
                       <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: project.color }} />
                       <p className="text-sm font-medium text-foreground truncate">{project.name}</p>

@@ -132,18 +132,7 @@ function MessageCard({
             Répondre à <span className="font-medium text-foreground">{message.authorName}</span>
             {message.entityTitle ? ` sur ${message.entityTitle}` : ''}
           </p>
-          {message.type === 'google_chat' ? (
-            <Button
-              size="sm"
-              variant="outline"
-              className="gap-1.5 text-xs"
-              onClick={() => window.open('https://chat.google.com', '_blank')}
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-              Répondre dans Google Chat
-            </Button>
-          ) : (
-            <div className="relative">
+          <div className="relative">
               <MentionCommentInput
                 value={replyContent}
                 onChange={setReplyContent}
@@ -156,7 +145,6 @@ function MessageCard({
                 </div>
               )}
             </div>
-          )}
         </div>
       )}
     </div>

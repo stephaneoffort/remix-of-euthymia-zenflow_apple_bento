@@ -289,6 +289,7 @@ export default function IntegrationsSettings() {
           <BrevoConnectionForm onConnected={() => {
             setBrevoFormOpen(false);
             refetch();
+            setConnInfoVersion(v => v + 1);
           }} />
         </DialogContent>
       </Dialog>

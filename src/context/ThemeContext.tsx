@@ -108,6 +108,11 @@ export const PALETTE_META: Record<ThemePalette, { label: string; description: st
     description: 'Soft UI · Gris perle · Jour',
     colors: ['#E8ECEF', '#C5C9CC', '#FFFFFF', '#4A7FA5'],
   },
+  nmMidnight: {
+    label: 'Midnight',
+    description: 'Soft UI · Charbon · Nuit',
+    colors: ['#1E2028', '#12141A', '#2A2D38', '#6B9BC0'],
+  },
 };
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {

@@ -370,37 +370,25 @@ export default function Index() {
                 </div>
               )}
 
-              {/* View selector — desktop inline */}
+              {/* View selector — desktop inline with drag & drop */}
               {!isMobile && (
-                <div className="flex items-center gap-0.5 ml-2 bg-muted/50 rounded-lg p-0.5 shrink-0">
-                  {VIEW_OPTIONS.map((v) => (
-                    <Tooltip key={v.key}>
-                      <TooltipTrigger asChild>
-                        <button
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleViewDragEnd}>
+                  <SortableContext items={viewOrder} strategy={horizontalListSortingStrategy}>
+                    <div className="flex items-center gap-0.5 ml-2 bg-muted/50 rounded-lg p-0.5 shrink-0">
+                      {orderedViews.map((v) => (
+                        <SortableViewTab
+                          key={v.key}
+                          viewKey={v.key}
+                          label={v.label}
+                          icon={v.icon}
+                          isActive={selectedView === v.key}
                           onClick={() => setSelectedView(v.key)}
-                          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                            selectedView === v.key
-                              ? "bg-background text-foreground shadow-sm"
-                              : "text-muted-foreground hover:text-foreground"
-                          }`}
-                        >
-                          <span className="relative">
-                            {v.icon}
-                            {v.key === 'calendar' && todayEventCount > 0 && (
-                              <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-bold leading-none">
-                                {todayEventCount > 99 ? '99+' : todayEventCount}
-                              </span>
-                            )}
-                          </span>
-                          <span className="hidden lg:inline">{v.label}</span>
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom" className="lg:hidden">
-                        {v.label}
-                      </TooltipContent>
-                    </Tooltip>
-                  ))}
-                </div>
+                          todayEventCount={v.key === 'calendar' ? todayEventCount : 0}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
               )}
             </div>
             <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">

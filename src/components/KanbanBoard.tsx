@@ -165,9 +165,13 @@ export default function KanbanBoard() {
   const renderCollapsedColumn = (status: string) => {
     const count = tasksByStatus[status]?.length || 0;
     return (
-      <button
+      <motion.button
         key={status}
-        className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md cursor-pointer transition-all duration-200 hover:bg-muted/60 bg-muted/30 border border-border text-xs ${
+        initial={{ opacity: 0, scale: 0.8, y: -8 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.8, y: -8 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+        className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md cursor-pointer transition-colors duration-200 hover:bg-muted/60 bg-muted/30 border border-border text-xs ${
           draggedColumn === status ? 'opacity-40 scale-[0.97]' : ''
         } ${dropTargetColumn === status && draggedColumn ? 'ring-2 ring-primary/40' : ''}`}
         draggable
@@ -189,7 +193,7 @@ export default function KanbanBoard() {
           {getStatusLabel(status)}
         </span>
         <span className="text-muted-foreground">{count}</span>
-      </button>
+      </motion.button>
     );
   };
 

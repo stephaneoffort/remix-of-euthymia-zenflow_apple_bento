@@ -250,7 +250,6 @@ export default function ZoomMeetingsDashboard() {
       setSelectedView("calendar");
     }
   };
-  };
 
   if (!zoomEnabled && !zoomActive) return null;
 

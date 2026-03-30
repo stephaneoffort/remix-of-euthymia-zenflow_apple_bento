@@ -96,17 +96,12 @@ function MessageCard({
             </div>
 
             <div className="mt-1 flex items-center gap-2">
-              <Badge
-                variant="secondary"
-                className={`text-[10px] px-1.5 py-0 ${
-                  message.type === 'google_chat' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : ''
-                }`}
-              >
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
                 {TYPE_LABELS[message.type] || 'Message'}
               </Badge>
               {message.entityTitle && (
                 <span className="text-xs text-muted-foreground truncate">
-                  {message.type === 'google_chat' ? '' : 'sur : '}{message.entityTitle}
+                  sur : {message.entityTitle}
                 </span>
               )}
             </div>

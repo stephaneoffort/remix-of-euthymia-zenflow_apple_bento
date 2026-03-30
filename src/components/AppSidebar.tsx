@@ -124,6 +124,34 @@ export default function AppSidebar() {
     } catch {}
     return new Set<string>();
   });
+  const [addingSpace, setAddingSpace] = useState(false);
+  const [newSpaceName, setNewSpaceName] = useState('');
+  const [newSpaceIcon, setNewSpaceIcon] = useState('📁');
+  const [newSpacePrivate, setNewSpacePrivate] = useState(false);
+  const [addingProjectForSpace, setAddingProjectForSpace] = useState<string | null>(null);
+  const [newProjectName, setNewProjectName] = useState('');
+  const [newProjectColor, setNewProjectColor] = useState(PROJECT_COLORS[0]);
+  const [newProjectMemberIds, setNewProjectMemberIds] = useState<string[]>([]);
+  const [editingSpaceId, setEditingSpaceId] = useState<string | null>(null);
+  const [editingSpaceName, setEditingSpaceName] = useState('');
+  const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
+  const [editingProjectName, setEditingProjectName] = useState('');
+  const [deleteConfirm, setDeleteConfirm] = useState<{ type: 'space' | 'project'; id: string; name: string } | null>(null);
+  const [filtersExpanded, setFiltersExpanded] = useState(() => !window.matchMedia('(max-width: 767px)').matches);
+  const [accessDialogSpace, setAccessDialogSpace] = useState<{ id: string; name: string; isPrivate: boolean } | null>(null);
+  const [membersDialogProject, setMembersDialogProject] = useState<{ id: string; name: string } | null>(null);
+
+  // Drag & drop state for cross-space project moves and task-to-project drops
+  const [dragOverSpaceId, setDragOverSpaceId] = useState<string | null>(null);
+  const [dragOverProjectId, setDragOverProjectId] = useState<string | null>(null);
+  const [draggingProjectId, setDraggingProjectId] = useState<string | null>(null);
+
+  // Filter spaces based on access
+  const visibleSpaces = spaces.filter(s => canAccessSpace(s.id));
+
+  useEffect(() => {
+    if (isMobile) setSidebarCollapsed(true);
+  }, [isMobile]);
 
   // Only auto-expand truly new spaces (never seen before), preserve user's collapsed state
   useEffect(() => {

@@ -749,6 +749,7 @@ export default function GanttView() {
                 <GanttBar
                   key={task.id}
                   task={task}
+                  allTasks={tasks}
                   rowIndex={rowIndex}
                   rangeStart={rangeStart}
                   zoom={zoom}

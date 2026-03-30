@@ -33,42 +33,36 @@ function getModeConfig(mode: 'day' | 'week') {
   };
 }
 
-// ─── Card colors by type with border-left ───
-interface CardStyle {
-  bg: string;
-  borderLeft: string;
-  className: string;
-}
-
-function getCardStyle(item: PositionedItem): CardStyle {
+// ─── Card colors using design system tokens ───
+function getCardClasses(item: PositionedItem): string {
   if (item.type === 'event') {
-    return { bg: '#1E40AF', borderLeft: '#3B82F6', className: 'bg-[#1E40AF] border-l-[3px] border-l-[#3B82F6]' };
+    return 'bg-[hsl(var(--cal-event-bg))] border-l-[3px] border-l-[hsl(var(--cal-event-border))] text-[hsl(var(--cal-card-fg))]';
   }
   const t = item.task!;
   if (t.status === 'done') {
-    return { bg: '#1F2937', borderLeft: '#6B7280', className: 'bg-[#1F2937] border-l-[3px] border-l-[#6B7280]' };
+    return 'bg-[hsl(var(--cal-done-bg))] border-l-[3px] border-l-[hsl(var(--cal-done-border))] text-[hsl(var(--cal-card-fg))]';
   }
   if (t.dueDate && t.dueDate < new Date().toISOString().split('T')[0] && t.status !== 'done') {
-    return { bg: '#7F1D1D', borderLeft: '#EF4444', className: 'bg-[#7F1D1D] border-l-[3px] border-l-[#EF4444]' };
+    return 'bg-[hsl(var(--cal-overdue-bg))] border-l-[3px] border-l-[hsl(var(--cal-overdue-border))] text-[hsl(var(--cal-card-fg))]';
   }
   if (t.status === 'in_progress') {
-    return { bg: '#78350F', borderLeft: '#F59E0B', className: 'bg-[#78350F] border-l-[3px] border-l-[#F59E0B]' };
+    return 'bg-[hsl(var(--cal-inprogress-bg))] border-l-[3px] border-l-[hsl(var(--cal-inprogress-border))] text-[hsl(var(--cal-card-fg))]';
   }
   if (item.type === 'subtask') {
-    return { bg: '#312E81', borderLeft: '#A78BFA', className: 'bg-[#312E81] border-l-[3px] border-l-[#A78BFA]' };
+    return 'bg-[hsl(var(--cal-subtask-bg))] border-l-[3px] border-l-[hsl(var(--cal-subtask-border))] text-[hsl(var(--cal-card-fg))]';
   }
-  return { bg: '#4C1D95', borderLeft: '#7C3AED', className: 'bg-[#4C1D95] border-l-[3px] border-l-[#7C3AED]' };
+  return 'bg-[hsl(var(--cal-task-bg))] border-l-[3px] border-l-[hsl(var(--cal-task-border))] text-[hsl(var(--cal-card-fg))]';
 }
 
-// Simple chip color for all-day zone
+// Chip color for all-day zone
 function getChipColor(item: PositionedItem): string {
-  if (item.type === 'event') return 'bg-[#2D8CFF] text-white';
+  if (item.type === 'event') return 'bg-[hsl(var(--cal-event-border))] text-[hsl(var(--cal-card-fg))]';
   const t = item.task!;
-  if (t.status === 'done') return 'bg-[#6B7280] text-white';
-  if (t.dueDate && t.dueDate < new Date().toISOString().split('T')[0]) return 'bg-[#EF4444] text-white';
-  if (t.status === 'in_progress') return 'bg-[#F59E0B] text-white';
-  if (item.type === 'subtask') return 'bg-[#A78BFA] text-white';
-  return 'bg-[#7C3AED] text-white';
+  if (t.status === 'done') return 'bg-[hsl(var(--cal-done-border))] text-[hsl(var(--cal-card-fg))]';
+  if (t.dueDate && t.dueDate < new Date().toISOString().split('T')[0]) return 'bg-[hsl(var(--cal-overdue-border))] text-[hsl(var(--cal-card-fg))]';
+  if (t.status === 'in_progress') return 'bg-[hsl(var(--cal-inprogress-border))] text-[hsl(var(--cal-card-fg))]';
+  if (item.type === 'subtask') return 'bg-[hsl(var(--cal-subtask-border))] text-[hsl(var(--cal-card-fg))]';
+  return 'bg-[hsl(var(--cal-task-border))] text-[hsl(var(--cal-card-fg))]';
 }
 
 // ─── Helpers ───

@@ -678,6 +678,7 @@ export default function TaskDetailPanel() {
             <ZoomMeetings entityType="task" entityId={task.id} compact defaultTitle={task.title} />
             <BrevoContacts entityType="task" entityId={task.id} compact />
             <GmailCompose entityType="task" entityId={task.id} defaultSubject={task.title} compact />
+            <GmailInbox compact />
 
             {!isActive('google_drive') && !isActive('canva') && !isActive('zoom') && !isActive('brevo') && !isActive('gmail') && (
               <a

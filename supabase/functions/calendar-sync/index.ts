@@ -150,7 +150,7 @@ async function googlePushCreate(account: any, event: any): Promise<string> {
   }
 
   const meetParam = event.has_meet ? "?conferenceDataVersion=1" : "";
-  const res = await fetch(
+  const res = await fetchWithRetry(
     `https://www.googleapis.com/calendar/v3/calendars/${calId}/events${meetParam}`,
     {
       method: "POST",

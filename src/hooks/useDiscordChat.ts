@@ -14,6 +14,12 @@ export function useDiscordChat() {
   const [loading, setLoading] = useState(true);
   const [memberProfiles, setMemberProfiles] = useState<Record<string, MemberProfile>>({});
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
+  const [pinnedMessages, setPinnedMessages] = useState<ChatMessage[]>([]);
+  const [threadParent, setThreadParent] = useState<ChatMessage | null>(null);
+  const [threadMessages, setThreadMessages] = useState<ChatMessage[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<ChatMessage[]>([]);
+  const [searching, setSearching] = useState(false);
   const messagesRef = useRef<ChatMessage[]>([]);
   const typingTimeouts = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
@@ -82,7 +88,6 @@ export function useDiscordChat() {
     if (data) {
       setMessages(data);
 
-      // Load reactions
       const messageIds = data.map((m: ChatMessage) => m.id);
       if (messageIds.length > 0) {
         const { data: rxns } = await db
@@ -100,7 +105,6 @@ export function useDiscordChat() {
         }
       }
 
-      // Load profiles
       const userIds = [...new Set(data.map((m: ChatMessage) => m.user_id))];
       loadProfiles(userIds as string[]);
     }
@@ -108,8 +112,112 @@ export function useDiscordChat() {
   }, [loadProfiles]);
 
   useEffect(() => {
-    if (activeChannelId) loadMessages(activeChannelId);
+    if (activeChannelId) {
+      loadMessages(activeChannelId);
+      loadPinnedMessages(activeChannelId);
+    }
+    setThreadParent(null);
+    setThreadMessages([]);
   }, [activeChannelId]);
+
+  // Load pinned messages
+  const loadPinnedMessages = useCallback(async (channelId: string) => {
+    const { data: pins } = await db
+      .from('chat_pinned_messages')
+      .select('message_id')
+      .eq('channel_id', channelId);
+
+    if (pins && pins.length > 0) {
+      const msgIds = pins.map((p: any) => p.message_id);
+      const { data: msgs } = await db
+        .from('chat_messages')
+        .select('*')
+        .in('id', msgIds)
+        .eq('is_deleted', false);
+      setPinnedMessages(msgs || []);
+    } else {
+      setPinnedMessages([]);
+    }
+  }, []);
+
+  // Pin/unpin a message
+  const togglePin = useCallback(async (messageId: string) => {
+    if (!activeChannelId || !user) return;
+    const isPinned = pinnedMessages.some(m => m.id === messageId);
+    if (isPinned) {
+      await db.from('chat_pinned_messages').delete()
+        .eq('message_id', messageId)
+        .eq('channel_id', activeChannelId);
+    } else {
+      await db.from('chat_pinned_messages').insert({
+        message_id: messageId,
+        channel_id: activeChannelId,
+        pinned_by: user.id,
+      });
+    }
+    await loadPinnedMessages(activeChannelId);
+  }, [activeChannelId, user, pinnedMessages, loadPinnedMessages]);
+
+  // Open thread
+  const openThread = useCallback(async (parentMsg: ChatMessage) => {
+    setThreadParent(parentMsg);
+    const { data } = await db
+      .from('chat_messages')
+      .select('*')
+      .eq('thread_id', parentMsg.id)
+      .eq('is_deleted', false)
+      .order('created_at', { ascending: true });
+    setThreadMessages(data || []);
+    const userIds = [...new Set((data || []).map((m: ChatMessage) => m.user_id))];
+    if (userIds.length) loadProfiles(userIds as string[]);
+  }, [loadProfiles]);
+
+  const closeThread = useCallback(() => {
+    setThreadParent(null);
+    setThreadMessages([]);
+  }, []);
+
+  // Send thread reply
+  const sendThreadReply = useCallback(async (content: string) => {
+    if (!threadParent || !activeChannelId || !user) return;
+    await db.from('chat_messages').insert({
+      channel_id: activeChannelId,
+      user_id: user.id,
+      content,
+      thread_id: threadParent.id,
+    });
+    // reload thread
+    const { data } = await db
+      .from('chat_messages')
+      .select('*')
+      .eq('thread_id', threadParent.id)
+      .eq('is_deleted', false)
+      .order('created_at', { ascending: true });
+    setThreadMessages(data || []);
+  }, [threadParent, activeChannelId, user]);
+
+  // Search messages
+  const searchMessages = useCallback(async (query: string) => {
+    if (!activeChannelId || !query.trim()) {
+      setSearchResults([]);
+      return;
+    }
+    setSearching(true);
+    const { data } = await db
+      .from('chat_messages')
+      .select('*')
+      .eq('channel_id', activeChannelId)
+      .eq('is_deleted', false)
+      .ilike('content', `%${query.trim()}%`)
+      .order('created_at', { ascending: false })
+      .limit(20);
+    setSearchResults(data || []);
+    if (data) {
+      const userIds = [...new Set(data.map((m: ChatMessage) => m.user_id))];
+      loadProfiles(userIds as string[]);
+    }
+    setSearching(false);
+  }, [activeChannelId, loadProfiles]);
 
   // Realtime subscriptions
   useEffect(() => {
@@ -124,17 +232,18 @@ export function useDiscordChat() {
         filter: `channel_id=eq.${activeChannelId}`,
       }, (payload) => {
         const newMsg = payload.new as ChatMessage;
-        if (!newMsg.thread_id) {
+        if (newMsg.thread_id === threadParent?.id) {
+          setThreadMessages(prev => [...prev, newMsg]);
+        } else if (!newMsg.thread_id) {
           setMessages(prev => [...prev, newMsg]);
-          loadProfiles([newMsg.user_id]);
         }
+        loadProfiles([newMsg.user_id]);
       })
       .on('postgres_changes', {
         event: '*',
         schema: 'public',
         table: 'chat_reactions',
       }, () => {
-        // Reload reactions for current messages
         const ids = messagesRef.current.map(m => m.id);
         if (ids.length > 0) {
           db.from('chat_reactions').select('*').in('message_id', ids).then(({ data: rxns }: any) => {
@@ -151,7 +260,6 @@ export function useDiscordChat() {
       })
       .subscribe();
 
-    // Typing indicator channel
     const typingChannel = supabase
       .channel(`typing-${activeChannelId}`)
       .on('broadcast', { event: 'typing' }, ({ payload }) => {
@@ -170,7 +278,7 @@ export function useDiscordChat() {
       supabase.removeChannel(typingChannel);
       setTypingUsers([]);
     };
-  }, [activeChannelId, loadProfiles]);
+  }, [activeChannelId, loadProfiles, threadParent]);
 
   // Send message
   const sendMessage = useCallback(async (content: string, mentionedUsers?: string[]) => {
@@ -212,21 +320,19 @@ export function useDiscordChat() {
     });
   }, [activeChannelId, user, memberProfiles]);
 
-  // Mark channel as read
-  const markRead = useCallback(async (channelId: string) => {
+  // Delete message
+  const deleteMessage = useCallback(async (messageId: string) => {
     if (!user) return;
-    await db.from('chat_channel_members').upsert({
-      channel_id: channelId,
-      user_id: user.id,
-      last_read_at: new Date().toISOString(),
-    }, { onConflict: 'channel_id,user_id' });
+    await db.from('chat_messages').update({ is_deleted: true, deleted_at: new Date().toISOString() }).eq('id', messageId).eq('user_id', user.id);
+    setMessages(prev => prev.filter(m => m.id !== messageId));
   }, [user]);
 
-  // Get unread count for a channel
-  const getUnreadCount = useCallback((_channelId: string) => {
-    // Simplified - would need channel_members data
-    return 0;
-  }, []);
+  // Edit message
+  const editMessage = useCallback(async (messageId: string, newContent: string) => {
+    if (!user) return;
+    await db.from('chat_messages').update({ content: newContent, is_edited: true, updated_at: new Date().toISOString() }).eq('id', messageId).eq('user_id', user.id);
+    setMessages(prev => prev.map(m => m.id === messageId ? { ...m, content: newContent, is_edited: true } : m));
+  }, [user]);
 
   return {
     channels,
@@ -240,9 +346,22 @@ export function useDiscordChat() {
     sendMessage,
     toggleReaction,
     sendTyping,
-    markRead,
-    getUnreadCount,
     loadChannels,
     user,
+    // New features
+    pinnedMessages,
+    togglePin,
+    openThread,
+    closeThread,
+    threadParent,
+    threadMessages,
+    sendThreadReply,
+    searchMessages,
+    searchQuery,
+    setSearchQuery,
+    searchResults,
+    searching,
+    deleteMessage,
+    editMessage,
   };
 }

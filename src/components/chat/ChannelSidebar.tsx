@@ -55,7 +55,7 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
 
   return (
     <>
-      <div className="w-64 bg-card/60 backdrop-blur-sm border-r border-border/50 flex flex-col shrink-0 h-full">
+      <div className="w-64 backdrop-blur-xl bg-card/20 border-r border-border/20 flex flex-col shrink-0 h-full shadow-[inset_-1px_0_0_rgba(255,255,255,0.04)]">
         {/* Header with back button */}
         <div className="h-14 flex items-center gap-2 px-3 border-b border-border/50">
           <button

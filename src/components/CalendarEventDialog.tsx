@@ -10,6 +10,7 @@ import DriveAttachments from '@/components/drive/DriveAttachments';
 import CanvaAttachments from '@/components/canva/CanvaAttachments';
 import ZoomMeetings from '@/components/zoom/ZoomMeetings';
 import BrevoContacts from '@/components/brevo/BrevoContacts';
+import BrevoNewsletterLinks from '@/components/brevo/BrevoNewsletterLinks';
 import GoogleCalendarPicker from '@/components/GoogleCalendarPicker';
 import type { CalendarEvent } from '@/hooks/useCalendarSync';
 import { supabase } from '@/integrations/supabase/client';
@@ -307,6 +308,7 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
               <CanvaAttachments entityType="event" entityId={event.id} compact defaultTitle={event.title} />
               <ZoomMeetings entityType="event" entityId={event.id} compact defaultTitle={event.title} />
               <BrevoContacts entityType="event" entityId={event.id} compact />
+              <BrevoNewsletterLinks entityType="event" entityId={event.id} compact />
             </>
           )}
           <div className="flex items-center justify-between pt-2">

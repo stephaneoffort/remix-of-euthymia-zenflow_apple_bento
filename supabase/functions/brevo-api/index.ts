@@ -293,6 +293,82 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify(data.templates ?? []), { headers: corsHeaders });
     }
 
+    // ── LIST NEWSLETTERS ────────────────────────────
+    if (action === "list_newsletters") {
+      const [sentRes, draftRes] = await Promise.all([
+        brevoFetch("GET", "/emailCampaigns?limit=50&sort=desc&status=sent", apiKey),
+        brevoFetch("GET", "/emailCampaigns?limit=20&sort=desc&status=draft", apiKey),
+      ]);
+      const campaigns = [
+        ...((sentRes as any).campaigns ?? []),
+        ...((draftRes as any).campaigns ?? []),
+      ].map((c: any) => ({
+        id: c.id,
+        name: c.name,
+        subject: c.subject,
+        status: c.status,
+        sent_date: c.sentDate ?? null,
+        open_rate: c.statistics?.globalStats?.openRate ?? null,
+        share_link: c.shareLink ?? null,
+      }));
+      return new Response(JSON.stringify(campaigns), { headers: corsHeaders });
+    }
+
+    // ── LINK NEWSLETTER ─────────────────────────────
+    if (action === "link_newsletter") {
+      const { entity_type, entity_id, campaign_id, campaign_name, campaign_url, custom_url, label } = body;
+      const { data, error } = await supabase
+        .from("brevo_entity_campaigns")
+        .upsert({
+          user_id: userId,
+          entity_type,
+          entity_id,
+          campaign_id: campaign_id ?? null,
+          campaign_name: campaign_name ?? null,
+          campaign_url: campaign_url ?? null,
+          custom_url: custom_url ?? null,
+          label: label ?? campaign_name ?? "Newsletter",
+        }, { onConflict: "entity_type,entity_id,campaign_id" })
+        .select()
+        .single();
+      if (error) throw error;
+      return new Response(JSON.stringify(data), { headers: corsHeaders });
+    }
+
+    // ── GET LINKED NEWSLETTERS ──────────────────────
+    if (action === "get_linked_newsletters") {
+      const { entity_type, entity_id } = body;
+      const { data } = await supabase
+        .from("brevo_entity_campaigns")
+        .select("*")
+        .eq("user_id", userId)
+        .eq("entity_type", entity_type)
+        .eq("entity_id", entity_id)
+        .order("created_at", { ascending: false });
+      return new Response(JSON.stringify(data ?? []), { headers: corsHeaders });
+    }
+
+    // ── UNLINK NEWSLETTER ───────────────────────────
+    if (action === "unlink_newsletter") {
+      const { link_id } = body;
+      await supabase
+        .from("brevo_entity_campaigns")
+        .delete()
+        .eq("id", link_id)
+        .eq("user_id", userId);
+      return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
+    }
+
+    // ── GET SHARE LINK ──────────────────────────────
+    if (action === "get_share_link") {
+      const { campaign_id } = body;
+      const data = await brevoFetch("GET", `/emailCampaigns/${campaign_id}`, apiKey);
+      return new Response(
+        JSON.stringify({ share_link: (data as any).shareLink ?? null }),
+        { headers: corsHeaders }
+      );
+    }
+
     return new Response(JSON.stringify({ error: "Unknown action" }), {
       status: 400,
       headers: corsHeaders,

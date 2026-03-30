@@ -75,10 +75,6 @@ export default function Settings() {
                 <ListChecks className="w-4 h-4 shrink-0" />
                 <span className="hidden xs:inline sm:inline">Avancements</span>
               </TabsTrigger>
-              <TabsTrigger value="chat" className="gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm data-[state=active]:shadow-sm">
-                <MessageCircle className="w-4 h-4 shrink-0" />
-                <span className="hidden xs:inline sm:inline">Chat</span>
-              </TabsTrigger>
               <TabsTrigger value="theme" className="gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm data-[state=active]:shadow-sm">
                 <Palette className="w-4 h-4 shrink-0" />
                 <span className="hidden xs:inline sm:inline">Thème</span>
@@ -110,9 +106,6 @@ export default function Settings() {
             <StatusesPanel />
           </TabsContent>
 
-          <TabsContent value="chat">
-            <ChatCategoriesPanel />
-          </TabsContent>
 
           <TabsContent value="theme">
             <ThemePalettePanel />
@@ -501,177 +494,6 @@ function StatusesPanel() {
   );
 }
 
-interface ChatCategory {
-  id: string;
-  name: string;
-  icon: string;
-  sort_order: number;
-}
-
-const CHAT_ICONS = ['💬', '📢', '🛟', '🎲', '🎯', '💡', '🔥', '📊', '🎨', '🤝'];
-
-function ChatCategoriesPanel() {
-  const [categories, setCategories] = useState<ChatCategory[]>([]);
-  const [newName, setNewName] = useState('');
-  const [newIcon, setNewIcon] = useState('💬');
-  const [adding, setAdding] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editName, setEditName] = useState('');
-  const [editIcon, setEditIcon] = useState('');
-
-  const fetchCategories = async () => {
-    const { data } = await supabase.from('chat_categories').select('*').order('sort_order');
-    setCategories(data || []);
-  };
-
-  useEffect(() => { fetchCategories(); }, []);
-
-  const handleAdd = async () => {
-    if (!newName.trim()) return;
-    setAdding(true);
-    const { error } = await supabase.from('chat_categories').insert({
-      name: newName.trim(),
-      icon: newIcon,
-      sort_order: categories.length,
-    });
-    if (error) {
-      toast.error(error.message);
-    } else {
-      setNewName('');
-      setNewIcon('💬');
-      toast.success('Catégorie ajoutée');
-      fetchCategories();
-    }
-    setAdding(false);
-  };
-
-  const handleDelete = async (id: string) => {
-    const { error } = await supabase.from('chat_categories').delete().eq('id', id);
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success('Catégorie supprimée');
-      fetchCategories();
-    }
-  };
-
-  const startEdit = (cat: ChatCategory) => {
-    setEditingId(cat.id);
-    setEditName(cat.name);
-    setEditIcon(cat.icon);
-  };
-
-  const handleSaveEdit = async () => {
-    if (!editingId || !editName.trim()) return;
-    const { error } = await supabase.from('chat_categories').update({ name: editName.trim(), icon: editIcon }).eq('id', editingId);
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success('Catégorie modifiée');
-      fetchCategories();
-    }
-    setEditingId(null);
-  };
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">Catégories du chat</CardTitle>
-        <p className="text-sm text-muted-foreground">
-          Gérez les canaux de discussion disponibles pour l'équipe.
-        </p>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {categories.map(cat => (
-          <div key={cat.id} className="flex items-center gap-2 px-3 py-2 rounded-md border border-border text-sm">
-            {editingId === cat.id ? (
-              <>
-                <div className="flex gap-0.5 shrink-0">
-                  {CHAT_ICONS.map(icon => (
-                    <button
-                      key={icon}
-                      onClick={() => setEditIcon(icon)}
-                      className={`w-9 h-9 rounded text-sm flex items-center justify-center transition-colors ${
-                        editIcon === icon ? 'bg-primary/10 ring-1 ring-primary' : 'hover:bg-muted'
-                      }`}
-                    >
-                      {icon}
-                    </button>
-                  ))}
-                </div>
-                <Input
-                  value={editName}
-                  onChange={e => setEditName(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleSaveEdit()}
-                  className="flex-1 h-8 text-sm"
-                  autoFocus
-                />
-                <Button variant="default" size="sm" className="h-8 w-8 p-0 btn-icon-touch" onClick={handleSaveEdit}>
-                  <Check className="w-4 h-4" />
-                </Button>
-                <Button variant="outline" size="sm" className="h-8 w-8 p-0 btn-icon-touch" onClick={() => setEditingId(null)}>
-                  <X className="w-4 h-4" />
-                </Button>
-              </>
-            ) : (
-              <>
-                <span>{cat.icon}</span>
-                <span className="flex-1 text-foreground">{cat.name}</span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-7 w-7 p-0 btn-icon-touch"
-                  onClick={() => startEdit(cat)}
-                  title="Renommer"
-                >
-                  <Pencil className="w-3.5 h-3.5" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-destructive hover:text-destructive hover:bg-destructive/10 h-7 w-7 p-0 btn-icon-touch"
-                  onClick={() => handleDelete(cat.id)}
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </Button>
-              </>
-            )}
-          </div>
-        ))}
-
-        {/* Add new category */}
-        <div className="pt-2 border-t border-border space-y-2">
-          <div className="flex gap-0.5 flex-wrap">
-            {CHAT_ICONS.map(icon => (
-              <button
-                key={icon}
-                onClick={() => setNewIcon(icon)}
-                className={`w-9 h-9 rounded text-sm flex items-center justify-center transition-colors ${
-                  newIcon === icon ? 'bg-primary/10 ring-1 ring-primary' : 'hover:bg-muted'
-                }`}
-              >
-                {icon}
-              </button>
-            ))}
-          </div>
-          <div className="flex gap-2">
-            <Input
-              value={newName}
-              onChange={e => setNewName(e.target.value)}
-              placeholder="Nouvelle catégorie..."
-              onKeyDown={e => e.key === 'Enter' && handleAdd()}
-              className="flex-1"
-            />
-            <Button onClick={handleAdd} disabled={adding || !newName.trim()} size="sm" className="gap-1">
-              <Plus className="w-4 h-4" />
-              Ajouter
-            </Button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
 
 function ThemePalettePanel() {
   const { palette, setPalette } = useThemeMode();

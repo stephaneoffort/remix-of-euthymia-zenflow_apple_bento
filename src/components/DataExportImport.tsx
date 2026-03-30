@@ -21,13 +21,10 @@ interface ExportData {
   comments: any[];
   attachments: any[];
   custom_statuses: any[];
-  chat_categories: any[];
+  chat_channels: any[];
+  chat_channel_members: any[];
   chat_messages: any[];
   chat_reactions: any[];
-  direct_conversations: any[];
-  direct_conversation_members: any[];
-  direct_messages: any[];
-  dm_reactions: any[];
 }
 
 export default function DataExportImport() {
@@ -53,13 +50,10 @@ export default function DataExportImport() {
         { data: comments },
         { data: attachments },
         { data: custom_statuses },
-        { data: chat_categories },
+        { data: chat_channels },
+        { data: chat_channel_members },
         { data: chat_messages },
         { data: chat_reactions },
-        { data: direct_conversations },
-        { data: direct_conversation_members },
-        { data: direct_messages },
-        { data: dm_reactions },
       ] = await Promise.all([
         supabase.from('team_members').select('*'),
         supabase.from('spaces').select('*').order('sort_order'),
@@ -73,13 +67,10 @@ export default function DataExportImport() {
         supabase.from('comments').select('*').order('created_at'),
         supabase.from('attachments').select('*'),
         supabase.from('custom_statuses').select('*').order('sort_order'),
-        supabase.from('chat_categories').select('*').order('sort_order'),
+        supabase.from('chat_channels').select('*').order('position'),
+        supabase.from('chat_channel_members').select('*'),
         supabase.from('chat_messages').select('*').order('created_at'),
         supabase.from('chat_reactions').select('*'),
-        supabase.from('direct_conversations').select('*'),
-        supabase.from('direct_conversation_members').select('*'),
-        supabase.from('direct_messages').select('*').order('created_at'),
-        supabase.from('dm_reactions').select('*'),
       ]);
 
       const exportData: ExportData = {
@@ -97,13 +88,10 @@ export default function DataExportImport() {
         comments: comments || [],
         attachments: attachments || [],
         custom_statuses: custom_statuses || [],
-        chat_categories: chat_categories || [],
+        chat_channels: chat_channels || [],
+        chat_channel_members: chat_channel_members || [],
         chat_messages: chat_messages || [],
         chat_reactions: chat_reactions || [],
-        direct_conversations: direct_conversations || [],
-        direct_conversation_members: direct_conversation_members || [],
-        direct_messages: direct_messages || [],
-        dm_reactions: dm_reactions || [],
       };
 
       const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
@@ -277,34 +265,22 @@ export default function DataExportImport() {
         const { error } = await supabase.from('custom_statuses').upsert(d.custom_statuses, { onConflict: 'id' });
         if (error) throw new Error(`custom_statuses: ${error.message}`);
       }
-      if (d.chat_categories.length) {
-        const { error } = await supabase.from('chat_categories').upsert(d.chat_categories, { onConflict: 'id' });
-        if (error) throw new Error(`chat_categories: ${error.message}`);
+      if (d.chat_channels?.length) {
+        const { error } = await supabase.from('chat_channels').upsert(d.chat_channels as any[], { onConflict: 'id' });
+        if (error) throw new Error(`chat_channels: ${error.message}`);
       }
-      if (d.chat_messages.length) {
-        const { error } = await supabase.from('chat_messages').upsert(d.chat_messages, { onConflict: 'id' });
+      if (d.chat_channel_members?.length) {
+        await supabase.from('chat_channel_members').delete().neq('channel_id', '___none___');
+        const { error } = await supabase.from('chat_channel_members').insert(d.chat_channel_members as any[]);
+        if (error) throw new Error(`chat_channel_members: ${error.message}`);
+      }
+      if (d.chat_messages?.length) {
+        const { error } = await supabase.from('chat_messages').upsert(d.chat_messages as any[], { onConflict: 'id' });
         if (error) throw new Error(`chat_messages: ${error.message}`);
       }
       if (d.chat_reactions?.length) {
-        const { error } = await supabase.from('chat_reactions').upsert(d.chat_reactions, { onConflict: 'id' });
+        const { error } = await supabase.from('chat_reactions').upsert(d.chat_reactions as any[], { onConflict: 'id' });
         if (error) throw new Error(`chat_reactions: ${error.message}`);
-      }
-      if (d.direct_conversations?.length) {
-        const { error } = await supabase.from('direct_conversations').upsert(d.direct_conversations, { onConflict: 'id' });
-        if (error) throw new Error(`direct_conversations: ${error.message}`);
-      }
-      if (d.direct_conversation_members?.length) {
-        await supabase.from('direct_conversation_members').delete().neq('conversation_id', '___none___');
-        const { error } = await supabase.from('direct_conversation_members').insert(d.direct_conversation_members);
-        if (error) throw new Error(`direct_conversation_members: ${error.message}`);
-      }
-      if (d.direct_messages?.length) {
-        const { error } = await supabase.from('direct_messages').upsert(d.direct_messages, { onConflict: 'id' });
-        if (error) throw new Error(`direct_messages: ${error.message}`);
-      }
-      if (d.dm_reactions?.length) {
-        const { error } = await supabase.from('dm_reactions').upsert(d.dm_reactions, { onConflict: 'id' });
-        if (error) throw new Error(`dm_reactions: ${error.message}`);
       }
 
       toast.success('Import terminé — rechargez la page pour voir les changements');
@@ -323,11 +299,10 @@ export default function DataExportImport() {
     members: importPreview.team_members.length,
     comments: importPreview.comments.length,
     checklists: importPreview.checklist_items.length,
-    chatCategories: importPreview.chat_categories.length,
-    chatMessages: importPreview.chat_messages.length,
+    chatChannels: (importPreview.chat_channels || []).length,
+    chatMembers: (importPreview.chat_channel_members || []).length,
+    chatMessages: (importPreview.chat_messages || []).length,
     chatReactions: (importPreview.chat_reactions || []).length,
-    directMessages: (importPreview.direct_messages || []).length,
-    dmReactions: (importPreview.dm_reactions || []).length,
     statuses: importPreview.custom_statuses.length,
   } : null;
 
@@ -387,11 +362,9 @@ export default function DataExportImport() {
                     ['Membres', counts!.members],
                     ['Commentaires', counts!.comments],
                     ['Checklist', counts!.checklists],
-                    ['Catégories chat', counts!.chatCategories],
+                    ['Canaux chat', counts!.chatChannels],
                     ['Messages chat', counts!.chatMessages],
                     ['Réactions chat', counts!.chatReactions],
-                    ['Messages privés', counts!.directMessages],
-                    ['Réactions DM', counts!.dmReactions],
                     ['Statuts perso.', counts!.statuses],
                   ].map(([label, count]) => (
                     <div key={label as string} className="text-xs">

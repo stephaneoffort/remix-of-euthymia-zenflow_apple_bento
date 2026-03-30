@@ -161,7 +161,8 @@ export default function DashboardMeetSection() {
                   return (
                     <div
                       key={ev.id}
-                      className={`w-full text-left py-2.5 hover:bg-muted/50 transition-colors flex items-center gap-3 px-2 rounded-md group ${
+                      onClick={() => setSelectedView("calendar")}
+                      className={`w-full text-left py-2.5 hover:bg-muted/50 transition-colors flex items-center gap-3 px-2 rounded-md group cursor-pointer ${
                         isSoon ? "bg-destructive/10 border border-destructive/20 animate-pulse" : ""
                       }`}
                     >

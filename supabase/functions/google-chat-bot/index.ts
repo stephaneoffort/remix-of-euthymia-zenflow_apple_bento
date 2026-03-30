@@ -3,106 +3,79 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
 }
-
-const supabase = createClient(
-  Deno.env.get("SUPABASE_URL") ?? "",
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-)
 
 serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders })
   }
 
-  // Logger toute requête entrante pour debug
-  console.log("Method:", req.method)
-  console.log("Headers:", Object.fromEntries(req.headers.entries()))
-
   try {
-    // Lire le body de façon robuste
     const rawBody = await req.text()
-    console.log("Raw body:", rawBody)
+    console.log("Received:", rawBody)
 
-    // Parser le JSON de façon sécurisée
     let body: any = {}
     try {
       body = JSON.parse(rawBody)
     } catch {
-      // Si pas du JSON → retourner OK pour les requêtes de vérification Google
-      console.log("Non-JSON body received, returning OK")
       return new Response(
         JSON.stringify({ text: "" }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: 200, headers: corsHeaders }
       )
     }
 
-    const { type, message, user } = body
-    console.log("Event type:", type)
-    console.log("Message:", JSON.stringify(message))
+    const type = body?.type ?? ""
+    const text = (body?.message?.text ?? "").trim()
+    const senderEmail = body?.user?.email ?? ""
 
-    // ── MESSAGE ──────────────────────────────────────────
-    if (type === "MESSAGE") {
-      // Google Chat peut mettre le texte dans message.text OU message.argumentText
-      const text = (
-        message?.text ??
-        message?.argumentText ??
-        ""
-      ).trim()
+    console.log("Type:", type, "Text:", text, "Email:", senderEmail)
 
-      const senderEmail = (
-        user?.email ??
-        message?.sender?.email ??
-        ""
+    // Réponse immédiate sans appel Supabase pour tester
+    if (type === "ADDED_TO_SPACE") {
+      return new Response(
+        JSON.stringify({ text: "👋 ZenFlow Bot connecté ! Tape /zenflow help" }),
+        { status: 200, headers: corsHeaders }
       )
+    }
 
-      console.log("Text:", text)
-      console.log("Sender:", senderEmail)
-
-      // Trouver l'utilisateur ZenFlow par email via la fonction SQL
-      const { data: authUsers } = await supabase
-        .rpc("get_user_by_email", { p_email: senderEmail })
-
-      const userId = authUsers?.[0]?.id
-
-      if (!userId) {
-        return new Response(JSON.stringify({
-          text: `❌ Ton compte *${senderEmail}* n'est pas lié à ZenFlow.\n👉 Connecte-toi sur https://euthymia-zenflow-bento.lovable.app`
-        }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
+    if (type === "MESSAGE") {
+      if (text.includes("help")) {
+        return new Response(
+          JSON.stringify({
+            text: "🤖 *ZenFlow Bot*\n`/zenflow task [titre]` — Créer une tâche\n`/zenflow list` — Mes tâches\n`/zenflow done [titre]` — Terminer"
+          }),
+          { status: 200, headers: corsHeaders }
+        )
       }
 
-      // ── /zenflow help ──
-      if (text.toLowerCase().includes("help") ||
-          text.toLowerCase().includes("/zenflow help") ||
-          text.toLowerCase().includes("/zth")) {
-        return new Response(JSON.stringify({
-          text: [
-            "🤖 *ZenFlow Bot — Commandes :*",
-            "",
-            "`/zenflow task [titre]` — Créer une tâche",
-            "`/zt [titre]` — Raccourci créer une tâche",
-            "`/zenflow done [titre]` — Marquer terminée",
-            "`/zenflow assign [titre] @membre` — Assigner une tâche",
-            "`/zenflow list` — Voir tes tâches",
-            "`/ztl` — Raccourci liste des tâches",
-            "`/zenflow help` — Cette aide",
-          ].join("\n")
-        }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
-      }
-
-      // ── /zenflow task [title] ──
       if (text.toLowerCase().startsWith("/zenflow task ") ||
           text.toLowerCase().startsWith("/zt ")) {
         const taskTitle = text
-          .replace(/^\/zenflow task /i, "")
-          .replace(/^\/zt /i, "")
+          .replace(/\/zenflow task /i, "")
+          .replace(/\/zt /i, "")
           .trim()
 
-        if (!taskTitle) {
-          return new Response(JSON.stringify({
-            text: "⚠️ Usage : `/zenflow task [titre]`"
-          }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
+        // Appel Supabase pour créer la tâche
+        const supabase = createClient(
+          Deno.env.get("SUPABASE_URL") ?? "",
+          Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+        )
+
+        // Trouver l'utilisateur par email
+        const { data: users } = await supabase
+          .rpc("get_user_by_email", { p_email: senderEmail })
+
+        const userId = users?.[0]?.id
+
+        if (!userId) {
+          return new Response(
+            JSON.stringify({
+              text: `❌ Email *${senderEmail}* non trouvé dans ZenFlow.\n👉 https://euthymia-zenflow-bento.lovable.app`
+            }),
+            { status: 200, headers: corsHeaders }
+          )
         }
 
         // Get the first available list for task creation
@@ -112,37 +85,44 @@ serve(async (req: Request) => {
           .limit(1)
 
         if (!lists?.length) {
-          return new Response(JSON.stringify({
-            text: "❌ Aucune liste de tâches trouvée dans ZenFlow"
-          }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
+          return new Response(
+            JSON.stringify({ text: "❌ Aucune liste de tâches trouvée dans ZenFlow" }),
+            { status: 200, headers: corsHeaders }
+          )
         }
 
-        const { data: task } = await supabase
-          .from("tasks")
-          .insert({
-            title: taskTitle,
-            status: "todo",
-            priority: "normal",
-            list_id: lists[0].id,
-          })
-          .select()
-          .single()
-
-        await supabase.from("chat_bot_commands").insert({
-          user_id: userId,
-          command: "create_task",
-          payload: { title: taskTitle },
-          result: { task_id: task?.id },
+        await supabase.from("tasks").insert({
+          title: taskTitle,
+          status: "todo",
+          priority: "normal",
+          list_id: lists[0].id,
         })
 
-        return new Response(JSON.stringify({
-          text: `✅ Tâche créée : *${taskTitle}*\n👉 https://euthymia-zenflow-bento.lovable.app`
-        }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
+        return new Response(
+          JSON.stringify({
+            text: `✅ Tâche créée : *${taskTitle}*\n👉 https://euthymia-zenflow-bento.lovable.app`
+          }),
+          { status: 200, headers: corsHeaders }
+        )
       }
 
-      // ── /zenflow list ──
-      if (text.toLowerCase().includes("/zenflow list") ||
-          text.toLowerCase().includes("/ztl")) {
+      if (text.toLowerCase().includes("/zenflow list")) {
+        const supabase = createClient(
+          Deno.env.get("SUPABASE_URL") ?? "",
+          Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+        )
+
+        const { data: users } = await supabase
+          .rpc("get_user_by_email", { p_email: senderEmail })
+
+        const userId = users?.[0]?.id
+        if (!userId) {
+          return new Response(
+            JSON.stringify({ text: "❌ Compte non trouvé dans ZenFlow" }),
+            { status: 200, headers: corsHeaders }
+          )
+        }
+
         const { data: tasks } = await supabase
           .from("tasks")
           .select("title, status")
@@ -151,159 +131,43 @@ serve(async (req: Request) => {
           .limit(5)
 
         if (!tasks?.length) {
-          return new Response(JSON.stringify({
-            text: "📋 Aucune tâche en cours dans ZenFlow"
-          }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
+          return new Response(
+            JSON.stringify({ text: "📋 Aucune tâche en cours dans ZenFlow" }),
+            { status: 200, headers: corsHeaders }
+          )
         }
 
-        const statusEmoji: Record<string, string> = {
-          todo: "🔵",
-          in_progress: "🟡",
-          cancelled: "🔴",
+        const emoji: Record<string, string> = {
+          todo: "🔵", in_progress: "🟡", cancelled: "🔴"
         }
+        const list = tasks
+          .map((t: any) => `${emoji[t.status] ?? "🔵"} ${t.title}`)
+          .join("\n")
 
-        const list = tasks.map((t: any) =>
-          `${statusEmoji[t.status] ?? "🔵"} ${t.title}`
-        ).join("\n")
-
-        return new Response(JSON.stringify({
-          text: `📋 *Tes tâches ZenFlow :*\n${list}\n\n👉 https://euthymia-zenflow-bento.lovable.app`
-        }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
-      }
-
-      // ── /zenflow assign [titre] @membre ──
-      if (text.toLowerCase().startsWith("/zenflow assign ")) {
-        const assignArgs = text.replace(/^\/zenflow assign /i, "").trim()
-
-        // Extract @mention — supports "@Name" or just the last word after the title
-        const mentionMatch = assignArgs.match(/^(.+?)\s+@(.+)$/i)
-
-        if (!mentionMatch) {
-          return new Response(JSON.stringify({
-            text: "⚠️ Usage : `/zenflow assign [titre de la tâche] @membre`\nExemple : `/zenflow assign Préparer réunion @Marie`"
-          }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
-        }
-
-        const taskRef = mentionMatch[1].trim()
-        const memberName = mentionMatch[2].trim()
-
-        // Find the task
-        const { data: task } = await supabase
-          .from("tasks")
-          .select("id, title")
-          .ilike("title", `%${taskRef}%`)
-          .neq("status", "done")
-          .limit(1)
-          .single()
-
-        if (!task) {
-          return new Response(JSON.stringify({
-            text: `❌ Tâche "${taskRef}" non trouvée dans ZenFlow`
-          }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
-        }
-
-        // Find the team member by name (case-insensitive)
-        const { data: members } = await supabase
-          .from("team_members")
-          .select("id, name, email")
-          .ilike("name", `%${memberName}%`)
-          .limit(1)
-
-        if (!members?.length) {
-          return new Response(JSON.stringify({
-            text: `❌ Membre "${memberName}" non trouvé dans l'équipe ZenFlow`
-          }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
-        }
-
-        const member = members[0]
-
-        // Check if already assigned
-        const { data: existing } = await supabase
-          .from("task_assignees")
-          .select("task_id")
-          .eq("task_id", task.id)
-          .eq("member_id", member.id)
-          .limit(1)
-
-        if (existing?.length) {
-          return new Response(JSON.stringify({
-            text: `ℹ️ *${member.name}* est déjà assigné(e) à *${task.title}*`
-          }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
-        }
-
-        // Assign the member
-        await supabase.from("task_assignees").insert({
-          task_id: task.id,
-          member_id: member.id,
-        })
-
-        await supabase.from("chat_bot_commands").insert({
-          user_id: userId,
-          command: "assign",
-          payload: { task_title: taskRef, member_name: memberName },
-          result: { task_id: task.id, member_id: member.id },
-        })
-
-        return new Response(JSON.stringify({
-          text: `✅ *${member.name}* assigné(e) à *${task.title}*\n👉 https://euthymia-zenflow-bento.lovable.app`
-        }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
-      }
-
-      // ── /zenflow done [title] ──
-      if (text.toLowerCase().startsWith("/zenflow done ")) {
-        const taskRef = text.replace(/^\/zenflow done /i, "").trim()
-
-        const { data: task } = await supabase
-          .from("tasks")
-          .select("id, title")
-          .ilike("title", `%${taskRef}%`)
-          .neq("status", "done")
-          .limit(1)
-          .single()
-
-        if (!task) {
-          return new Response(JSON.stringify({
-            text: `❌ Tâche "${taskRef}" non trouvée`
-          }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
-        }
-
-        await supabase.from("tasks").update({ status: "done" }).eq("id", task.id)
-
-        await supabase.from("chat_bot_commands").insert({
-          user_id: userId,
-          command: "done",
-          payload: { title: taskRef },
-          result: { task_id: task.id },
-        })
-
-        return new Response(JSON.stringify({
-          text: `✅ *${task.title}* marquée comme terminée !`
-        }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
+        return new Response(
+          JSON.stringify({ text: `📋 *Tes tâches :*\n${list}` }),
+          { status: 200, headers: corsHeaders }
+        )
       }
 
       // Message non reconnu
-      return new Response(JSON.stringify({
-        text: "Tape `/zenflow help` pour voir les commandes disponibles."
-      }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
+      return new Response(
+        JSON.stringify({ text: "Tape `/zenflow help` pour l'aide." }),
+        { status: 200, headers: corsHeaders }
+      )
     }
 
-    // ── BOT AJOUTÉ ────────────────────────────────────────
-    if (type === "ADDED_TO_SPACE") {
-      return new Response(JSON.stringify({
-        text: "👋 Bonjour ! Je suis *ZenFlow Bot*.\nTape `/zenflow help` pour voir ce que je peux faire."
-      }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
-    }
-
-    // Autres types → OK silencieux
+    // Tout autre type → OK silencieux
     return new Response(
       JSON.stringify({ text: "" }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { status: 200, headers: corsHeaders }
     )
+
   } catch (err) {
-    console.error("Chat bot error:", err)
+    console.error("Error:", err)
     return new Response(
       JSON.stringify({ text: "" }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { status: 200, headers: corsHeaders }
     )
   }
 })

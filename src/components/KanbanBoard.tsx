@@ -368,11 +368,21 @@ export default function KanbanBoard() {
       </div>
 
       {/* Collapsed columns shown as horizontal chips at the top */}
-      {collapsedStatuses.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 px-3 sm:px-3 pt-2">
-          {collapsedStatuses.map(renderCollapsedColumn)}
-        </div>
-      )}
+      <AnimatePresence>
+        {collapsedStatuses.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            className="flex flex-wrap gap-1.5 px-3 sm:px-3 pt-2 overflow-hidden"
+          >
+            <AnimatePresence mode="popLayout">
+              {collapsedStatuses.map(renderCollapsedColumn)}
+            </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Main kanban area */}
       <div className={`flex gap-1.5 sm:gap-2 p-2 sm:p-3 overflow-x-auto sm:overflow-hidden flex-1 snap-x snap-mandatory sm:snap-none ${collapsedStatuses.length > 0 ? 'pt-1' : ''}`}>

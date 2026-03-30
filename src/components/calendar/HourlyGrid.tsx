@@ -409,13 +409,21 @@ export default function HourlyGrid({
     return map;
   }, [days, tasksByDate, externalEventsByDate, allTasks]);
 
-  // Collect all-day items across days
+  // Collect all-day items across days (deduplicated)
   const allDayItems = useMemo(() => {
+    const seen = new Set<string>();
     const items: PositionedItem[] = [];
     days.forEach(d => {
       const ds = toDateStr(d);
       const data = dataByDay.get(ds);
-      if (data) items.push(...data.allDay);
+      if (data) {
+        data.allDay.forEach(item => {
+          if (!seen.has(item.id)) {
+            seen.add(item.id);
+            items.push(item);
+          }
+        });
+      }
     });
     return items;
   }, [days, dataByDay]);

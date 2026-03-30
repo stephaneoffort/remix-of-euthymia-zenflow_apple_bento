@@ -2167,7 +2167,7 @@ html body::after {
   border-top-color: rgba(255, 255, 255, 0.7) !important;
   border-radius: 14px !important;
   box-shadow: 0 2px 8px rgba(31, 38, 135, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
-  color: rgba(35, 35, 65, 0.72) !important;
+  color: rgba(30, 30, 55, 0.78) !important;
   transition: all 0.2s ease !important;
 }
 [data-palette^="liquidGlass"].light button[data-variant="outline"]:hover,

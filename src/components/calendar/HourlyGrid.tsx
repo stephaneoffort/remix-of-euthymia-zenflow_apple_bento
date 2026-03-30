@@ -644,6 +644,8 @@ export default function HourlyGrid({
                       maxEventHeight={maxEventHeight}
                       fontSize={config.cardFontSize}
                       padding={config.cardPadding}
+                      zoomTaskIds={zoomTaskIds}
+                      meetTaskIds={meetTaskIds}
                     />
                   );
                 })}

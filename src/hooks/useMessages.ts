@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
 
 export interface AppMessage {
@@ -118,15 +119,33 @@ export function useMessages() {
     fetchMessages();
   }, [fetchMessages]);
 
-  // Realtime subscription for new comments + google chat messages
+  // Realtime subscription with toast notifications
   useEffect(() => {
     if (!teamMemberId) return;
     const channel = supabase
       .channel('messages-sidebar')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'comments' }, () => {
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'comments' }, (payload) => {
+        const row = payload.new as any;
+        if (row.mentioned_member_ids?.includes(teamMemberId) && row.author_id !== teamMemberId) {
+          const authorName = membersCache.current[row.author_id] || 'Quelqu\'un';
+          toast.info(`${authorName} t'a mentionné dans un commentaire`, {
+            description: row.content?.slice(0, 80),
+            action: { label: 'Voir', onClick: () => window.location.assign('/messages') },
+            duration: 5000,
+          });
+        }
         fetchMessages();
       })
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'google_chat_messages' }, () => {
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'google_chat_messages' }, async (payload) => {
+        const row = payload.new as any;
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user && row.user_id === user.id && row.is_mention) {
+          toast.info(`${row.sender_name || 'Quelqu\'un'} t'a mentionné dans Google Chat`, {
+            description: row.content?.slice(0, 80),
+            action: { label: 'Voir', onClick: () => window.location.assign('/messages') },
+            duration: 5000,
+          });
+        }
         fetchMessages();
       })
       .subscribe();

@@ -6,7 +6,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MessageSquare, CheckCheck, Mail, ArrowLeft, ExternalLink, Reply, Send, X } from 'lucide-react';
+import { MessageSquare, CheckCheck, Mail, ArrowLeft, Reply, Send, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -24,7 +24,6 @@ function stripHtml(html: string): string {
 const TYPE_LABELS: Record<string, string> = {
   comment: 'Commentaire',
   chat: 'Chat',
-  google_chat: 'Google Chat',
 };
 
 function MessageCard({
@@ -42,7 +41,7 @@ function MessageCard({
 }) {
   const { getMemberById } = useApp();
   const { teamMemberId } = useAuth();
-  const member = message.type !== 'google_chat' ? getMemberById(message.authorId) : null;
+  const member = getMemberById(message.authorId);
   const preview = stripHtml(message.content);
   const [replyContent, setReplyContent] = useState('');
   const [sending, setSending] = useState(false);
@@ -60,9 +59,6 @@ function MessageCard({
           mentioned_member_ids: mentionedIds.length > 0 ? mentionedIds : [message.authorId],
         });
         toast.success('Réponse envoyée');
-      } else if (message.type === 'google_chat') {
-        window.open('https://chat.google.com', '_blank');
-        toast.info('Ouvre Google Chat pour répondre');
       }
       setReplyContent('');
       onReplySent();
@@ -81,12 +77,10 @@ function MessageCard({
       >
         <div className="flex items-start gap-3">
           <div
-            className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0 ${
-              message.type === 'google_chat' ? 'bg-emerald-600' : ''
-            }`}
-            style={message.type !== 'google_chat' ? { backgroundColor: member?.avatarColor || '#888' } : undefined}
+            className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0"
+            style={{ backgroundColor: member?.avatarColor || '#888' }}
           >
-            {message.type === 'google_chat' ? 'G' : (member?.name || 'M').charAt(0).toUpperCase()}
+            {(member?.name || 'M').charAt(0).toUpperCase()}
           </div>
 
           <div className="flex-1 min-w-0">
@@ -103,29 +97,17 @@ function MessageCard({
             </div>
 
             <div className="mt-1 flex items-center gap-2">
-              <Badge
-                variant="secondary"
-                className={`text-[10px] px-1.5 py-0 ${
-                  message.type === 'google_chat' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : ''
-                }`}
-              >
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
                 {TYPE_LABELS[message.type] || 'Message'}
               </Badge>
               {message.entityTitle && (
                 <span className="text-xs text-muted-foreground truncate">
-                  {message.type === 'google_chat' ? '' : 'sur : '}{message.entityTitle}
+                  sur : {message.entityTitle}
                 </span>
               )}
             </div>
 
             <p className="text-sm text-muted-foreground mt-1.5 line-clamp-2">{preview}</p>
-
-            {message.type === 'google_chat' && (
-              <span className="inline-flex items-center gap-1 text-xs text-emerald-600 mt-1">
-                <ExternalLink className="w-3 h-3" />
-                Ouvrir dans Google Chat
-              </span>
-            )}
           </div>
         </div>
       </button>
@@ -150,18 +132,7 @@ function MessageCard({
             Répondre à <span className="font-medium text-foreground">{message.authorName}</span>
             {message.entityTitle ? ` sur ${message.entityTitle}` : ''}
           </p>
-          {message.type === 'google_chat' ? (
-            <Button
-              size="sm"
-              variant="outline"
-              className="gap-1.5 text-xs"
-              onClick={() => window.open('https://chat.google.com', '_blank')}
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-              Répondre dans Google Chat
-            </Button>
-          ) : (
-            <div className="relative">
+          <div className="relative">
               <MentionCommentInput
                 value={replyContent}
                 onChange={setReplyContent}
@@ -174,7 +145,6 @@ function MessageCard({
                 </div>
               )}
             </div>
-          )}
         </div>
       )}
     </div>
@@ -195,8 +165,6 @@ export default function Messages() {
     if (msg.type === 'comment' && msg.entityId) {
       setSelectedTaskId(msg.entityId);
       navigate('/');
-    } else if (msg.type === 'google_chat') {
-      window.open('https://chat.google.com', '_blank');
     } else {
       navigate('/chat');
     }
@@ -232,14 +200,6 @@ export default function Messages() {
               <TabsTrigger value="all">Tous</TabsTrigger>
               <TabsTrigger value="comment">Commentaires</TabsTrigger>
               <TabsTrigger value="chat">Chat</TabsTrigger>
-              <TabsTrigger value="google_chat" className="gap-1">
-                Google Chat
-                {messages.filter(m => m.type === 'google_chat' && !m.isRead).length > 0 && (
-                  <span className="ml-1 w-4 h-4 rounded-full bg-emerald-500 text-white text-[10px] flex items-center justify-center">
-                    {messages.filter(m => m.type === 'google_chat' && !m.isRead).length}
-                  </span>
-                )}
-              </TabsTrigger>
             </TabsList>
 
             <TabsContent value={tab} className="mt-4">

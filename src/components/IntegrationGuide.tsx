@@ -11,7 +11,6 @@ const GUIDE_MESSAGES: Record<IntegrationKey, string> = {
   google_meet: 'Active Google Meet dans Settings → Intégrations pour ajouter des liens Meet',
   gmail: 'Connecte ton compte Gmail dans Settings → Intégrations → Gmail pour lire et envoyer des emails',
   brevo: 'Connecte ton compte Brevo dans Settings → Intégrations → Brevo pour gérer tes newsletters',
-  google_chat: 'Connecte ton compte Google Chat dans Settings → Intégrations → Google Chat pour recevoir tes mentions',
 };
 
 interface Props {

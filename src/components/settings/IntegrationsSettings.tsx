@@ -14,7 +14,6 @@ const CONNECT_URLS: Partial<Record<IntegrationKey, string>> = {
   zoom: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/zoom-oauth/authorize',
   canva: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/canva-oauth/authorize',
   gmail: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/gmail-oauth/authorize',
-  google_chat: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/google-chat-oauth/authorize',
 };
 
 const CONNECTION_TABLES: Partial<Record<IntegrationKey, string>> = {
@@ -22,7 +21,6 @@ const CONNECTION_TABLES: Partial<Record<IntegrationKey, string>> = {
   zoom: 'zoom_connections',
   canva: 'canva_connections',
   gmail: 'gmail_connections',
-  google_chat: 'google_chat_connections',
 };
 
 export default function IntegrationsSettings() {
@@ -68,11 +66,6 @@ export default function IntegrationsSettings() {
         info.google_meet = { display_name: calLabel };
       }
 
-      // Google Chat
-      const { data: gchatData } = await (supabase as any)
-        .from('google_chat_connections').select('email').eq('user_id', user.id).limit(1);
-      if (gchatData?.[0]) info.google_chat = { email: gchatData[0].email };
-
       setConnInfo(info);
     })();
 
@@ -83,7 +76,6 @@ export default function IntegrationsSettings() {
       ['zoom_connected', 'zoom'],
       ['canva_connected', 'canva'],
       ['gmail_connected', 'gmail'],
-      ['google_chat_connected', 'google_chat'],
     ];
     callbacks.forEach(([param, key]) => {
       if (params.get(param) === 'true') {
@@ -115,7 +107,7 @@ export default function IntegrationsSettings() {
     const { data: { session } } = await supabase.auth.getSession();
     if (!user || !session) return;
 
-    if (key === 'zoom' || key === 'gmail' || key === 'google_chat') {
+    if (key === 'zoom' || key === 'gmail') {
       window.location.href = `${url}?token=${session.access_token}`;
     } else {
       window.location.href = `${url}?user_id=${user.id}`;
@@ -149,7 +141,7 @@ export default function IntegrationsSettings() {
     }
   };
 
-  const allKeys: IntegrationKey[] = ['google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo', 'google_chat'];
+  const allKeys: IntegrationKey[] = ['google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo'];
 
   if (loading) {
     return (

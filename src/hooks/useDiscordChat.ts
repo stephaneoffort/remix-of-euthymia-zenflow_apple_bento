@@ -277,6 +277,10 @@ export function useDiscordChat() {
           setMessages(prev => [...prev, newMsg]);
         }
         loadProfiles([newMsg.user_id]);
+        // Mark as read since user is viewing this channel
+        if (newMsg.user_id !== user?.id) {
+          markChannelRead(activeChannelId);
+        }
       })
       .on('postgres_changes', {
         event: '*',

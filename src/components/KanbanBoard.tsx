@@ -203,7 +203,7 @@ export default function KanbanBoard() {
         key={status}
         layout
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        className={`flex flex-col w-[75vw] sm:w-0 sm:min-w-[8rem] sm:max-w-[14rem] sm:flex-1 shrink-0 sm:shrink rounded-lg snap-center sm:snap-align-none transition-all duration-200 ${
+        className={`flex flex-col w-[75vw] sm:w-0 sm:min-w-0 sm:flex-1 shrink-0 sm:shrink rounded-lg snap-center sm:snap-align-none transition-all duration-200 ${
           draggedColumn === status ? 'opacity-40 scale-[0.97]' : ''
         } ${dropTargetColumn === status && draggedColumn ? 'ring-2 ring-primary/40 ring-offset-2 ring-offset-background' : ''}`}
         onDragOver={e => {

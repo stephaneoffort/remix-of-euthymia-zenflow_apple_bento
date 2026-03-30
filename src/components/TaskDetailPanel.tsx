@@ -869,24 +869,12 @@ export default function TaskDetailPanel() {
                   );
                 })}
               </div>
-              <div className="space-y-2">
-                <RichTextEditor
-                  content={newComment}
-                  onChange={setNewComment}
-                  placeholder="Écrire un commentaire..."
-                  className="text-sm"
-                  editorClassName="min-h-[38px]"
-                />
-                <div className="flex justify-end">
-                  <button
-                    onClick={handleAddComment}
-                    disabled={!newComment.trim() || newComment === '<p></p>'}
-                    className="px-3 py-1.5 bg-primary text-primary-foreground text-xs font-medium rounded-md hover:opacity-90 disabled:opacity-50 shrink-0"
-                  >
-                    Envoyer
-                  </button>
-                </div>
-              </div>
+              <MentionCommentInput
+                value={newComment}
+                onChange={setNewComment}
+                onSubmit={handleAddComment}
+                placeholder="Écrire un commentaire... Tapez @ pour mentionner"
+              />
             </div>
           </div>
 

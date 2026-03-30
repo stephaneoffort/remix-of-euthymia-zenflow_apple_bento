@@ -409,7 +409,7 @@ function KanbanCard({
   task, isMobile, subtasks, doneSubtasks, isOverdue, draggedTaskId,
   selectedProjectId, getProjectName, getStatusColor, getStatusLabel,
   allStatuses, moveTask, setSelectedTaskId, setDraggedTaskId,
-  handleTaskDragStart, getMemberById,
+  handleTaskDragStart, getMemberById, zoomTaskIds, meetTaskIds,
 }: {
   task: Task;
   isMobile: boolean;
@@ -427,6 +427,8 @@ function KanbanCard({
   setDraggedTaskId: (id: string | null) => void;
   handleTaskDragStart: (e: React.DragEvent, taskId: string) => void;
   getMemberById: (id: string) => any;
+  zoomTaskIds: Set<string>;
+  meetTaskIds: Set<string>;
 }) {
   const [moveOpen, setMoveOpen] = useState(false);
   const [pressing, setPressing] = useState(false);

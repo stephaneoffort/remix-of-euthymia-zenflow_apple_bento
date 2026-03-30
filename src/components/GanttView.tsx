@@ -14,6 +14,12 @@ import {
   Filter,
   Download,
   Calendar as CalendarIcon,
+  CalendarDays,
+  Link2,
+  Milestone,
+  Palette,
+  Trash2,
+  Percent,
 } from "lucide-react";
 import {
   addDays,

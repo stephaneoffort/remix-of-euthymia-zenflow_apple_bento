@@ -36,6 +36,7 @@ import {
   Calendar,
   BarChart3,
   Network,
+  GanttChart,
   Search,
   X,
   Keyboard,

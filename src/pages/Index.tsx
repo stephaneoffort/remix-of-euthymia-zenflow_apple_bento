@@ -1,4 +1,5 @@
 import DashboardView from "@/components/DashboardView";
+import GanttView from "@/components/GanttView";
 import VoiceTaskCreator from "@/components/VoiceTaskCreator";
 import React, { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useApp } from "@/context/AppContext";
@@ -35,6 +36,7 @@ import {
   Calendar,
   BarChart3,
   Network,
+  GanttChart,
   Search,
   X,
   Keyboard,
@@ -49,6 +51,7 @@ const VIEW_OPTIONS: { key: ViewType; label: string; icon: React.ReactNode }[] = 
   { key: "calendar", label: "Calendrier", icon: <Calendar className="w-4 h-4" /> },
   { key: "workload", label: "Charge", icon: <BarChart3 className="w-4 h-4" /> },
   { key: "mindmap", label: "Carte mentale", icon: <Network className="w-4 h-4" /> },
+  { key: "gantt", label: "Gantt", icon: <GanttChart className="w-4 h-4" /> },
 ];
 
 const QUICK_FILTER_TITLES: Record<string, string> = {
@@ -468,6 +471,7 @@ export default function Index() {
           {selectedView === "calendar" && <CalendarView />}
           {selectedView === "workload" && <WorkloadView />}
           {selectedView === "mindmap" && <MindMapView />}
+          {selectedView === "gantt" && <GanttView />}
         </main>
       </div>
 

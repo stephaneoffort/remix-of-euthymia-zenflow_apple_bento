@@ -77,6 +77,20 @@ export interface Task {
   targetCalendarId?: string | null;
   createdAt: string;
   order: number;
+  // Gantt fields
+  durationDays?: number | null;
+  progress?: number;
+  isMilestone?: boolean;
+  color?: string | null;
+  wbs?: string | null;
+}
+
+export interface TaskDependency {
+  id: string;
+  taskId: string;
+  dependsOnId: string;
+  type: 'FS' | 'SS' | 'FF' | 'SF';
+  lagDays: number;
 }
 
 export interface TaskList {
@@ -115,6 +129,6 @@ export interface SpaceManager {
   memberId: string;
 }
 
-export type ViewType = "dashboard" | "kanban" | "list" | "calendar" | "workload" | "mindmap";
+export type ViewType = "dashboard" | "kanban" | "list" | "calendar" | "workload" | "mindmap" | "gantt";
 
 export type QuickFilter = "all" | "my_tasks" | "urgent" | "today" | "overdue";

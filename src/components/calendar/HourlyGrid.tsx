@@ -444,7 +444,7 @@ function EventCard({ item, onClick, widthPercent, leftPercent, isDay, maxEventHe
   const t = item.task!;
   return (
     <button onClick={onClick}
-      className={`absolute rounded text-left cursor-pointer z-10 overflow-hidden transition-opacity hover:opacity-90 text-white/95 ${style.className}`}
+      className={`absolute rounded text-left cursor-pointer z-10 overflow-hidden transition-opacity hover:opacity-90 ${cardClasses}`}
       style={{ top: item.top, height: h, width: `${widthPercent}%`, left: `${leftPercent}%`, padding, fontSize, maxHeight: maxEventHeight, overflowY: h >= maxEventHeight ? 'auto' : 'hidden' }}>
       <div className="flex items-center gap-1 min-w-0">
         {item.type === 'subtask' ? (

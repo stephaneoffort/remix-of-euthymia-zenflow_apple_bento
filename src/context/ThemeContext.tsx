@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export type ThemeMode = 'light' | 'dark' | 'mixed';
-export type ThemePalette = 'clubroom' | 'neutrals' | 'sapphire' | 'cinematic' | 'teal' | 'bento2026' | 'bentoOcean' | 'bentoRose' | 'bentoAmber' | 'liquidGlass' | 'liquidGlassOcean' | 'liquidGlassAurora' | 'liquidGlassRose' | 'liquidGlassAmber' | 'liquidGlassViolet' | 'liquidGlassCoral' | 'liquidGlassSlate' | 'liquidGlassMidnight' | 'nmCloud' | 'nmMidnight' | 'nmSand' | 'nmForest' | 'nmLavender';
+export type ThemePalette = 'clubroom' | 'neutrals' | 'sapphire' | 'cinematic' | 'teal' | 'bento2026' | 'bentoOcean' | 'bentoRose' | 'bentoAmber' | 'liquidGlass' | 'liquidGlassOcean' | 'liquidGlassAurora' | 'liquidGlassRose' | 'liquidGlassAmber' | 'liquidGlassViolet' | 'liquidGlassCoral' | 'liquidGlassSlate' | 'liquidGlassMidnight' | 'nmCloud' | 'nmMidnight' | 'nmSand' | 'nmForest' | 'nmLavender' | 'nmDeepForest';
 
 interface ThemeContextType {
   theme: ThemeMode;
@@ -127,6 +127,11 @@ export const PALETTE_META: Record<ThemePalette, { label: string; description: st
     label: 'Lavender',
     description: 'Soft UI · Lavande · Spirituel',
     colors: ['#EDE8F0', '#CAC5CD', '#FFFFFF', '#7B5EA7'],
+  },
+  nmDeepForest: {
+    label: 'Deep Forest',
+    description: 'Soft UI · Vert sombre · Nuit',
+    colors: ['#1A1F1A', '#0F1210', '#252C25', '#5A9A6A'],
   },
 };
 

@@ -5520,3 +5520,403 @@ html body::after {
   box-shadow: inset 4px 4px 8px #CAC5CD, inset -4px -4px 8px #FFFFFF !important;
   border: none !important;
 }
+
+/* ═══════════════════════════════════════════════════════
+   NEUMORPHISM DEEP FOREST — Soft UI · Vert sombre · Nuit
+   ═══════════════════════════════════════════════════════ */
+
+[data-palette="nmDeepForest"],
+[data-palette="nmDeepForest"].light,
+[data-palette="nmDeepForest"].dark,
+[data-palette="nmDeepForest"].mixed {
+  --background: 120 10% 11%;
+  --foreground: 140 15% 61%;
+  --card: 120 10% 11%;
+  --card-foreground: 140 15% 61%;
+  --popover: 120 10% 11%;
+  --popover-foreground: 140 15% 61%;
+  --primary: 132 26% 47%;
+  --primary-foreground: 120 20% 4%;
+  --secondary: 120 10% 15%;
+  --secondary-foreground: 140 15% 42%;
+  --muted: 120 10% 15%;
+  --muted-foreground: 140 12% 27%;
+  --accent: 120 10% 15%;
+  --accent-foreground: 140 15% 42%;
+  --destructive: 0 30% 53%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 120 8% 14%;
+  --input: 120 8% 14%;
+  --ring: 132 26% 47%;
+  --radius: 12px;
+  --sidebar-background: 120 10% 11%;
+  --sidebar-foreground: 140 15% 61%;
+  --sidebar-primary: 132 26% 47%;
+  --sidebar-primary-foreground: 120 20% 4%;
+  --sidebar-accent: 120 10% 15%;
+  --sidebar-accent-foreground: 140 15% 42%;
+  --sidebar-border: 120 8% 14%;
+  --sidebar-ring: 132 26% 47%;
+  --sidebar-bg: 120 10% 11%;
+  --sidebar-fg: 140 15% 42%;
+  --sidebar-fg-bright: 140 15% 61%;
+  --sidebar-hover: 120 10% 15%;
+  --sidebar-active: 120 10% 11%;
+  --sidebar-active-fg: 132 26% 47%;
+  --priority-urgent: 0 30% 53%;
+  --priority-high: 45 38% 50%;
+  --priority-normal: 132 26% 47%;
+  --priority-low: 140 12% 27%;
+  --status-todo: 140 12% 27%;
+  --status-progress: 132 26% 47%;
+  --status-review: 207 22% 48%;
+  --status-done: 132 30% 55%;
+  --status-blocked: 0 30% 53%;
+}
+
+/* ─── Global base ─── */
+[data-palette="nmDeepForest"] body,
+[data-palette="nmDeepForest"] #root {
+  background: #1A1F1A !important;
+  font-family: 'Inter', 'Plus Jakarta Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Remove borders ─── */
+[data-palette="nmDeepForest"] .border,
+[data-palette="nmDeepForest"] .border-border,
+[data-palette="nmDeepForest"] .border-input,
+[data-palette="nmDeepForest"] [class*="border-"] {
+  border-color: transparent !important;
+}
+
+/* ─── Cards ─── */
+[data-palette="nmDeepForest"] .bg-card,
+[data-palette="nmDeepForest"] .rounded-lg.border.bg-card {
+  background: #1A1F1A !important;
+  box-shadow: 6px 6px 12px #0F1210, -6px -6px 12px #252C25 !important;
+  border: none !important;
+  border-radius: 16px !important;
+}
+[data-palette="nmDeepForest"] .bg-card:hover {
+  box-shadow: 10px 10px 20px #0F1210, -10px -10px 20px #252C25 !important;
+}
+
+/* ─── Buttons ─── */
+[data-palette="nmDeepForest"] button:not([data-state]):not(.ghost),
+[data-palette="nmDeepForest"] [role="button"]:not([data-state]) {
+  background: #1A1F1A;
+  border: none !important;
+  border-radius: 12px;
+}
+[data-palette="nmDeepForest"] .bg-primary {
+  background: #1A1F1A !important;
+  color: hsl(132, 26%, 47%) !important;
+  box-shadow: 6px 6px 12px #0F1210, -6px -6px 12px #252C25;
+  border: none !important;
+}
+[data-palette="nmDeepForest"] .bg-primary:hover {
+  box-shadow: 10px 10px 20px #0F1210, -10px -10px 20px #252C25;
+}
+[data-palette="nmDeepForest"] .bg-primary:active {
+  box-shadow: inset 4px 4px 8px #0F1210, inset -4px -4px 8px #252C25;
+  transform: scale(0.99);
+}
+[data-palette="nmDeepForest"] .hover\:bg-accent:hover {
+  background: #1A1F1A !important;
+  box-shadow: 4px 4px 8px #0F1210, -4px -4px 8px #252C25;
+}
+[data-palette="nmDeepForest"] .hover\:bg-accent:active {
+  box-shadow: inset 3px 3px 6px #0F1210, inset -3px -3px 6px #252C25;
+}
+[data-palette="nmDeepForest"] button.h-10.w-10,
+[data-palette="nmDeepForest"] button.h-9.w-9,
+[data-palette="nmDeepForest"] button.h-8.w-8 {
+  background: #1A1F1A !important;
+  box-shadow: 4px 4px 8px #0F1210, -4px -4px 8px #252C25;
+  border: none !important;
+  border-radius: 9999px;
+}
+[data-palette="nmDeepForest"] button.h-10.w-10:hover,
+[data-palette="nmDeepForest"] button.h-9.w-9:hover,
+[data-palette="nmDeepForest"] button.h-8.w-8:hover {
+  box-shadow: 6px 6px 12px #0F1210, -6px -6px 12px #252C25;
+}
+[data-palette="nmDeepForest"] button.h-10.w-10:active,
+[data-palette="nmDeepForest"] button.h-9.w-9:active,
+[data-palette="nmDeepForest"] button.h-8.w-8:active {
+  box-shadow: inset 3px 3px 6px #0F1210, inset -3px -3px 6px #252C25;
+}
+
+/* ─── Inputs ─── */
+[data-palette="nmDeepForest"] input,
+[data-palette="nmDeepForest"] textarea,
+[data-palette="nmDeepForest"] select,
+[data-palette="nmDeepForest"] .bg-background {
+  background: #1A1F1A !important;
+}
+[data-palette="nmDeepForest"] input:not([type="checkbox"]):not([type="radio"]),
+[data-palette="nmDeepForest"] textarea,
+[data-palette="nmDeepForest"] select {
+  box-shadow: inset 4px 4px 8px #0F1210, inset -4px -4px 8px #252C25 !important;
+  border: none !important;
+  border-radius: 12px !important;
+}
+[data-palette="nmDeepForest"] input:focus,
+[data-palette="nmDeepForest"] textarea:focus {
+  box-shadow: inset 6px 6px 12px #0F1210, inset -6px -6px 12px #252C25,
+              0 0 0 2px rgba(90, 154, 106, 0.15) !important;
+}
+
+/* ─── Sidebar ─── */
+[data-palette="nmDeepForest"] [data-sidebar="sidebar"],
+[data-palette="nmDeepForest"] aside {
+  background: #1A1F1A !important;
+  border-right: none !important;
+}
+[data-palette="nmDeepForest"] [data-sidebar="menu-button"] {
+  background: #1A1F1A !important;
+  border: none !important;
+  border-radius: 12px;
+  transition: box-shadow 0.2s ease;
+}
+[data-palette="nmDeepForest"] [data-sidebar="menu-button"]:hover {
+  box-shadow: 4px 4px 8px #0F1210, -4px -4px 8px #252C25;
+}
+[data-palette="nmDeepForest"] [data-sidebar="menu-button"][data-active="true"],
+[data-palette="nmDeepForest"] [data-sidebar="menu-button"].active {
+  box-shadow: inset 4px 4px 8px #0F1210, inset -4px -4px 8px #252C25 !important;
+  color: hsl(132, 26%, 47%) !important;
+}
+
+/* ─── Tabs ─── */
+[data-palette="nmDeepForest"] [role="tablist"] {
+  background: #1A1F1A !important;
+  box-shadow: inset 3px 3px 6px #0F1210, inset -3px -3px 6px #252C25;
+  border: none !important;
+  border-radius: 12px;
+}
+[data-palette="nmDeepForest"] [role="tab"] {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 10px;
+  transition: box-shadow 0.15s ease;
+}
+[data-palette="nmDeepForest"] [role="tab"][data-state="active"] {
+  background: #1A1F1A !important;
+  box-shadow: 4px 4px 8px #0F1210, -4px -4px 8px #252C25;
+  color: hsl(132, 26%, 47%) !important;
+  font-weight: 500;
+}
+
+/* ─── Dialogs / Modals ─── */
+[data-palette="nmDeepForest"] [role="dialog"],
+[data-palette="nmDeepForest"] [data-radix-dialog-content] {
+  background: #1A1F1A !important;
+  box-shadow: 16px 16px 32px #0F1210, -16px -16px 32px #252C25,
+              0 0 60px rgba(90, 154, 106, 0.05) !important;
+  border: none !important;
+  border-radius: 24px !important;
+}
+[data-palette="nmDeepForest"] [data-radix-dialog-overlay] {
+  background: rgba(8, 12, 8, 0.65) !important;
+  backdrop-filter: blur(6px);
+}
+
+/* ─── Dropdowns / Popovers ─── */
+[data-palette="nmDeepForest"] [data-radix-popper-content-wrapper] [role="menu"],
+[data-palette="nmDeepForest"] [data-radix-popper-content-wrapper] [data-radix-menu-content],
+[data-palette="nmDeepForest"] [data-radix-popover-content] {
+  background: #1A1F1A !important;
+  box-shadow: 10px 10px 20px #0F1210, -10px -10px 20px #252C25 !important;
+  border: none !important;
+  border-radius: 16px !important;
+}
+[data-palette="nmDeepForest"] [role="menuitem"],
+[data-palette="nmDeepForest"] [role="option"] {
+  border-radius: 10px;
+  transition: box-shadow 0.15s ease;
+}
+[data-palette="nmDeepForest"] [role="menuitem"]:hover,
+[data-palette="nmDeepForest"] [role="option"]:hover,
+[data-palette="nmDeepForest"] [role="menuitem"][data-highlighted],
+[data-palette="nmDeepForest"] [role="option"][data-highlighted] {
+  background: #1A1F1A !important;
+  box-shadow: inset 3px 3px 6px #0F1210, inset -3px -3px 6px #252C25;
+}
+
+/* ─── Badges ─── */
+[data-palette="nmDeepForest"] .inline-flex.items-center.rounded-full {
+  background: #1A1F1A !important;
+  box-shadow: 3px 3px 6px #0F1210, -3px -3px 6px #252C25;
+  border: none !important;
+}
+
+/* ─── Checkbox / Switch ─── */
+[data-palette="nmDeepForest"] [role="checkbox"],
+[data-palette="nmDeepForest"] button[role="checkbox"] {
+  background: #1A1F1A !important;
+  box-shadow: inset 3px 3px 6px #0F1210, inset -3px -3px 6px #252C25 !important;
+  border: none !important;
+  border-radius: 6px;
+}
+[data-palette="nmDeepForest"] [role="checkbox"][data-state="checked"] {
+  color: hsl(132, 26%, 47%);
+}
+[data-palette="nmDeepForest"] [role="switch"] {
+  background: #1A1F1A !important;
+  box-shadow: inset 4px 4px 8px #0F1210, inset -4px -4px 8px #252C25 !important;
+  border: none !important;
+}
+[data-palette="nmDeepForest"] [role="switch"] span {
+  background: #1A1F1A !important;
+  box-shadow: 3px 3px 6px #0F1210, -3px -3px 6px #252C25;
+}
+[data-palette="nmDeepForest"] [role="switch"][data-state="checked"] span {
+  background: hsl(132, 26%, 47%) !important;
+  box-shadow: 2px 2px 4px #0F1210, -1px -1px 3px #252C25,
+              0 0 10px rgba(90, 154, 106, 0.22);
+}
+
+/* ─── Progress bar ─── */
+[data-palette="nmDeepForest"] [role="progressbar"] {
+  background: #1A1F1A !important;
+  box-shadow: inset 3px 3px 6px #0F1210, inset -3px -3px 6px #252C25;
+  border: none !important;
+}
+[data-palette="nmDeepForest"] [role="progressbar"] > div {
+  background: linear-gradient(90deg, hsl(132, 35%, 35%), hsl(132, 26%, 55%)) !important;
+  box-shadow: 0 0 10px rgba(90, 154, 106, 0.22), 0 0 20px rgba(90, 154, 106, 0.08);
+}
+
+/* ─── Toasts ─── */
+[data-palette="nmDeepForest"] [data-sonner-toast],
+[data-palette="nmDeepForest"] li[data-sonner-toast] {
+  background: #1A1F1A !important;
+  box-shadow: 10px 10px 20px #0F1210, -10px -10px 20px #252C25, 0 0 24px rgba(0,0,0,0.4) !important;
+  border: none !important;
+  border-radius: 16px !important;
+}
+
+/* ─── Separators ─── */
+[data-palette="nmDeepForest"] [data-orientation="horizontal"][role="separator"],
+[data-palette="nmDeepForest"] hr {
+  border: none !important;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #252C25 30%, #252C25 70%, transparent) !important;
+  opacity: 0.4;
+}
+
+/* ─── Bento / Kanban ─── */
+[data-palette="nmDeepForest"] .bento-cell {
+  background: #1A1F1A !important;
+  box-shadow: inset 6px 6px 12px #0F1210, inset -6px -6px 12px #252C25 !important;
+  border: none !important;
+  border-radius: 20px !important;
+}
+[data-palette="nmDeepForest"] .bento-hero,
+[data-palette="nmDeepForest"] .bento-urgent,
+[data-palette="nmDeepForest"] .bento-ai,
+[data-palette="nmDeepForest"] .dashboard-widget {
+  background: #1A1F1A !important;
+  box-shadow: 6px 6px 12px #0F1210, -6px -6px 12px #252C25 !important;
+  border: none !important;
+  border-radius: 20px !important;
+}
+[data-palette="nmDeepForest"] .bento-hero:hover,
+[data-palette="nmDeepForest"] .bento-urgent:hover,
+[data-palette="nmDeepForest"] .bento-ai:hover {
+  box-shadow: 10px 10px 20px #0F1210, -10px -10px 20px #252C25 !important;
+}
+
+/* ─── Scrollbars ─── */
+[data-palette="nmDeepForest"] ::-webkit-scrollbar { width: 6px; height: 6px; }
+[data-palette="nmDeepForest"] ::-webkit-scrollbar-track {
+  background: #1A1F1A;
+  box-shadow: inset 2px 2px 4px #0F1210;
+  border-radius: 3px;
+}
+[data-palette="nmDeepForest"] ::-webkit-scrollbar-thumb {
+  background: #252C25;
+  border-radius: 3px;
+  box-shadow: 1px 1px 3px #0F1210;
+}
+[data-palette="nmDeepForest"] ::-webkit-scrollbar-thumb:hover {
+  background: hsl(132, 26%, 47%);
+  box-shadow: 0 0 6px rgba(90, 154, 106, 0.22);
+}
+
+/* ─── Select trigger ─── */
+[data-palette="nmDeepForest"] button[role="combobox"],
+[data-palette="nmDeepForest"] [data-radix-select-trigger] {
+  background: #1A1F1A !important;
+  box-shadow: 4px 4px 8px #0F1210, -4px -4px 8px #252C25 !important;
+  border: none !important;
+  border-radius: 12px;
+}
+
+/* ─── Calendar ─── */
+[data-palette="nmDeepForest"] .rdp-day {
+  background: #1A1F1A;
+  border-radius: 10px;
+  transition: box-shadow 0.15s ease;
+}
+[data-palette="nmDeepForest"] .rdp-day:hover {
+  box-shadow: inset 3px 3px 6px #0F1210, inset -3px -3px 6px #252C25;
+}
+[data-palette="nmDeepForest"] .rdp-day_today {
+  box-shadow: inset 4px 4px 8px #0F1210, inset -4px -4px 8px #252C25;
+  color: hsl(132, 26%, 47%);
+  font-weight: 500;
+}
+[data-palette="nmDeepForest"] .rdp-day_selected {
+  background: #1A1F1A !important;
+  box-shadow: 4px 4px 8px #0F1210, -4px -4px 8px #252C25,
+              0 0 12px rgba(90, 154, 106, 0.22);
+  color: hsl(132, 26%, 47%) !important;
+}
+
+/* ─── Disable glass/mesh ─── */
+[data-palette="nmDeepForest"] body::before,
+[data-palette="nmDeepForest"] body::after,
+[data-palette="nmDeepForest"] .mesh-gradient,
+[data-palette="nmDeepForest"] .grain-overlay {
+  display: none !important;
+}
+
+/* ─── Background everywhere ─── */
+[data-palette="nmDeepForest"] .bg-background,
+[data-palette="nmDeepForest"] main,
+[data-palette="nmDeepForest"] .flex-1 {
+  background: #1A1F1A !important;
+}
+
+/* ─── Sheet panels ─── */
+[data-palette="nmDeepForest"] [data-radix-dialog-content][role="dialog"][data-state] {
+  background: #1A1F1A !important;
+  box-shadow: -16px 0 32px #0F1210, 0 0 60px rgba(90, 154, 106, 0.05) !important;
+  border: none !important;
+}
+
+/* ─── Tooltip ─── */
+[data-palette="nmDeepForest"] [role="tooltip"] {
+  background: #1A1F1A !important;
+  box-shadow: 6px 6px 12px #0F1210, -6px -6px 12px #252C25 !important;
+  border: none !important;
+  border-radius: 10px !important;
+  color: hsl(140, 15%, 61%);
+}
+
+/* ─── Command palette ─── */
+[data-palette="nmDeepForest"] [cmdk-root] {
+  background: #1A1F1A !important;
+  box-shadow: 16px 16px 32px #0F1210, -16px -16px 32px #252C25,
+              0 0 60px rgba(90, 154, 106, 0.05) !important;
+  border: none !important;
+  border-radius: 20px !important;
+}
+[data-palette="nmDeepForest"] [cmdk-input] {
+  background: #1A1F1A !important;
+  box-shadow: inset 4px 4px 8px #0F1210, inset -4px -4px 8px #252C25 !important;
+  border: none !important;
+}

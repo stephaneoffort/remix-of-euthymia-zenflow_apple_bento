@@ -1,4 +1,5 @@
 import DashboardView from "@/components/DashboardView";
+import GanttView from "@/components/GanttView";
 import VoiceTaskCreator from "@/components/VoiceTaskCreator";
 import React, { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useApp } from "@/context/AppContext";

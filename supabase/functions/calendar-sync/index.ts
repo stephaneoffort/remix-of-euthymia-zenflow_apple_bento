@@ -258,7 +258,7 @@ async function googlePushDelete(account: any, externalId: string): Promise<void>
 async function googleTest(account: any): Promise<boolean> {
   try {
     const token = await refreshGoogleToken(account);
-    const res = await fetch(
+    const res = await fetchWithRetry(
       "https://www.googleapis.com/calendar/v3/users/me/calendarList?maxResults=1",
       { headers: { Authorization: `Bearer ${token}` } },
     );

@@ -861,7 +861,18 @@ function GanttBar({
   const baseLeft = differenceInDays(start, rangeStart) * ppd;
   const duration = Math.max(differenceInDays(end, start), 1);
   const baseWidth = duration * ppd;
-  const progress = task.progress ?? 0;
+
+  // Compute effective progress: status-driven fallback when progress is 0
+  const rawProgress = task.progress ?? 0;
+  let progress = rawProgress;
+  if (rawProgress === 0 && task.status === "done") {
+    progress = 100;
+  } else if (rawProgress === 0 && task.status === "in_progress") {
+    progress = 50;
+  } else if (rawProgress === 0 && task.status === "in_review") {
+    progress = 75;
+  }
+
   const top = 12 + rowIndex * ROW_HEIGHT + (ROW_HEIGHT - 24) / 2;
 
   // Apply drag offsets

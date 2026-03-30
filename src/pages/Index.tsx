@@ -72,6 +72,7 @@ const DEFAULT_VIEW_OPTIONS: { key: ViewType; label: string; icon: React.ReactNod
   { key: "workload", label: "Charge", icon: <BarChart3 className="w-4 h-4" /> },
   { key: "mindmap", label: "Carte mentale", icon: <Network className="w-4 h-4" /> },
   { key: "gantt", label: "Gantt", icon: <GanttChart className="w-4 h-4" /> },
+  { key: "timeline", label: "Chronologie", icon: <AlignHorizontalJustifyStart className="w-4 h-4" /> },
 ];
 
 const VIEW_MAP = Object.fromEntries(DEFAULT_VIEW_OPTIONS.map(v => [v.key, v]));

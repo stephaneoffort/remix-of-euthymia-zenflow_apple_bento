@@ -531,7 +531,7 @@ async function getSyncPrefs(userId: string) {
 }
 
 // ── Build Google Calendar event payload ──
-function buildEventPayload(task: any) {
+async function buildEventPayload(taskId: string, task: any) {
   const isSubtask = !!task.parent_task_id;
   const prefix = isSubtask ? "↳ " : "✓ ";
   const statusEmoji: Record<string, string> = { todo: "🔵", in_progress: "🟡", in_review: "🟠", done: "🟢", blocked: "🔴" };
@@ -539,7 +539,16 @@ function buildEventPayload(task: any) {
   const eventTitle = `${emoji} ${prefix}${task.title}`;
   const startDate = task.due_date ? new Date(task.due_date) : new Date();
   const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
-  const description = [
+
+  // Look up associated Zoom meeting
+  const { data: zoomMeeting } = await supabase
+    .from("zoom_meetings")
+    .select("join_url, password, topic")
+    .eq("entity_id", taskId)
+    .limit(1)
+    .maybeSingle();
+
+  const descParts = [
     task.description || "",
     "",
     "── Détails ZenFlow ──",
@@ -547,13 +556,19 @@ function buildEventPayload(task: any) {
     `Priorité : ${task.priority}`,
     isSubtask ? "Type : Sous-tâche" : "Type : Tâche",
     `ID : ${task.id}`,
-    "",
-    "https://euthymia-zenflow-bento.lovable.app",
-  ].join("\n");
+  ];
+
+  if (zoomMeeting?.join_url) {
+    descParts.push("", "── Session Zoom ──", `Rejoindre : ${zoomMeeting.join_url}`);
+    if (zoomMeeting.password) descParts.push(`Mot de passe : ${zoomMeeting.password}`);
+  }
+
+  descParts.push("", "https://euthymia-zenflow-bento.lovable.app");
+
   const colorId: Record<string, string> = { todo: "9", in_progress: "5", in_review: "6", done: "10", blocked: "11" };
   return {
     summary: eventTitle,
-    description,
+    description: descParts.join("\n"),
     start: { dateTime: startDate.toISOString(), timeZone: "Europe/Paris" },
     end: { dateTime: endDate.toISOString(), timeZone: "Europe/Paris" },
     colorId: colorId[task.status] ?? "9",

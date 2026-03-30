@@ -234,6 +234,8 @@ export default function ListView() {
                   {task.recurrence && <Repeat className="w-3 h-3 text-primary shrink-0" />}
                   <SubtaskProgress total={subtasks.length} done={doneSubtasks.length} />
                   <ZenflowBadge googleEventId={task.googleEventId} />
+                  <ZoomSessionBadge hasZoom={zoomTaskIds.has(task.id)} />
+                  <MeetSessionBadge hasMeet={!!task.googleEventId && meetTaskIds.has(task.googleEventId)} />
                 </div>
               </div>
             </div>

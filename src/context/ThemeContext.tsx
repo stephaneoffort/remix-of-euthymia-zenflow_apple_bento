@@ -123,6 +123,11 @@ export const PALETTE_META: Record<ThemePalette, { label: string; description: st
     description: 'Soft UI · Vert mousse · Zen',
     colors: ['#E6EDE8', '#C3CAC5', '#FFFFFF', '#4E7A45'],
   },
+  nmLavender: {
+    label: 'Lavender',
+    description: 'Soft UI · Lavande · Spirituel',
+    colors: ['#EDE8F0', '#CAC5CD', '#FFFFFF', '#7B5EA7'],
+  },
 };
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {

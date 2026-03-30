@@ -102,7 +102,13 @@ export default function Chat() {
             />
           </div>
           {showMembers && !isMobile && (
-            <MembersPanel memberProfiles={chat.memberProfiles} />
+            <MembersPanel
+              memberProfiles={chat.memberProfiles}
+              onDmCreated={(channelId) => {
+                chat.setActiveChannelId(channelId);
+                chat.loadChannels();
+              }}
+            />
           )}
         </div>
       </div>

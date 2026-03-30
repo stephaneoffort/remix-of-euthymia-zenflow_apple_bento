@@ -165,6 +165,26 @@ serve(async (req: Request) => {
           task_id: task.id, member_id: member.id,
         })
 
+        // Find sender's team_member_id for the comment author
+        const { data: senderMembers } = await supabase
+          .from("team_members")
+          .select("id, name")
+          .ilike("email", `%${senderEmail}%`)
+          .limit(1)
+
+        const senderMemberId = senderMembers?.[0]?.id
+        const senderName = senderMembers?.[0]?.name || senderEmail
+
+        // Insert a comment with @mention to trigger ZenFlow notification
+        if (senderMemberId) {
+          await supabase.from("comments").insert({
+            task_id: task.id,
+            author_id: senderMemberId,
+            content: `📌 @${member.name} a été assigné(e) à cette tâche via Google Chat par ${senderName}`,
+            mentioned_member_ids: [member.id],
+          })
+        }
+
         return new Response(
           JSON.stringify({ text: `✅ *${member.name}* assigné(e) à *${task.title}*` }),
           { status: 200, headers: corsHeaders }

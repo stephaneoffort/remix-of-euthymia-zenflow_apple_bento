@@ -1698,6 +1698,12 @@ export type Database = {
         Args: { _member_id: string; _space_id: string }
         Returns: boolean
       }
+      get_user_by_email: {
+        Args: { p_email: string }
+        Returns: {
+          id: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

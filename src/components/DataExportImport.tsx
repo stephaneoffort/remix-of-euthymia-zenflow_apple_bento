@@ -88,13 +88,10 @@ export default function DataExportImport() {
         comments: comments || [],
         attachments: attachments || [],
         custom_statuses: custom_statuses || [],
-        chat_categories: chat_categories || [],
+        chat_channels: chat_channels || [],
+        chat_channel_members: chat_channel_members || [],
         chat_messages: chat_messages || [],
         chat_reactions: chat_reactions || [],
-        direct_conversations: direct_conversations || [],
-        direct_conversation_members: direct_conversation_members || [],
-        direct_messages: direct_messages || [],
-        dm_reactions: dm_reactions || [],
       };
 
       const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });

@@ -218,10 +218,6 @@ export default function IntegrationsSettings() {
               </div>
             );
           })}
-
-          <p className="text-[11px] text-muted-foreground pt-2">
-            💡 Gmail sera disponible prochainement.
-          </p>
         </CardContent>
       </Card>
 

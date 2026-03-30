@@ -6,10 +6,14 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MessageSquare, CheckCheck, Mail, ArrowLeft, ExternalLink } from 'lucide-react';
+import { MessageSquare, CheckCheck, Mail, ArrowLeft, ExternalLink, Reply, Send, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/context/AuthContext';
+import { toast } from 'sonner';
+import MentionCommentInput from '@/components/MentionCommentInput';
 
 function stripHtml(html: string): string {
   const div = document.createElement('div');
@@ -23,77 +27,166 @@ const TYPE_LABELS: Record<string, string> = {
   google_chat: 'Google Chat',
 };
 
-function MessageCard({ message, onClick }: { message: AppMessage; onClick: () => void }) {
+function MessageCard({
+  message,
+  onClick,
+  replyingTo,
+  onReplyToggle,
+  onReplySent,
+}: {
+  message: AppMessage;
+  onClick: () => void;
+  replyingTo: boolean;
+  onReplyToggle: () => void;
+  onReplySent: () => void;
+}) {
   const { getMemberById } = useApp();
+  const { teamMemberId } = useAuth();
   const member = message.type !== 'google_chat' ? getMemberById(message.authorId) : null;
   const preview = stripHtml(message.content);
+  const [replyContent, setReplyContent] = useState('');
+  const [sending, setSending] = useState(false);
+
+  const handleSendReply = async (content: string, mentionedIds: string[]) => {
+    if (!content.trim() || content === '<p></p>' || !teamMemberId) return;
+    setSending(true);
+    try {
+      if (message.type === 'comment' && message.entityId) {
+        // Reply as a comment on the same task
+        await supabase.from('comments').insert({
+          task_id: message.entityId,
+          author_id: teamMemberId,
+          content,
+          mentioned_member_ids: mentionedIds.length > 0 ? mentionedIds : [message.authorId],
+        });
+        toast.success('Réponse envoyée');
+      } else if (message.type === 'google_chat') {
+        window.open('https://chat.google.com', '_blank');
+        toast.info('Ouvre Google Chat pour répondre');
+      }
+      setReplyContent('');
+      onReplySent();
+    } catch (e) {
+      toast.error('Erreur lors de l\'envoi');
+    } finally {
+      setSending(false);
+    }
+  };
 
   return (
-    <button
-      onClick={onClick}
-      className={`w-full text-left p-4 rounded-lg border transition-colors hover:bg-muted/50 ${
-        !message.isRead ? 'bg-primary/5 border-primary/20' : 'border-border'
-      }`}
-    >
-      <div className="flex items-start gap-3">
-        {/* Avatar */}
-        <div
-          className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0 ${
-            message.type === 'google_chat' ? 'bg-emerald-600' : ''
-          }`}
-          style={message.type !== 'google_chat' ? { backgroundColor: member?.avatarColor || '#888' } : undefined}
-        >
-          {message.type === 'google_chat' ? 'G' : (member?.name || 'M').charAt(0).toUpperCase()}
-        </div>
-
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2">
-            <span className="font-semibold text-sm text-foreground">{message.authorName}</span>
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="text-xs text-muted-foreground">
-                {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true, locale: fr })}
-              </span>
-              {!message.isRead && (
-                <span className="w-2.5 h-2.5 rounded-full bg-destructive animate-pulse" />
-              )}
-            </div>
+    <div className={`rounded-lg border transition-colors ${!message.isRead ? 'bg-primary/5 border-primary/20' : 'border-border'}`}>
+      <button
+        onClick={onClick}
+        className="w-full text-left p-4 hover:bg-muted/50 transition-colors rounded-t-lg"
+      >
+        <div className="flex items-start gap-3">
+          <div
+            className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0 ${
+              message.type === 'google_chat' ? 'bg-emerald-600' : ''
+            }`}
+            style={message.type !== 'google_chat' ? { backgroundColor: member?.avatarColor || '#888' } : undefined}
+          >
+            {message.type === 'google_chat' ? 'G' : (member?.name || 'M').charAt(0).toUpperCase()}
           </div>
 
-          <div className="mt-1 flex items-center gap-2">
-            <Badge
-              variant="secondary"
-              className={`text-[10px] px-1.5 py-0 ${
-                message.type === 'google_chat' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : ''
-              }`}
-            >
-              {TYPE_LABELS[message.type] || 'Message'}
-            </Badge>
-            {message.entityTitle && (
-              <span className="text-xs text-muted-foreground truncate">
-                {message.type === 'google_chat' ? '' : 'sur : '}{message.entityTitle}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between gap-2">
+              <span className="font-semibold text-sm text-foreground">{message.authorName}</span>
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="text-xs text-muted-foreground">
+                  {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true, locale: fr })}
+                </span>
+                {!message.isRead && (
+                  <span className="w-2.5 h-2.5 rounded-full bg-destructive animate-pulse" />
+                )}
+              </div>
+            </div>
+
+            <div className="mt-1 flex items-center gap-2">
+              <Badge
+                variant="secondary"
+                className={`text-[10px] px-1.5 py-0 ${
+                  message.type === 'google_chat' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : ''
+                }`}
+              >
+                {TYPE_LABELS[message.type] || 'Message'}
+              </Badge>
+              {message.entityTitle && (
+                <span className="text-xs text-muted-foreground truncate">
+                  {message.type === 'google_chat' ? '' : 'sur : '}{message.entityTitle}
+                </span>
+              )}
+            </div>
+
+            <p className="text-sm text-muted-foreground mt-1.5 line-clamp-2">{preview}</p>
+
+            {message.type === 'google_chat' && (
+              <span className="inline-flex items-center gap-1 text-xs text-emerald-600 mt-1">
+                <ExternalLink className="w-3 h-3" />
+                Ouvrir dans Google Chat
               </span>
             )}
           </div>
+        </div>
+      </button>
 
-          <p className="text-sm text-muted-foreground mt-1.5 line-clamp-2">{preview}</p>
+      {/* Reply button */}
+      <div className="px-4 pb-2 flex items-center gap-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-xs gap-1.5 text-muted-foreground hover:text-foreground h-7"
+          onClick={(e) => { e.stopPropagation(); onReplyToggle(); }}
+        >
+          {replyingTo ? <X className="w-3.5 h-3.5" /> : <Reply className="w-3.5 h-3.5" />}
+          {replyingTo ? 'Annuler' : 'Répondre'}
+        </Button>
+      </div>
 
-          {message.type === 'google_chat' && (
-            <span className="inline-flex items-center gap-1 text-xs text-emerald-600 mt-1">
-              <ExternalLink className="w-3 h-3" />
-              Ouvrir dans Google Chat
-            </span>
+      {/* Inline reply area */}
+      {replyingTo && (
+        <div className="px-4 pb-4 border-t border-border pt-3">
+          <p className="text-[11px] text-muted-foreground mb-2">
+            Répondre à <span className="font-medium text-foreground">{message.authorName}</span>
+            {message.entityTitle ? ` sur ${message.entityTitle}` : ''}
+          </p>
+          {message.type === 'google_chat' ? (
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1.5 text-xs"
+              onClick={() => window.open('https://chat.google.com', '_blank')}
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              Répondre dans Google Chat
+            </Button>
+          ) : (
+            <div className="relative">
+              <MentionCommentInput
+                value={replyContent}
+                onChange={setReplyContent}
+                onSubmit={handleSendReply}
+                placeholder={`Répondre à ${message.authorName}...`}
+              />
+              {sending && (
+                <div className="absolute inset-0 bg-background/50 flex items-center justify-center rounded-md">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary" />
+                </div>
+              )}
+            </div>
           )}
         </div>
-      </div>
-    </button>
+      )}
+    </div>
   );
 }
 
 export default function Messages() {
-  const { messages, unreadCount, loading, markAsRead, markAllAsRead } = useMessages();
+  const { messages, unreadCount, loading, markAsRead, markAllAsRead, refetch } = useMessages();
   const navigate = useNavigate();
   const { setSelectedTaskId } = useApp();
   const [tab, setTab] = useState('all');
+  const [replyingToId, setReplyingToId] = useState<string | null>(null);
 
   const filtered = tab === 'all' ? messages : messages.filter(m => m.type === tab);
 
@@ -167,7 +260,14 @@ export default function Messages() {
               ) : (
                 <div className="space-y-2">
                   {filtered.map(msg => (
-                    <MessageCard key={msg.id} message={msg} onClick={() => handleClick(msg)} />
+                    <MessageCard
+                      key={msg.id}
+                      message={msg}
+                      onClick={() => handleClick(msg)}
+                      replyingTo={replyingToId === msg.id}
+                      onReplyToggle={() => setReplyingToId(prev => prev === msg.id ? null : msg.id)}
+                      onReplySent={() => { setReplyingToId(null); refetch(); }}
+                    />
                   ))}
                 </div>
               )}

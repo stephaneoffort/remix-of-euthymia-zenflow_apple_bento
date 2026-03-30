@@ -128,6 +128,11 @@ export const PALETTE_META: Record<ThemePalette, { label: string; description: st
     description: 'Soft UI · Lavande · Spirituel',
     colors: ['#EDE8F0', '#CAC5CD', '#FFFFFF', '#7B5EA7'],
   },
+  nmDeepForest: {
+    label: 'Deep Forest',
+    description: 'Soft UI · Vert sombre · Nuit',
+    colors: ['#1A1F1A', '#0F1210', '#252C25', '#5A9A6A'],
+  },
 };
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {

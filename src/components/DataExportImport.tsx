@@ -299,11 +299,10 @@ export default function DataExportImport() {
     members: importPreview.team_members.length,
     comments: importPreview.comments.length,
     checklists: importPreview.checklist_items.length,
-    chatCategories: importPreview.chat_categories.length,
-    chatMessages: importPreview.chat_messages.length,
+    chatChannels: (importPreview.chat_channels || []).length,
+    chatMembers: (importPreview.chat_channel_members || []).length,
+    chatMessages: (importPreview.chat_messages || []).length,
     chatReactions: (importPreview.chat_reactions || []).length,
-    directMessages: (importPreview.direct_messages || []).length,
-    dmReactions: (importPreview.dm_reactions || []).length,
     statuses: importPreview.custom_statuses.length,
   } : null;
 

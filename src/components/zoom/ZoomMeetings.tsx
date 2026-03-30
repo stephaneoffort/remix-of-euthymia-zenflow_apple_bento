@@ -173,6 +173,8 @@ function ZoomMeetingCreator({
     }
   }, [open, defaultTitle]);
 
+  const { syncTask } = useTaskSync();
+
   const handleCreate = async (instant = false) => {
     if (!topic.trim()) return;
     setCreating(true);
@@ -181,6 +183,38 @@ function ZoomMeetingCreator({
       console.log("Creating Zoom meeting:", { topic: topic.trim(), entityType, entityId, startTime, duration: parseInt(duration) });
       const result = await zoom.createMeeting(topic.trim(), entityType, entityId, startTime, parseInt(duration));
       console.log("Zoom meeting created:", result);
+
+      // If this is a task, update description with Zoom link and sync to Google Calendar
+      if (entityType === 'task' && result?.join_url) {
+        try {
+          const { data: task } = await supabase
+            .from('tasks')
+            .select('description')
+            .eq('id', entityId)
+            .single();
+
+          const zoomSection = [
+            '',
+            '── Session Zoom ──',
+            `Rejoindre : ${result.join_url}`,
+            result.password ? `Mot de passe : ${result.password}` : '',
+          ].filter(Boolean).join('\n');
+
+          const newDescription = (task?.description || '') + zoomSection;
+
+          await supabase
+            .from('tasks')
+            .update({ description: newDescription })
+            .eq('id', entityId);
+
+          // Sync to Google Calendar with Zoom data
+          await syncTask(entityId, 'update');
+          console.log('Task synced to Google Calendar with Zoom link');
+        } catch (syncErr) {
+          console.error('Failed to sync task with Zoom to Google Calendar:', syncErr);
+        }
+      }
+
       toast.success('Réunion Zoom créée ✅');
       onCreated();
       onOpenChange(false);

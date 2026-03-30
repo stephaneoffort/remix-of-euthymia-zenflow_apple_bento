@@ -531,7 +531,7 @@ async function getOrCreateZenflowCalendar(token: string, accountId: string): Pro
   const created = await createRes.json();
 
   // Set color
-  await fetch(
+  await fetchWithRetry(
     `https://www.googleapis.com/calendar/v3/users/me/calendarList/${encodeURIComponent(created.id)}`,
     {
       method: "PATCH",

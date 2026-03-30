@@ -956,6 +956,7 @@ function GanttBar({
             className="absolute cursor-pointer z-[2]"
             style={{ left: displayLeft - 8, top: top + 4, width: 16, height: 16 }}
             onDoubleClick={onDoubleClick}
+            onContextMenu={onContextMenu}
           >
             <Diamond className={`w-4 h-4 ${isCritical ? "text-destructive" : "text-primary"} fill-current`} />
           </div>

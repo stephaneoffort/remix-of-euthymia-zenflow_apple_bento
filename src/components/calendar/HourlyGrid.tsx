@@ -4,6 +4,9 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import type { Task } from '@/types';
 import type { CalendarEvent } from '@/hooks/useCalendarSync';
+import { useTaskMeetings } from '@/hooks/useTaskMeetings';
+import zoomIcon from '@/assets/integrations/zoom.png';
+import googleMeetIcon from '@/assets/integrations/google-meet.png';
 
 // ─── Constants ───
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
@@ -399,7 +402,7 @@ function OverflowBadge({ items, top, height, onTaskClick, onEventClick }: {
 }
 
 // ─── Event card ───
-function EventCard({ item, onClick, widthPercent, leftPercent, isDay, maxEventHeight, fontSize, padding }: {
+function EventCard({ item, onClick, widthPercent, leftPercent, isDay, maxEventHeight, fontSize, padding, zoomTaskIds, meetTaskIds }: {
   item: PositionedItem;
   onClick: () => void;
   widthPercent: number;
@@ -408,6 +411,8 @@ function EventCard({ item, onClick, widthPercent, leftPercent, isDay, maxEventHe
   maxEventHeight: number;
   fontSize: string;
   padding: string;
+  zoomTaskIds: Set<string>;
+  meetTaskIds: Set<string>;
 }) {
   const cardClasses = getCardClasses(item);
   const h = item.height;
@@ -454,6 +459,8 @@ function EventCard({ item, onClick, widthPercent, leftPercent, isDay, maxEventHe
           <CheckCircle2 className="w-3 h-3 shrink-0 opacity-80" />
         )}
         <span className="truncate font-medium leading-tight">{t.title}</span>
+        {zoomTaskIds.has(t.id) && <img src={zoomIcon} alt="Zoom" className="w-3 h-3 shrink-0" />}
+        {t.googleEventId && meetTaskIds.has(t.googleEventId) && <img src={googleMeetIcon} alt="Meet" className="w-3 h-3 shrink-0" />}
       </div>
       {showTime && t.dueDate && hasTimeComponent(t.dueDate) && (
         <div className="opacity-60 truncate" style={{ fontSize: timeFontSize }}>
@@ -490,6 +497,7 @@ export default function HourlyGrid({
   const config = getModeConfig(mode);
   const { hourHeight, minEventHeight, maxEventHeight, maxOverlaps, labelWidth } = config;
   const isDay = mode === 'day';
+  const { zoomTaskIds, meetTaskIds } = useTaskMeetings();
 
   useEffect(() => {
     if (hasScrolled.current) return;
@@ -636,6 +644,8 @@ export default function HourlyGrid({
                       maxEventHeight={maxEventHeight}
                       fontSize={config.cardFontSize}
                       padding={config.cardPadding}
+                      zoomTaskIds={zoomTaskIds}
+                      meetTaskIds={meetTaskIds}
                     />
                   );
                 })}

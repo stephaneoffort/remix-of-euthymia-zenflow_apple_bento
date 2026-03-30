@@ -4,7 +4,8 @@ import EmptyState from '@/components/EmptyState';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { PRIORITY_LABELS, Status, Priority } from '@/types';
-import { PriorityBadge, StatusBadge, AvatarGroup, SubtaskProgress, ZenflowBadge } from '@/components/TaskBadges';
+import { PriorityBadge, StatusBadge, AvatarGroup, SubtaskProgress, ZenflowBadge, ZoomSessionBadge, MeetSessionBadge } from '@/components/TaskBadges';
+import { useTaskMeetings } from '@/hooks/useTaskMeetings';
 import { ChevronRight, ChevronDown, ArrowUpDown, Plus, Repeat } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -15,6 +16,7 @@ const PRIORITY_ORDER: Priority[] = ['urgent', 'high', 'normal', 'low'];
 export default function ListView() {
   const { getFilteredTasks, setSelectedTaskId, getMemberById, tasks, addTask, selectedProjectId, getListsForProject, lists, projects, quickFilter } = useApp();
   const { teamMemberId } = useAuth();
+  const { zoomTaskIds, meetTaskIds } = useTaskMeetings();
   const [sortKey, setSortKey] = useState<SortKey>('priority');
   const [sortAsc, setSortAsc] = useState(true);
   const [expandedTasks, setExpandedTasks] = useState<Set<string>>(new Set());
@@ -133,6 +135,8 @@ export default function ListView() {
                   <PriorityBadge priority={task.priority} />
                   <SubtaskProgress total={subtasks.length} done={doneSubtasks.length} />
                   <ZenflowBadge googleEventId={task.googleEventId} />
+                  <ZoomSessionBadge hasZoom={zoomTaskIds.has(task.id)} />
+                  <MeetSessionBadge hasMeet={!!task.googleEventId && meetTaskIds.has(task.googleEventId)} />
                 </div>
                 <div className="flex items-center justify-between mt-1.5">
                   {task.dueDate ? (
@@ -230,6 +234,8 @@ export default function ListView() {
                   {task.recurrence && <Repeat className="w-3 h-3 text-primary shrink-0" />}
                   <SubtaskProgress total={subtasks.length} done={doneSubtasks.length} />
                   <ZenflowBadge googleEventId={task.googleEventId} />
+                  <ZoomSessionBadge hasZoom={zoomTaskIds.has(task.id)} />
+                  <MeetSessionBadge hasMeet={!!task.googleEventId && meetTaskIds.has(task.googleEventId)} />
                 </div>
               </div>
             </div>

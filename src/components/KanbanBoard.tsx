@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { Task } from '@/types';
-import { PriorityBadge, AvatarGroup, SubtaskProgress, ZenflowBadge } from '@/components/TaskBadges';
+import { PriorityBadge, AvatarGroup, SubtaskProgress, ZenflowBadge, ZoomSessionBadge, MeetSessionBadge } from '@/components/TaskBadges';
+import { useTaskMeetings } from '@/hooks/useTaskMeetings';
 import { Plus, GripVertical, GripHorizontal, ChevronRight, ChevronsLeftRight, ChevronsRightLeft, Repeat, ArrowRightLeft } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import {
@@ -23,6 +24,7 @@ const STATUS_COLORS: Record<string, string> = {
 export default function KanbanBoard() {
   const { getFilteredTasks, moveTask, setSelectedTaskId, getMemberById, addTask, selectedProjectId, selectedSpaceId, getListsForProject, tasks, allStatuses, getStatusLabel, getTasksForProject, projects, lists, quickFilter } = useApp();
   const { teamMemberId } = useAuth();
+  const { zoomTaskIds, meetTaskIds } = useTaskMeetings();
 
   const getProjectName = useCallback((listId: string) => {
     const list = lists.find(l => l.id === listId);
@@ -310,6 +312,8 @@ export default function KanbanBoard() {
                 setDraggedTaskId={setDraggedTaskId}
                 handleTaskDragStart={handleTaskDragStart}
                 getMemberById={getMemberById}
+                zoomTaskIds={zoomTaskIds}
+                meetTaskIds={meetTaskIds}
               />
             );
           })}
@@ -407,7 +411,7 @@ function KanbanCard({
   task, isMobile, subtasks, doneSubtasks, isOverdue, draggedTaskId,
   selectedProjectId, getProjectName, getStatusColor, getStatusLabel,
   allStatuses, moveTask, setSelectedTaskId, setDraggedTaskId,
-  handleTaskDragStart, getMemberById,
+  handleTaskDragStart, getMemberById, zoomTaskIds, meetTaskIds,
 }: {
   task: Task;
   isMobile: boolean;
@@ -425,6 +429,8 @@ function KanbanCard({
   setDraggedTaskId: (id: string | null) => void;
   handleTaskDragStart: (e: React.DragEvent, taskId: string) => void;
   getMemberById: (id: string) => any;
+  zoomTaskIds: Set<string>;
+  meetTaskIds: Set<string>;
 }) {
   const [moveOpen, setMoveOpen] = useState(false);
   const [pressing, setPressing] = useState(false);
@@ -506,6 +512,8 @@ function KanbanCard({
             )}
             <SubtaskProgress total={subtasks.length} done={doneSubtasks.length} />
             <ZenflowBadge googleEventId={task.googleEventId} />
+            <ZoomSessionBadge hasZoom={zoomTaskIds.has(task.id)} />
+            <MeetSessionBadge hasMeet={!!task.googleEventId && meetTaskIds.has(task.googleEventId)} />
           </div>
           <div className="flex items-center justify-between mt-1.5 sm:mt-2">
             <div className="flex gap-1 flex-wrap items-center">

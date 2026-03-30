@@ -1,6 +1,8 @@
 import React from 'react';
 import { Priority } from '@/types';
 import { AlertCircle, ArrowUp, Minus, ArrowDown, Circle, Loader, Eye, CheckCircle, Ban, CalendarSync } from 'lucide-react';
+import zoomIcon from '@/assets/integrations/zoom.png';
+import googleMeetIcon from '@/assets/integrations/google-meet.png';
 
 export const PriorityBadge = React.forwardRef<HTMLSpanElement, { priority: Priority }>(({ priority }, ref) => {
   const config: Record<Priority, { label: string; className: string; icon: React.ReactNode }> = {
@@ -108,6 +110,26 @@ export function ZenflowBadge({ googleEventId }: { googleEventId?: string | null 
     <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-primary/10 text-primary" title="Synchronisé avec ZENFLOW">
       <CalendarSync className="w-3 h-3" />
       ZENFLOW
+    </span>
+  );
+}
+
+export function ZoomSessionBadge({ hasZoom }: { hasZoom: boolean }) {
+  if (!hasZoom) return null;
+  return (
+    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-[hsl(213,80%,50%)]/10 text-[hsl(213,80%,50%)]" title="Session Zoom">
+      <img src={zoomIcon} alt="Zoom" className="w-3 h-3" />
+      Zoom
+    </span>
+  );
+}
+
+export function MeetSessionBadge({ hasMeet }: { hasMeet: boolean }) {
+  if (!hasMeet) return null;
+  return (
+    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-[hsl(142,60%,45%)]/10 text-[hsl(142,60%,45%)]" title="Google Meet">
+      <img src={googleMeetIcon} alt="Meet" className="w-3 h-3" />
+      Meet
     </span>
   );
 }

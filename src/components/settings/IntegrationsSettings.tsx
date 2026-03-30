@@ -160,7 +160,6 @@ export default function IntegrationsSettings() {
             const info = connInfo[key];
             const enabled = status?.is_enabled ?? false;
             const connected = status?.is_connected ?? false;
-            const isGmailNotReady = key === 'gmail'; // Gmail OAuth not implemented yet
 
             return (
               <div

@@ -308,6 +308,7 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
               <CanvaAttachments entityType="event" entityId={event.id} compact defaultTitle={event.title} />
               <ZoomMeetings entityType="event" entityId={event.id} compact defaultTitle={event.title} />
               <BrevoContacts entityType="event" entityId={event.id} compact />
+              <BrevoNewsletterLinks entityType="event" entityId={event.id} compact />
             </>
           )}
           <div className="flex items-center justify-between pt-2">

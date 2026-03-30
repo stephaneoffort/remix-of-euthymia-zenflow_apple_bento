@@ -678,6 +678,7 @@ export default function TaskDetailPanel() {
             <CanvaAttachments entityType="task" entityId={task.id} compact defaultTitle={task.title} />
             <ZoomMeetings entityType="task" entityId={task.id} compact defaultTitle={task.title} />
             <BrevoContacts entityType="task" entityId={task.id} compact />
+            <BrevoNewsletterLinks entityType="task" entityId={task.id} compact />
             <GmailCompose entityType="task" entityId={task.id} defaultSubject={task.title} compact />
             <GmailInbox compact />
 

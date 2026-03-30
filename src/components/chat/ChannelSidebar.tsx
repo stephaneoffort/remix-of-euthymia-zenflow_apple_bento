@@ -20,9 +20,10 @@ interface Props {
   onSelectChannel: (id: string) => void;
   currentUserProfile?: MemberProfile | null;
   onChannelCreated?: () => void;
+  unreadCounts?: Record<string, number>;
 }
 
-export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, currentUserProfile, onChannelCreated }: Props) {
+export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, currentUserProfile, onChannelCreated, unreadCounts = {} }: Props) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { teamMembers } = useApp();
@@ -177,7 +178,7 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
             <div className="space-y-0.5 px-2">
               {publicChannels.map(ch => (
                 <ChannelItem key={ch.id} channel={ch} isActive={activeChannelId === ch.id}
-                  onClick={() => onSelectChannel(ch.id)} icon={<Hash className="w-4 h-4 shrink-0" />} />
+                  onClick={() => onSelectChannel(ch.id)} icon={<Hash className="w-4 h-4 shrink-0" />} unread={unreadCounts[ch.id] || 0} />
               ))}
               {publicChannels.length === 0 && (
                 <p className="text-[11px] text-muted-foreground/40 px-3 py-2 italic">Aucun canal</p>
@@ -194,7 +195,7 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
               <div className="space-y-0.5 px-2">
                 {privateChannels.map(ch => (
                   <ChannelItem key={ch.id} channel={ch} isActive={activeChannelId === ch.id}
-                    onClick={() => onSelectChannel(ch.id)} icon={<Lock className="w-4 h-4 shrink-0" />} />
+                    onClick={() => onSelectChannel(ch.id)} icon={<Lock className="w-4 h-4 shrink-0" />} unread={unreadCounts[ch.id] || 0} />
                 ))}
               </div>
             </div>
@@ -220,6 +221,7 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
                     onClick={() => onSelectChannel(ch.id)}
                     partnerName={partner?.name}
                     partnerColor={partner?.avatarColor}
+                    unread={unreadCounts[ch.id] || 0}
                   />
                 );
               })}
@@ -332,25 +334,32 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
   );
 }
 
-function ChannelItem({ channel, isActive, onClick, icon }: {
-  channel: ChatChannel; isActive: boolean; onClick: () => void; icon: React.ReactNode;
+function ChannelItem({ channel, isActive, onClick, icon, unread = 0 }: {
+  channel: ChatChannel; isActive: boolean; onClick: () => void; icon: React.ReactNode; unread?: number;
 }) {
   return (
     <button onClick={onClick}
       className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all duration-200 ${
         isActive
           ? 'bg-primary/10 text-primary font-semibold backdrop-blur-xl border border-primary/15 shadow-[0_0_14px_hsl(var(--primary)/0.1),inset_0_1px_0_rgba(255,255,255,0.05)]'
-          : 'text-muted-foreground/60 hover:bg-muted/20 hover:text-foreground hover:backdrop-blur-sm'
+          : unread > 0
+            ? 'text-foreground font-medium hover:bg-muted/20'
+            : 'text-muted-foreground/60 hover:bg-muted/20 hover:text-foreground hover:backdrop-blur-sm'
       }`}
     >
-      <span className={isActive ? 'text-primary' : 'opacity-40'}>{icon}</span>
-      <span className="truncate">{channel.name}</span>
+      <span className={isActive ? 'text-primary' : unread > 0 ? 'opacity-70' : 'opacity-40'}>{icon}</span>
+      <span className="truncate flex-1 text-left">{channel.name}</span>
+      {unread > 0 && !isActive && (
+        <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center shrink-0">
+          {unread > 99 ? '99+' : unread}
+        </span>
+      )}
     </button>
   );
 }
 
-function DmItem({ channelId, isActive, onClick, partnerName, partnerColor }: {
-  channelId: string; isActive: boolean; onClick: () => void; partnerName?: string; partnerColor?: string;
+function DmItem({ channelId, isActive, onClick, partnerName, partnerColor, unread = 0 }: {
+  channelId: string; isActive: boolean; onClick: () => void; partnerName?: string; partnerColor?: string; unread?: number;
 }) {
   const displayName = partnerName || 'Utilisateur';
   const color = partnerColor || '#6366f1';
@@ -360,14 +369,23 @@ function DmItem({ channelId, isActive, onClick, partnerName, partnerColor }: {
       className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all duration-200 ${
         isActive
           ? 'bg-primary/10 text-primary font-semibold backdrop-blur-xl border border-primary/15 shadow-[0_0_14px_hsl(var(--primary)/0.1),inset_0_1px_0_rgba(255,255,255,0.05)]'
-          : 'text-muted-foreground/60 hover:bg-muted/20 hover:text-foreground hover:backdrop-blur-sm'
+          : unread > 0
+            ? 'text-foreground font-medium hover:bg-muted/20'
+            : 'text-muted-foreground/60 hover:bg-muted/20 hover:text-foreground hover:backdrop-blur-sm'
       }`}
     >
-      <div className="w-6 h-6 rounded-lg flex items-center justify-center text-[9px] font-bold text-white shrink-0"
-        style={{ backgroundColor: color }}>
-        {displayName[0]?.toUpperCase()}
+      <div className="relative shrink-0">
+        <div className="w-6 h-6 rounded-lg flex items-center justify-center text-[9px] font-bold text-white"
+          style={{ backgroundColor: color }}>
+          {displayName[0]?.toUpperCase()}
+        </div>
       </div>
-      <span className="truncate">{displayName}</span>
+      <span className="truncate flex-1 text-left">{displayName}</span>
+      {unread > 0 && !isActive && (
+        <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center shrink-0">
+          {unread > 99 ? '99+' : unread}
+        </span>
+      )}
     </button>
   );
 }

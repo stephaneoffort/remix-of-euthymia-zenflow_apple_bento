@@ -80,6 +80,7 @@ export default function Chat() {
               }}
               currentUserProfile={currentUserProfile || null}
               onChannelCreated={() => chat.loadChannels()}
+              unreadCounts={chat.unreadCounts}
             />
           </motion.div>
         )}

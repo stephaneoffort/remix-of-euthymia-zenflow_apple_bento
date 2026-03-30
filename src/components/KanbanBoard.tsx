@@ -165,21 +165,26 @@ export default function KanbanBoard() {
   const renderCollapsedColumn = (status: string) => {
     const count = tasksByStatus[status]?.length || 0;
     return (
-      <button
+      <motion.button
         key={status}
-        className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md cursor-pointer transition-all duration-200 hover:bg-muted/60 bg-muted/30 border border-border text-xs ${
+        initial={{ opacity: 0, scale: 0.8, y: -8 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.8, y: -8 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+        className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md cursor-pointer transition-colors duration-200 hover:bg-muted/60 bg-muted/30 border border-border text-xs ${
           draggedColumn === status ? 'opacity-40 scale-[0.97]' : ''
         } ${dropTargetColumn === status && draggedColumn ? 'ring-2 ring-primary/40' : ''}`}
         draggable
-        onDragStart={e => handleColumnDragStart(e, status)}
+        onDragStart={e => handleColumnDragStart(e as unknown as React.DragEvent, status)}
         onDragEnd={handleColumnDragEnd}
         onDragOver={e => {
           e.preventDefault();
-          if (draggedColumn) handleColumnDragOver(e, status);
+          if (draggedColumn) handleColumnDragOver(e as unknown as React.DragEvent, status);
         }}
         onDrop={e => {
-          if (draggedColumn) handleColumnDrop(e, status);
-          else handleTaskDrop(e, status);
+          const de = e as unknown as React.DragEvent;
+          if (draggedColumn) handleColumnDrop(de, status);
+          else handleTaskDrop(de, status);
         }}
         onDragLeave={() => { if (dropTargetColumn === status) setDropTargetColumn(null); }}
         onClick={() => toggleColumnCollapse(status)}
@@ -189,7 +194,7 @@ export default function KanbanBoard() {
           {getStatusLabel(status)}
         </span>
         <span className="text-muted-foreground">{count}</span>
-      </button>
+      </motion.button>
     );
   };
 
@@ -363,11 +368,21 @@ export default function KanbanBoard() {
       </div>
 
       {/* Collapsed columns shown as horizontal chips at the top */}
-      {collapsedStatuses.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 px-3 sm:px-3 pt-2">
-          {collapsedStatuses.map(renderCollapsedColumn)}
-        </div>
-      )}
+      <AnimatePresence>
+        {collapsedStatuses.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            className="flex flex-wrap gap-1.5 px-3 sm:px-3 pt-2 overflow-hidden"
+          >
+            <AnimatePresence mode="popLayout">
+              {collapsedStatuses.map(renderCollapsedColumn)}
+            </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Main kanban area */}
       <div className={`flex gap-1.5 sm:gap-2 p-2 sm:p-3 overflow-x-auto sm:overflow-hidden flex-1 snap-x snap-mandatory sm:snap-none ${collapsedStatuses.length > 0 ? 'pt-1' : ''}`}>

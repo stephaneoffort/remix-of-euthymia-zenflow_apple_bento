@@ -406,8 +406,6 @@ export default function AppSidebar() {
             </Tooltip>
           ))}
 
-          {/* Messages */}
-          <MessagesCollapsedIcon />
 
           <div className="w-6 border-t border-sidebar-border-color my-1.5" />
 

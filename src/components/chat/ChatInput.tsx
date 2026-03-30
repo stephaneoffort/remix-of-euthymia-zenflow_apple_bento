@@ -100,7 +100,18 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, 
     inputRef.current?.focus();
   };
 
-  const insertFormat = (prefix: string, suffix: string) => {
+  const handleFileSelect = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (onFileUpload) {
+      onFileUpload(file);
+    } else {
+      // Default: insert file name as message
+      onSend(`📎 ${file.name}`);
+    }
+    e.target.value = '';
+  }, [onFileUpload, onSend]);
+
     const textarea = inputRef.current;
     if (!textarea) return;
     const start = textarea.selectionStart;

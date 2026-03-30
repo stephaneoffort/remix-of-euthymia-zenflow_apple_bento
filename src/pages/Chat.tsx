@@ -98,6 +98,7 @@ export default function Chat() {
               channelName={activeChannel?.name || ''}
               onTyping={chat.sendTyping}
               memberProfiles={chat.memberProfiles}
+              allMembers={allMentionableMembers}
             />
           </div>
           {showMembers && !isMobile && (

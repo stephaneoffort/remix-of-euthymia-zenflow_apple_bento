@@ -676,8 +676,9 @@ export default function TaskDetailPanel() {
             <CanvaAttachments entityType="task" entityId={task.id} compact defaultTitle={task.title} />
             <ZoomMeetings entityType="task" entityId={task.id} compact defaultTitle={task.title} />
             <BrevoContacts entityType="task" entityId={task.id} compact />
+            <GmailCompose entityType="task" entityId={task.id} defaultSubject={task.title} compact />
 
-            {!isActive('google_drive') && !isActive('canva') && !isActive('zoom') && !isActive('brevo') && (
+            {!isActive('google_drive') && !isActive('canva') && !isActive('zoom') && !isActive('brevo') && !isActive('gmail') && (
               <a
                 href="/settings"
                 className="flex items-center justify-center gap-2 w-full py-3 px-4 border border-dashed border-border rounded-lg text-xs text-muted-foreground hover:border-primary/50 hover:text-primary transition-colors"

@@ -38,6 +38,22 @@ async function refreshGoogleToken(account: any): Promise<string> {
   return data.access_token;
 }
 
+// ─── RESILIENT FETCH WITH RETRY ───
+async function fetchWithRetry(url: string, options: RequestInit, retries = 3): Promise<Response> {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      return await fetch(url, options);
+    } catch (err) {
+      const msg = String(err);
+      const isTransient = msg.includes("close_notify") || msg.includes("tls handshake eof") || msg.includes("connection error");
+      if (!isTransient || attempt === retries) throw err;
+      console.warn(`Fetch attempt ${attempt} failed (transient), retrying in ${attempt * 500}ms...`);
+      await new Promise(r => setTimeout(r, attempt * 500));
+    }
+  }
+  throw new Error("fetchWithRetry: unreachable");
+}
+
 // ─── GOOGLE ───
 async function googlePull(account: any): Promise<number> {
   const token = await refreshGoogleToken(account);
@@ -50,7 +66,7 @@ async function googlePull(account: any): Promise<number> {
     singleEvents: "true",
     maxResults: "250",
   });
-  const res = await fetch(
+  const res = await fetchWithRetry(
     `https://www.googleapis.com/calendar/v3/calendars/${calId}/events?${params}`,
     { headers: { Authorization: `Bearer ${token}` } },
   );

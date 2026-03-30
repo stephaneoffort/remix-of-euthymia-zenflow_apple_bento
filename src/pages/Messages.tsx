@@ -107,13 +107,6 @@ function MessageCard({
             </div>
 
             <p className="text-sm text-muted-foreground mt-1.5 line-clamp-2">{preview}</p>
-
-            {message.type === 'google_chat' && (
-              <span className="inline-flex items-center gap-1 text-xs text-emerald-600 mt-1">
-                <ExternalLink className="w-3 h-3" />
-                Ouvrir dans Google Chat
-              </span>
-            )}
           </div>
         </div>
       </button>

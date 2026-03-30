@@ -3373,12 +3373,12 @@ html body::after {
   --priority-urgent: 0 35% 45%;
   --priority-high: 25 45% 45%;
   --priority-normal: 205 38% 47%;
-  --priority-low: 210 12% 55%;
+  --priority-low: 210 12% 38%;
 
   /* Statuses */
-  --status-todo: 210 12% 55%;
+  --status-todo: 210 12% 38%;
   --status-progress: 205 38% 47%;
-  --status-review: 38 45% 45%;
+  --status-review: 38 55% 38%;
   --status-done: 145 30% 40%;
   --status-blocked: 0 35% 45%;
 
@@ -4314,10 +4314,10 @@ html body::after {
   --priority-urgent: 10 38% 46%;
   --priority-high: 25 50% 48%;
   --priority-normal: 35 45% 44%;
-  --priority-low: 28 12% 54%;
-  --status-todo: 28 12% 54%;
+  --priority-low: 28 12% 38%;
+  --status-todo: 28 12% 38%;
   --status-progress: 35 45% 44%;
-  --status-review: 38 50% 48%;
+  --status-review: 38 55% 36%;
   --status-done: 130 22% 45%;
   --status-blocked: 10 38% 46%;
 
@@ -4759,8 +4759,8 @@ html body::after {
   --priority-urgent: 12 40% 38%;
   --priority-high: 25 45% 45%;
   --priority-normal: 112 28% 37%;
-  --priority-low: 135 12% 54%;
-  --status-todo: 135 12% 54%;
+  --priority-low: 135 12% 38%;
+  --status-todo: 135 12% 38%;
   --status-progress: 112 28% 37%;
   --status-review: 50 38% 42%;
   --status-done: 118 25% 40%;
@@ -5167,8 +5167,8 @@ html body::after {
   --priority-urgent: 340 35% 45%;
   --priority-high: 45 40% 42%;
   --priority-normal: 270 28% 51%;
-  --priority-low: 270 16% 61%;
-  --status-todo: 270 16% 61%;
+  --priority-low: 270 16% 38%;
+  --status-todo: 270 16% 38%;
   --status-progress: 270 28% 51%;
   --status-review: 235 22% 48%;
   --status-done: 120 18% 41%;
@@ -5566,8 +5566,8 @@ html body::after {
   --priority-urgent: 0 30% 53%;
   --priority-high: 45 38% 50%;
   --priority-normal: 132 26% 47%;
-  --priority-low: 140 12% 27%;
-  --status-todo: 140 12% 27%;
+  --priority-low: 140 12% 50%;
+  --status-todo: 140 12% 50%;
   --status-progress: 132 26% 47%;
   --status-review: 207 22% 48%;
   --status-done: 132 30% 55%;

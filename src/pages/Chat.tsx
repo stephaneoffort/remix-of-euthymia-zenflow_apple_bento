@@ -12,11 +12,17 @@ import type { MemberProfile } from '@/types/chat';
 
 export default function Chat() {
   const chat = useDiscordChat();
+  const { teamMembers } = useApp();
   const [showMembers, setShowMembers] = useState(true);
   const [showChannels, setShowChannels] = useState(true);
   const isMobile = useIsMobile();
   const activeChannel = chat.channels.find(c => c.id === chat.activeChannelId);
   const currentUserProfile = chat.user ? chat.memberProfiles[chat.user.id] : undefined;
+
+  const allMentionableMembers = useMemo(() =>
+    teamMembers.map(m => ({ id: m.id, name: m.name, avatar_color: m.avatarColor, role: m.role })),
+    [teamMembers]
+  );
 
   return (
     <div className="flex h-[100dvh] bg-background">

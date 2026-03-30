@@ -238,25 +238,34 @@ export default function KanbanBoard() {
           draggable
           onDragStart={e => handleColumnDragStart(e, status)}
           onDragEnd={handleColumnDragEnd}
-          className="flex items-center gap-2 mb-3 px-1 group/header cursor-grab active:cursor-grabbing"
+          className="flex flex-col gap-1.5 mb-3 px-1 group/header cursor-grab active:cursor-grabbing"
         >
-          <GripHorizontal className="w-3.5 h-3.5 text-muted-foreground/30 opacity-0 group-hover/header:opacity-100 transition-opacity shrink-0 hidden sm:block" />
-          <button
-            onClick={e => { e.stopPropagation(); toggleColumnCollapse(status); }}
-            className="p-0.5 hover:bg-muted rounded transition-colors"
-            title="Réduire la colonne"
-          >
-            <ChevronRight className="w-3.5 h-3.5 text-muted-foreground rotate-90" />
-          </button>
-          <div className={`w-2.5 h-2.5 rounded-full ${getStatusColor(status)}`} />
-          <h3 className="font-semibold text-xs sm:text-sm text-foreground select-none">{getStatusLabel(status)}</h3>
-          <span className="text-xs text-muted-foreground ml-1">{count}</span>
-          <button
-            onClick={() => setNewTaskStatus(status)}
-            className="ml-auto p-1 rounded hover:bg-muted transition-colors text-muted-foreground"
-          >
-            <Plus className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            <GripHorizontal className="w-3.5 h-3.5 text-muted-foreground/30 opacity-0 group-hover/header:opacity-100 transition-opacity shrink-0 hidden sm:block" />
+            <button
+              onClick={e => { e.stopPropagation(); toggleColumnCollapse(status); }}
+              className="p-0.5 hover:bg-muted rounded transition-colors"
+              title="Réduire la colonne"
+            >
+              <ChevronRight className="w-3.5 h-3.5 text-muted-foreground rotate-90" />
+            </button>
+            <div className={`w-2.5 h-2.5 rounded-full ${getStatusColor(status)}`} />
+            <h3 className="font-semibold text-xs sm:text-sm text-foreground select-none truncate">{getStatusLabel(status)}</h3>
+            <span className="text-xs text-muted-foreground ml-auto shrink-0">{count}/{filteredTasks.length}</span>
+            <button
+              onClick={() => setNewTaskStatus(status)}
+              className="p-1 rounded hover:bg-muted transition-colors text-muted-foreground shrink-0"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
+          </div>
+          {/* Mini progress bar */}
+          <div className="h-1 rounded-full bg-muted overflow-hidden">
+            <div
+              className={`h-full rounded-full transition-all duration-500 ${getStatusColor(status)}`}
+              style={{ width: filteredTasks.length > 0 ? `${(count / filteredTasks.length) * 100}%` : '0%' }}
+            />
+          </div>
         </div>
 
         {/* Drop zone indicator */}

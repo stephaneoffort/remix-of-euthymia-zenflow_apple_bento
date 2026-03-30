@@ -9,11 +9,19 @@ import type { MemberProfile } from '@/types/chat';
 
 const EMOJI_LIST = ['😊', '😂', '❤️', '👍', '🎉', '🔥', '🤔', '👀', '✅', '💯', '🙏', '😍', '🚀', '💪', '👏', '😭'];
 
+interface MentionableMember {
+  id: string;
+  name: string;
+  avatar_color: string;
+  role: string;
+}
+
 interface Props {
   onSend: (content: string, mentionedUsers?: string[]) => void;
   channelName: string;
   onTyping?: () => void;
   memberProfiles?: Record<string, MemberProfile>;
+  allMembers?: MentionableMember[];
 }
 
 export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {} }: Props) {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useDiscordChat } from '@/hooks/useDiscordChat';
 import { ChannelSidebar } from '@/components/chat/ChannelSidebar';
 import { MessageList } from '@/components/chat/MessageList';
@@ -7,6 +7,8 @@ import { MembersPanel } from '@/components/chat/MembersPanel';
 import { Hash, Users, Pin, Search, Menu, X } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import MobileBottomNav from '@/components/MobileBottomNav';
+import { useApp } from '@/context/AppContext';
+import type { MemberProfile } from '@/types/chat';
 
 export default function Chat() {
   const chat = useDiscordChat();

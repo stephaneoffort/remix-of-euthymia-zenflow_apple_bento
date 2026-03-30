@@ -221,6 +221,7 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
                     onClick={() => onSelectChannel(ch.id)}
                     partnerName={partner?.name}
                     partnerColor={partner?.avatarColor}
+                    unread={unreadCounts[ch.id] || 0}
                   />
                 );
               })}

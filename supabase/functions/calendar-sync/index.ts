@@ -630,6 +630,7 @@ async function buildEventPayload(taskId: string, task: any) {
   }
 
   return payload;
+}
 
 // ── Push a task to a specific user's Google Calendar ──
 async function pushTaskForUser(userId: string, taskId: string, action: string) {

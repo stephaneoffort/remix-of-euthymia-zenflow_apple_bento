@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useDiscordChat } from '@/hooks/useDiscordChat';
 import { ChannelSidebar } from '@/components/chat/ChannelSidebar';
 import { MessageList } from '@/components/chat/MessageList';
@@ -7,7 +7,8 @@ import { MembersPanel } from '@/components/chat/MembersPanel';
 import { ThreadPanel } from '@/components/chat/ThreadPanel';
 import { SearchPanel } from '@/components/chat/SearchPanel';
 import { PinnedMessagesPanel } from '@/components/chat/PinnedMessagesPanel';
-import { Hash, Users, Pin, Search, Menu, X } from 'lucide-react';
+import { Hash, Users, Pin, Search, Menu, X, MessageCircle } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import { useIsMobile } from '@/hooks/use-mobile';
 import MobileBottomNav from '@/components/MobileBottomNav';
 import { useApp } from '@/context/AppContext';

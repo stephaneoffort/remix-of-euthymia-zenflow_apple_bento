@@ -687,6 +687,7 @@ export default function TaskDetailPanel() {
                 <img src={INTEGRATION_CONFIG.canva.icon} alt="" className="w-5 h-5" />
                 <img src={INTEGRATION_CONFIG.zoom.icon} alt="" className="w-5 h-5" />
                 <img src={INTEGRATION_CONFIG.brevo.icon} alt="" className="w-5 h-5" />
+                <img src={INTEGRATION_CONFIG.gmail.icon} alt="" className="w-5 h-5" />
                 <span>— Connecte des outils depuis les Settings →</span>
               </a>
             )}

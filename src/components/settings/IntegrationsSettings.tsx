@@ -66,6 +66,7 @@ export default function IntegrationsSettings() {
       ['drive_connected', 'google_drive'],
       ['zoom_connected', 'zoom'],
       ['canva_connected', 'canva'],
+      ['gmail_connected', 'gmail'],
     ];
     callbacks.forEach(([param, key]) => {
       if (params.get(param) === 'true') {

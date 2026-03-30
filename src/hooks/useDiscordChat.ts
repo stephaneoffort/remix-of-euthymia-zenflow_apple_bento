@@ -391,7 +391,6 @@ export function useDiscordChat() {
     sendTyping,
     loadChannels,
     user,
-    // New features
     pinnedMessages,
     togglePin,
     openThread,
@@ -406,5 +405,6 @@ export function useDiscordChat() {
     searching,
     deleteMessage,
     editMessage,
+    unreadCounts,
   };
 }

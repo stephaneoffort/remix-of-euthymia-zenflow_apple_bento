@@ -98,7 +98,7 @@ export function MembersPanel({ memberProfiles, onDmCreated, onlineTeamMemberIds 
   const renderMember = (member: typeof teamMembers[0], isOnline: boolean) => {
     const authId = teamMemberToAuthId[member.id];
     const isSelf = authId === user?.id;
-    const canDm = !isSelf && !!authId;
+    const canDm = !isSelf;
 
     return (
       <button

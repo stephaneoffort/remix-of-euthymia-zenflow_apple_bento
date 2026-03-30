@@ -24,7 +24,6 @@ function stripHtml(html: string): string {
 const TYPE_LABELS: Record<string, string> = {
   comment: 'Commentaire',
   chat: 'Chat',
-  google_chat: 'Google Chat',
 };
 
 function MessageCard({

@@ -433,7 +433,7 @@ function EventCard({ item, onClick, widthPercent, leftPercent, isDay, maxEventHe
         {isDay && h >= 80 && ev.has_meet && ev.meet_link && (
           <a href={ev.meet_link} target="_blank" rel="noopener noreferrer"
             onClick={e => e.stopPropagation()}
-            className="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded bg-white/20 text-[10px] font-medium hover:bg-white/30 transition-colors">
+            className="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded bg-background/20 text-[10px] font-medium hover:bg-background/30 transition-colors">
             <Video className="w-3 h-3" /> Rejoindre
           </a>
         )}

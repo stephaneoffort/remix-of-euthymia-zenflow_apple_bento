@@ -195,7 +195,7 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
               <div className="space-y-0.5 px-2">
                 {privateChannels.map(ch => (
                   <ChannelItem key={ch.id} channel={ch} isActive={activeChannelId === ch.id}
-                    onClick={() => onSelectChannel(ch.id)} icon={<Lock className="w-4 h-4 shrink-0" />} />
+                    onClick={() => onSelectChannel(ch.id)} icon={<Lock className="w-4 h-4 shrink-0" />} unread={unreadCounts[ch.id] || 0} />
                 ))}
               </div>
             </div>

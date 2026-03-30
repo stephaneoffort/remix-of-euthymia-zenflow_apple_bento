@@ -498,7 +498,7 @@ export default function GanttView() {
                   isCritical={showCritical && cpmResult.criticalTaskIds.includes(task.id)}
                   totalFloat={cpmResult.totalFloat[task.id]}
                   onDoubleClick={() => setSelectedTaskId(task.id)}
-                />
+                  onDatesChange={handleDatesChange}
               ))}
 
               {/* Dependency arrows */}

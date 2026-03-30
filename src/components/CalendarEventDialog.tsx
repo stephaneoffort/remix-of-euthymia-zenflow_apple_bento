@@ -259,7 +259,7 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
 
           {isActive('google_meet') && (
             <div className="flex items-center gap-3 p-2.5 rounded-lg border border-border bg-muted/20">
-              <Video className="w-4 h-4 text-[hsl(174,60%,30%)] shrink-0" />
+              <Video className="w-4 h-4 text-primary shrink-0" />
               <div className="flex-1">
                 <Label htmlFor="ev-meet" className="text-sm font-medium cursor-pointer">Google Meet</Label>
                 {hasMeet && !event?.meet_link && (
@@ -287,8 +287,8 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
           )}
 
           {event?.meet_link && (
-            <div className="flex items-center gap-2 p-2.5 rounded-lg bg-[hsl(174,60%,30%)]/10 border border-[hsl(174,60%,30%)]/20">
-              <Video className="w-4 h-4 text-[hsl(174,60%,30%)] shrink-0" />
+            <div className="flex items-center gap-2 p-2.5 rounded-lg bg-primary/10 border border-primary/20">
+              <Video className="w-4 h-4 text-primary shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-medium text-foreground">Google Meet actif</p>
                 <p className="text-[10px] text-muted-foreground truncate">{event.meet_link.replace('https://', '')}</p>

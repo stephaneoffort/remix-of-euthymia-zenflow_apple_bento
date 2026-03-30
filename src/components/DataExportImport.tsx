@@ -70,13 +70,10 @@ export default function DataExportImport() {
         supabase.from('comments').select('*').order('created_at'),
         supabase.from('attachments').select('*'),
         supabase.from('custom_statuses').select('*').order('sort_order'),
-        supabase.from('chat_categories').select('*').order('sort_order'),
+        supabase.from('chat_channels').select('*').order('position'),
+        supabase.from('chat_channel_members').select('*'),
         supabase.from('chat_messages').select('*').order('created_at'),
         supabase.from('chat_reactions').select('*'),
-        supabase.from('direct_conversations').select('*'),
-        supabase.from('direct_conversation_members').select('*'),
-        supabase.from('direct_messages').select('*').order('created_at'),
-        supabase.from('dm_reactions').select('*'),
       ]);
 
       const exportData: ExportData = {

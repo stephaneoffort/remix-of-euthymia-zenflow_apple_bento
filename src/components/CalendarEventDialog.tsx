@@ -12,6 +12,7 @@ import ZoomMeetings from '@/components/zoom/ZoomMeetings';
 import BrevoContacts from '@/components/brevo/BrevoContacts';
 import GoogleCalendarPicker from '@/components/GoogleCalendarPicker';
 import type { CalendarEvent } from '@/hooks/useCalendarSync';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useIntegrations, INTEGRATION_CONFIG } from '@/hooks/useIntegrations';
 import { useZoom } from '@/hooks/useZoom';
@@ -92,29 +93,98 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
       const start = isAllDay ? `${startDate}T00:00:00` : `${startDate}T${startTime}:00`;
       const end = isAllDay ? `${endDate || startDate}T23:59:59` : `${endDate || startDate}T${endTime}:00`;
       const startISO = new Date(start).toISOString();
+      const endISO = new Date(end).toISOString();
+
+      // Save the event (creates in DB + pushes to Google Calendar)
       await onSave({
         title: title.trim(),
         description: description.trim(),
         start_time: startISO,
-        end_time: new Date(end).toISOString(),
+        end_time: endISO,
         is_all_day: isAllDay,
         location: location.trim(),
         has_meet: hasMeet,
         target_calendar_id: targetCalendarId,
       });
 
-      if (hasZoom && zoom.isConnected) {
+      // If Zoom is toggled, create Zoom meeting and re-sync to Google Calendar
+      if (hasZoom && zoom.isConnected && !event) {
         try {
           const durationMin = Math.round((new Date(end).getTime() - new Date(start).getTime()) / 60000);
-          await zoom.createMeeting(
+
+          // Find the just-created event by title+start_time
+          const { data: createdEvents } = await supabase
+            .from('calendar_events')
+            .select('id, account_id, description')
+            .eq('title', title.trim())
+            .eq('start_time', startISO)
+            .order('created_at', { ascending: false })
+            .limit(1);
+
+          const createdEvent = createdEvents?.[0];
+          const eventId = (createdEvent as any)?.id || '';
+
+          // Create Zoom meeting linked to this event
+          const zoomResult = await zoom.createMeeting(
             title.trim(),
             'event',
-            '',
+            eventId,
             isAllDay ? undefined : startISO,
             durationMin > 0 ? durationMin : 60
           );
+
+          console.log('Zoom meeting created:', zoomResult);
+
+          // Update calendar event with Zoom link in description
+          if (zoomResult?.join_url && eventId) {
+            const zoomSection = [
+              '',
+              '── Session Zoom ──',
+              `Rejoindre : ${zoomResult.join_url}`,
+              zoomResult.password ? `Mot de passe : ${zoomResult.password}` : '',
+            ].filter(Boolean).join('\n');
+
+            const newDescription = ((createdEvent as any)?.description || description.trim() || '') + zoomSection;
+
+            await supabase
+              .from('calendar_events')
+              .update({
+                description: newDescription,
+                meet_link: zoomResult.join_url,
+                sync_status: 'pending',
+              } as any)
+              .eq('id', eventId);
+
+            // Re-push to Google Calendar with updated Zoom link
+            const accountId = (createdEvent as any)?.account_id;
+            if (accountId) {
+              try {
+                const { data: { session } } = await supabase.auth.getSession();
+                const CALENDAR_SYNC_URL = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/calendar-sync`;
+                const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+                if (session?.access_token) {
+                  headers['Authorization'] = `Bearer ${session.access_token}`;
+                }
+                await fetch(CALENDAR_SYNC_URL, {
+                  method: 'POST',
+                  headers,
+                  body: JSON.stringify({
+                    account_id: accountId,
+                    direction: 'push',
+                    event_id: eventId,
+                    action: 'update',
+                  }),
+                });
+                console.log('Re-pushed event to Google Calendar with Zoom link');
+              } catch (pushErr) {
+                console.error('Failed to re-push event with Zoom link:', pushErr);
+              }
+            }
+          }
+
           toast.success('Réunion Zoom créée ✅');
-        } catch {
+        } catch (zoomErr) {
+          console.error('Zoom creation error:', zoomErr);
           toast.error('Événement créé, mais erreur Zoom');
         }
       }

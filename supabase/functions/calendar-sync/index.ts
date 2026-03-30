@@ -93,9 +93,30 @@ async function googlePull(account: any): Promise<number> {
 async function googlePushCreate(account: any, event: any): Promise<string> {
   const token = await refreshGoogleToken(account);
   const calId = encodeURIComponent(account.calendar_id || "primary");
+
+  // Look up associated Zoom meeting
+  const { data: zoomMeeting } = await supabase
+    .from("zoom_meetings")
+    .select("join_url, password, topic")
+    .eq("entity_id", event.id)
+    .limit(1)
+    .maybeSingle();
+
+  // Build description with Zoom link if exists
+  let description = event.description || "";
+  if (zoomMeeting?.join_url && !description.includes(zoomMeeting.join_url)) {
+    description += [
+      "",
+      "",
+      "── Session Zoom ──",
+      `Rejoindre : ${zoomMeeting.join_url}`,
+      zoomMeeting.password ? `Mot de passe : ${zoomMeeting.password}` : "",
+    ].filter(Boolean).join("\n");
+  }
+
   const payload: any = {
     summary: event.title,
-    description: event.description,
+    description,
     location: event.location,
     ...(event.is_all_day
       ? { start: { date: event.start_time.split("T")[0] }, end: { date: event.end_time.split("T")[0] } }
@@ -143,9 +164,29 @@ async function googlePushCreate(account: any, event: any): Promise<string> {
 async function googlePushUpdate(account: any, event: any): Promise<void> {
   const token = await refreshGoogleToken(account);
   const calId = encodeURIComponent(account.calendar_id || "primary");
+
+  // Look up associated Zoom meeting
+  const { data: zoomMeeting } = await supabase
+    .from("zoom_meetings")
+    .select("join_url, password, topic")
+    .eq("entity_id", event.id)
+    .limit(1)
+    .maybeSingle();
+
+  let description = event.description || "";
+  if (zoomMeeting?.join_url && !description.includes(zoomMeeting.join_url)) {
+    description += [
+      "",
+      "",
+      "── Session Zoom ──",
+      `Rejoindre : ${zoomMeeting.join_url}`,
+      zoomMeeting.password ? `Mot de passe : ${zoomMeeting.password}` : "",
+    ].filter(Boolean).join("\n");
+  }
+
   const payload: any = {
     summary: event.title,
-    description: event.description,
+    description,
     location: event.location,
     ...(event.is_all_day
       ? { start: { date: event.start_time.split("T")[0] }, end: { date: event.end_time.split("T")[0] } }
@@ -510,7 +551,7 @@ async function getSyncPrefs(userId: string) {
 }
 
 // ── Build Google Calendar event payload ──
-function buildEventPayload(task: any) {
+async function buildEventPayload(taskId: string, task: any) {
   const isSubtask = !!task.parent_task_id;
   const prefix = isSubtask ? "↳ " : "✓ ";
   const statusEmoji: Record<string, string> = { todo: "🔵", in_progress: "🟡", in_review: "🟠", done: "🟢", blocked: "🔴" };
@@ -518,7 +559,16 @@ function buildEventPayload(task: any) {
   const eventTitle = `${emoji} ${prefix}${task.title}`;
   const startDate = task.due_date ? new Date(task.due_date) : new Date();
   const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
-  const description = [
+
+  // Look up associated Zoom meeting
+  const { data: zoomMeeting } = await supabase
+    .from("zoom_meetings")
+    .select("join_url, password, topic")
+    .eq("entity_id", taskId)
+    .limit(1)
+    .maybeSingle();
+
+  const descParts = [
     task.description || "",
     "",
     "── Détails ZenFlow ──",
@@ -526,13 +576,19 @@ function buildEventPayload(task: any) {
     `Priorité : ${task.priority}`,
     isSubtask ? "Type : Sous-tâche" : "Type : Tâche",
     `ID : ${task.id}`,
-    "",
-    "https://euthymia-zenflow-bento.lovable.app",
-  ].join("\n");
+  ];
+
+  if (zoomMeeting?.join_url) {
+    descParts.push("", "── Session Zoom ──", `Rejoindre : ${zoomMeeting.join_url}`);
+    if (zoomMeeting.password) descParts.push(`Mot de passe : ${zoomMeeting.password}`);
+  }
+
+  descParts.push("", "https://euthymia-zenflow-bento.lovable.app");
+
   const colorId: Record<string, string> = { todo: "9", in_progress: "5", in_review: "6", done: "10", blocked: "11" };
   return {
     summary: eventTitle,
-    description,
+    description: descParts.join("\n"),
     start: { dateTime: startDate.toISOString(), timeZone: "Europe/Paris" },
     end: { dateTime: endDate.toISOString(), timeZone: "Europe/Paris" },
     colorId: colorId[task.status] ?? "9",
@@ -601,7 +657,7 @@ async function pushTaskForUser(userId: string, taskId: string, action: string) {
   if (!isSubtask && !prefs.auto_sync_tasks) return;
   if (!task.due_date && !prefs.sync_tasks_without_date) return;
 
-  const payload = buildEventPayload(task);
+  const payload = await buildEventPayload(taskId, task);
 
   if (action === "create" || (action === "update" && !task.google_event_id)) {
     const res = await fetch(baseUrl, { method: "POST", headers, body: JSON.stringify(payload) });
@@ -663,7 +719,7 @@ async function pushTaskToZenflow(account: any, taskId: string, action: string) {
   }
 
   if (!task) throw new Error("Task not found");
-  const payload = buildEventPayload(task);
+  const payload = await buildEventPayload(taskId, task);
 
   if (action === "create" || (action === "update" && !task.google_event_id)) {
     const res = await fetch(baseUrl, { method: "POST", headers, body: JSON.stringify(payload) });

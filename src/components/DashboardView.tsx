@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import DashboardZoomSection from '@/components/dashboard/DashboardZoomSection';
+import ZoomMeetingsDashboard from '@/components/dashboard/ZoomMeetingsDashboard';
 import DashboardMeetSection from '@/components/dashboard/DashboardMeetSection';
 import DashboardResourcesSection from '@/components/dashboard/DashboardResourcesSection';
 import BrevoStats from '@/components/brevo/BrevoStats';

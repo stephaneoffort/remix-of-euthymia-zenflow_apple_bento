@@ -76,12 +76,10 @@ function MessageCard({
       >
         <div className="flex items-start gap-3">
           <div
-            className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0 ${
-              message.type === 'google_chat' ? 'bg-emerald-600' : ''
-            }`}
-            style={message.type !== 'google_chat' ? { backgroundColor: member?.avatarColor || '#888' } : undefined}
+            className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0"
+            style={{ backgroundColor: member?.avatarColor || '#888' }}
           >
-            {message.type === 'google_chat' ? 'G' : (member?.name || 'M').charAt(0).toUpperCase()}
+            {(member?.name || 'M').charAt(0).toUpperCase()}
           </div>
 
           <div className="flex-1 min-w-0">

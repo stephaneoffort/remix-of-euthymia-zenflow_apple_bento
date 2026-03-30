@@ -136,11 +136,12 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
     onChannelCreated?.();
   }, [user, onSelectChannel, onChannelCreated]);
 
-  // Members available for new DMs
+  // All team members except self for DMs
   const availableForDm = useMemo(() => {
     return teamMembers.filter(m => {
       const authId = teamMemberToAuthId[m.id];
-      return authId && authId !== user?.id;
+      // Exclude self, include everyone else (even without account)
+      return authId !== user?.id;
     });
   }, [teamMembers, teamMemberToAuthId, user]);
 
@@ -307,32 +308,48 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
             <DialogDescription>Choisissez un membre pour démarrer une conversation privée.</DialogDescription>
           </DialogHeader>
           <div className="max-h-72 overflow-y-auto space-y-1 pt-2">
-            {availableForDm.map(member => (
-              <button
-                key={member.id}
-                onClick={() => startDm(teamMemberToAuthId[member.id], member.name)}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-primary/10 transition-all text-left group"
-              >
-                <div className="w-8 h-8 rounded-xl flex items-center justify-center text-[10px] font-bold text-white shadow-sm"
-                  style={{ backgroundColor: member.avatarColor || '#6366f1' }}>
-                  {member.name[0]?.toUpperCase()}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">{member.name}</p>
-                  <p className="text-[10px] text-muted-foreground/50 truncate">{member.role}</p>
-                </div>
-                <Mail className="w-4 h-4 text-muted-foreground/0 group-hover:text-primary transition-all shrink-0" />
-              </button>
-            ))}
+            {availableForDm.map(member => {
+              const authId = teamMemberToAuthId[member.id];
+              const hasAccount = !!authId;
+              return (
+                <button
+                  key={member.id}
+                  onClick={() => {
+                    if (hasAccount) {
+                      startDm(authId, member.name);
+                    } else {
+                      toast.info(`${member.name} n'a pas encore créé de compte. Le message sera disponible dès sa connexion.`);
+                    }
+                  }}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left group ${
+                    hasAccount ? 'hover:bg-primary/10' : 'hover:bg-muted/10 opacity-60'
+                  }`}
+                >
+                  <div className="relative">
+                    <div className="w-8 h-8 rounded-xl flex items-center justify-center text-[10px] font-bold text-white shadow-sm"
+                      style={{ backgroundColor: member.avatarColor || '#6366f1' }}>
+                      {member.name[0]?.toUpperCase()}
+                    </div>
+                    {!hasAccount && (
+                      <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-muted-foreground/30 border-2 border-popover" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">{member.name}</p>
+                    <p className="text-[10px] text-muted-foreground/50 truncate">
+                      {hasAccount ? member.role : `${member.role} · Pas encore inscrit`}
+                    </p>
+                  </div>
+                  <Mail className={`w-4 h-4 shrink-0 transition-all ${
+                    hasAccount ? 'text-muted-foreground/0 group-hover:text-primary' : 'text-muted-foreground/20'
+                  }`} />
+                </button>
+              );
+            })}
             {availableForDm.length === 0 && (
               <p className="text-sm text-muted-foreground/50 text-center py-6">Aucun membre disponible</p>
             )}
           </div>
-          {teamMembers.length > availableForDm.length + 1 && (
-            <p className="text-[11px] text-muted-foreground/50 px-1 pt-2 border-t border-border/15">
-              💡 Seuls les membres ayant créé un compte apparaissent ici. Les autres doivent d'abord se connecter à l'application.
-            </p>
-          )}
         </DialogContent>
       </Dialog>
     </>

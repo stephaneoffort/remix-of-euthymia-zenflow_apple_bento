@@ -126,6 +126,7 @@ export default function DashboardMeetSection() {
   const remaining = events.length - MAX_VISIBLE;
 
   return (
+    <>
     <Card className="bg-card border-border">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium text-foreground flex items-center gap-2">

@@ -59,6 +59,7 @@ function MessageCard({
           mentioned_member_ids: mentionedIds.length > 0 ? mentionedIds : [message.authorId],
         });
         toast.success('Réponse envoyée');
+      }
       setReplyContent('');
       onReplySent();
     } catch (e) {

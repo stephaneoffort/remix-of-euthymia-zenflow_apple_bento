@@ -212,16 +212,24 @@ export default function TaskDetailPanel() {
     setAddingSubtaskFor(null);
   };
 
-  const handleAddComment = () => {
-    if (!newComment.trim()) return;
+  const handleAddComment = (content: string, mentionedIds: string[]) => {
+    if (!content.trim()) return;
+    const commentId = `c_${Date.now()}`;
     updateTask(task.id, {
       comments: [...task.comments, {
-        id: `c_${Date.now()}`,
-        authorId: 'tm1',
-        content: newComment.trim(),
+        id: commentId,
+        authorId: teamMemberId || 'tm1',
+        content: content.trim(),
         createdAt: new Date().toISOString(),
       }],
     });
+    // Save mentioned_member_ids to the comment in DB
+    if (mentionedIds.length > 0) {
+      supabase.from('comments')
+        .update({ mentioned_member_ids: mentionedIds })
+        .eq('id', commentId)
+        .then(() => {});
+    }
     setNewComment('');
   };
 

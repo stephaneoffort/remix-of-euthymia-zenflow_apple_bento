@@ -254,6 +254,11 @@ export default function ZoomMeetingsDashboard() {
               </span>
             )}
             <div className="ml-auto flex items-center gap-1">
+              <Button size="sm" variant="ghost" className="h-7 w-7 p-0"
+                onClick={async () => { setLoading(true); await fetchMeetings(); }}
+                title="Rafraîchir">
+                <RefreshCw className={`w-3.5 h-3.5 text-muted-foreground ${loading ? "animate-spin" : ""}`} />
+              </Button>
               <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={toggleSound}
                 title={soundEnabled ? "Désactiver le son d'alerte" : "Activer le son d'alerte"}>
                 {soundEnabled ? <Volume2 className="w-3.5 h-3.5 text-primary" /> : <VolumeX className="w-3.5 h-3.5 text-muted-foreground" />}

@@ -401,6 +401,10 @@ export default function ZoomMeetingsDashboard() {
                               className="p-1.5 rounded-md hover:bg-muted text-muted-foreground transition-colors" title="Copier le lien">
                               <Copy className="w-3.5 h-3.5" />
                             </button>
+                            <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(m); }}
+                              className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Supprimer">
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
                           </div>
                         </div>
                       </div>

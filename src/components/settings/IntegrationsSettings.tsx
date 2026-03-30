@@ -213,7 +213,6 @@ export default function IntegrationsSettings() {
                   <Switch
                     checked={enabled}
                     onCheckedChange={(v) => handleToggle(key, v)}
-                    disabled={isGmailNotReady}
                   />
                 </div>
               </div>

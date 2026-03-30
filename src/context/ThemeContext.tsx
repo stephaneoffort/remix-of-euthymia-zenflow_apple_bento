@@ -113,6 +113,11 @@ export const PALETTE_META: Record<ThemePalette, { label: string; description: st
     description: 'Soft UI · Charbon · Nuit',
     colors: ['#1E2028', '#12141A', '#2A2D38', '#6B9BC0'],
   },
+  nmSand: {
+    label: 'Sand',
+    description: 'Soft UI · Beige sable · Chaud',
+    colors: ['#EDE8E3', '#CAC5C0', '#FFFFFF', '#A07840'],
+  },
 };
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {

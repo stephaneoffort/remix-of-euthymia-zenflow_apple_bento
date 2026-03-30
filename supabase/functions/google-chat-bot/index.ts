@@ -171,6 +171,84 @@ serve(async (req: Request) => {
         }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
       }
 
+      // ── /zenflow assign [titre] @membre ──
+      if (text.toLowerCase().startsWith("/zenflow assign ")) {
+        const assignArgs = text.replace(/^\/zenflow assign /i, "").trim()
+
+        // Extract @mention — supports "@Name" or just the last word after the title
+        const mentionMatch = assignArgs.match(/^(.+?)\s+@(.+)$/i)
+
+        if (!mentionMatch) {
+          return new Response(JSON.stringify({
+            text: "⚠️ Usage : `/zenflow assign [titre de la tâche] @membre`\nExemple : `/zenflow assign Préparer réunion @Marie`"
+          }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
+        }
+
+        const taskRef = mentionMatch[1].trim()
+        const memberName = mentionMatch[2].trim()
+
+        // Find the task
+        const { data: task } = await supabase
+          .from("tasks")
+          .select("id, title")
+          .ilike("title", `%${taskRef}%`)
+          .neq("status", "done")
+          .limit(1)
+          .single()
+
+        if (!task) {
+          return new Response(JSON.stringify({
+            text: `❌ Tâche "${taskRef}" non trouvée dans ZenFlow`
+          }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
+        }
+
+        // Find the team member by name (case-insensitive)
+        const { data: members } = await supabase
+          .from("team_members")
+          .select("id, name, email")
+          .ilike("name", `%${memberName}%`)
+          .limit(1)
+
+        if (!members?.length) {
+          return new Response(JSON.stringify({
+            text: `❌ Membre "${memberName}" non trouvé dans l'équipe ZenFlow`
+          }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
+        }
+
+        const member = members[0]
+
+        // Check if already assigned
+        const { data: existing } = await supabase
+          .from("task_assignees")
+          .select("task_id")
+          .eq("task_id", task.id)
+          .eq("member_id", member.id)
+          .limit(1)
+
+        if (existing?.length) {
+          return new Response(JSON.stringify({
+            text: `ℹ️ *${member.name}* est déjà assigné(e) à *${task.title}*`
+          }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
+        }
+
+        // Assign the member
+        await supabase.from("task_assignees").insert({
+          task_id: task.id,
+          member_id: member.id,
+        })
+
+        await supabase.from("chat_bot_commands").insert({
+          user_id: userId,
+          command: "assign",
+          payload: { task_title: taskRef, member_name: memberName },
+          result: { task_id: task.id, member_id: member.id },
+        })
+
+        return new Response(JSON.stringify({
+          text: `✅ *${member.name}* assigné(e) à *${task.title}*\n👉 https://euthymia-zenflow-bento.lovable.app`
+        }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
+      }
+
       // ── /zenflow done [title] ──
       if (text.toLowerCase().startsWith("/zenflow done ")) {
         const taskRef = text.replace(/^\/zenflow done /i, "").trim()

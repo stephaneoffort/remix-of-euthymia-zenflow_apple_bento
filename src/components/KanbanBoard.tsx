@@ -40,6 +40,7 @@ export default function KanbanBoard() {
   const [newTaskStatus, setNewTaskStatus] = useState<string | null>(null);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [collapsedColumns, setCollapsedColumns] = useState<Set<string>>(new Set());
+  const [mobileActiveStatus, setMobileActiveStatus] = useState<string>(allStatuses[0] || 'todo');
   const isMobile = useIsMobile();
 
   const toggleColumnCollapse = (status: string) => {
@@ -368,43 +369,141 @@ export default function KanbanBoard() {
         );
       })()}
 
-      {/* Toggle all button */}
-      <div className="flex justify-end px-3 sm:px-6 pt-2 sm:pt-4">
-        <button
-          onClick={toggleAll}
-          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
-          title={allExpanded ? 'Tout réduire' : 'Tout déplier'}
-        >
-          {allExpanded ? <ChevronsRightLeft className="w-3.5 h-3.5" /> : <ChevronsLeftRight className="w-3.5 h-3.5" />}
-          {allExpanded ? 'Tout réduire' : 'Tout déplier'}
-        </button>
-      </div>
-
-      {/* Collapsed columns shown as horizontal chips at the top */}
-      <AnimatePresence>
-        {collapsedStatuses.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-            className="flex flex-wrap gap-1.5 px-3 sm:px-3 pt-2 overflow-hidden"
+      {/* Toggle all button – desktop only */}
+      {!isMobile && (
+        <div className="flex justify-end px-6 pt-4">
+          <button
+            onClick={toggleAll}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
+            title={allExpanded ? 'Tout réduire' : 'Tout déplier'}
           >
-            <AnimatePresence mode="popLayout">
-              {collapsedStatuses.map(renderCollapsedColumn)}
-            </AnimatePresence>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            {allExpanded ? <ChevronsRightLeft className="w-3.5 h-3.5" /> : <ChevronsLeftRight className="w-3.5 h-3.5" />}
+            {allExpanded ? 'Tout réduire' : 'Tout déplier'}
+          </button>
+        </div>
+      )}
+
+      {/* Collapsed columns shown as horizontal chips – desktop only */}
+      {!isMobile && (
+        <AnimatePresence>
+          {collapsedStatuses.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+              className="flex flex-wrap gap-1.5 px-3 pt-2 overflow-hidden"
+            >
+              <AnimatePresence mode="popLayout">
+                {collapsedStatuses.map(renderCollapsedColumn)}
+              </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
 
       {/* Main kanban area */}
       {isMobile ? (
-        <div className={`flex p-2 overflow-x-auto flex-1 snap-x snap-mandatory gap-2 ${collapsedStatuses.length > 0 ? 'pt-1' : ''}`}>
-          {expandedStatuses.map(status => (
-            <div key={status} className="snap-center shrink-0 w-[85vw] min-w-[260px] max-w-[320px]">
-              {renderExpandedColumn(status)}
-            </div>
-          ))}
+        <div className="flex flex-col flex-1 min-h-0">
+          {/* Mobile status tabs */}
+          <div className="flex gap-1 px-2 pt-2 pb-1 overflow-x-auto scrollbar-none">
+            {columnOrder.map(status => {
+              const count = tasksByStatus[status]?.length || 0;
+              const isActive = mobileActiveStatus === status;
+              return (
+                <button
+                  key={status}
+                  onClick={() => setMobileActiveStatus(status)}
+                  className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-200 shrink-0 ${
+                    isActive
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'bg-muted/40 text-muted-foreground hover:bg-muted/70'
+                  }`}
+                >
+                  <div className={`w-2 h-2 rounded-full ${isActive ? 'bg-primary-foreground/70' : getStatusColor(status)}`} />
+                  {getStatusLabel(status)}
+                  <span className={`ml-0.5 tabular-nums ${isActive ? 'text-primary-foreground/80' : 'text-muted-foreground/60'}`}>{count}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Active column content */}
+          <div className="flex-1 overflow-y-auto p-2 pt-1">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={mobileActiveStatus}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.15 }}
+                className="space-y-2"
+              >
+                {/* Add task button */}
+                <button
+                  onClick={() => setNewTaskStatus(mobileActiveStatus)}
+                  className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-lg border border-dashed border-border text-muted-foreground text-xs font-medium hover:bg-muted/40 transition-colors"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  Ajouter une tâche
+                </button>
+
+                {/* Inline add task */}
+                {newTaskStatus === mobileActiveStatus && (
+                  <div className="bg-card rounded-lg border p-3">
+                    <input
+                      autoFocus
+                      value={newTaskTitle}
+                      onChange={e => setNewTaskTitle(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') handleAddTask(mobileActiveStatus);
+                        if (e.key === 'Escape') { setNewTaskStatus(null); setNewTaskTitle(''); }
+                      }}
+                      onBlur={() => { if (!newTaskTitle.trim()) { setNewTaskStatus(null); setNewTaskTitle(''); } }}
+                      placeholder="Titre de la tâche..."
+                      className="w-full text-sm bg-transparent border-none outline-none placeholder:text-muted-foreground"
+                    />
+                  </div>
+                )}
+
+                {/* Cards */}
+                {(tasksByStatus[mobileActiveStatus] || []).map(task => {
+                  const subtasks = tasks.filter(t => t.parentTaskId === task.id);
+                  const doneSubtasks = subtasks.filter(t => t.status === 'done');
+                  const isOverdue = task.dueDate && task.dueDate < new Date().toISOString().split('T')[0] && task.status !== 'done';
+                  return (
+                    <KanbanCard
+                      key={task.id}
+                      task={task}
+                      isMobile={isMobile}
+                      subtasks={subtasks}
+                      doneSubtasks={doneSubtasks}
+                      isOverdue={!!isOverdue}
+                      draggedTaskId={draggedTaskId}
+                      selectedProjectId={selectedProjectId}
+                      getProjectName={getProjectName}
+                      getStatusColor={getStatusColor}
+                      getStatusLabel={getStatusLabel}
+                      allStatuses={allStatuses}
+                      moveTask={moveTask}
+                      setSelectedTaskId={setSelectedTaskId}
+                      setDraggedTaskId={setDraggedTaskId}
+                      handleTaskDragStart={handleTaskDragStart}
+                      getMemberById={getMemberById}
+                      zoomTaskIds={zoomTaskIds}
+                      meetTaskIds={meetTaskIds}
+                    />
+                  );
+                })}
+
+                {(tasksByStatus[mobileActiveStatus] || []).length === 0 && newTaskStatus !== mobileActiveStatus && (
+                  <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                    <p className="text-sm">Aucune tâche</p>
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
       ) : (
         <div className={`grid p-3 overflow-hidden flex-1 ${collapsedStatuses.length > 0 ? 'pt-1' : ''}`} style={{ gridTemplateColumns: `repeat(${expandedStatuses.length}, minmax(0, 1fr))`, gap: '0.5rem' }}>

@@ -802,6 +802,8 @@ export default function CalendarView() {
             members={teamMembers}
             allTasks={allTasks}
             spanInfo={entry.totalDays > 1 ? { isStart: entry.isStart, isEnd: entry.isEnd, totalDays: entry.totalDays } : undefined}
+            zoomTaskIds={zoomTaskIds}
+            meetTaskIds={meetTaskIds}
           />
         ))}
         {visibleExts.map(ev => {

@@ -326,8 +326,18 @@ export default function GanttView() {
 
   // Update progress
   const handleProgressChange = async (taskId: string, progress: number) => {
-    updateTask(taskId, { progress } as any);
-    await supabase.from("tasks").update({ progress }).eq("id", taskId);
+    // Auto-sync status with progress
+    const task = tasks.find(t => t.id === taskId);
+    const statusUpdate: Record<string, any> = { progress };
+    if (progress === 100 && task?.status !== "done") {
+      statusUpdate.status = "done";
+    } else if (progress > 0 && progress < 100 && task?.status === "done") {
+      statusUpdate.status = "in_progress";
+    } else if (progress === 0 && task?.status === "done") {
+      statusUpdate.status = "todo";
+    }
+    updateTask(taskId, statusUpdate as any);
+    await supabase.from("tasks").update(statusUpdate).eq("id", taskId);
   };
 
   // Update dates via drag

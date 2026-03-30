@@ -348,7 +348,7 @@ async function caldavPull(account: any): Promise<number> {
 </C:calendar-query>`;
 
   const auth = btoa(`${account.caldav_username}:${account.caldav_password}`);
-  const res = await fetch(account.caldav_url, {
+  const res = await fetchWithRetry(account.caldav_url, {
     method: "REPORT",
     headers: {
       Authorization: `Basic ${auth}`,
@@ -393,7 +393,7 @@ async function caldavPushCreate(account: any, event: any): Promise<string> {
   const uid = event.external_id || event.id || crypto.randomUUID();
   const auth = btoa(`${account.caldav_username}:${account.caldav_password}`);
   const url = `${account.caldav_url.replace(/\/$/, "")}/${uid}.ics`;
-  const res = await fetch(url, {
+  const res = await fetchWithRetry(url, {
     method: "PUT",
     headers: {
       Authorization: `Basic ${auth}`,
@@ -414,7 +414,7 @@ async function caldavPushUpdate(account: any, event: any): Promise<void> {
   const uid = event.external_id || event.id;
   const auth = btoa(`${account.caldav_username}:${account.caldav_password}`);
   const url = `${account.caldav_url.replace(/\/$/, "")}/${uid}.ics`;
-  const res = await fetch(url, {
+  const res = await fetchWithRetry(url, {
     method: "PUT",
     headers: {
       Authorization: `Basic ${auth}`,
@@ -434,7 +434,7 @@ async function caldavPushUpdate(account: any, event: any): Promise<void> {
 async function caldavPushDelete(account: any, externalId: string): Promise<void> {
   const auth = btoa(`${account.caldav_username}:${account.caldav_password}`);
   const url = `${account.caldav_url.replace(/\/$/, "")}/${externalId}.ics`;
-  const res = await fetch(url, {
+  const res = await fetchWithRetry(url, {
     method: "DELETE",
     headers: { Authorization: `Basic ${auth}` },
   });
@@ -447,7 +447,7 @@ async function caldavPushDelete(account: any, externalId: string): Promise<void>
 async function caldavTest(account: any): Promise<boolean> {
   try {
     const auth = btoa(`${account.caldav_username}:${account.caldav_password}`);
-    const res = await fetch(account.caldav_url, {
+    const res = await fetchWithRetry(account.caldav_url, {
       method: "PROPFIND",
       headers: { Authorization: `Basic ${auth}`, Depth: "0" },
     });
@@ -457,7 +457,7 @@ async function caldavTest(account: any): Promise<boolean> {
 
 // ─── ICS (read-only) ───
 async function icsPull(account: any): Promise<number> {
-  const res = await fetch(account.ics_url);
+  const res = await fetchWithRetry(account.ics_url, {});
   if (!res.ok) throw new Error(`ICS fetch failed: ${res.status}`);
   const text = await res.text();
 

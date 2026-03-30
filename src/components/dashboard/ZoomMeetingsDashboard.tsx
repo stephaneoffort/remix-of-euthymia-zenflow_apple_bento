@@ -93,6 +93,8 @@ export default function ZoomMeetingsDashboard() {
   const [soundEnabled, setSoundEnabled] = useState(() => {
     try { return localStorage.getItem("zoom_alert_sound") !== "off"; } catch { return true; }
   });
+  const [deleteTarget, setDeleteTarget] = useState<ZoomMeetingRow | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const alertedMeetingsRef = useRef<Set<string>>(new Set());
 
   const zoomEnabled = integrations.zoom?.is_enabled ?? false;

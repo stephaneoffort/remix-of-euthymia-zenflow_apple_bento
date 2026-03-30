@@ -14,7 +14,6 @@ const CONNECT_URLS: Partial<Record<IntegrationKey, string>> = {
   zoom: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/zoom-oauth/authorize',
   canva: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/canva-oauth/authorize',
   gmail: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/gmail-oauth/authorize',
-  google_chat: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/google-chat-oauth/authorize',
 };
 
 const CONNECTION_TABLES: Partial<Record<IntegrationKey, string>> = {
@@ -22,7 +21,6 @@ const CONNECTION_TABLES: Partial<Record<IntegrationKey, string>> = {
   zoom: 'zoom_connections',
   canva: 'canva_connections',
   gmail: 'gmail_connections',
-  google_chat: 'google_chat_connections',
 };
 
 export default function IntegrationsSettings() {

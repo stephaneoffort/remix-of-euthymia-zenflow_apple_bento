@@ -38,6 +38,7 @@ import {
   BarChart3,
   Network,
   GanttChart,
+  AlignHorizontalJustifyStart,
   Search,
   X,
   Keyboard,

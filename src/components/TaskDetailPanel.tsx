@@ -682,6 +682,7 @@ export default function TaskDetailPanel() {
             <GmailCompose entityType="task" entityId={task.id} defaultSubject={task.title} compact />
             <GmailInbox compact />
 
+            {/* Per-integration guiding messages */}
             {!isActive('google_drive') && !isActive('canva') && !isActive('zoom') && !isActive('brevo') && !isActive('gmail') && (
               <a
                 href="/settings"
@@ -692,7 +693,7 @@ export default function TaskDetailPanel() {
                 <img src={INTEGRATION_CONFIG.zoom.icon} alt="" className="w-5 h-5" />
                 <img src={INTEGRATION_CONFIG.brevo.icon} alt="" className="w-5 h-5" />
                 <img src={INTEGRATION_CONFIG.gmail.icon} alt="" className="w-5 h-5" />
-                <span>— Connecte des outils depuis les Settings →</span>
+                <span>— Connecte tes propres outils depuis Settings →</span>
               </a>
             )}
 

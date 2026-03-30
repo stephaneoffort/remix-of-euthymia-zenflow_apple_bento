@@ -58,6 +58,14 @@ export default function IntegrationsSettings() {
         .from('gmail_connections').select('email, display_name').eq('user_id', user.id).limit(1);
       if (gmailData?.[0]) info.gmail = { email: gmailData[0].email, display_name: gmailData[0].display_name };
 
+      // Google Calendar / Meet uses calendar_accounts
+      const { data: calData } = await (supabase as any)
+        .from('calendar_accounts').select('label, calendar_id').eq('user_id', user.id).eq('provider', 'google').eq('is_active', true).limit(1);
+      if (calData?.[0]) {
+        const calLabel = calData[0].label || calData[0].calendar_id || 'Google Calendar';
+        info.google_meet = { display_name: calLabel };
+      }
+
       setConnInfo(info);
     })();
 
@@ -147,6 +155,17 @@ export default function IntegrationsSettings() {
 
   return (
     <>
+      {/* Privacy banner */}
+      <div className="flex items-start gap-3 p-4 rounded-xl border border-primary/20 bg-primary/5 mb-4">
+        <span className="text-lg mt-0.5">🔒</span>
+        <div>
+          <p className="text-sm font-semibold text-foreground">Tes intégrations sont personnelles</p>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Connecte tes propres comptes Google, Zoom, Canva etc. Tes connexions sont privées — les autres membres ne les voient pas.
+          </p>
+        </div>
+      </div>
+
       <Card>
         <CardHeader>
           <CardTitle className="text-foreground">Mes intégrations</CardTitle>

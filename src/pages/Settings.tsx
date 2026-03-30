@@ -13,6 +13,7 @@ import { useThemeMode, PALETTE_META, type ThemePalette } from '@/context/ThemeCo
 import DataExportImport from '@/components/DataExportImport';
 import InviteMemberDialog from '@/components/InviteMemberDialog';
 import IntegrationsSettings from '@/components/settings/IntegrationsSettings';
+import AdminIntegrationsPanel from '@/components/settings/AdminIntegrationsPanel';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
 import CalendarSyncSettingsPanel from '@/components/settings/CalendarSyncSettings';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -119,6 +120,9 @@ export default function Settings() {
 
           <TabsContent value="integrations">
             <IntegrationsSettings />
+            <div className="mt-6">
+              <AdminIntegrationsPanel />
+            </div>
           </TabsContent>
 
           <TabsContent value="calendar">

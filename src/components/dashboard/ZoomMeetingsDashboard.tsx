@@ -73,6 +73,7 @@ function formatMeetingDate(startTime: string): string {
 }
 
 export default function ZoomMeetingsDashboard() {
+  const { setSelectedTaskId, setSelectedView } = useApp();
   const { isActive, integrations } = useIntegrations();
   const navigate = useNavigate();
   const zoom = useZoom();

@@ -290,7 +290,7 @@ export default function ListView() {
               <SortHeader label="Tâche" sortKeyName="title" />
               <SortHeader label="Statut" sortKeyName="status" />
               <SortHeader label="Priorité" sortKeyName="priority" />
-              <th className="text-left py-2.5 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Assignée à</th>
+              <th className="text-left py-2.5 px-3 text-xs font-semibold text-foreground/70 uppercase tracking-wider">Assignée à</th>
               <SortHeader label="Échéance" sortKeyName="dueDate" />
             </tr>
           </thead>

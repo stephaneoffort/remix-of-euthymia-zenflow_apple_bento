@@ -28,11 +28,15 @@ export type ThemePalette =
   | "nmDeepForest"
   | "ivoireChaud";
 
-interface ThemeContextType {
+export type DesignMode = 'classic' | 'neumorphic';
+
+iinterface ThemeContextType {
   theme: ThemeMode;
   setTheme: (theme: ThemeMode) => void;
   palette: ThemePalette;
   setPalette: (palette: ThemePalette) => void;
+  designMode: DesignMode;
+  setDesignMode: (mode: DesignMode) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | null>(null);
@@ -169,6 +173,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<ThemeMode>(() => {
     return (localStorage.getItem("euthymia-theme") as ThemeMode) || "dark";
   });
+  const [designMode, setDesignModeState] = useState<DesignMode>(() => {
+  return (localStorage.getItem('euthymia-design-mode') as DesignMode) || 'classic';
+});
+const setDesignMode = (m: DesignMode) => {
+  setDesignModeState(m);
+  localStorage.setItem('euthymia-design-mode', m);
+};
   const [palette, setPaletteState] = useState<ThemePalette>(() => {
     return (localStorage.getItem("euthymia-palette") as ThemePalette) || "sapphire";
   });
@@ -200,7 +211,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     root.dataset.palette = palette;
   }, [palette]);
 
-  return <ThemeContext.Provider value={{ theme, setTheme, palette, setPalette }}>{children}</ThemeContext.Provider>;
+  return <ThemeContext.Provider value={{ theme, setTheme, palette, setPalette, designMode, setDesignMode }}>{children}</ThemeContext.Provider>;
 }
 
 export function useThemeMode() {

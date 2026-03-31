@@ -82,9 +82,7 @@ export const RADIUS_TOKENS = {
 /* ─── Helper : lire une variable CSS à l'exécution ─── */
 export function getCssVar(name: string, fallback = ""): string {
   if (typeof window === "undefined") return fallback;
-  const value = getComputedStyle(document.documentElement)
-    .getPropertyValue(name)
-    .trim();
+  const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   return value || fallback;
 }
 
@@ -92,4 +90,98 @@ export function getCssVar(name: string, fallback = ""): string {
 export function getHslColor(token: string, fallback = ""): string {
   const raw = getCssVar(token, fallback);
   return raw ? `hsl(${raw})` : fallback;
+}
+/*
+  ═══════════════════════════════════════════════════════
+  EUTHYMIA — DESIGN TOKENS
+  
+  Ce fichier remplace les constantes hardcodées dans
+  chaque vue (BG, SHD, SHL, TEXT…)
+  
+  Il lit les variables CSS définies dans nm-themes.css
+  → automatiquement adaptées au thème actif (Clair/Sombre/Mixte)
+  ═══════════════════════════════════════════════════════
+*/
+
+/* ─── COULEURS DE FOND & OMBRES ─────────────────────────── */
+export const BG = "var(--nm-bg)";
+export const SHD = "var(--nm-shd)";
+export const SHL = "var(--nm-shl)";
+
+/* ─── SHADOWS NEUMORPHIQUES PRÉCOMPILÉES ────────────────── */
+export const UP = "var(--nm-up)";
+export const UP_SM = "var(--nm-up-sm)";
+export const UP_XS = "var(--nm-up-xs)";
+export const DN = "var(--nm-dn)";
+export const DN_SM = "var(--nm-dn-sm)";
+export const DN_XS = "var(--nm-dn-xs)";
+
+/* ─── COULEURS TEXTE ────────────────────────────────────── */
+export const TEXT = "var(--nm-text)";
+export const MUTED = "var(--nm-muted)";
+export const FAINT = "var(--nm-faint)";
+
+/* ─── COULEURS SÉMANTIQUES ──────────────────────────────── */
+export const ACCENT = "var(--nm-accent)"; // terracotta
+export const GREEN = "var(--nm-green)"; // vert sauge
+export const RED = "var(--nm-red)"; // rouge urgence
+export const BLUE = "var(--nm-blue)"; // bleu normale
+
+/* ─── TEXTES SUR FONDS COLORÉS ─────────────────────────── */
+export const ON_ACCENT = "var(--nm-on-accent)"; // texte sur fond terracotta
+export const ON_GREEN = "var(--nm-on-green)"; // texte sur fond vert
+export const ON_RED = "var(--nm-on-red)"; // texte sur fond rouge
+export const ON_BLUE = "var(--nm-on-blue)"; // texte sur fond bleu
+
+/* ─── UTILITAIRES ───────────────────────────────────────── */
+export const BORDER = "var(--nm-border)";
+export const SERIF = "'Cormorant Garamond', Georgia, serif";
+export const SANS = "'DM Sans', system-ui, sans-serif";
+
+/* ─── HELPERS BADGE PRIORITÉ ────────────────────────────── */
+export function priorityBg(priority: string): string {
+  switch (priority?.toLowerCase()) {
+    case "urgent":
+      return RED;
+    case "haute":
+      return ACCENT;
+    case "normale":
+      return BLUE;
+    default:
+      return BG;
+  }
+}
+
+export function priorityText(priority: string): string {
+  switch (priority?.toLowerCase()) {
+    case "urgent":
+      return ON_RED;
+    case "haute":
+      return ON_ACCENT;
+    case "normale":
+      return ON_BLUE;
+    default:
+      return MUTED;
+  }
+}
+
+export function priorityShadow(priority: string): string {
+  if (!priority || priority.toLowerCase() === "basse") return UP_XS;
+  return "none";
+}
+
+/* ─── HELPER COULEUR STATUT ─────────────────────────────── */
+export function statusColor(status: string): string {
+  switch (status) {
+    case "done":
+      return GREEN;
+    case "in_progress":
+      return ACCENT;
+    case "in_review":
+      return BLUE;
+    case "blocked":
+      return RED;
+    default:
+      return MUTED;
+  }
 }

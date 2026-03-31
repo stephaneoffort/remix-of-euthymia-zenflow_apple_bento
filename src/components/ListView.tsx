@@ -285,7 +285,7 @@ export default function ListView() {
     <div className="p-4 sm:p-6 overflow-auto h-full">
       <div className="bg-card rounded-lg border overflow-hidden">
         <table className="w-full">
-          <thead className="border-b border-border bg-muted/30">
+          <thead className="border-b border-border bg-muted/50">
             <tr>
               <SortHeader label="Tâche" sortKeyName="title" />
               <SortHeader label="Statut" sortKeyName="status" />

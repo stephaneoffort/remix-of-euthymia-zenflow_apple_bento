@@ -924,6 +924,18 @@ FOND GLOBAL — Navy profond Apple-style ─────────────
   }
 }
 
+/* ─── Sélection de texte — thèmes clairs ─── */
+.light ::selection,
+.mixed ::selection {
+  background: hsl(var(--primary) / 0.25);
+  color: hsl(var(--foreground));
+}
+.light ::-moz-selection,
+.mixed ::-moz-selection {
+  background: hsl(var(--primary) / 0.25);
+  color: hsl(var(--foreground));
+}
+
 /* ─── Utilitaires mobile ─── */
 @layer utilities {
   .scrollbar-none {

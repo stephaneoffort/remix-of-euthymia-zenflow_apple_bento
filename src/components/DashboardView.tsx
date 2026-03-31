@@ -1,390 +1,131 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-/* ═══════════════════════════════════
-   TYPES SUPABASE
-═══════════════════════════════════ */
+/* ─── COULEURS ─────────────────────────────────────────── */
+const BG = "#EDE6DA";
+const SHD = "rgba(160,140,108,0.45)";
+const SHL = "rgba(255,252,246,0.85)";
+const UP = `6px 6px 14px ${SHD},-6px -6px 14px ${SHL}`;
+const UP_SM = `3px 3px 8px ${SHD},-3px -3px 8px ${SHL}`;
+const UP_XS = `2px 2px 5px ${SHD},-2px -2px 5px ${SHL}`;
+const DN = `inset 4px 4px 10px ${SHD},inset -4px -4px 10px ${SHL}`;
+const DN_XS = `inset 1px 1px 4px ${SHD},inset -1px -1px 4px ${SHL}`;
+const SERIF = "'Cormorant Garamond',Georgia,serif";
+const SANS = "'DM Sans',system-ui,sans-serif";
+const ACCENT = "#B87440";
+const SUCCESS = "#6B8F6A";
+const DANGER = "#B85040";
+const TEXT = "#2D2820";
+const MUTED = "#8A7E6E";
+const FAINT = "#B0A494";
+
+/* ─── TYPES ────────────────────────────────────────────── */
 type Task = {
   id: string;
   title: string;
   status: string;
   priority: string;
   due_date: string | null;
-  progress: number | null;
   tags: string[];
 };
+type Member = { id: string; name: string; avatar_color: string };
 
-type TeamMember = {
-  id: string;
-  name: string;
-  avatar_color: string;
-  role: string;
-};
+/* ─── HELPERS ──────────────────────────────────────────── */
+const done = (t: Task) => ["done", "terminé", "terminée", "completed"].includes(t.status.toLowerCase());
+const overdue = (t: Task) => !done(t) && !!t.due_date && new Date(t.due_date) < new Date();
+const urgent = (t: Task) => ["urgent", "urgente", "high", "haute"].includes(t.priority.toLowerCase());
+const daysLate = (t: Task) => (t.due_date ? Math.round((Date.now() - new Date(t.due_date).getTime()) / 86400000) : 0);
+const daysLeft = (t: Task) =>
+  t.due_date ? Math.round((new Date(t.due_date).getTime() - Date.now()) / 86400000) : null;
 
-type ZoomMeeting = {
-  id: string;
-  topic: string;
-  start_time: string | null;
-  join_url: string;
-};
-
-/* ═══════════════════════════════════
-   TOKENS NEUMORPHIQUES IVOIRE CHAUD
-═══════════════════════════════════ */
-const BG = "#EDE6DA";
-const SH_D = "rgba(160,140,108,0.45)";
-const SH_L = "rgba(255,252,246,0.85)";
-const RAISED = `6px 6px 14px ${SH_D}, -6px -6px 14px ${SH_L}`;
-const RAISED_SM = `3px 3px 8px ${SH_D}, -3px -3px 8px ${SH_L}`;
-const RAISED_XS = `2px 2px 5px ${SH_D}, -2px -2px 5px ${SH_L}`;
-const INSET = `inset 4px 4px 10px ${SH_D}, inset -4px -4px 10px ${SH_L}`;
-const INSET_SM = `inset 2px 2px 6px ${SH_D}, inset -2px -2px 6px ${SH_L}`;
-const INSET_XS = `inset 1px 1px 4px ${SH_D}, inset -1px -1px 4px ${SH_L}`;
-
-const C = {
-  accent: "#B87440",
-  success: "#6B8F6A",
-  danger: "#B85040",
-  text: "#2D2820",
-  muted: "#8A7E6E",
-  faint: "#B0A494",
-  serif: "'Cormorant Garamond', Georgia, serif",
-  sans: "'DM Sans', system-ui, sans-serif",
-};
-
-/* ═══════════════════════════════════
-   HELPERS
-═══════════════════════════════════ */
-const isOverdue = (task: Task) => {
-  if (!task.due_date) return false;
-  if (["done", "terminé", "terminée", "completed"].includes(task.status.toLowerCase())) return false;
-  return new Date(task.due_date) < new Date();
-};
-
-const isDone = (task: Task) => ["done", "terminé", "terminée", "completed"].includes(task.status.toLowerCase());
-
-const isUrgent = (task: Task) => ["urgent", "urgente"].includes(task.priority.toLowerCase());
-
-const getStatusLabel = (status: string) => {
-  const map: Record<string, string> = {
-    todo: "À faire",
-    "à faire": "À faire",
-    in_progress: "En cours",
-    "en cours": "En cours",
-    review: "En revue",
-    "en revue": "En revue",
-    done: "Terminée",
-    terminé: "Terminée",
-    terminée: "Terminée",
-    blocked: "Bloquée",
-    bloqué: "Bloquée",
-  };
-  return map[status.toLowerCase()] ?? status;
-};
-
-/* ═══════════════════════════════════
-   COMPOSANTS UI
-═══════════════════════════════════ */
+/* ─── COMPOSANTS DE BASE ───────────────────────────────── */
 function Tile({
-  children,
+  ch,
   inset = false,
-  style = {},
+  s = {},
   onClick,
 }: {
-  children: React.ReactNode;
+  ch: React.ReactNode;
   inset?: boolean;
-  style?: React.CSSProperties;
+  s?: React.CSSProperties;
   onClick?: () => void;
 }) {
   return (
     <div
       onClick={onClick}
-      style={{ background: BG, borderRadius: 16, boxShadow: inset ? INSET : RAISED, overflow: "hidden", ...style }}
+      style={{ background: BG, borderRadius: 16, boxShadow: inset ? DN : UP, overflow: "hidden", ...s }}
     >
-      {children}
+      {ch}
     </div>
   );
 }
-
-function Label({ children, style = {} }: { children: React.ReactNode; style?: React.CSSProperties }) {
+function Lbl({ ch, s = {} }: { ch: React.ReactNode; s?: React.CSSProperties }) {
   return (
     <div
       style={{
-        color: C.muted,
+        color: MUTED,
         fontSize: 9,
         fontWeight: 500,
         letterSpacing: "1.5px",
         textTransform: "uppercase" as const,
-        ...style,
+        ...s,
       }}
     >
-      {children}
+      {ch}
     </div>
   );
 }
-
-function Tag({
-  children,
-  variant = "default",
-}: {
-  children: React.ReactNode;
-  variant?: "default" | "danger" | "accent" | "success";
-}) {
-  const colors = { default: C.muted, danger: C.danger, accent: C.accent, success: C.success };
+function Tag({ ch, color = MUTED }: { ch: string; color?: string }) {
   return (
     <span
       style={{
         background: BG,
         borderRadius: 4,
-        boxShadow: RAISED_XS,
-        color: colors[variant],
-        display: "inline-block",
+        boxShadow: UP_XS,
+        color,
         fontSize: 9,
         fontWeight: 500,
         padding: "2px 6px",
         whiteSpace: "nowrap" as const,
       }}
     >
-      {children}
+      {ch}
     </span>
   );
 }
-
-function Avatar({ initials, color, size = 26 }: { initials: string; color: string; size?: number }) {
-  return (
-    <div
-      style={{
-        alignItems: "center",
-        background: BG,
-        borderRadius: "50%",
-        boxShadow: RAISED_SM,
-        color,
-        display: "flex",
-        flexShrink: 0,
-        fontSize: size * 0.3,
-        fontWeight: 500,
-        height: size,
-        justifyContent: "center",
-        width: size,
-      }}
-    >
-      {initials.slice(0, 2).toUpperCase()}
-    </div>
-  );
+function Dot({ color }: { color: string }) {
+  return <div style={{ width: 6, height: 6, borderRadius: "50%", background: color, flexShrink: 0 }} />;
+}
+function Row({ ch, s = {} }: { ch: React.ReactNode; s?: React.CSSProperties }) {
+  return <div style={{ display: "flex", alignItems: "center", gap: 8, ...s }}>{ch}</div>;
 }
 
-function ProgressBar({ value, max }: { value: number; max: number }) {
-  const pct = max > 0 ? Math.round((value / max) * 100) : 0;
-  return (
-    <div>
-      <div style={{ background: BG, borderRadius: 4, boxShadow: INSET_XS, height: 6, overflow: "hidden" }}>
-        <div
-          style={{
-            background: C.success,
-            borderRadius: 4,
-            height: "100%",
-            width: `${pct}%`,
-            transition: "width 0.6s ease",
-          }}
-        />
-      </div>
-      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9, color: C.faint, marginTop: 4 }}>
-        <span>0</span>
-        <span>
-          {pct}% · {value}/{max}
-        </span>
-        <span>{max}</span>
-      </div>
-    </div>
-  );
-}
-
-function Ring({ value, max, size = 52 }: { value: number; max: number; size?: number }) {
-  const r = size / 2 - 5;
-  const circ = 2 * Math.PI * r;
-  const pct = max > 0 ? value / max : 0;
-  return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ margin: "8px auto 0", display: "block" }}>
-      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(160,140,108,0.2)" strokeWidth="5" />
-      <circle
-        cx={size / 2}
-        cy={size / 2}
-        r={r}
-        fill="none"
-        stroke={C.success}
-        strokeWidth="5"
-        strokeDasharray={circ}
-        strokeDashoffset={circ - pct * circ}
-        strokeLinecap="round"
-        transform={`rotate(-90 ${size / 2} ${size / 2})`}
-      />
-    </svg>
-  );
-}
-
-function Donut({ segments, total, size = 76 }: { segments: { v: number; c: string }[]; total: number; size?: number }) {
-  const r = size / 2 - 5;
-  const circ = 2 * Math.PI * r;
-  let off = 0;
-  return (
-    <div style={{ position: "relative", width: size, height: size }}>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(160,140,108,0.12)" strokeWidth="8" />
-        {segments.map(({ v, c }, i) => {
-          const dash = total > 0 ? (v / total) * circ : 0;
-          const el = (
-            <circle
-              key={i}
-              cx={size / 2}
-              cy={size / 2}
-              r={r}
-              fill="none"
-              stroke={c}
-              strokeWidth="8"
-              strokeDasharray={`${dash} ${circ - dash}`}
-              strokeDashoffset={-off}
-              transform={`rotate(-90 ${size / 2} ${size / 2})`}
-            />
-          );
-          off += dash;
-          return el;
-        })}
-      </svg>
-      <div
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%,-50%)",
-          textAlign: "center",
-        }}
-      >
-        <div style={{ fontFamily: C.serif, fontSize: 18, fontWeight: 300, color: C.text, lineHeight: 1 }}>{total}</div>
-        <div style={{ fontSize: 8, color: C.faint }}>total</div>
-      </div>
-    </div>
-  );
-}
-
-function Sparkline({ data }: { data: number[] }) {
-  if (!data.length) return null;
-  const max = Math.max(...data, 1);
-  const w = 110,
-    h = 52,
-    pad = 8;
-  const pts = data
-    .map((v, i) => {
-      const x = (i / (data.length - 1)) * w;
-      const y = h - pad - (v / max) * (h - pad * 2);
-      return `${x},${y}`;
-    })
-    .join(" ");
-  const peakIdx = data.indexOf(Math.max(...data));
-  const peakX = (peakIdx / (data.length - 1)) * w;
-  const peakY = h - pad - (data[peakIdx] / max) * (h - pad * 2);
-  return (
-    <svg width="100%" height={h} viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none">
-      <path d={`M${pts.replace(/ /g, " L")} L${w},${h} L0,${h} Z`} fill={C.success} fillOpacity="0.1" />
-      <polyline
-        points={pts}
-        fill="none"
-        stroke={C.success}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx={peakX} cy={peakY} r="3" fill={C.success} />
-    </svg>
-  );
-}
-
-function Skeleton() {
-  return (
-    <div
-      style={{
-        background: BG,
-        borderRadius: 16,
-        boxShadow: INSET_SM,
-        height: "100%",
-        minHeight: 120,
-        animation: "pulse 1.5s ease-in-out infinite",
-      }}
-    />
-  );
-}
-
-/* ═══════════════════════════════════
-   DASHBOARD PRINCIPAL
-═══════════════════════════════════ */
+/* ─── DASHBOARD ────────────────────────────────────────── */
 export default function DashboardView() {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [team, setTeam] = useState<TeamMember[]>([]);
-  const [zoomMtgs, setZoomMtgs] = useState<ZoomMeeting[]>([]);
-  const [activity, setActivity] = useState<number[]>([]);
+  const [team, setTeam] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
 
-  /* ── CHARGEMENT DONNÉES ── */
   useEffect(() => {
-    async function load() {
-      setLoading(true);
-      try {
-        // Tâches
-        const { data: tasksData } = await supabase
-          .from("tasks")
-          .select("id, title, status, priority, due_date, progress, tags")
-          .order("due_date", { ascending: true });
-
-        // Membres équipe
-        const { data: teamData } = await supabase.from("team_members").select("id, name, avatar_color, role");
-
-        // Réunions Zoom à venir
-        const { data: zoomData } = await supabase
-          .from("zoom_meetings")
-          .select("id, topic, start_time, join_url")
-          .gte("start_time", new Date().toISOString())
-          .order("start_time", { ascending: true })
-          .limit(5);
-
-        // Activité 7 derniers jours
-        const days7 = Array.from({ length: 7 }, (_, i) => {
-          const d = new Date();
-          d.setDate(d.getDate() - (6 - i));
-          return d.toISOString().slice(0, 10);
-        });
-        const activityCounts = days7.map(
-          (day) => (tasksData ?? []).filter((t) => t.due_date?.slice(0, 10) === day).length,
-        );
-
-        setTasks(tasksData ?? []);
-        setTeam(teamData ?? []);
-        setZoomMtgs(zoomData ?? []);
-        setActivity(activityCounts);
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
+    (async () => {
+      const [{ data: t }, { data: m }] = await Promise.all([
+        supabase.from("tasks").select("id,title,status,priority,due_date,tags").order("due_date", { ascending: true }),
+        supabase.from("team_members").select("id,name,avatar_color"),
+      ]);
+      setTasks(t ?? []);
+      setTeam(m ?? []);
+      setLoading(false);
+    })();
   }, []);
 
-  /* ── CALCULS STATS ── */
   const total = tasks.length;
-  const terminees = tasks.filter(isDone).length;
-  const enRetard = tasks.filter((t) => !isDone(t) && isOverdue(t)).length;
-  const urgentes = tasks.filter((t) => !isDone(t) && isUrgent(t)).length;
-  const enRevue = tasks.filter((t) => ["review", "en revue", "en_review"].includes(t.status.toLowerCase())).length;
-  const nonTerminees = tasks.filter((t) => !isDone(t)).length;
-
-  const urgentTasks = tasks.filter((t) => !isDone(t) && isUrgent(t)).slice(0, 4);
-
-  const echeances = tasks
-    .filter((t) => !isDone(t))
-    .sort((a, b) => {
-      if (!a.due_date) return 1;
-      if (!b.due_date) return -1;
-      return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
-    })
-    .slice(0, 4);
-
+  const nDone = tasks.filter(done).length;
+  const nUrgent = tasks.filter((t) => !done(t) && urgent(t)).length;
+  const nLate = tasks.filter(overdue).length;
+  const nPending = total - nDone;
+  const pct = total > 0 ? Math.round((nDone / total) * 100) : 0;
+  const urgentList = tasks.filter((t) => !done(t) && urgent(t)).slice(0, 4);
+  const upcoming = tasks.filter((t) => !done(t)).slice(0, 4);
   const date = new Date().toLocaleDateString("fr-FR", {
     weekday: "long",
     day: "numeric",
@@ -392,103 +133,135 @@ export default function DashboardView() {
     year: "numeric",
   });
 
-  /* ── CHARGE ÉQUIPE (tâches par membre) ── */
-  // Approximation : répartition égale si pas de champ assignee
-  const teamWithPct = team.slice(0, 3).map((m, i) => ({
-    ...m,
-    pct: [35, 32, 8][i] ?? 10,
-  }));
+  /* Activité 7j */
+  const days7 = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (6 - i));
+    return d.toISOString().slice(0, 10);
+  });
+  const activity = days7.map((d) => tasks.filter((t) => t.due_date?.slice(0, 10) === d).length);
+  const peakVal = Math.max(...activity, 1);
 
-  if (loading) {
+  if (loading)
     return (
-      <div style={{ fontFamily: C.sans, background: BG, minHeight: "100vh", padding: 20 }}>
-        <div style={{ display: "grid", gridTemplateColumns: "minmax(0,7fr) minmax(0,3fr) minmax(0,2fr)", gap: 14 }}>
-          {Array.from({ length: 8 }).map((_, i) => (
-            <Skeleton key={i} />
-          ))}
-        </div>
+      <div
+        style={{
+          fontFamily: SANS,
+          background: BG,
+          minHeight: "100vh",
+          padding: 20,
+          display: "grid",
+          gridTemplateColumns: "minmax(0,7fr) minmax(0,3fr) minmax(0,2fr)",
+          gap: 14,
+        }}
+      >
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} style={{ background: BG, borderRadius: 16, boxShadow: DN, minHeight: 120 }} />
+        ))}
       </div>
     );
-  }
 
   return (
-    <div style={{ fontFamily: C.sans, background: BG, minHeight: "100vh", padding: 20 }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
-      `}</style>
+    <div style={{ fontFamily: SANS, background: BG, minHeight: "100vh", padding: 20 }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap');`}</style>
 
       <div style={{ display: "grid", gridTemplateColumns: "minmax(0,7fr) minmax(0,3fr) minmax(0,2fr)", gap: 14 }}>
-        {/* ── HERO ── */}
-        <Tile style={{ padding: "20px 22px" }}>
-          <Label>{date}</Label>
-          <div
-            style={{
-              fontFamily: C.serif,
-              fontSize: 38,
-              fontWeight: 300,
-              color: C.text,
-              lineHeight: 1.05,
-              letterSpacing: "-0.5px",
-              marginTop: 6,
-            }}
-          >
-            Bonjour,
-            <br />
-            Ste<em style={{ fontStyle: "italic", color: C.accent }}>phane</em>
-          </div>
-          <div style={{ color: C.accent, fontSize: 11, marginTop: 5 }}>
-            {nonTerminees} tâches en attente · {zoomMtgs.length} réunion{zoomMtgs.length > 1 ? "s" : ""} à venir
-          </div>
-          <div style={{ marginTop: 14 }}>
-            <ProgressBar value={terminees} max={total} />
-          </div>
-        </Tile>
-
-        {/* ── TOTAL — inset ── */}
-        <Tile inset style={{ padding: 16, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-          <div
-            style={{
-              fontFamily: C.serif,
-              fontSize: 46,
-              fontWeight: 300,
-              color: C.text,
-              letterSpacing: "-2px",
-              lineHeight: 1,
-            }}
-          >
-            {nonTerminees}
-          </div>
-          <div style={{ fontSize: 9, color: C.faint, marginTop: 3, letterSpacing: "0.5px" }}>tâches en attente</div>
-          <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 7 }}>
-            {[
-              { dot: C.accent, label: "Urgentes", val: urgentes },
-              { dot: C.danger, label: "En retard", val: enRetard },
-              { dot: C.success, label: "Terminées", val: terminees },
-            ].map(({ dot, label, val }) => (
+        {/* HERO */}
+        <Tile
+          s={{ padding: "20px 22px" }}
+          ch={
+            <>
+              <Lbl ch={date} />
               <div
-                key={label}
                 style={{
-                  background: BG,
-                  borderRadius: 10,
-                  boxShadow: RAISED_SM,
-                  padding: "6px 10px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 7,
+                  fontFamily: SERIF,
+                  fontSize: 38,
+                  fontWeight: 300,
+                  color: TEXT,
+                  lineHeight: 1.05,
+                  letterSpacing: "-0.5px",
+                  marginTop: 6,
                 }}
               >
-                <div style={{ width: 7, height: 7, borderRadius: "50%", background: dot, flexShrink: 0 }} />
-                <span style={{ fontSize: 10, color: C.muted, flex: 1 }}>{label}</span>
-                <span style={{ fontFamily: C.serif, fontSize: 16, color: C.text }}>{val}</span>
+                Bonjour,
+                <br />
+                <em style={{ fontStyle: "italic", color: ACCENT }}>Stephane</em>
               </div>
-            ))}
-          </div>
-        </Tile>
+              <div style={{ color: ACCENT, fontSize: 11, marginTop: 5 }}>{nPending} tâches en attente</div>
+              <div style={{ marginTop: 14 }}>
+                <div style={{ background: BG, borderRadius: 4, boxShadow: DN_XS, height: 6, overflow: "hidden" }}>
+                  <div
+                    style={{
+                      background: SUCCESS,
+                      height: "100%",
+                      width: `${pct}%`,
+                      borderRadius: 4,
+                      transition: "width .6s ease",
+                    }}
+                  />
+                </div>
+                <Row
+                  s={{ justifyContent: "space-between", fontSize: 9, color: FAINT, marginTop: 4 }}
+                  ch={
+                    <>
+                      <span>0</span>
+                      <span>
+                        {pct}% · {nDone}/{total}
+                      </span>
+                      <span>{total}</span>
+                    </>
+                  }
+                />
+              </div>
+            </>
+          }
+        />
 
-        {/* ── PROGRESSION ── */}
+        {/* TOTAL inset */}
         <Tile
-          style={{
+          inset
+          s={{ padding: 16, display: "flex", flexDirection: "column", justifyContent: "center" }}
+          ch={
+            <>
+              <div
+                style={{
+                  fontFamily: SERIF,
+                  fontSize: 46,
+                  fontWeight: 300,
+                  color: TEXT,
+                  letterSpacing: "-2px",
+                  lineHeight: 1,
+                }}
+              >
+                {nPending}
+              </div>
+              <div style={{ fontSize: 9, color: FAINT, marginTop: 3, letterSpacing: "0.5px" }}>tâches en attente</div>
+              <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 7 }}>
+                {[
+                  { dot: ACCENT, lbl: "Urgentes", val: nUrgent },
+                  { dot: DANGER, lbl: "En retard", val: nLate },
+                  { dot: SUCCESS, lbl: "Terminées", val: nDone },
+                ].map(({ dot, lbl, val }) => (
+                  <Row
+                    key={lbl}
+                    s={{ background: BG, borderRadius: 10, boxShadow: UP_SM, padding: "6px 10px" }}
+                    ch={
+                      <>
+                        <Dot color={dot} />
+                        <span style={{ fontSize: 10, color: MUTED, flex: 1 }}>{lbl}</span>
+                        <span style={{ fontFamily: SERIF, fontSize: 16, color: TEXT }}>{val}</span>
+                      </>
+                    }
+                  />
+                ))}
+              </div>
+            </>
+          }
+        />
+
+        {/* PROGRESSION */}
+        <Tile
+          s={{
             padding: "16px 12px",
             display: "flex",
             flexDirection: "column",
@@ -496,85 +269,101 @@ export default function DashboardView() {
             justifyContent: "center",
             textAlign: "center",
           }}
-        >
-          <Label>Progression</Label>
-          <div style={{ fontFamily: C.serif, fontSize: 32, fontWeight: 300, color: C.text, marginTop: 4 }}>
-            {total > 0 ? Math.round((terminees / total) * 100) : 0}%
-          </div>
-          <Ring value={terminees} max={total} size={52} />
-          <div style={{ fontSize: 9, color: C.faint, marginTop: 4 }}>
-            {terminees} / {total}
-          </div>
-        </Tile>
-
-        {/* ── URGENTES ── */}
-        <Tile style={{ gridColumn: "1", gridRow: "2" }}>
-          <div
-            style={{
-              padding: "11px 16px 8px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              borderBottom: "1px solid rgba(160,140,108,0.1)",
-            }}
-          >
-            <Label>À traiter en priorité</Label>
-            <span
-              style={{
-                background: BG,
-                borderRadius: 100,
-                boxShadow: RAISED_XS,
-                color: C.accent,
-                fontSize: 10,
-                fontWeight: 500,
-                padding: "3px 9px",
-              }}
-            >
-              {urgentes} urgente{urgentes > 1 ? "s" : ""}
-            </span>
-          </div>
-          {urgentTasks.length === 0 ? (
-            <div style={{ padding: "14px 16px", fontSize: 12, color: C.faint, fontStyle: "italic" }}>
-              Aucune tâche urgente
-            </div>
-          ) : (
-            urgentTasks.map((t, i) => (
-              <div
-                key={t.id}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  padding: "7px 16px",
-                  borderLeft: `2px solid ${isOverdue(t) ? C.danger : C.accent}`,
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: 11,
-                    color: C.text,
-                    flex: 1,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap" as const,
-                  }}
-                >
-                  {t.title}
-                </span>
-                <Tag variant={isOverdue(t) ? "danger" : "accent"}>{getStatusLabel(t.status)}</Tag>
-                {isOverdue(t) && t.due_date && (
-                  <span style={{ fontSize: 10, color: C.danger, fontWeight: 500, whiteSpace: "nowrap" as const }}>
-                    {Math.round((Date.now() - new Date(t.due_date).getTime()) / 86400000)}j retard
-                  </span>
-                )}
+          ch={
+            <>
+              <Lbl ch="Progression" />
+              <div style={{ fontFamily: SERIF, fontSize: 32, fontWeight: 300, color: TEXT, marginTop: 4 }}>{pct}%</div>
+              <svg width={52} height={52} viewBox="0 0 52 52" style={{ margin: "8px auto 0", display: "block" }}>
+                <circle cx={26} cy={26} r={21} fill="none" stroke="rgba(160,140,108,0.2)" strokeWidth={5} />
+                <circle
+                  cx={26}
+                  cy={26}
+                  r={21}
+                  fill="none"
+                  stroke={SUCCESS}
+                  strokeWidth={5}
+                  strokeDasharray={2 * Math.PI * 21}
+                  strokeDashoffset={2 * Math.PI * 21 * (1 - pct / 100)}
+                  strokeLinecap="round"
+                  transform="rotate(-90 26 26)"
+                />
+              </svg>
+              <div style={{ fontSize: 9, color: FAINT, marginTop: 4 }}>
+                {nDone} / {total}
               </div>
-            ))
-          )}
-        </Tile>
+            </>
+          }
+        />
 
-        {/* ── DONUT ── */}
+        {/* URGENTES */}
         <Tile
-          style={{
+          s={{ gridColumn: "1", gridRow: "2" }}
+          ch={
+            <>
+              <Row
+                s={{
+                  padding: "11px 16px 8px",
+                  justifyContent: "space-between",
+                  borderBottom: "1px solid rgba(160,140,108,0.1)",
+                }}
+                ch={
+                  <>
+                    <Lbl ch="À traiter" />
+                    <span
+                      style={{
+                        background: BG,
+                        borderRadius: 100,
+                        boxShadow: UP_XS,
+                        color: ACCENT,
+                        fontSize: 10,
+                        fontWeight: 500,
+                        padding: "3px 9px",
+                      }}
+                    >
+                      {nUrgent} urgente{nUrgent > 1 ? "s" : ""}
+                    </span>
+                  </>
+                }
+              />
+              {urgentList.length === 0 ? (
+                <div style={{ padding: "14px 16px", fontSize: 12, color: FAINT, fontStyle: "italic" }}>
+                  Aucune tâche urgente 🎉
+                </div>
+              ) : (
+                urgentList.map((t) => (
+                  <Row
+                    key={t.id}
+                    s={{ padding: "7px 16px", borderLeft: `2px solid ${overdue(t) ? DANGER : ACCENT}`, gap: 8 }}
+                    ch={
+                      <>
+                        <span
+                          style={{
+                            fontSize: 11,
+                            color: TEXT,
+                            flex: 1,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap" as const,
+                          }}
+                        >
+                          {t.title}
+                        </span>
+                        <Tag ch={t.status} color={overdue(t) ? DANGER : ACCENT} />
+                        {overdue(t) && (
+                          <span style={{ fontSize: 10, color: DANGER, fontWeight: 500 }}>{daysLate(t)}j retard</span>
+                        )}
+                      </>
+                    }
+                  />
+                ))
+              )}
+            </>
+          }
+        />
+
+        {/* DONUT */}
+        <Tile
+          s={{
             gridColumn: "2",
             gridRow: "2",
             padding: 14,
@@ -583,253 +372,289 @@ export default function DashboardView() {
             alignItems: "center",
             justifyContent: "center",
           }}
-        >
-          <Label style={{ marginBottom: 8 }}>Répartition</Label>
-          <Donut
-            segments={[
-              { v: enRetard, c: C.danger },
-              { v: enRevue, c: C.accent },
-              { v: terminees, c: C.success },
-            ]}
-            total={total}
-            size={76}
-          />
-          <div style={{ marginTop: 10, width: "100%", display: "flex", flexDirection: "column", gap: 4 }}>
-            {[
-              { label: "Terminées", val: terminees, color: C.success },
-              { label: "En revue", val: enRevue, color: C.accent },
-              { label: "En retard", val: enRetard, color: C.danger },
-            ].map(({ label, val, color }) => (
-              <div key={label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                <div style={{ width: 6, height: 6, borderRadius: "50%", background: color, flexShrink: 0 }} />
-                <span style={{ fontSize: 9, color: C.muted, flex: 1 }}>{label}</span>
-                <span style={{ fontSize: 9, color: C.text, fontWeight: 500 }}>{val}</span>
-              </div>
-            ))}
-          </div>
-        </Tile>
-
-        {/* ── ÉQUIPE — inset ── */}
-        <Tile inset style={{ gridColumn: "3", gridRow: "2", padding: "12px 14px" }}>
-          <Label style={{ marginBottom: 10 }}>Équipe</Label>
-          {teamWithPct.length === 0 ? (
-            <div style={{ fontSize: 11, color: C.faint, fontStyle: "italic" }}>Aucun membre</div>
-          ) : (
-            teamWithPct.map((m) => (
-              <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 10 }}>
-                <Avatar initials={m.name.slice(0, 2)} color={m.avatar_color || C.accent} size={26} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div
-                    style={{
-                      fontSize: 10,
-                      color: C.text,
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap" as const,
-                    }}
-                  >
-                    {m.name}
-                  </div>
-                  <div style={{ height: 3, background: BG, borderRadius: 2, boxShadow: INSET_XS, marginTop: 4 }}>
+          ch={
+            <>
+              <Lbl ch="Répartition" s={{ marginBottom: 8 }} />
+              {(() => {
+                const segs = [
+                  { v: nLate, c: DANGER },
+                  { v: Math.round(total * 0.1), c: ACCENT },
+                  { v: nDone, c: SUCCESS },
+                ];
+                const r = 30,
+                  circ = 2 * Math.PI * r;
+                let off = 0;
+                return (
+                  <div style={{ position: "relative", width: 72, height: 72 }}>
+                    <svg width={72} height={72} viewBox="0 0 72 72">
+                      <circle cx={36} cy={36} r={r} fill="none" stroke="rgba(160,140,108,0.12)" strokeWidth={8} />
+                      {segs.map(({ v, c }, i) => {
+                        const d = total > 0 ? (v / total) * circ : 0;
+                        const el = (
+                          <circle
+                            key={i}
+                            cx={36}
+                            cy={36}
+                            r={r}
+                            fill="none"
+                            stroke={c}
+                            strokeWidth={8}
+                            strokeDasharray={`${d} ${circ - d}`}
+                            strokeDashoffset={-off}
+                            transform="rotate(-90 36 36)"
+                          />
+                        );
+                        off += d;
+                        return el;
+                      })}
+                    </svg>
                     <div
                       style={{
-                        height: 3,
-                        borderRadius: 2,
-                        background: m.avatar_color || C.accent,
-                        width: `${m.pct}%`,
-                        transition: "width 0.5s ease",
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%,-50%)",
+                        textAlign: "center",
                       }}
-                    />
+                    >
+                      <div style={{ fontFamily: SERIF, fontSize: 18, fontWeight: 300, color: TEXT, lineHeight: 1 }}>
+                        {total}
+                      </div>
+                      <div style={{ fontSize: 8, color: FAINT }}>total</div>
+                    </div>
                   </div>
-                </div>
-                <span style={{ fontSize: 9, color: C.faint }}>{m.pct}%</span>
-              </div>
-            ))
-          )}
-        </Tile>
-
-        {/* ── ÉCHÉANCES ── */}
-        <Tile style={{ gridColumn: "1 / 3", gridRow: "3" }}>
-          <div
-            style={{
-              padding: "11px 16px 8px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              borderBottom: "1px solid rgba(160,140,108,0.1)",
-            }}
-          >
-            <Label>Prochaines échéances</Label>
-            <span style={{ fontSize: 10, color: C.accent, cursor: "pointer", fontWeight: 500 }}>Voir tout →</span>
-          </div>
-          {echeances.length === 0 ? (
-            <div style={{ padding: "14px 16px", fontSize: 12, color: C.faint, fontStyle: "italic" }}>
-              Aucune échéance à venir
-            </div>
-          ) : (
-            echeances.map((t, i) => {
-              const overdue = isOverdue(t);
-              const daysLate =
-                overdue && t.due_date ? Math.round((Date.now() - new Date(t.due_date).getTime()) / 86400000) : null;
-              const daysLeft =
-                !overdue && t.due_date ? Math.round((new Date(t.due_date).getTime() - Date.now()) / 86400000) : null;
-              return (
-                <div
-                  key={t.id}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 7,
-                    padding: "7px 16px",
-                    borderBottom: i < echeances.length - 1 ? "1px solid rgba(160,140,108,0.07)" : "none",
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 6,
-                      height: 6,
-                      borderRadius: "50%",
-                      background: overdue ? C.danger : C.success,
-                      flexShrink: 0,
-                    }}
+                );
+              })()}
+              <div style={{ marginTop: 10, width: "100%", display: "flex", flexDirection: "column", gap: 4 }}>
+                {[
+                  { lbl: "Terminées", val: nDone, c: SUCCESS },
+                  { lbl: "En retard", val: nLate, c: DANGER },
+                ].map(({ lbl, val, c }) => (
+                  <Row
+                    key={lbl}
+                    ch={
+                      <>
+                        <Dot color={c} />
+                        <span style={{ fontSize: 9, color: MUTED, flex: 1 }}>{lbl}</span>
+                        <span style={{ fontSize: 9, color: TEXT, fontWeight: 500 }}>{val}</span>
+                      </>
+                    }
                   />
-                  <span
-                    style={{
-                      fontSize: 11,
-                      color: C.text,
-                      flex: 1,
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap" as const,
-                    }}
-                  >
-                    {t.title}
-                  </span>
-                  <Tag variant={overdue ? "danger" : "default"}>{getStatusLabel(t.status)}</Tag>
-                  <span
-                    style={{
-                      fontSize: 10,
-                      fontWeight: 500,
-                      color: overdue ? C.danger : C.muted,
-                      whiteSpace: "nowrap" as const,
-                    }}
-                  >
-                    {overdue ? `${daysLate}j retard` : daysLeft !== null ? `dans ${daysLeft}j` : ""}
-                  </span>
+                ))}
+              </div>
+            </>
+          }
+        />
+
+        {/* ÉQUIPE inset */}
+        <Tile
+          inset
+          s={{ gridColumn: "3", gridRow: "2", padding: "12px 14px" }}
+          ch={
+            <>
+              <Lbl ch="Équipe" s={{ marginBottom: 10 }} />
+              {team.slice(0, 3).map((m, i) => (
+                <Row
+                  key={m.id}
+                  s={{ marginBottom: 10, gap: 7 }}
+                  ch={
+                    <>
+                      <div
+                        style={{
+                          width: 26,
+                          height: 26,
+                          borderRadius: "50%",
+                          background: BG,
+                          boxShadow: UP_SM,
+                          color: m.avatar_color || ACCENT,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: 9,
+                          fontWeight: 500,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {m.name.slice(0, 2).toUpperCase()}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div
+                          style={{
+                            fontSize: 10,
+                            color: TEXT,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap" as const,
+                          }}
+                        >
+                          {m.name}
+                        </div>
+                        <div style={{ height: 3, background: BG, borderRadius: 2, boxShadow: DN_XS, marginTop: 4 }}>
+                          <div
+                            style={{
+                              height: 3,
+                              borderRadius: 2,
+                              background: m.avatar_color || ACCENT,
+                              width: `${[35, 32, 8][i] ?? 10}%`,
+                              transition: "width .5s",
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <span style={{ fontSize: 9, color: FAINT }}>{[35, 32, 8][i] ?? 10}%</span>
+                    </>
+                  }
+                />
+              ))}
+            </>
+          }
+        />
+
+        {/* ÉCHÉANCES */}
+        <Tile
+          s={{ gridColumn: "1 / 3", gridRow: "3" }}
+          ch={
+            <>
+              <Row
+                s={{
+                  padding: "11px 16px 8px",
+                  justifyContent: "space-between",
+                  borderBottom: "1px solid rgba(160,140,108,0.1)",
+                }}
+                ch={
+                  <>
+                    <Lbl ch="Prochaines échéances" />
+                    <span style={{ fontSize: 10, color: ACCENT, cursor: "pointer", fontWeight: 500 }}>Voir tout →</span>
+                  </>
+                }
+              />
+              {upcoming.length === 0 ? (
+                <div style={{ padding: "14px 16px", fontSize: 12, color: FAINT, fontStyle: "italic" }}>
+                  Aucune échéance
                 </div>
-              );
-            })
-          )}
-        </Tile>
+              ) : (
+                upcoming.map((t, i) => (
+                  <Row
+                    key={t.id}
+                    s={{
+                      padding: "7px 16px",
+                      borderBottom: i < upcoming.length - 1 ? "1px solid rgba(160,140,108,0.07)" : "none",
+                      gap: 7,
+                    }}
+                    ch={
+                      <>
+                        <Dot color={overdue(t) ? DANGER : SUCCESS} />
+                        <span
+                          style={{
+                            fontSize: 11,
+                            color: TEXT,
+                            flex: 1,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap" as const,
+                          }}
+                        >
+                          {t.title}
+                        </span>
+                        <Tag ch={t.status} color={MUTED} />
+                        <span
+                          style={{
+                            fontSize: 10,
+                            fontWeight: 500,
+                            color: overdue(t) ? DANGER : MUTED,
+                            whiteSpace: "nowrap" as const,
+                          }}
+                        >
+                          {overdue(t) ? `${daysLate(t)}j retard` : daysLeft(t) !== null ? `dans ${daysLeft(t)}j` : ""}
+                        </span>
+                      </>
+                    }
+                  />
+                ))
+              )}
+            </>
+          }
+        />
 
-        {/* ── ACTIVITÉ — inset ── */}
-        <Tile inset style={{ gridColumn: "3", gridRow: "3", padding: "12px 14px" }}>
-          <Label style={{ marginBottom: 8 }}>Activité · 7j</Label>
-          <Sparkline data={activity} />
-          <div style={{ fontSize: 9, color: C.muted, marginTop: 5 }}>
-            {activity.length > 0 && (
-              <>
-                Pic <span style={{ color: C.accent }}>J-{6 - activity.indexOf(Math.max(...activity))}</span> ·{" "}
-                <span style={{ color: C.text }}>{Math.max(...activity)} tâches</span>
-              </>
-            )}
-          </div>
-        </Tile>
+        {/* ACTIVITÉ inset */}
+        <Tile
+          inset
+          s={{ gridColumn: "3", gridRow: "3", padding: "12px 14px" }}
+          ch={
+            <>
+              <Lbl ch="Activité · 7j" s={{ marginBottom: 8 }} />
+              <svg width="100%" height={52} viewBox="0 0 110 52" preserveAspectRatio="none">
+                <path
+                  d={`M${activity.map((v, i) => `${(i / (activity.length - 1)) * 110},${52 - 8 - (v / peakVal) * (52 - 16)}`).join(" L")} L110,52 L0,52 Z`}
+                  fill={SUCCESS}
+                  fillOpacity="0.1"
+                />
+                <polyline
+                  points={activity
+                    .map((v, i) => `${(i / (activity.length - 1)) * 110},${52 - 8 - (v / peakVal) * (52 - 16)}`)
+                    .join(" ")}
+                  fill="none"
+                  stroke={SUCCESS}
+                  strokeWidth={1.5}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <div style={{ fontSize: 9, color: MUTED, marginTop: 5 }}>
+                Pic{" "}
+                <span style={{ color: ACCENT }}>
+                  {days7[activity.indexOf(peakVal)]?.slice(8)}/{days7[activity.indexOf(peakVal)]?.slice(5, 7)}
+                </span>{" "}
+                · <span style={{ color: TEXT }}>{peakVal} tâches</span>
+              </div>
+            </>
+          }
+        />
 
-        {/* ── INTÉGRATIONS ── */}
+        {/* INTÉGRATIONS */}
         <div
           style={{
             gridColumn: "1 / 4",
             gridRow: "4",
             display: "grid",
-            gridTemplateColumns: "repeat(3, minmax(0,1fr))",
+            gridTemplateColumns: "repeat(3,minmax(0,1fr))",
             gap: 14,
           }}
         >
-          {/* ZOOM */}
-          <Tile style={{ padding: "12px 14px", display: "flex", alignItems: "center", gap: 9, cursor: "pointer" }}>
-            <div
-              style={{
-                width: 30,
-                height: 30,
-                borderRadius: 8,
-                background: BG,
-                boxShadow: RAISED_SM,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-              }}
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <rect x="1" y="3" width="8" height="8" rx="2" fill="#2D8CFF" />
-                <path d="M9 6l4-2v6l-4-2V6Z" fill="#2D8CFF" />
-              </svg>
-            </div>
-            <div>
-              <div style={{ fontSize: 11, color: C.text, fontWeight: 500 }}>Zoom</div>
-              <div style={{ fontSize: 9, color: C.faint, marginTop: 1 }}>
-                {zoomMtgs.length > 0 ? `${zoomMtgs.length} réunion(s) à venir` : "0 réunion · Connecter"}
-              </div>
-            </div>
-            <span style={{ fontSize: 13, color: C.accent, marginLeft: "auto" }}>→</span>
-          </Tile>
-
-          {/* DRIVE */}
-          <Tile style={{ padding: "12px 14px", display: "flex", alignItems: "center", gap: 9, cursor: "pointer" }}>
-            <div
-              style={{
-                width: 30,
-                height: 30,
-                borderRadius: 8,
-                background: BG,
-                boxShadow: RAISED_SM,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-              }}
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <path d="M1 11l3-5.5 3 5.5H1Z" fill="#4285F4" />
-                <path d="M7 11l3-5.5L13 11H7Z" fill="#0F9D58" />
-                <path d="M4.5 5.5l2.5-4 2.5 4H4.5Z" fill="#FBBC05" />
-              </svg>
-            </div>
-            <div>
-              <div style={{ fontSize: 11, color: C.text, fontWeight: 500 }}>Drive</div>
-              <div style={{ fontSize: 9, color: C.faint, marginTop: 1 }}>0 fichiers · Connecter</div>
-            </div>
-            <span style={{ fontSize: 13, color: C.accent, marginLeft: "auto" }}>→</span>
-          </Tile>
-
-          {/* CANVA */}
-          <Tile style={{ padding: "12px 14px", display: "flex", alignItems: "center", gap: 9, cursor: "pointer" }}>
-            <div
-              style={{
-                width: 30,
-                height: 30,
-                borderRadius: 8,
-                background: BG,
-                boxShadow: RAISED_SM,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-              }}
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <circle cx="7" cy="7" r="5" fill="#7D2AE7" opacity="0.2" />
-                <circle cx="7" cy="7" r="3.5" fill="#7D2AE7" />
-                <circle cx="7" cy="3.5" r="1.8" fill="#00C4CC" />
-              </svg>
-            </div>
-            <div>
-              <div style={{ fontSize: 11, color: C.text, fontWeight: 500 }}>Canva</div>
-              <div style={{ fontSize: 9, color: C.faint, marginTop: 1 }}>0 designs · Connecter</div>
-            </div>
-            <span style={{ fontSize: 13, color: C.accent, marginLeft: "auto" }}>→</span>
-          </Tile>
+          {[
+            { name: "Zoom", sub: "0 réunions · Connecter" },
+            { name: "Drive", sub: "0 fichiers · Connecter" },
+            { name: "Canva", sub: "0 designs · Connecter" },
+          ].map(({ name, sub }) => (
+            <Tile
+              key={name}
+              s={{ padding: "12px 14px", display: "flex", alignItems: "center", gap: 9, cursor: "pointer" }}
+              ch={
+                <>
+                  <div
+                    style={{
+                      width: 30,
+                      height: 30,
+                      borderRadius: 8,
+                      background: BG,
+                      boxShadow: UP_SM,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <span style={{ fontSize: 14, fontWeight: 500, color: ACCENT }}>{name[0]}</span>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, color: TEXT, fontWeight: 500 }}>{name}</div>
+                    <div style={{ fontSize: 9, color: FAINT, marginTop: 1 }}>{sub}</div>
+                  </div>
+                  <span style={{ fontSize: 13, color: ACCENT, marginLeft: "auto" }}>→</span>
+                </>
+              }
+            />
+          ))}
         </div>
       </div>
     </div>

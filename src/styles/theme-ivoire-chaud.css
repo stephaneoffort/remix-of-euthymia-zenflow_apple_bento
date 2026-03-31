@@ -570,3 +570,63 @@
   border-top: 1px solid rgba(160, 140, 108, 0.12);
   margin: 0;
 }
+/*
+  ═══════════════════════════════════════════════════
+  PROTECTION THÈME IVOIRE CHAUD — à coller à la FIN
+  du fichier theme-ivoire-chaud.css dans Lovable
+  ═══════════════════════════════════════════════════
+ 
+  Ce fichier garantit que le fond de page, les resets
+  et les éléments natifs correspondent au thème Ivoire Chaud,
+  sans écraser les styles inline des nouveaux composants.
+*/
+
+/* 1. Fond de page unifié */
+html,
+body,
+#root {
+  background-color: #ede6da !important;
+  color: #1a1208;
+  font-family: "DM Sans", system-ui, sans-serif;
+}
+
+/* 2. Reset inputs et boutons natifs (évite les outlines bleus par défaut) */
+button:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* 3. Reset scrollbar (optionnel mais recommandé) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(140, 118, 88, 0.3) transparent;
+}
+*::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(140, 118, 88, 0.35);
+  border-radius: 10px;
+}
+
+/* 4. Protection des styles inline — interdit à Tailwind de les écraser */
+[style] {
+  /* Les styles inline ont déjà priorité, mais on s'assure
+     que Tailwind preflight ne réinitialise pas box-sizing */
+  box-sizing: border-box;
+}
+
+/* 5. Transitions globales douces */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  transition-timing-function: ease;
+}

@@ -271,7 +271,7 @@ export default function ListView() {
 
   const SortHeader = ({ label, sortKeyName }: { label: string; sortKeyName: SortKey }) => (
     <th
-      className="text-left py-2.5 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider cursor-pointer hover:text-foreground select-none"
+      className="text-left py-2.5 px-3 text-xs font-semibold text-foreground/70 uppercase tracking-wider cursor-pointer hover:text-foreground select-none"
       onClick={() => toggleSort(sortKeyName)}
     >
       <span className="inline-flex items-center gap-1">

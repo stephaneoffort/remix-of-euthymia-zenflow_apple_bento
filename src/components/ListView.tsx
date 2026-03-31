@@ -216,6 +216,12 @@ export default function ListView() {
           exit={{ opacity: 0, transition: { duration: 0.12 } }}
           transition={{ type: 'spring', stiffness: 500, damping: 30 }}
           className="border-b border-border hover:bg-muted/50 transition-colors cursor-pointer group"
+          draggable
+          onDragStart={e => {
+            (e as unknown as React.DragEvent).dataTransfer.setData('type', 'task');
+            (e as unknown as React.DragEvent).dataTransfer.setData('taskId', task.id);
+            (e as unknown as React.DragEvent).dataTransfer.effectAllowed = 'move';
+          }}
           onClick={() => setSelectedTaskId(task.id)}
         >
           <td className="py-2.5 px-3" style={{ paddingLeft: `${12 + depth * 24}px` }}>

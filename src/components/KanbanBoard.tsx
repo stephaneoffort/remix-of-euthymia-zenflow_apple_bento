@@ -604,7 +604,7 @@ function KanbanCard({
           {!selectedProjectId && (() => {
             const proj = getProjectName(task.listId);
             return proj ? (
-              <span className="text-label text-muted-foreground flex items-center gap-1 mb-1">
+              <span className="text-label text-foreground/70 flex items-center gap-1 mb-1">
                 <span className="w-1.5 h-1.5 rounded-sm shrink-0" style={{ backgroundColor: proj.color }} />
                 {proj.name}
               </span>

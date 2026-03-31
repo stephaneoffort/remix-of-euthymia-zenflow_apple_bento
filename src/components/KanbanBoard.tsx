@@ -599,7 +599,7 @@ function KanbanCard({
       {/* Liquid Glass shimmer overlay */}
       <div className="pointer-events-none absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-foreground/[0.03] via-transparent to-foreground/[0.02]" />
       <div className="flex items-start gap-1.5">
-        <GripVertical className="w-4 h-4 text-muted-foreground/40 opacity-0 group-hover:opacity-100 mt-0.5 shrink-0 cursor-grab hidden sm:block" />
+        <GripVertical className="w-4 h-4 text-muted-foreground/60 opacity-0 group-hover:opacity-100 mt-0.5 shrink-0 cursor-grab hidden sm:block" />
         <div className="flex-1 min-w-0">
           {!selectedProjectId && (() => {
             const proj = getProjectName(task.listId);

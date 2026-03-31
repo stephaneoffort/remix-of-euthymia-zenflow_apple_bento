@@ -244,7 +244,7 @@ export default function KanbanBoard() {
           className="flex flex-col gap-1.5 mb-3 px-1 group/header cursor-grab active:cursor-grabbing"
         >
           <div className="flex items-center gap-2">
-            <GripHorizontal className="w-3.5 h-3.5 text-muted-foreground/30 opacity-0 group-hover/header:opacity-100 transition-opacity shrink-0 hidden sm:block" />
+            <GripHorizontal className="w-3.5 h-3.5 text-muted-foreground/50 opacity-0 group-hover/header:opacity-100 transition-opacity shrink-0 hidden sm:block" />
             <button
               onClick={e => { e.stopPropagation(); toggleColumnCollapse(status); }}
               className="p-0.5 hover:bg-muted rounded transition-colors"

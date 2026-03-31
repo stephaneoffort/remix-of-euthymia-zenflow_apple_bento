@@ -355,7 +355,7 @@ export default function KanbanBoard() {
           <div className="px-3 sm:px-6 pt-3 sm:pt-4 pb-1">
             <div className="flex items-center gap-2.5">
               <div className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: project.color }} />
-              <span className="text-xs font-medium text-muted-foreground">{project.name}</span>
+              <span className="text-xs font-medium text-foreground">{project.name}</span>
               <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all duration-500"
@@ -604,7 +604,7 @@ function KanbanCard({
           {!selectedProjectId && (() => {
             const proj = getProjectName(task.listId);
             return proj ? (
-              <span className="text-label text-muted-foreground flex items-center gap-1 mb-1">
+              <span className="text-label text-foreground/70 flex items-center gap-1 mb-1">
                 <span className="w-1.5 h-1.5 rounded-sm shrink-0" style={{ backgroundColor: proj.color }} />
                 {proj.name}
               </span>
@@ -614,7 +614,7 @@ function KanbanCard({
           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
             <PriorityBadge priority={task.priority} />
             {task.dueDate && (
-              <span className={`text-label sm:text-xs px-1.5 py-0.5 rounded transition-colors dark:bg-muted dark:text-foreground dark:hover:bg-accent ${isOverdue ? 'text-priority-urgent font-medium' : 'text-foreground'}`}>
+              <span className={`text-label sm:text-xs px-1.5 py-0.5 rounded bg-muted/50 transition-colors ${isOverdue ? 'text-priority-urgent font-medium' : 'text-foreground'}`}>
                 {new Date(task.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
               </span>
             )}

@@ -261,7 +261,7 @@ export default function ListView() {
               <span className={`text-sm px-1.5 py-0.5 rounded transition-colors dark:bg-muted dark:text-foreground dark:hover:bg-accent ${isOverdue ? 'text-priority-urgent font-medium' : 'text-foreground'}`}>
                 {new Date(task.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
               </span>
-            ) : <span className="text-foreground/40 text-sm">—</span>}
+            ) : <span className="text-muted-foreground text-sm">—</span>}
           </td>
         </tr>
         {isExpanded && subtasks.map(st => renderRow(st, depth + 1))}

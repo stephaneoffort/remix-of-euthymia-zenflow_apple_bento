@@ -60,8 +60,8 @@
   /* Bento */
   --bento-bg: transparent;
   --bento-bg-hover: rgba(194, 120, 56, 0.06);
-  --bento-border: rgba(194, 120, 56, 0.10);
-  --bento-border-h: rgba(194, 120, 56, 0.20);
+  --bento-border: rgba(194, 120, 56, 0.1);
+  --bento-border-h: rgba(194, 120, 56, 0.2);
   --bento-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(194, 120, 56, 0.06);
 }
 
@@ -177,4 +177,396 @@
   --bento-border: rgba(0, 0, 0, 0.06);
   --bento-border-h: rgba(0, 0, 0, 0.12);
   --bento-shadow: 0 8px 32px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+/* ═══════════════════════════════════════════════════════
+   EUTHYMIA — Thème Ivoire Chaud (Neumorphisme)
+   À importer dans votre fichier CSS global ou index.css
+   ═══════════════════════════════════════════════════════ */
+
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap");
+
+/* ── TOKENS ── */
+:root {
+  /* Surfaces */
+  --nm-bg: #ede6da;
+  --nm-bg-raised: #f2ede4;
+  --nm-bg-inset: #e6dfd0;
+
+  /* Ombres neumorphiques */
+  --nm-sh-dark: rgba(160, 140, 108, 0.45);
+  --nm-sh-light: rgba(255, 252, 246, 0.85);
+
+  /* Élévations */
+  --nm-raised: 6px 6px 14px var(--nm-sh-dark), -6px -6px 14px var(--nm-sh-light);
+  --nm-raised-sm: 3px 3px 8px var(--nm-sh-dark), -3px -3px 8px var(--nm-sh-light);
+  --nm-raised-xs: 2px 2px 5px var(--nm-sh-dark), -2px -2px 5px var(--nm-sh-light);
+  --nm-inset: inset 4px 4px 10px var(--nm-sh-dark), inset -4px -4px 10px var(--nm-sh-light);
+  --nm-inset-sm: inset 2px 2px 6px var(--nm-sh-dark), inset -2px -2px 6px var(--nm-sh-light);
+  --nm-inset-xs: inset 1px 1px 4px var(--nm-sh-dark), inset -1px -1px 4px var(--nm-sh-light);
+
+  /* Couleurs sémantiques */
+  --nm-accent: #b87440; /* terracotta / or brûlé */
+  --nm-success: #6b8f6a; /* vert sauge */
+  --nm-danger: #b85040; /* rouge terre */
+  --nm-warning: #c4a040; /* ambre chaud */
+
+  /* Texte */
+  --nm-text-primary: #2d2820;
+  --nm-text-secondary: #8a7e6e;
+  --nm-text-muted: #b0a494;
+
+  /* Typographie */
+  --nm-font-display: "Cormorant Garamond", Georgia, serif;
+  --nm-font-ui: "DM Sans", system-ui, sans-serif;
+
+  /* Rayons */
+  --nm-radius-xl: 20px;
+  --nm-radius-lg: 16px;
+  --nm-radius-md: 12px;
+  --nm-radius-sm: 8px;
+  --nm-radius-pill: 100px;
+}
+
+/* ── RESET DE BASE ── */
+.nm-app {
+  font-family: var(--nm-font-ui);
+  background: var(--nm-bg);
+  color: var(--nm-text-primary);
+  min-height: 100vh;
+}
+
+/* ══════════════════════════════════════
+   COMPOSANTS NEUMORPHIQUES
+══════════════════════════════════════ */
+
+/* Tuile standard (extrudée) */
+.nm-tile {
+  background: var(--nm-bg);
+  border-radius: var(--nm-radius-lg);
+  box-shadow: var(--nm-raised);
+  overflow: hidden;
+}
+
+/* Tuile enfoncée (inset) */
+.nm-tile-inset {
+  background: var(--nm-bg);
+  border-radius: var(--nm-radius-lg);
+  box-shadow: var(--nm-inset);
+}
+
+/* Bouton raised */
+.nm-btn {
+  background: var(--nm-bg);
+  border: none;
+  border-radius: var(--nm-radius-sm);
+  box-shadow: var(--nm-raised-sm);
+  color: var(--nm-text-primary);
+  cursor: pointer;
+  font-family: var(--nm-font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 18px;
+  transition:
+    box-shadow 0.15s ease,
+    transform 0.1s ease;
+}
+.nm-btn:hover {
+  box-shadow: var(--nm-raised);
+}
+.nm-btn:active {
+  box-shadow: var(--nm-inset-sm);
+  transform: scale(0.98);
+}
+
+/* Bouton accent */
+.nm-btn-accent {
+  background: var(--nm-accent);
+  color: #fff8f0;
+  box-shadow:
+    4px 4px 10px rgba(160, 100, 40, 0.4),
+    -2px -2px 8px rgba(255, 240, 210, 0.3);
+}
+.nm-btn-accent:hover {
+  box-shadow:
+    6px 6px 14px rgba(160, 100, 40, 0.5),
+    -3px -3px 10px rgba(255, 240, 210, 0.4);
+}
+
+/* Input neumorphique */
+.nm-input {
+  background: var(--nm-bg);
+  border: none;
+  border-radius: var(--nm-radius-sm);
+  box-shadow: var(--nm-inset-sm);
+  color: var(--nm-text-primary);
+  font-family: var(--nm-font-ui);
+  font-size: 13px;
+  outline: none;
+  padding: 10px 14px;
+  width: 100%;
+  transition: box-shadow 0.2s ease;
+}
+.nm-input:focus {
+  box-shadow:
+    var(--nm-inset),
+    0 0 0 2px rgba(184, 116, 64, 0.2);
+}
+.nm-input::placeholder {
+  color: var(--nm-text-muted);
+}
+
+/* Badge / Pill */
+.nm-badge {
+  background: var(--nm-bg);
+  border-radius: var(--nm-radius-pill);
+  box-shadow: var(--nm-raised-xs);
+  color: var(--nm-accent);
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  padding: 3px 9px;
+}
+
+/* Tag statut */
+.nm-tag {
+  background: var(--nm-bg);
+  border-radius: 4px;
+  box-shadow: var(--nm-raised-xs);
+  color: var(--nm-text-secondary);
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 500;
+  padding: 2px 6px;
+}
+.nm-tag--danger {
+  color: var(--nm-danger);
+}
+.nm-tag--accent {
+  color: var(--nm-accent);
+}
+.nm-tag--success {
+  color: var(--nm-success);
+}
+
+/* Avatar */
+.nm-avatar {
+  align-items: center;
+  background: var(--nm-bg);
+  border-radius: 50%;
+  box-shadow: var(--nm-raised-sm);
+  color: var(--nm-accent);
+  display: flex;
+  font-size: 10px;
+  font-weight: 500;
+  height: 32px;
+  justify-content: center;
+  width: 32px;
+}
+
+/* Barre de progression */
+.nm-progress-track {
+  background: var(--nm-bg);
+  border-radius: 4px;
+  box-shadow: var(--nm-inset-xs);
+  height: 6px;
+  overflow: hidden;
+}
+.nm-progress-fill {
+  background: var(--nm-success);
+  border-radius: 4px;
+  height: 100%;
+  transition: width 0.6s ease;
+}
+
+/* Sidebar item actif */
+.nm-sidebar-item {
+  border-radius: var(--nm-radius-sm);
+  cursor: pointer;
+  padding: 8px 12px;
+  transition: box-shadow 0.15s ease;
+}
+.nm-sidebar-item:hover {
+  box-shadow: var(--nm-raised-xs);
+}
+.nm-sidebar-item.active {
+  box-shadow: var(--nm-inset-xs);
+  color: var(--nm-accent);
+  font-weight: 500;
+}
+
+/* ══════════════════════════════════════
+   TYPOGRAPHIE
+══════════════════════════════════════ */
+
+.nm-display {
+  font-family: var(--nm-font-display);
+  font-weight: 300;
+  letter-spacing: -0.5px;
+  line-height: 1.05;
+}
+.nm-display em {
+  color: var(--nm-accent);
+  font-style: italic;
+}
+.nm-display--xl {
+  font-size: 48px;
+}
+.nm-display--lg {
+  font-size: 38px;
+}
+.nm-display--md {
+  font-size: 28px;
+}
+.nm-display--sm {
+  font-size: 20px;
+}
+
+.nm-label {
+  color: var(--nm-text-secondary);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.nm-stat {
+  font-family: var(--nm-font-display);
+  font-size: 46px;
+  font-weight: 300;
+  letter-spacing: -2px;
+  line-height: 1;
+}
+
+/* ══════════════════════════════════════
+   BENTO GRID
+══════════════════════════════════════ */
+
+.nm-bento {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 3fr) minmax(0, 2fr);
+}
+
+/* Areas nommées */
+.nm-bento__hero {
+  grid-column: 1 / 2;
+  grid-row: 1;
+}
+.nm-bento__total {
+  grid-column: 2 / 3;
+  grid-row: 1;
+}
+.nm-bento__pct {
+  grid-column: 3 / 4;
+  grid-row: 1;
+}
+.nm-bento__urgent {
+  grid-column: 1 / 2;
+  grid-row: 2;
+}
+.nm-bento__donut {
+  grid-column: 2 / 3;
+  grid-row: 2;
+}
+.nm-bento__equipe {
+  grid-column: 3 / 4;
+  grid-row: 2;
+}
+.nm-bento__ech {
+  grid-column: 1 / 3;
+  grid-row: 3;
+}
+.nm-bento__act {
+  grid-column: 3 / 4;
+  grid-row: 3;
+}
+.nm-bento__integr {
+  grid-column: 1 / 4;
+  grid-row: 4;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .nm-bento {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .nm-bento__hero,
+  .nm-bento__urgent,
+  .nm-bento__ech {
+    grid-column: 1 / 3;
+  }
+  .nm-bento__integr {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .nm-bento {
+    grid-template-columns: 1fr;
+  }
+  .nm-bento__hero,
+  .nm-bento__total,
+  .nm-bento__pct,
+  .nm-bento__urgent,
+  .nm-bento__donut,
+  .nm-bento__equipe,
+  .nm-bento__ech,
+  .nm-bento__act {
+    grid-column: 1;
+  }
+  .nm-bento__integr {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ══════════════════════════════════════
+   UTILITAIRES RAPIDES
+══════════════════════════════════════ */
+.nm-p-lg {
+  padding: 20px 22px;
+}
+.nm-p-md {
+  padding: 16px 16px;
+}
+.nm-p-sm {
+  padding: 12px 14px;
+}
+.nm-flex {
+  display: flex;
+  align-items: center;
+}
+.nm-flex-col {
+  display: flex;
+  flex-direction: column;
+}
+.nm-gap-xs {
+  gap: 4px;
+}
+.nm-gap-sm {
+  gap: 8px;
+}
+.nm-gap-md {
+  gap: 12px;
+}
+.nm-text-accent {
+  color: var(--nm-accent);
+}
+.nm-text-success {
+  color: var(--nm-success);
+}
+.nm-text-danger {
+  color: var(--nm-danger);
+}
+.nm-text-muted {
+  color: var(--nm-text-secondary);
+}
+.nm-divider {
+  border: none;
+  border-top: 1px solid rgba(160, 140, 108, 0.12);
+  margin: 0;
 }

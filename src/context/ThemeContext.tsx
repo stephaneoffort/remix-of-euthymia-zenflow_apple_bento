@@ -133,6 +133,11 @@ export const PALETTE_META: Record<ThemePalette, { label: string; description: st
     description: 'Soft UI · Vert sombre · Nuit',
     colors: ['#1A1F1A', '#0F1210', '#252C25', '#5A9A6A'],
   },
+  ivoireChaud: {
+    label: 'Ivoire Chaud',
+    description: 'Crème doré · Terre cuite · Chaleur naturelle',
+    colors: ['#f5efe3', '#ede6d8', '#c27838', '#3a2a1a'],
+  },
 };
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {

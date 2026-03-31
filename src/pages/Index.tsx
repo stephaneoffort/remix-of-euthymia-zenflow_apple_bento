@@ -24,6 +24,7 @@ import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { ViewType } from "@/types";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Drawer, DrawerContent, DrawerTrigger, DrawerTitle } from "@/components/ui/drawer";
+import { useThemeMode } from "@/context/ThemeContext";
 
 import {
   Sparkles,
@@ -56,12 +57,7 @@ import {
   useSensors,
   type DragEndEvent,
 } from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  horizontalListSortingStrategy,
-  useSortable,
-} from "@dnd-kit/sortable";
+import { arrayMove, SortableContext, horizontalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
 const DEFAULT_VIEW_OPTIONS: { key: ViewType; label: string; icon: React.ReactNode }[] = [
@@ -75,7 +71,7 @@ const DEFAULT_VIEW_OPTIONS: { key: ViewType; label: string; icon: React.ReactNod
   { key: "timeline", label: "Chronologie", icon: <AlignHorizontalJustifyStart className="w-4 h-4" /> },
 ];
 
-const VIEW_MAP = Object.fromEntries(DEFAULT_VIEW_OPTIONS.map(v => [v.key, v]));
+const VIEW_MAP = Object.fromEntries(DEFAULT_VIEW_OPTIONS.map((v) => [v.key, v]));
 
 const STORAGE_KEY = "euthymia:viewOrder";
 
@@ -85,13 +81,13 @@ function loadViewOrder(): ViewType[] {
     if (stored) {
       const parsed = JSON.parse(stored) as ViewType[];
       // Ensure all views present (handles new views added later)
-      const allKeys = DEFAULT_VIEW_OPTIONS.map(v => v.key);
-      const valid = parsed.filter(k => allKeys.includes(k));
-      const missing = allKeys.filter(k => !valid.includes(k));
+      const allKeys = DEFAULT_VIEW_OPTIONS.map((v) => v.key);
+      const valid = parsed.filter((k) => allKeys.includes(k));
+      const missing = allKeys.filter((k) => !valid.includes(k));
       return [...valid, ...missing];
     }
   } catch {}
-  return DEFAULT_VIEW_OPTIONS.map(v => v.key);
+  return DEFAULT_VIEW_OPTIONS.map((v) => v.key);
 }
 
 function saveViewOrder(order: ViewType[]) {
@@ -140,21 +136,19 @@ export default function Index() {
   const [projectMemberIds, setProjectMemberIds] = useState<string[]>([]);
   const [todayEventCount, setTodayEventCount] = useState(0);
   const [viewOrder, setViewOrder] = useState<ViewType[]>(loadViewOrder);
+  const { designMode } = useThemeMode();
 
-  const orderedViews = useMemo(
-    () => viewOrder.map(key => VIEW_MAP[key]).filter(Boolean),
-    [viewOrder]
-  );
+  const orderedViews = useMemo(() => viewOrder.map((key) => VIEW_MAP[key]).filter(Boolean), [viewOrder]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(KeyboardSensor)
+    useSensor(KeyboardSensor),
   );
 
   const handleViewDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-    setViewOrder(prev => {
+    setViewOrder((prev) => {
       const oldIndex = prev.indexOf(active.id as ViewType);
       const newIndex = prev.indexOf(over.id as ViewType);
       const next = arrayMove(prev, oldIndex, newIndex);
@@ -168,26 +162,29 @@ export default function Index() {
     const now = new Date();
     const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
     supabase
-      .from('calendar_events')
-      .select('id', { count: 'exact', head: true })
-      .gte('start_time', now.toISOString())
-      .lte('start_time', endOfDay.toISOString())
+      .from("calendar_events")
+      .select("id", { count: "exact", head: true })
+      .gte("start_time", now.toISOString())
+      .lte("start_time", endOfDay.toISOString())
       .then(({ count }) => setTodayEventCount(count || 0));
   }, []);
 
   // Fetch project members when a project is selected
   useEffect(() => {
-    if (!selectedProjectId) { setProjectMemberIds([]); return; }
+    if (!selectedProjectId) {
+      setProjectMemberIds([]);
+      return;
+    }
     supabase
-      .from('project_members')
-      .select('member_id')
-      .eq('project_id', selectedProjectId)
+      .from("project_members")
+      .select("member_id")
+      .eq("project_id", selectedProjectId)
       .then(({ data }) => setProjectMemberIds((data || []).map((r) => r.member_id)));
   }, [selectedProjectId]);
 
   const projectResponsibles = useMemo(
     () => teamMembers.filter((m) => projectMemberIds.includes(m.id)),
-    [teamMembers, projectMemberIds]
+    [teamMembers, projectMemberIds],
   );
 
   // Keyboard shortcuts
@@ -211,7 +208,7 @@ export default function Index() {
       priority: "normal",
       dueDate: null,
       startDate: null,
-      assigneeIds: quickFilter === 'my_tasks' && teamMemberId ? [teamMemberId] : [],
+      assigneeIds: quickFilter === "my_tasks" && teamMemberId ? [teamMemberId] : [],
       tags: [],
       parentTaskId: null,
       listId,
@@ -357,11 +354,17 @@ export default function Index() {
                               className="w-6 h-6 rounded-full border-2 border-card flex items-center justify-center text-[10px] font-bold text-white"
                               style={{ backgroundColor: m.avatarColor }}
                             >
-                              {m.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                              {m.name
+                                .split(" ")
+                                .map((n) => n[0])
+                                .join("")
+                                .slice(0, 2)}
                             </div>
                           )}
                         </TooltipTrigger>
-                        <TooltipContent side="bottom" className="text-xs">{m.name}</TooltipContent>
+                        <TooltipContent side="bottom" className="text-xs">
+                          {m.name}
+                        </TooltipContent>
                       </Tooltip>
                     ))}
                     {projectResponsibles.length > 5 && (
@@ -386,7 +389,7 @@ export default function Index() {
                           icon={v.icon}
                           isActive={selectedView === v.key}
                           onClick={() => setSelectedView(v.key)}
-                          todayEventCount={v.key === 'calendar' ? todayEventCount : 0}
+                          todayEventCount={v.key === "calendar" ? todayEventCount : 0}
                         />
                       ))}
                     </div>
@@ -492,7 +495,7 @@ export default function Index() {
                       icon={v.icon}
                       isActive={selectedView === v.key}
                       onClick={() => setSelectedView(v.key)}
-                      todayEventCount={v.key === 'calendar' ? todayEventCount : 0}
+                      todayEventCount={v.key === "calendar" ? todayEventCount : 0}
                     />
                   ))}
                 </div>
@@ -560,7 +563,10 @@ export default function Index() {
             <div className="flex items-center justify-between mt-3">
               <span className="text-xs text-muted-foreground">Entrée pour créer · Échap pour annuler</span>
               <button
-                onClick={() => { setQuickAddOpen(false); setVoiceAddOpen(true); }}
+                onClick={() => {
+                  setQuickAddOpen(false);
+                  setVoiceAddOpen(true);
+                }}
                 className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                 title="Dicter une tâche"
               >
@@ -633,10 +639,12 @@ function TaskPanelAnimated({ taskId, onClose }: { taskId: string | null; onClose
   return (
     <>
       <div
-        className={`fixed inset-0 z-40 bg-black/20 backdrop-blur-sm transition-opacity duration-300 ${closing ? 'opacity-0' : 'opacity-100'}`}
+        className={`fixed inset-0 z-40 bg-black/20 backdrop-blur-sm transition-opacity duration-300 ${closing ? "opacity-0" : "opacity-100"}`}
         onClick={handleClose}
       />
-      <div className={`fixed z-50 inset-0 sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[520px] ${closing ? 'animate-slide-out-right' : 'animate-slide-in-right'}`}>
+      <div
+        className={`fixed z-50 inset-0 sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[520px] ${closing ? "animate-slide-out-right" : "animate-slide-in-right"}`}
+      >
         <TaskDetailPanel />
       </div>
     </>
@@ -673,16 +681,14 @@ function SortableViewTab({ viewKey, label, icon, isActive, onClick, todayEventCo
           {...listeners}
           onClick={onClick}
           className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors cursor-grab active:cursor-grabbing ${
-            isActive
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
+            isActive ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
           }`}
         >
           <span className="relative">
             {icon}
             {todayEventCount > 0 && (
               <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-bold leading-none">
-                {todayEventCount > 99 ? '99+' : todayEventCount}
+                {todayEventCount > 99 ? "99+" : todayEventCount}
               </span>
             )}
           </span>
@@ -715,16 +721,14 @@ function SortableViewTabMobile({ viewKey, label, icon, isActive, onClick, todayE
       {...listeners}
       onClick={onClick}
       className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-colors shrink-0 cursor-grab active:cursor-grabbing ${
-        isActive
-          ? "bg-primary/15 text-primary"
-          : "text-muted-foreground hover:text-foreground"
+        isActive ? "bg-primary/15 text-primary" : "text-muted-foreground hover:text-foreground"
       }`}
     >
       <span className="relative">
         {icon}
         {todayEventCount > 0 && (
           <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-bold leading-none">
-            {todayEventCount > 99 ? '99+' : todayEventCount}
+            {todayEventCount > 99 ? "99+" : todayEventCount}
           </span>
         )}
       </span>

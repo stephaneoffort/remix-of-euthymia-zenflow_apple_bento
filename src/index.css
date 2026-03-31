@@ -7,13 +7,16 @@
 .palette-transitioning *,
 .palette-transitioning *::before,
 .palette-transitioning *::after {
-  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease,
-              box-shadow 0.4s ease, fill 0.4s ease, stroke 0.4s ease !important;
+  transition:
+    background-color 0.4s ease,
+    color 0.4s ease,
+    border-color 0.4s ease,
+    box-shadow 0.4s ease,
+    fill 0.4s ease,
+    stroke 0.4s ease !important;
 }
 
-   FOND GLOBAL — Navy profond Apple-style
-───────────────────────────────────────────────────── */
-@layer base {
+FOND GLOBAL — Navy profond Apple-style ───────────────────────────────────────────────────── */ @layer base {
   html,
   body {
     min-height: 100vh;
@@ -75,7 +78,6 @@
     --status-done: 142 71% 48%;
     --status-blocked: 0 80% 62%;
 
-
     /* Bento tokens */
     --bento-gap: 13px;
     --bento-radius: 20px;
@@ -83,7 +85,7 @@
     --bento-bg-hover: rgba(255, 255, 255, 0.06);
     --bento-border: rgba(255, 255, 255, 0.1);
     --bento-border-h: rgba(255, 255, 255, 0.15);
-    --bento-shadow: 0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.08);
+    --bento-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 }
 
@@ -964,8 +966,12 @@
 .tiptap ol li {
   display: list-item;
 }
-.tiptap ul ul { list-style-type: circle; }
-.tiptap ul ul ul { list-style-type: square; }
+.tiptap ul ul {
+  list-style-type: circle;
+}
+.tiptap ul ul ul {
+  list-style-type: square;
+}
 
 /* Titres */
 .tiptap h1 {
@@ -1027,9 +1033,18 @@
 }
 
 /* Affichage lecture (RichTextDisplay) */
-.prose ul { list-style-type: disc; padding-left: 1.5em; }
-.prose ol { list-style-type: decimal; padding-left: 1.5em; }
-.prose ul li, .prose ol li { display: list-item; }
+.prose ul {
+  list-style-type: disc;
+  padding-left: 1.5em;
+}
+.prose ol {
+  list-style-type: decimal;
+  padding-left: 1.5em;
+}
+.prose ul li,
+.prose ol li {
+  display: list-item;
+}
 .prose blockquote {
   border-left: 3px solid hsl(var(--primary));
   padding-left: 1em;
@@ -1049,3 +1064,4 @@
 .subtask-date:active {
   color: hsl(var(--foreground)) !important;
 }
+@import "./styles/theme-ivoire-chaud.css";

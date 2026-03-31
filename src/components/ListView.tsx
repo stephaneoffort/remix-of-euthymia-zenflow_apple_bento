@@ -102,6 +102,12 @@ export default function ListView() {
             whileHover={{ y: -2, scale: 1.01, transition: { duration: 0.2 } }}
             whileTap={{ scale: 0.98 }}
             transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+            draggable
+            onDragStart={e => {
+              e.dataTransfer.setData('type', 'task');
+              e.dataTransfer.setData('taskId', task.id);
+              e.dataTransfer.effectAllowed = 'move';
+            }}
             className={`relative overflow-hidden bg-card rounded-lg border p-3 cursor-pointer hover:shadow-md group ${isOverdue ? 'border-l-2 border-l-priority-urgent' : ''}`}
             style={{ marginLeft: `${depth * 12}px` }}
             onClick={() => setSelectedTaskId(task.id)}

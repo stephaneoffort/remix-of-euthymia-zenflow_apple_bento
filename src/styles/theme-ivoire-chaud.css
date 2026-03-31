@@ -1246,3 +1246,163 @@ select:focus {
   border: none !important;
   border-radius: 14px !important;
 }
+/*
+  ═══════════════════════════════════════════════════════
+  EUTHYMIA — STYLE NEUMORPHIQUE GANTT
+  À coller à la FIN de theme-ivoire-chaud.css
+  après nm-calendrier.css
+  ═══════════════════════════════════════════════════════
+*/
+
+/* ─── FOND GÉNÉRAL ───────────────────────────────────── */
+[data-palette="ivoireChaud"] .bg-background.flex.flex-col.h-full {
+  background-color: var(--nm-bg) !important;
+}
+
+/* ─── TOOLBAR ────────────────────────────────────────── */
+[data-palette="ivoireChaud"] .border-b.border-border.shrink-0.flex-wrap {
+  background-color: var(--nm-bg) !important;
+  border-bottom: 1px solid var(--nm-border) !important;
+  box-shadow: 0 2px 6px var(--nm-shd) !important;
+}
+
+/* ─── SWITCHER ZOOM (day/week/month/quarter) ─────────── */
+[data-palette="ivoireChaud"] .bg-muted\/50.rounded-lg.p-0\.5 {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-dn-sm) !important;
+  border-radius: 10px !important;
+}
+[data-palette="ivoireChaud"] .bg-background.text-foreground.shadow-sm {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-up-xs) !important;
+  border-radius: 7px !important;
+  color: var(--nm-accent) !important;
+  font-weight: 700 !important;
+}
+
+/* ─── BOUTONS TOOLBAR (chevrons, aujourd'hui) ────────── */
+[data-palette="ivoireChaud"] .hover\:bg-muted.text-muted-foreground.p-1\.5 {
+  border-radius: 8px !important;
+}
+[data-palette="ivoireChaud"] .hover\:bg-muted.text-muted-foreground.p-1\.5:hover {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-dn-xs) !important;
+}
+[data-palette="ivoireChaud"] .hover\:bg-muted.text-foreground {
+  border-radius: 8px !important;
+}
+[data-palette="ivoireChaud"] .hover\:bg-muted.text-foreground:hover {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-dn-xs) !important;
+}
+
+/* ─── COLONNE LISTE GAUCHE ───────────────────────────── */
+[data-palette="ivoireChaud"] .shrink-0.border-r.border-border {
+  background-color: var(--nm-bg) !important;
+  border-right: 1px solid var(--nm-border) !important;
+}
+
+/* ─── HEADER LISTE (N°, Titre, %) ───────────────────── */
+[data-palette="ivoireChaud"] .h-12.flex.items-center.px-3.border-b.bg-muted\/30 {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-dn-xs) !important;
+  border-bottom: 1px solid var(--nm-border) !important;
+}
+
+/* ─── LIGNES TÂCHES LISTE ────────────────────────────── */
+[data-palette="ivoireChaud"] .border-b.border-border\/50.hover\:bg-muted\/30 {
+  border-bottom: 1px solid var(--nm-border) !important;
+  background-color: transparent !important;
+}
+[data-palette="ivoireChaud"] .border-b.border-border\/50.hover\:bg-muted\/30:hover {
+  background-color: rgba(122, 69, 24, 0.04) !important;
+}
+
+/* ─── CHEMIN CRITIQUE ────────────────────────────────── */
+[data-palette="ivoireChaud"] .bg-destructive\/5 {
+  background-color: rgba(122, 30, 14, 0.05) !important;
+}
+
+/* ─── TIMELINE HEADER ────────────────────────────────── */
+[data-palette="ivoireChaud"] .sticky.top-0.z-10.bg-muted\/80 {
+  background-color: var(--nm-bg) !important;
+  box-shadow:
+    var(--nm-dn-xs),
+    0 2px 6px var(--nm-shd) !important;
+  border-bottom: 1px solid var(--nm-border) !important;
+  backdrop-filter: none !important;
+}
+[data-palette="ivoireChaud"] .border-r.border-border\/30.text-\[10px\].text-muted-foreground {
+  color: var(--nm-muted) !important;
+  border-color: var(--nm-border) !important;
+}
+
+/* ─── LIGNES GRILLE ALTERNÉES ────────────────────────── */
+[data-palette="ivoireChaud"] .bg-muted\/10 {
+  background-color: rgba(140, 118, 88, 0.04) !important;
+}
+[data-palette="ivoireChaud"] .border-b.border-border\/20 {
+  border-color: var(--nm-border) !important;
+}
+
+/* ─── LÉGENDE BAS ────────────────────────────────────── */
+[data-palette="ivoireChaud"] .border-t.border-border.text-\[10px\].text-muted-foreground {
+  background-color: var(--nm-bg) !important;
+  border-top: 1px solid var(--nm-border) !important;
+  box-shadow: 0 -2px 6px var(--nm-shd) !important;
+  color: var(--nm-muted) !important;
+}
+
+/* ─── DIALOGUES (dates, couleur, dépendance) ─────────── */
+[data-palette="ivoireChaud"] .bg-popover.border.border-border.rounded-xl.shadow-xl {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-up) !important;
+  border: none !important;
+  border-radius: 16px !important;
+}
+[data-palette="ivoireChaud"] .bg-popover.border.border-border.rounded-xl.shadow-xl h3 {
+  color: var(--nm-text) !important;
+}
+
+/* ─── INPUTS DANS DIALOGUES ──────────────────────────── */
+[data-palette="ivoireChaud"] input[type="date"],
+[data-palette="ivoireChaud"] select.rounded-md.border.border-border {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-dn-sm) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  color: var(--nm-text) !important;
+}
+
+/* ─── BOUTON ENREGISTRER ─────────────────────────────── */
+[data-palette="ivoireChaud"] .bg-primary.text-primary-foreground.rounded-md {
+  background-color: var(--nm-green) !important;
+  color: var(--nm-on-green) !important;
+  box-shadow: 3px 3px 7px rgba(20, 50, 20, 0.4) !important;
+  border: none !important;
+}
+
+/* ─── MENU CONTEXTUEL ────────────────────────────────── */
+[data-palette="ivoireChaud"] .fixed.z-50.bg-popover.border.border-border.rounded-lg.shadow-xl {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-up) !important;
+  border: none !important;
+  border-radius: 12px !important;
+}
+[data-palette="ivoireChaud"] .fixed.z-50.bg-popover .hover\:bg-muted:hover {
+  background-color: rgba(122, 69, 24, 0.06) !important;
+}
+[data-palette="ivoireChaud"] .fixed.z-50.bg-popover .hover\:bg-destructive\/10:hover {
+  background-color: rgba(122, 30, 14, 0.08) !important;
+}
+[data-palette="ivoireChaud"] .h-px.bg-border {
+  background-color: var(--nm-border) !important;
+}
+
+/* ─── POPOVER PROGRESSION ────────────────────────────── */
+[data-palette="ivoireChaud"] [data-radix-popper-content-wrapper] .bg-popover {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-up-sm) !important;
+  border: none !important;
+  border-radius: 12px !important;
+}

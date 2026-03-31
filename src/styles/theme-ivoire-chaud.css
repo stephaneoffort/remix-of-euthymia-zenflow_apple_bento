@@ -915,3 +915,108 @@ select:focus {
   background-color: var(--nm-bg) !important;
   border-right-color: var(--nm-border) !important;
 }
+/*
+  ═══════════════════════════════════════════════════════
+  EUTHYMIA — STYLE NEUMORPHIQUE KANBAN
+  À coller à la FIN de theme-ivoire-chaud.css
+  après le bloc nm-dashboard.css
+  ═══════════════════════════════════════════════════════
+*/
+
+/* ─── COLONNES ───────────────────────────────────────── */
+[data-palette="ivoireChaud"] .rounded-lg.flex.flex-col.min-w-0 {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-dn-sm) !important;
+  border-radius: 14px !important;
+  padding: 12px 10px !important;
+  border: none !important;
+}
+
+/* ─── HEADER COLONNE ─────────────────────────────────── */
+[data-palette="ivoireChaud"] .group\/header {
+  padding: 0 4px !important;
+}
+
+/* ─── MINI PROGRESS BAR COLONNE ──────────────────────── */
+[data-palette="ivoireChaud"] .h-1.rounded-full.bg-muted {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-dn-xs) !important;
+}
+
+/* ─── CARDS KANBAN ───────────────────────────────────── */
+[data-palette="ivoireChaud"] .kanban-card,
+[data-palette="ivoireChaud"] .space-y-2 > div,
+[data-palette="ivoireChaud"] .space-y-2 > .motion-div {
+  background-color: var(--nm-bg) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--nm-up-xs) !important;
+  border: none !important;
+  transition: box-shadow 0.15s ease !important;
+}
+[data-palette="ivoireChaud"] .space-y-2 > div:hover {
+  box-shadow: var(--nm-up-sm) !important;
+}
+
+/* ─── CARTE : bordure gauche statut ──────────────────── */
+[data-palette="ivoireChaud"] .border-l-2 {
+  border-left-width: 3px !important;
+}
+
+/* ─── BOUTON AJOUTER TÂCHE ───────────────────────────── */
+[data-palette="ivoireChaud"] .border-dashed {
+  background-color: var(--nm-bg) !important;
+  border: 1.5px dashed var(--nm-border) !important;
+  box-shadow: none !important;
+  color: var(--nm-muted) !important;
+  border-radius: 10px !important;
+}
+[data-palette="ivoireChaud"] .border-dashed:hover {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-dn-xs) !important;
+}
+
+/* ─── INPUT AJOUT TÂCHE INLINE ───────────────────────── */
+[data-palette="ivoireChaud"] .bg-card.rounded-lg.border {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-dn-sm) !important;
+  border: none !important;
+  border-radius: 10px !important;
+}
+
+/* ─── ONGLETS MOBILE STATUTS ─────────────────────────── */
+[data-palette="ivoireChaud"] .bg-primary.text-primary-foreground.shadow-sm {
+  background-color: var(--nm-green) !important;
+  color: var(--nm-on-green) !important;
+  box-shadow: 3px 3px 7px rgba(20, 50, 20, 0.4) !important;
+  border-radius: 9px !important;
+}
+[data-palette="ivoireChaud"] .bg-muted\/40 {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-up-xs) !important;
+  border-radius: 9px !important;
+}
+[data-palette="ivoireChaud"] .bg-muted\/40:hover,
+[data-palette="ivoireChaud"] .bg-muted\/70 {
+  box-shadow: var(--nm-dn-xs) !important;
+}
+
+/* ─── COLONNE COLLAPSE (chips) ───────────────────────── */
+[data-palette="ivoireChaud"] .flex.flex-wrap.gap-1\.5 > * {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-up-xs) !important;
+  border-radius: 100px !important;
+  border: none !important;
+}
+
+/* ─── DRAG OVER HIGHLIGHT ────────────────────────────── */
+[data-palette="ivoireChaud"] .ring-2.ring-primary\/40 {
+  box-shadow:
+    var(--nm-dn-sm),
+    0 0 0 2px var(--nm-accent) !important;
+}
+
+/* ─── BARRE PROGRESSION PROJET ───────────────────────── */
+[data-palette="ivoireChaud"] .h-1\.5.rounded-full.bg-muted {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-dn-xs) !important;
+}

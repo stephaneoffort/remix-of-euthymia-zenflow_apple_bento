@@ -630,9 +630,6 @@ function KanbanCard({
                   <Repeat className="w-3 h-3" />
                 </span>
               )}
-              {task.tags.slice(0, 2).map(tag => (
-                <span key={tag} className="text-label bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full">{tag}</span>
-              ))}
             </div>
             <div className="flex items-center gap-1.5">
               {isMobile && (

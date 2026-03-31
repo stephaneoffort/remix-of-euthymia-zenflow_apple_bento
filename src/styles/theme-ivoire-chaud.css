@@ -1120,3 +1120,129 @@ select:focus {
 [data-palette="ivoireChaud"] button:has(.lucide-arrow-up-down):hover {
   box-shadow: var(--nm-dn-xs) !important;
 }
+/*
+  ═══════════════════════════════════════════════════════
+  EUTHYMIA — STYLE NEUMORPHIQUE CALENDRIER
+  À coller à la FIN de theme-ivoire-chaud.css
+  après nm-liste.css
+  ═══════════════════════════════════════════════════════
+*/
+
+/* ─── FOND GÉNÉRAL ───────────────────────────────────── */
+[data-palette="ivoireChaud"] .p-6.h-full.flex.flex-col {
+  background-color: var(--nm-bg) !important;
+}
+
+/* ─── GRILLE MOIS ────────────────────────────────────── */
+[data-palette="ivoireChaud"] .grid.grid-cols-7.border.border-border.rounded-lg {
+  border: none !important;
+  border-radius: 14px !important;
+  box-shadow: var(--nm-up) !important;
+  overflow: hidden !important;
+}
+
+/* ─── HEADER JOURS (Lun, Mar…) ───────────────────────── */
+[data-palette="ivoireChaud"] .bg-muted\/60.border-b.border-border {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-dn-xs) !important;
+  border-bottom: 1px solid var(--nm-border) !important;
+  color: var(--nm-text) !important;
+  font-weight: 700 !important;
+}
+
+/* ─── CELLULES JOURS ─────────────────────────────────── */
+[data-palette="ivoireChaud"] .border-b.border-r.border-border {
+  border-color: var(--nm-border) !important;
+  background-color: var(--nm-bg) !important;
+}
+
+/* ─── JOUR AUJOURD'HUI ───────────────────────────────── */
+[data-palette="ivoireChaud"] .bg-primary\/5 {
+  background-color: rgba(42, 88, 40, 0.06) !important;
+}
+
+/* ─── NUMÉRO JOUR AUJOURD'HUI ────────────────────────── */
+[data-palette="ivoireChaud"] .bg-primary.text-primary-foreground.rounded-full {
+  background-color: var(--nm-green) !important;
+  color: var(--nm-on-green) !important;
+  box-shadow: 2px 2px 5px rgba(20, 50, 20, 0.4) !important;
+}
+
+/* ─── JOURS HORS MOIS ────────────────────────────────── */
+[data-palette="ivoireChaud"] .text-muted-foreground\/40 {
+  color: var(--nm-faint) !important;
+  opacity: 0.5 !important;
+}
+
+/* ─── PILLS TÂCHES DANS CELLULE ──────────────────────── */
+[data-palette="ivoireChaud"] .text-\[11px\].px-1\.5.py-0\.5.rounded {
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+}
+
+/* ─── INPUT AJOUT TÂCHE CELLULE ──────────────────────── */
+[data-palette="ivoireChaud"] input.rounded.border.border-primary\/40 {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-dn-xs) !important;
+  border: 1px solid var(--nm-accent) !important;
+  color: var(--nm-text) !important;
+  border-radius: 6px !important;
+}
+
+/* ─── DRAG OVERLAY ───────────────────────────────────── */
+[data-palette="ivoireChaud"] .shadow-lg.border.border-primary\/30 {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-up-sm) !important;
+  border: 1px solid var(--nm-accent) !important;
+  color: var(--nm-accent) !important;
+  border-radius: 8px !important;
+}
+
+/* ─── HEADER NAVIGATION CALENDRIER ──────────────────── */
+[data-palette="ivoireChaud"] .sharedHeader,
+[data-palette="ivoireChaud"] .flex.items-center.justify-between.mb-4,
+[data-palette="ivoireChaud"] .flex.items-center.gap-2.mb-4 {
+  margin-bottom: 14px !important;
+}
+
+/* ─── BOUTONS NAV (chevrons) ─────────────────────────── */
+[data-palette="ivoireChaud"] button:has(.lucide-chevron-left),
+[data-palette="ivoireChaud"] button:has(.lucide-chevron-right) {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-up-xs) !important;
+  border-radius: 8px !important;
+  border: none !important;
+}
+[data-palette="ivoireChaud"] button:has(.lucide-chevron-left):hover,
+[data-palette="ivoireChaud"] button:has(.lucide-chevron-right):hover {
+  box-shadow: var(--nm-dn-xs) !important;
+}
+
+/* ─── SWITCHER VUE (Jour/Semaine/Mois) ───────────────── */
+[data-palette="ivoireChaud"] .rounded-lg.p-1.bg-muted {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-dn-sm) !important;
+  border-radius: 10px !important;
+}
+
+/* ─── VUE SEMAINE : GRILLE HORAIRE ───────────────────── */
+[data-palette="ivoireChaud"] .border-r.border-border.text-right {
+  border-color: var(--nm-border) !important;
+  color: var(--nm-muted) !important;
+}
+
+/* ─── BADGES SYNC CALENDRIER ─────────────────────────── */
+[data-palette="ivoireChaud"] .bg-green-500\/10 {
+  background-color: rgba(42, 88, 40, 0.1) !important;
+}
+[data-palette="ivoireChaud"] .text-green-600 {
+  color: var(--nm-green) !important;
+}
+
+/* ─── POPOVER DÉTAIL TÂCHE ───────────────────────────── */
+[data-palette="ivoireChaud"] [data-radix-popper-content-wrapper] > div {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-up) !important;
+  border: none !important;
+  border-radius: 14px !important;
+}

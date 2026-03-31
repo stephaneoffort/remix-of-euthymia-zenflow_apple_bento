@@ -263,7 +263,7 @@ export default function ListView() {
               </span>
             ) : <span className="text-foreground/40 text-sm">—</span>}
           </td>
-        </motion.tr>
+        </tr>
         {isExpanded && subtasks.map(st => renderRow(st, depth + 1))}
       </React.Fragment>
     );

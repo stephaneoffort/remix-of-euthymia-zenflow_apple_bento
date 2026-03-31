@@ -1,552 +1,452 @@
-import React, { useMemo, useState } from "react";
-import ZoomMeetingsDashboard from '@/components/dashboard/ZoomMeetingsDashboard';
-import DashboardMeetSection from '@/components/dashboard/DashboardMeetSection';
-import DashboardResourcesSection from '@/components/dashboard/DashboardResourcesSection';
-import BrevoStats from '@/components/brevo/BrevoStats';
-import { useApp } from '@/context/AppContext';
-import { useAuth } from '@/context/AuthContext';
-import { useThemeMode } from '@/context/ThemeContext';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { STATUS_LABELS, PRIORITY_LABELS, Priority } from '@/types';
-import { PriorityBadge, StatusBadge } from '@/components/TaskBadges';
+/**
+ * EuthymiaDashboard.jsx
+ * Dashboard complet — Thème Ivoire Chaud Neumorphique
+ * Copier dans : src/pages/Dashboard.jsx  (ou là où se trouve votre page dashboard)
+ *
+ * Prérequis :
+ *   1. src/styles/1_theme-ivoire-chaud.css importé dans index.css ou main.jsx
+ *   2. src/components/EuthymiaTheme.jsx présent
+ */
+
 import {
-  CheckCircle2, Clock, AlertTriangle, TrendingUp, ListTodo, Users,
-  CalendarDays, BarChart3, Flame, ChevronDown, ChevronUp,
-} from 'lucide-react';
-import { format, isToday, isPast, parseISO, differenceInDays } from 'date-fns';
-import { fr } from 'date-fns/locale';
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, AreaChart, Area,
-} from 'recharts';
-import { motion } from 'framer-motion';
+  NmApp,
+  NmTile,
+  NmTileInset,
+  NmBtn,
+  NmBadge,
+  NmTag,
+  NmProgress,
+  NmAvatar,
+  NmDisplay,
+  NmStat,
+  NmLabel,
+  NmDivider,
+  nm,
+} from "@/components/EuthymiaTheme";
 
-/* ─── Couleurs des graphiques (utilise les tokens CSS pour s'adapter aux thèmes) ─── */
-function getChartColors() {
-  const root = getComputedStyle(document.documentElement);
-  const hsl = (v: string, fallback: string) => {
-    const val = root.getPropertyValue(v).trim();
-    return val ? `hsl(${val})` : fallback;
-  };
-  return {
-    status: {
-      todo: hsl('--status-todo', 'hsl(var(--muted-foreground))'),
-      in_progress: hsl('--status-progress', 'hsl(var(--primary))'),
-      in_review: hsl('--status-review', 'hsl(38, 92%, 50%)'),
-      done: hsl('--status-done', 'hsl(142, 71%, 45%)'),
-      blocked: hsl('--status-blocked', 'hsl(0, 84%, 60%)'),
-    } as Record<string, string>,
-    priority: {
-      urgent: hsl('--priority-urgent', 'hsl(0, 84%, 60%)'),
-      high: hsl('--priority-high', 'hsl(25, 95%, 53%)'),
-      normal: hsl('--priority-normal', 'hsl(var(--primary))'),
-      low: hsl('--priority-low', 'hsl(var(--muted-foreground))'),
-    } as Record<string, string>,
-  };
-}
+// ─── DONNÉES (à remplacer par vos vraies données) ────────
+const STATS = { total: 50, urgent: 4, retard: 11, terminees: 41, espaces: 9, projets: 26, membres: 3 };
+const TEAM = [
+  { init: "SO", name: "Stéphane", pct: 35, tasks: 17, color: nm.accent },
+  { init: "ST", name: "Stéphanie", pct: 32, tasks: 19, color: nm.danger },
+  { init: "JU", name: "Julien", pct: 8, tasks: 14, color: nm.textSec },
+];
+const URGENT_TASKS = [
+  { name: "Événement IMIC", tags: ["Urgent", "En cours"], delay: "4j", level: "high" },
+  { name: "1er contact", tags: ["Urgent", "En revue"], delay: "3j", level: "high" },
+  { name: "Retrouver email philos.", tags: ["Urgent"], delay: "2j", level: "med" },
+  { name: "Écriture", tags: ["Urgent"], delay: "1j", level: "med" },
+];
+const ECHEANCES = [
+  { name: "Contacter les intervenants", tags: ["Haute", "En revue"], delay: "4j retard", ok: false },
+  { name: "Stories · Retraite silencieuse", tags: ["Haute"], delay: "4j retard", ok: false },
+  { name: "Tester paiement formulaire", tags: ["En revue"], delay: "5j retard", ok: false },
+  { name: "Contact Rinpoche 25/03", tags: ["Normale"], delay: "terminée", ok: true },
+];
+const INTEGRATIONS = [
+  { name: "Zoom", sub: "0 réunions · Connecter", icon: <ZoomIcon /> },
+  { name: "Drive", sub: "0 fichiers · Connecter", icon: <DriveIcon /> },
+  { name: "Canva", sub: "0 designs · Connecter", icon: <CanvaIcon /> },
+];
 
-/* ─── Animation ─── */
-const fadeUp = {
-  hidden: { opacity: 0, y: 16 },
-  show: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.06, duration: 0.35 } }),
-};
-
-/* ─── My Tasks foldable card ─── */
-function MyTasksCard({ tasks, onTaskClick }: { tasks: ReturnType<typeof Array<any>>; onTaskClick: (id: string) => void }) {
-  const [expanded, setExpanded] = useState(false);
-  const COLLAPSED_COUNT = 4;
-  const visibleTasks = expanded ? tasks : tasks.slice(0, COLLAPSED_COUNT);
-  const hasMore = tasks.length > COLLAPSED_COUNT;
+// ─── DASHBOARD ───────────────────────────────────────────
+export default function EuthymiaDashboard() {
+  const progress = Math.round((STATS.terminees / (STATS.total + STATS.terminees)) * 100);
 
   return (
-    <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-lg overflow-hidden">
-      <CardHeader className="pb-3 pt-4 px-5">
-        <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2.5 tracking-wide uppercase">
-          <div className="p-1.5 rounded-md bg-destructive/10">
-            <Flame className="w-3.5 h-3.5 text-destructive" />
-          </div>
-          À traiter
-          <span className="ml-auto text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
-            {tasks.length}
-          </span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="px-3 pb-3">
-        <div className="space-y-px">
-          {visibleTasks.map((task: any, index: number) => {
-            const daysLeft = task.dueDate ? differenceInDays(parseISO(task.dueDate), new Date()) : null;
-            const isOverdue = daysLeft !== null && daysLeft < 0;
-            return (
-              <motion.button
-                key={task.id}
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.04, duration: 0.25 }}
-                onClick={() => onTaskClick(task.id)}
-                className="w-full text-left py-2.5 px-3 hover:bg-primary/5 transition-all duration-200 flex items-center gap-2.5 rounded-lg group"
-              >
-                <div className="w-1 h-6 rounded-full shrink-0 opacity-60 group-hover:opacity-100 transition-opacity"
-                  style={{ backgroundColor: isOverdue ? 'hsl(0 84% 60%)' : 'hsl(var(--primary))' }}
-                />
-                <p className="text-sm text-foreground truncate min-w-0 flex-1 font-medium">{task.title}</p>
-                <PriorityBadge priority={task.priority} />
-                <StatusBadge status={task.status} />
-                {daysLeft !== null ? (
-                  <span className={`text-[11px] font-semibold shrink-0 tabular-nums ${isOverdue ? 'text-destructive' : 'text-muted-foreground'}`}>
-                    {isOverdue ? `−${Math.abs(daysLeft)}j` : daysLeft === 0 ? "Auj." : `${daysLeft}j`}
-                  </span>
-                ) : (
-                  <span className="text-[11px] text-muted-foreground/40 shrink-0">—</span>
-                )}
-              </motion.button>
-            );
-          })}
-        </div>
-        {hasMore && (
-          <button
-            onClick={() => setExpanded(!expanded)}
-            className="w-full mt-1.5 py-2 flex items-center justify-center gap-1.5 text-xs font-semibold text-primary/70 hover:text-primary transition-colors rounded-lg hover:bg-primary/5"
-          >
-            {expanded ? (
-              <>Réduire <ChevronUp className="w-3.5 h-3.5" /></>
-            ) : (
-              <>+{tasks.length - COLLAPSED_COUNT} autres <ChevronDown className="w-3.5 h-3.5" /></>
-            )}
-          </button>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-export default function DashboardView() {
-  const { tasks, teamMembers, spaces, projects, setSelectedTaskId } = useApp();
-  const { teamMemberId } = useAuth();
-  const { palette, theme } = useThemeMode();
-
-  // Compute chart colors reactively based on current palette
-  const { STATUS_COLORS, PRIORITY_COLORS } = useMemo(() => {
-    const colors = getChartColors();
-    return { STATUS_COLORS: colors.status, PRIORITY_COLORS: colors.priority };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [palette, theme]);
-  // ─── Current member name ───
-  const currentMember = useMemo(
-    () => teamMembers.find(m => m.id === teamMemberId),
-    [teamMembers, teamMemberId]
-  );
-  const firstName = currentMember?.name?.split(' ')[0] || 'là';
-
-  // ─── Greeting ───
-  const greeting = useMemo(() => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Bonjour';
-    if (hour < 18) return 'Bon après-midi';
-    return 'Bonsoir';
-  }, []);
-
-  // ─── My pending tasks (sorted by urgency then due date) ───
-  const myPendingTasks = useMemo(() => {
-    const priorityOrder: Record<string, number> = { urgent: 0, high: 1, normal: 2, low: 3 };
-    return tasks
-      .filter(t => t.assigneeIds.includes(teamMemberId || '') && t.status !== 'done')
-      .sort((a, b) => {
-        const aOverdue = a.dueDate && isPast(parseISO(a.dueDate)) ? 0 : 1;
-        const bOverdue = b.dueDate && isPast(parseISO(b.dueDate)) ? 0 : 1;
-        if (aOverdue !== bOverdue) return aOverdue - bOverdue;
-        const aPrio = priorityOrder[a.priority] ?? 2;
-        const bPrio = priorityOrder[b.priority] ?? 2;
-        if (aPrio !== bPrio) return aPrio - bPrio;
-        if (a.dueDate && b.dueDate) return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
-        if (a.dueDate) return -1;
-        if (b.dueDate) return 1;
-        return 0;
-      });
-  }, [tasks, teamMemberId]);
-
-
-  const totalTasks = tasks.length;
-  const globalDone = tasks.filter(t => t.status === 'done').length;
-  const globalOverdue = tasks.filter(t => t.dueDate && isPast(parseISO(t.dueDate)) && t.status !== 'done').length;
-  const globalCompletion = totalTasks > 0 ? Math.round((globalDone / totalTasks) * 100) : 0;
-
-  // Status distribution (PieChart)
-  const statusData = useMemo(() => {
-    const counts: Record<string, number> = {};
-    tasks.forEach(t => { counts[t.status] = (counts[t.status] || 0) + 1; });
-    return Object.entries(counts).map(([key, value]) => ({
-      name: STATUS_LABELS[key] || key,
-      value,
-      color: STATUS_COLORS[key] || 'hsl(var(--muted-foreground))',
-    }));
-  }, [tasks]);
-
-  // Priority distribution (PieChart)
-  const priorityData = useMemo(() => {
-    const counts: Record<string, number> = {};
-    tasks.forEach(t => { counts[t.priority] = (counts[t.priority] || 0) + 1; });
-    return Object.entries(counts).map(([key, value]) => ({
-      name: PRIORITY_LABELS[key as Priority] || key,
-      value,
-      color: PRIORITY_COLORS[key] || 'hsl(var(--muted-foreground))',
-    }));
-  }, [tasks]);
-
-  // Team workload
-  const teamWorkload = useMemo(() =>
-    teamMembers.map(m => {
-      const memberTasks = tasks.filter(t => t.assigneeIds.includes(m.id));
-      const done = memberTasks.filter(t => t.status === 'done').length;
-      return {
-        name: m.name.split(' ')[0],
-        total: memberTasks.length,
-        done,
-        inProgress: memberTasks.filter(t => t.status === 'in_progress').length,
-        completion: memberTasks.length > 0 ? Math.round((done / memberTasks.length) * 100) : 0,
-        color: m.avatarColor,
-      };
-    }).sort((a, b) => b.total - a.total),
-    [tasks, teamMembers]
-  );
-
-  // Activity trend (7 derniers jours)
-  const activityTrend = useMemo(() => {
-    const days: { date: string; created: number; completed: number }[] = [];
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      const dateStr = format(d, 'yyyy-MM-dd');
-      const label = format(d, 'EEE', { locale: fr });
-      days.push({
-        date: label,
-        created: tasks.filter(t => t.createdAt?.startsWith(dateStr)).length,
-        completed: tasks.filter(t => t.status === 'done' && t.createdAt?.startsWith(dateStr)).length,
-      });
-    }
-    return days;
-  }, [tasks]);
-
-  // Upcoming deadlines (5 prochaines)
-  const upcomingTasks = useMemo(() =>
-    tasks
-      .filter(t => t.dueDate && t.status !== 'done')
-      .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime())
-      .slice(0, 5),
-    [tasks]
-  );
-
-  // Recently completed
-  const recentlyDone = useMemo(() =>
-    tasks
-      .filter(t => t.status === 'done')
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      .slice(0, 5),
-    [tasks]
-  );
-
-  // ═══ RENDU ═══
-  return (
-    <div className="p-4 sm:p-6 space-y-8 max-w-7xl mx-auto">
-
-      {/* ═══ GREETING + MY TASKS ═══ */}
-      <section>
-        <div className="mb-5">
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
-            {greeting}, {firstName}
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1.5 font-medium">
-            {myPendingTasks.length === 0
-              ? 'Aucune tâche en attente — profite de ta journée !'
-              : `${myPendingTasks.length} tâche${myPendingTasks.length > 1 ? 's' : ''} en attente`
-            }
-          </p>
-        </div>
-
-        {myPendingTasks.length > 0 && <MyTasksCard tasks={myPendingTasks} onTaskClick={setSelectedTaskId} />}
-      </section>
-
-      {/* ═══ SECTION 1 : VUE D'ENSEMBLE ═══ */}
-      <section>
-        <div className="flex items-center gap-2 mb-4">
-          <BarChart3 className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-semibold text-foreground">Vue d'ensemble</h2>
-        </div>
-
-        {/* 4 KPI cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-          {[
-            { label: 'Total tâches', value: totalTasks, icon: <ListTodo className="w-4 h-4 text-primary" /> },
-            { label: 'Espaces', value: spaces.length, icon: <BarChart3 className="w-4 h-4 text-primary" /> },
-            { label: 'Projets', value: projects.length, icon: <TrendingUp className="w-4 h-4 text-primary" /> },
-            { label: 'Membres', value: teamMembers.length, icon: <Users className="w-4 h-4 text-primary" /> },
-          ].map((stat, i) => (
-            <motion.div key={stat.label} custom={i} variants={fadeUp} initial="hidden" animate="show">
-              <Card className="bg-card border-border">
-                <CardContent className="p-4 flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-primary/10">{stat.icon}</div>
-                  <div>
-                    <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-                    <p className="text-xs text-muted-foreground">{stat.label}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* PieCharts : Statut + Priorité */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          {/* Status pie */}
-          <motion.div custom={4} variants={fadeUp} initial="hidden" animate="show">
-            <Card className="bg-card border-border">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-foreground">Répartition par statut</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-48">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie data={statusData} cx="50%" cy="50%" innerRadius={40} outerRadius={70} dataKey="value" paddingAngle={2}>
-                        {statusData.map((e, i) => <Cell key={i} fill={e.color} />)}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="flex flex-wrap gap-3 mt-2">
-                  {statusData.map(s => (
-                    <span key={s.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: s.color }} />
-                      {s.name}: {s.value}
-                    </span>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Priority pie */}
-          <motion.div custom={5} variants={fadeUp} initial="hidden" animate="show">
-            <Card className="bg-card border-border">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-foreground">Répartition par priorité</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-48">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie data={priorityData} cx="50%" cy="50%" innerRadius={40} outerRadius={70} dataKey="value" paddingAngle={2}>
-                        {priorityData.map((e, i) => <Cell key={i} fill={e.color} />)}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="flex flex-wrap gap-3 mt-2">
-                  {priorityData.map(p => (
-                    <span key={p.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: p.color }} />
-                      {p.name}: {p.value}
-                    </span>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-
-        {/* Global progress bar */}
-        <motion.div custom={6} variants={fadeUp} initial="hidden" animate="show">
-          <Card className="bg-card border-border">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-foreground">Progression globale</span>
-                <span className="text-sm text-muted-foreground">{globalCompletion}% · {globalDone}/{totalTasks}</span>
-              </div>
-              <Progress value={globalCompletion} className="h-2" />
-              {globalOverdue > 0 && (
-                <div className="flex items-center gap-1.5 mt-2 text-xs text-destructive">
-                  <AlertTriangle className="w-3.5 h-3.5" />
-                  {globalOverdue} tâche{globalOverdue > 1 ? 's' : ''} en retard
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
-      </section>
-
-      {/* ═══ SECTION 2 : ANALYTIQUES ═══ */}
-      <section>
-        <div className="flex items-center gap-2 mb-4">
-          <TrendingUp className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-semibold text-foreground">Analytiques</h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          {/* Activity trend area chart */}
-          <motion.div custom={7} variants={fadeUp} initial="hidden" animate="show">
-            <Card className="bg-card border-border">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-foreground">Activité (7 derniers jours)</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-56">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={activityTrend}>
-                      <defs>
-                        <linearGradient id="gradCreated" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                          <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis dataKey="date" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
-                      <YAxis tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
-                      <Tooltip />
-                      <Area type="monotone" dataKey="created" stroke="hsl(var(--primary))" fill="url(#gradCreated)" name="Créées" />
-                      <Area type="monotone" dataKey="completed" stroke="hsl(142, 71%, 45%)" fill="hsl(142, 71%, 45%)" fillOpacity={0.15} name="Terminées" />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Team workload bar chart */}
-          <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show">
-            <Card className="bg-card border-border">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-foreground">Charge de l'équipe</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-56">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={teamWorkload}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
-                      <YAxis tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
-                      <Tooltip />
-                      <Bar dataKey="done" stackId="a" fill="hsl(142, 71%, 45%)" name="Terminées" radius={[0, 0, 0, 0]} />
-                      <Bar dataKey="inProgress" stackId="a" fill="hsl(var(--primary))" name="En cours" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-
-        {/* Team member cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-          {teamWorkload.map((m, i) => (
-            <motion.div key={m.name} custom={9 + i} variants={fadeUp} initial="hidden" animate="show">
-              <Card className="bg-card border-border">
-                <CardContent className="p-3">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
-                      style={{ backgroundColor: m.color }}
-                    >
-                      {m.name.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{m.name}</p>
-                      <p className="text-xs text-muted-foreground">{m.total} tâche{m.total !== 1 ? 's' : ''}</p>
-                    </div>
-                    <span className="text-xs font-semibold text-primary ml-auto">{m.completion}%</span>
-                  </div>
-                  <Progress value={m.completion} className="h-1.5" />
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* ═══ SECTION 3 : PROCHAINES ÉCHÉANCES ═══ */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Upcoming deadlines */}
-        <Card className="bg-card border-border">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-foreground flex items-center gap-2">
-              <CalendarDays className="w-4 h-4 text-primary" />
-              Prochaines échéances
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-1">
-              {upcomingTasks.length === 0 && (
-                <p className="text-sm text-muted-foreground py-4 text-center">Aucune échéance à venir</p>
-              )}
-              {upcomingTasks.map(task => {
-                const daysLeft = differenceInDays(parseISO(task.dueDate!), new Date());
-                const isOverdue = daysLeft < 0;
-                return (
-                  <button
-                    key={task.id}
-                    onClick={() => setSelectedTaskId(task.id)}
-                    className="w-full text-left py-2.5 hover:bg-muted/50 transition-colors flex items-center gap-3 px-1 rounded-md"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm text-foreground truncate">{task.title}</p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <PriorityBadge priority={task.priority} />
-                        <StatusBadge status={task.status} />
-                      </div>
-                    </div>
-                    <span className={`text-xs font-medium shrink-0 ${isOverdue ? 'text-destructive' : 'text-muted-foreground'}`}>
-                      {isOverdue ? `${Math.abs(daysLeft)}j retard` : daysLeft === 0 ? "Aujourd'hui" : `${daysLeft}j`}
-                    </span>
-                  </button>
-                );
+    <NmApp>
+      <div style={{ padding: 20 }}>
+        <div className="nm-bento">
+          {/* ── HERO ── */}
+          <NmTile className="nm-bento__hero nm-p-lg">
+            <NmLabel style={{ marginBottom: 6 }}>
+              {new Date().toLocaleDateString("fr-FR", {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+                year: "numeric",
               })}
+            </NmLabel>
+            <NmDisplay size="lg">
+              Bonjour,
+              <br />
+              Ste<em style={{ color: nm.accent }}>phane</em>
+            </NmDisplay>
+            <div style={{ color: nm.accent, fontSize: 11, marginTop: 5 }}>
+              {STATS.total} tâches · {STATS.espaces} espaces actifs
             </div>
-          </CardContent>
-        </Card>
+            <div style={{ marginTop: 14 }}>
+              <NmProgress value={STATS.terminees} max={STATS.total + STATS.terminees} />
+            </div>
+          </NmTile>
 
-        {/* Recently completed */}
-        <Card className="bg-card border-border">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-foreground flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-primary" />
-              Récemment terminées
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-1">
-              {recentlyDone.length === 0 && (
-                <p className="text-sm text-muted-foreground py-4 text-center">Aucune tâche terminée</p>
-              )}
-              {recentlyDone.map(task => (
-                <button
-                  key={task.id}
-                  onClick={() => setSelectedTaskId(task.id)}
-                  className="w-full text-left py-2.5 hover:bg-muted/50 transition-colors flex items-center gap-3 px-1 rounded-md"
+          {/* ── TOTAL — inset ── */}
+          <NmTileInset
+            className="nm-bento__total nm-p-md"
+            style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}
+          >
+            <NmStat value={STATS.total} label="tâches en attente" />
+            <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 7 }}>
+              {[
+                { dot: nm.accent, label: "Urgentes", val: STATS.urgent },
+                { dot: nm.danger, label: "En retard", val: STATS.retard },
+                { dot: nm.success, label: "Terminées", val: STATS.terminees },
+              ].map(({ dot, label, val }) => (
+                <div
+                  key={label}
+                  style={{
+                    background: nm.bg,
+                    borderRadius: 10,
+                    boxShadow: nm.raisedSm,
+                    padding: "6px 10px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 7,
+                  }}
                 >
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm text-foreground truncate">{task.title}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <PriorityBadge priority={task.priority} />
-                    </div>
-                  </div>
-                  <span className="text-xs text-muted-foreground shrink-0">
-                    {format(parseISO(task.createdAt), 'd MMM', { locale: fr })}
-                  </span>
-                </button>
+                  <div style={{ width: 7, height: 7, borderRadius: "50%", background: dot, flexShrink: 0 }} />
+                  <span style={{ fontSize: 10, color: nm.textSec, flex: 1 }}>{label}</span>
+                  <span style={{ fontFamily: nm.fontDisplay, fontSize: 16, color: nm.textPri }}>{val}</span>
+                </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
-      </section>
+          </NmTileInset>
 
-      {/* ═══ SECTION 4 : INTÉGRATIONS ═══ */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <ZoomMeetingsDashboard />
-        <DashboardMeetSection />
-        <BrevoStats />
-        <DashboardResourcesSection projects={projects} />
-      </section>
+          {/* ── PROGRESSION ── */}
+          <NmTile
+            className="nm-bento__pct nm-p-md"
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              textAlign: "center",
+            }}
+          >
+            <NmLabel style={{ marginBottom: 6 }}>Progression</NmLabel>
+            <div style={{ fontFamily: nm.fontDisplay, fontSize: 32, fontWeight: 300, color: nm.textPri }}>
+              {progress}%
+            </div>
+            <ProgressRing value={progress} color={nm.success} size={52} />
+            <div style={{ fontSize: 9, color: nm.textMuted, marginTop: 4 }}>
+              {STATS.terminees} / {STATS.total + STATS.terminees}
+            </div>
+          </NmTile>
+
+          {/* ── URGENTES ── */}
+          <NmTile className="nm-bento__urgent">
+            <div
+              style={{
+                padding: "11px 16px 8px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <NmLabel>À traiter</NmLabel>
+              <NmBadge variant="accent">{STATS.urgent} urgentes</NmBadge>
+            </div>
+            <NmDivider />
+            {URGENT_TASKS.map((t, i) => (
+              <div
+                key={i}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "7px 16px",
+                  borderLeft: `2px solid ${t.level === "high" ? nm.danger : nm.accent}`,
+                }}
+              >
+                <span style={{ fontSize: 11, color: nm.textPri, flex: 1 }}>{t.name}</span>
+                <div style={{ display: "flex", gap: 3 }}>
+                  {t.tags.map((tag) => (
+                    <NmTag key={tag} variant={tag === "Urgent" ? "danger" : tag === "En revue" ? "accent" : "default"}>
+                      {tag}
+                    </NmTag>
+                  ))}
+                </div>
+                <span style={{ fontSize: 10, color: nm.danger, fontWeight: 500, whiteSpace: "nowrap" }}>{t.delay}</span>
+              </div>
+            ))}
+          </NmTile>
+
+          {/* ── DONUT ── */}
+          <NmTile
+            className="nm-bento__donut nm-p-md"
+            style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}
+          >
+            <NmLabel style={{ marginBottom: 8 }}>Répartition</NmLabel>
+            <DonutChart
+              segments={[
+                { value: STATS.retard, color: nm.danger },
+                { value: 13, color: nm.accent },
+                { value: STATS.terminees, color: nm.success },
+              ]}
+              total={120}
+              size={76}
+            />
+            <div style={{ marginTop: 10, width: "100%", display: "flex", flexDirection: "column", gap: 4 }}>
+              {[
+                { label: "Terminées", val: STATS.terminees, color: nm.success },
+                { label: "En revue", val: 13, color: nm.accent },
+                { label: "En retard", val: STATS.retard, color: nm.danger },
+              ].map(({ label, val, color }) => (
+                <div key={label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                  <div style={{ width: 6, height: 6, borderRadius: "50%", background: color, flexShrink: 0 }} />
+                  <span style={{ fontSize: 9, color: nm.textSec, flex: 1 }}>{label}</span>
+                  <span style={{ fontSize: 9, color: nm.textPri, fontWeight: 500 }}>{val}</span>
+                </div>
+              ))}
+            </div>
+          </NmTile>
+
+          {/* ── ÉQUIPE — inset ── */}
+          <NmTileInset className="nm-bento__equipe nm-p-sm">
+            <NmLabel style={{ marginBottom: 10 }}>Équipe</NmLabel>
+            {TEAM.map((m) => (
+              <div key={m.name} style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 10 }}>
+                <NmAvatar initials={m.init} color={m.color} size={26} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div
+                    style={{
+                      fontSize: 10,
+                      color: nm.textPri,
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {m.name}
+                  </div>
+                  <div style={{ height: 3, background: nm.bg, borderRadius: 2, boxShadow: nm.insetXs, marginTop: 4 }}>
+                    <div
+                      style={{
+                        height: 3,
+                        borderRadius: 2,
+                        background: m.color,
+                        width: `${m.pct}%`,
+                        transition: "width 0.5s ease",
+                      }}
+                    />
+                  </div>
+                </div>
+                <span style={{ fontSize: 9, color: nm.textMuted, marginLeft: 4 }}>{m.pct}%</span>
+              </div>
+            ))}
+          </NmTileInset>
+
+          {/* ── ÉCHÉANCES ── */}
+          <NmTile className="nm-bento__ech">
+            <div
+              style={{
+                padding: "11px 16px 8px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <NmLabel>Prochaines échéances</NmLabel>
+              <span style={{ fontSize: 10, color: nm.accent, cursor: "pointer", fontWeight: 500 }}>Voir tout →</span>
+            </div>
+            <NmDivider />
+            {ECHEANCES.map((e, i) => (
+              <div
+                key={i}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 7,
+                  padding: "7px 16px",
+                  borderBottom: i < ECHEANCES.length - 1 ? "1px solid rgba(160,140,108,0.08)" : "none",
+                }}
+              >
+                <div
+                  style={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: "50%",
+                    background: e.ok ? nm.success : nm.danger,
+                    flexShrink: 0,
+                  }}
+                />
+                <span style={{ fontSize: 11, color: nm.textPri, flex: 1 }}>{e.name}</span>
+                <div style={{ display: "flex", gap: 3 }}>
+                  {e.tags.map((tag) => (
+                    <NmTag key={tag} variant={tag === "Haute" ? "danger" : "default"}>
+                      {tag}
+                    </NmTag>
+                  ))}
+                </div>
+                <span
+                  style={{ fontSize: 10, fontWeight: 500, color: e.ok ? nm.success : nm.danger, whiteSpace: "nowrap" }}
+                >
+                  {e.delay}
+                </span>
+              </div>
+            ))}
+          </NmTile>
+
+          {/* ── ACTIVITÉ — inset ── */}
+          <NmTileInset className="nm-bento__act nm-p-sm">
+            <NmLabel style={{ marginBottom: 8 }}>Activité · 7j</NmLabel>
+            <ActivitySparkline color={nm.success} />
+            <div style={{ fontSize: 9, color: nm.textSec, marginTop: 5 }}>
+              Pic <span style={{ color: nm.accent }}>mer 26</span> · <span style={{ color: nm.textPri }}>8 tâches</span>
+            </div>
+          </NmTileInset>
+
+          {/* ── INTÉGRATIONS ── */}
+          <div className="nm-bento__integr">
+            {INTEGRATIONS.map(({ name, sub, icon }) => (
+              <NmTile
+                key={name}
+                style={{ padding: "12px 14px", display: "flex", alignItems: "center", gap: 9, cursor: "pointer" }}
+              >
+                <div
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: 8,
+                    background: nm.bg,
+                    boxShadow: nm.raisedSm,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  {icon}
+                </div>
+                <div>
+                  <div style={{ fontSize: 11, color: nm.textPri, fontWeight: 500 }}>{name}</div>
+                  <div style={{ fontSize: 9, color: nm.textMuted, marginTop: 1 }}>{sub}</div>
+                </div>
+                <span style={{ fontSize: 13, color: nm.accent, marginLeft: "auto" }}>→</span>
+              </NmTile>
+            ))}
+          </div>
+        </div>
+      </div>
+    </NmApp>
+  );
+}
+
+// ─── SOUS-COMPOSANTS ─────────────────────────────────────
+
+function ProgressRing({ value = 0, color = nm.success, size = 52 }) {
+  const r = size / 2 - 5;
+  const circ = 2 * Math.PI * r;
+  const offset = circ - (value / 100) * circ;
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ margin: "10px auto 0" }}>
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(160,140,108,0.2)" strokeWidth="5" />
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={r}
+        fill="none"
+        stroke={color}
+        strokeWidth="5"
+        strokeDasharray={circ}
+        strokeDashoffset={offset}
+        strokeLinecap="round"
+        transform={`rotate(-90 ${size / 2} ${size / 2})`}
+        style={{ transition: "stroke-dashoffset 0.6s ease" }}
+      />
+    </svg>
+  );
+}
+
+function DonutChart({ segments = [], total = 100, size = 76 }) {
+  const r = size / 2 - 5;
+  const circ = 2 * Math.PI * r;
+  let offset = 0;
+  return (
+    <div style={{ position: "relative", width: size, height: size }}>
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(160,140,108,0.12)" strokeWidth="8" />
+        {segments.map(({ value, color }, i) => {
+          const dash = (value / total) * circ;
+          const el = (
+            <circle
+              key={i}
+              cx={size / 2}
+              cy={size / 2}
+              r={r}
+              fill="none"
+              stroke={color}
+              strokeWidth="8"
+              strokeDasharray={`${dash} ${circ - dash}`}
+              strokeDashoffset={-offset}
+              transform={`rotate(-90 ${size / 2} ${size / 2})`}
+            />
+          );
+          offset += dash;
+          return el;
+        })}
+      </svg>
+      <div
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%,-50%)",
+          textAlign: "center",
+        }}
+      >
+        <div style={{ fontFamily: nm.fontDisplay, fontSize: 18, fontWeight: 300, color: nm.textPri, lineHeight: 1 }}>
+          {total}
+        </div>
+        <div style={{ fontSize: 8, color: nm.textMuted }}>total</div>
+      </div>
     </div>
+  );
+}
+
+function ActivitySparkline({ color = nm.success }) {
+  const points = "0,44 16,38 32,22 48,29 64,11 80,29 96,21 110,34";
+  const area = `${points} 110,54 0,54`;
+  return (
+    <svg width="100%" height="54" viewBox="0 0 110 54" preserveAspectRatio="none">
+      <polygon points={area} fill={color} fillOpacity="0.1" />
+      <polyline
+        points={points}
+        fill="none"
+        stroke={color}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="64" cy="11" r="3" fill={color} />
+    </svg>
+  );
+}
+
+// ─── ICÔNES SVG ──────────────────────────────────────────
+function ZoomIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <rect x="1" y="3" width="8" height="8" rx="2" fill="#2D8CFF" />
+      <path d="M9 6l4-2v6l-4-2V6Z" fill="#2D8CFF" />
+    </svg>
+  );
+}
+function DriveIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <path d="M1 11l3-5.5 3 5.5H1Z" fill="#4285F4" />
+      <path d="M7 11l3-5.5L13 11H7Z" fill="#0F9D58" />
+      <path d="M4.5 5.5l2.5-4 2.5 4H4.5Z" fill="#FBBC05" />
+    </svg>
+  );
+}
+function CanvaIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <circle cx="7" cy="7" r="5" fill="#7D2AE7" opacity="0.2" />
+      <circle cx="7" cy="7" r="3.5" fill="#7D2AE7" />
+      <circle cx="7" cy="3.5" r="1.8" fill="#00C4CC" />
+    </svg>
   );
 }

@@ -353,6 +353,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (updates.dueDate !== undefined) dbUpdates.due_date = updates.dueDate;
       if (updates.startDate !== undefined) dbUpdates.start_date = updates.startDate;
       if (updates.tags !== undefined) dbUpdates.tags = updates.tags;
+      if (updates.parentTaskId !== undefined) dbUpdates.parent_task_id = updates.parentTaskId;
+      if (updates.listId !== undefined) dbUpdates.list_id = updates.listId;
       if (updates.timeEstimate !== undefined) dbUpdates.time_estimate = updates.timeEstimate;
       if (updates.timeLogged !== undefined) dbUpdates.time_logged = updates.timeLogged;
       if (updates.aiSummary !== undefined) dbUpdates.ai_summary = updates.aiSummary;

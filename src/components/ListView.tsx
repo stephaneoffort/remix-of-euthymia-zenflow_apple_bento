@@ -94,6 +94,15 @@ export default function ListView() {
 
       return (
         <React.Fragment key={task.id}>
+          <div
+            draggable
+            onDragStart={e => {
+              e.dataTransfer.setData('type', 'task');
+              e.dataTransfer.setData('taskId', task.id);
+              e.dataTransfer.effectAllowed = 'move';
+            }}
+            style={{ marginLeft: `${depth * 12}px` }}
+          >
           <motion.div
             layout
             initial={{ opacity: 0, y: 10, scale: 0.97 }}
@@ -103,7 +112,6 @@ export default function ListView() {
             whileTap={{ scale: 0.98 }}
             transition={{ type: 'spring', stiffness: 400, damping: 28 }}
             className={`relative overflow-hidden bg-card rounded-lg border p-3 cursor-pointer hover:shadow-md group ${isOverdue ? 'border-l-2 border-l-priority-urgent' : ''}`}
-            style={{ marginLeft: `${depth * 12}px` }}
             onClick={() => setSelectedTaskId(task.id)}
           >
             <div className="pointer-events-none absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-white/10 via-transparent to-white/5" />
@@ -149,6 +157,7 @@ export default function ListView() {
               </div>
             </div>
           </motion.div>
+          </div>
           {isExpanded && subtasks.map(st => renderCard(st, depth + 1))}
         </React.Fragment>
       );
@@ -207,6 +216,12 @@ export default function ListView() {
           exit={{ opacity: 0, transition: { duration: 0.12 } }}
           transition={{ type: 'spring', stiffness: 500, damping: 30 }}
           className="border-b border-border hover:bg-muted/50 transition-colors cursor-pointer group"
+          draggable
+          onDragStart={e => {
+            (e as unknown as React.DragEvent).dataTransfer.setData('type', 'task');
+            (e as unknown as React.DragEvent).dataTransfer.setData('taskId', task.id);
+            (e as unknown as React.DragEvent).dataTransfer.effectAllowed = 'move';
+          }}
           onClick={() => setSelectedTaskId(task.id)}
         >
           <td className="py-2.5 px-3" style={{ paddingLeft: `${12 + depth * 24}px` }}>

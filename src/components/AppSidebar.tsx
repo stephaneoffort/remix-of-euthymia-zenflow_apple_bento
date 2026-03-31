@@ -35,6 +35,7 @@ import {
   Copy,
   Archive,
   Users,
+  Sparkles,
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
@@ -1652,7 +1653,7 @@ function ChatLink({ handleNavClick }: { handleNavClick: () => void }) {
   );
 }
 function ThemeSwitcher() {
-  const { theme, setTheme, palette, setPalette } = useThemeMode();
+  const { theme, setTheme, palette, setPalette, designMode, setDesignMode } = useThemeMode();
   const options: { key: "light" | "dark" | "mixed"; label: string; title: string; icon: React.ReactNode }[] = [
     { key: "light", label: "Clair", title: "Thème clair", icon: <Sun className="w-3.5 h-3.5" /> },
     { key: "dark", label: "Sombre", title: "Thème sombre", icon: <Moon className="w-3.5 h-3.5" /> },
@@ -1717,6 +1718,36 @@ function ThemeSwitcher() {
             </TooltipContent>
           </Tooltip>
         ))}
+      </div>
+      {/* ── Design Mode Switch ── */}
+      <div className="mt-3 pt-3 border-t border-border/30">
+        <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-2 px-1">
+          Interface
+        </div>
+        <div className="flex gap-1 p-1 rounded-lg bg-muted/30">
+          <button
+            onClick={() => setDesignMode("classic")}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs font-medium transition-all ${
+              designMode === "classic"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <LayoutGrid className="w-3 h-3" />
+            Classic
+          </button>
+          <button
+            onClick={() => setDesignMode("neumorphic")}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs font-medium transition-all ${
+              designMode === "neumorphic"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Sparkles className="w-3 h-3" />
+            Ivoire
+          </button>
+        </div>
       </div>
     </div>
   );

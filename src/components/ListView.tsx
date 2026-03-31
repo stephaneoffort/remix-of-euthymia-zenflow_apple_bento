@@ -211,7 +211,7 @@ export default function ListView() {
     return (
       <React.Fragment key={task.id}>
         <tr
-          className="border-b border-border hover:bg-muted/50 transition-colors cursor-pointer group animate-in fade-in slide-in-from-left-2 duration-200"
+          className="border-b border-border hover:bg-accent/60 transition-colors cursor-pointer group animate-in fade-in slide-in-from-left-2 duration-200"
           draggable
           onDragStart={e => {
             e.dataTransfer.setData('type', 'task');
@@ -261,7 +261,7 @@ export default function ListView() {
               <span className={`text-sm px-1.5 py-0.5 rounded transition-colors dark:bg-muted dark:text-foreground dark:hover:bg-accent ${isOverdue ? 'text-priority-urgent font-medium' : 'text-foreground'}`}>
                 {new Date(task.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
               </span>
-            ) : <span className="text-foreground/40 text-sm">—</span>}
+            ) : <span className="text-muted-foreground text-sm">—</span>}
           </td>
         </tr>
         {isExpanded && subtasks.map(st => renderRow(st, depth + 1))}
@@ -271,7 +271,7 @@ export default function ListView() {
 
   const SortHeader = ({ label, sortKeyName }: { label: string; sortKeyName: SortKey }) => (
     <th
-      className="text-left py-2.5 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider cursor-pointer hover:text-foreground select-none"
+      className="text-left py-2.5 px-3 text-xs font-semibold text-foreground/70 uppercase tracking-wider cursor-pointer hover:text-foreground select-none"
       onClick={() => toggleSort(sortKeyName)}
     >
       <span className="inline-flex items-center gap-1">
@@ -285,12 +285,12 @@ export default function ListView() {
     <div className="p-4 sm:p-6 overflow-auto h-full">
       <div className="bg-card rounded-lg border overflow-hidden">
         <table className="w-full">
-          <thead className="border-b border-border bg-muted/30">
+          <thead className="border-b border-border bg-muted/50">
             <tr>
               <SortHeader label="Tâche" sortKeyName="title" />
               <SortHeader label="Statut" sortKeyName="status" />
               <SortHeader label="Priorité" sortKeyName="priority" />
-              <th className="text-left py-2.5 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Assignée à</th>
+              <th className="text-left py-2.5 px-3 text-xs font-semibold text-foreground/70 uppercase tracking-wider">Assignée à</th>
               <SortHeader label="Échéance" sortKeyName="dueDate" />
             </tr>
           </thead>

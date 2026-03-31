@@ -355,7 +355,7 @@ export default function KanbanBoard() {
           <div className="px-3 sm:px-6 pt-3 sm:pt-4 pb-1">
             <div className="flex items-center gap-2.5">
               <div className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: project.color }} />
-              <span className="text-xs font-medium text-muted-foreground">{project.name}</span>
+              <span className="text-xs font-medium text-foreground">{project.name}</span>
               <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all duration-500"

@@ -244,7 +244,7 @@ export default function KanbanBoard() {
           className="flex flex-col gap-1.5 mb-3 px-1 group/header cursor-grab active:cursor-grabbing"
         >
           <div className="flex items-center gap-2">
-            <GripHorizontal className="w-3.5 h-3.5 text-muted-foreground/30 opacity-0 group-hover/header:opacity-100 transition-opacity shrink-0 hidden sm:block" />
+            <GripHorizontal className="w-3.5 h-3.5 text-muted-foreground/50 opacity-0 group-hover/header:opacity-100 transition-opacity shrink-0 hidden sm:block" />
             <button
               onClick={e => { e.stopPropagation(); toggleColumnCollapse(status); }}
               className="p-0.5 hover:bg-muted rounded transition-colors"
@@ -597,14 +597,14 @@ function KanbanCard({
       style={{ willChange: 'transform' }}
     >
       {/* Liquid Glass shimmer overlay */}
-      <div className="pointer-events-none absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-white/10 via-transparent to-white/5" />
+      <div className="pointer-events-none absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-foreground/[0.03] via-transparent to-foreground/[0.02]" />
       <div className="flex items-start gap-1.5">
-        <GripVertical className="w-4 h-4 text-muted-foreground/40 opacity-0 group-hover:opacity-100 mt-0.5 shrink-0 cursor-grab hidden sm:block" />
+        <GripVertical className="w-4 h-4 text-muted-foreground/60 opacity-0 group-hover:opacity-100 mt-0.5 shrink-0 cursor-grab hidden sm:block" />
         <div className="flex-1 min-w-0">
           {!selectedProjectId && (() => {
             const proj = getProjectName(task.listId);
             return proj ? (
-              <span className="text-label text-foreground/70 flex items-center gap-1 mb-1">
+              <span className="text-label text-muted-foreground flex items-center gap-1 mb-1">
                 <span className="w-1.5 h-1.5 rounded-sm shrink-0" style={{ backgroundColor: proj.color }} />
                 {proj.name}
               </span>

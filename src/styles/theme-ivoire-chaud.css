@@ -630,3 +630,162 @@ select:focus {
   box-sizing: border-box;
   transition-timing-function: ease;
 }
+/*
+  ═══════════════════════════════════════════════════════
+  EUTHYMIA — SYSTÈME DE THÈMES NEUMORPHIQUES
+  3 modes : Clair (ivoire chaud) · Sombre · Mixte
+  
+  À coller à la FIN de theme-ivoire-chaud.css dans Lovable
+  ═══════════════════════════════════════════════════════
+*/
+
+/* ─────────────────────────────────────────────
+   THÈME CLAIR — Ivoire Chaud (défaut)
+───────────────────────────────────────────── */
+:root,
+[data-theme="light"] {
+  /* Fond principal */
+  --nm-bg: #ede6da;
+
+  /* Ombres neumorphiques */
+  --nm-shd: rgba(140, 118, 88, 0.45);
+  --nm-shl: rgba(255, 250, 242, 0.88);
+
+  /* Shadows précompilées */
+  --nm-up: 4px 4px 10px var(--nm-shd), -4px -4px 10px var(--nm-shl);
+  --nm-up-sm: 3px 3px 8px var(--nm-shd), -3px -3px 8px var(--nm-shl);
+  --nm-up-xs: 2px 2px 5px var(--nm-shd), -2px -2px 5px var(--nm-shl);
+  --nm-dn: inset 3px 3px 8px var(--nm-shd), inset -3px -3px 8px var(--nm-shl);
+  --nm-dn-sm: inset 2px 2px 5px var(--nm-shd), inset -2px -2px 5px var(--nm-shl);
+  --nm-dn-xs: inset 1px 1px 4px var(--nm-shd), inset -1px -1px 4px var(--nm-shl);
+
+  /* Couleurs texte */
+  --nm-text: #1a1208;
+  --nm-muted: #5a5040;
+  --nm-faint: #8a7060;
+
+  /* Couleurs sémantiques */
+  --nm-accent: #7a4518; /* terracotta */
+  --nm-green: #2a5828; /* vert sauge */
+  --nm-red: #7a1e0e; /* rouge foncé */
+  --nm-blue: #1e4878; /* bleu marine */
+
+  /* Textes sur fonds colorés */
+  --nm-on-accent: #fff0dc;
+  --nm-on-green: #f0faf0;
+  --nm-on-red: #fff0dc;
+  --nm-on-blue: #e0eaff;
+
+  /* Séparateur */
+  --nm-border: rgba(140, 118, 88, 0.15);
+
+  /* Scrollbar */
+  --nm-scroll: rgba(140, 118, 88, 0.35);
+}
+
+/* ─────────────────────────────────────────────
+   THÈME SOMBRE — Brun profond chaud
+───────────────────────────────────────────── */
+[data-theme="dark"] {
+  --nm-bg: #1c1710;
+
+  --nm-shd: rgba(0, 0, 0, 0.55);
+  --nm-shl: rgba(70, 52, 28, 0.3);
+
+  --nm-up: 4px 4px 12px var(--nm-shd), -3px -3px 8px var(--nm-shl);
+  --nm-up-sm: 3px 3px 8px var(--nm-shd), -2px -2px 6px var(--nm-shl);
+  --nm-up-xs: 2px 2px 6px var(--nm-shd), -1px -1px 4px var(--nm-shl);
+  --nm-dn: inset 3px 3px 8px var(--nm-shd), inset -2px -2px 6px var(--nm-shl);
+  --nm-dn-sm: inset 2px 2px 6px var(--nm-shd), inset -1px -1px 4px var(--nm-shl);
+  --nm-dn-xs: inset 1px 1px 4px var(--nm-shd), inset -1px -1px 3px var(--nm-shl);
+
+  --nm-text: #f0e8d8;
+  --nm-muted: #9a8870;
+  --nm-faint: #6a5e50;
+
+  --nm-accent: #c47a38; /* terracotta clair */
+  --nm-green: #4a8848; /* vert sauge clair */
+  --nm-red: #c03820; /* rouge vif */
+  --nm-blue: #3868a8; /* bleu clair */
+
+  --nm-on-accent: #fff0dc;
+  --nm-on-green: #f0faf0;
+  --nm-on-red: #fff0dc;
+  --nm-on-blue: #e0eaff;
+
+  --nm-border: rgba(255, 240, 200, 0.08);
+  --nm-scroll: rgba(200, 170, 120, 0.25);
+}
+
+/* ─────────────────────────────────────────────
+   THÈME MIXTE — Brun moyen chaud (mi-chemin)
+───────────────────────────────────────────── */
+[data-theme="mixed"] {
+  --nm-bg: #2e2518;
+
+  --nm-shd: rgba(0, 0, 0, 0.48);
+  --nm-shl: rgba(80, 60, 30, 0.22);
+
+  --nm-up: 4px 4px 10px var(--nm-shd), -3px -3px 8px var(--nm-shl);
+  --nm-up-sm: 3px 3px 8px var(--nm-shd), -2px -2px 5px var(--nm-shl);
+  --nm-up-xs: 2px 2px 5px var(--nm-shd), -1px -1px 4px var(--nm-shl);
+  --nm-dn: inset 3px 3px 8px var(--nm-shd), inset -2px -2px 6px var(--nm-shl);
+  --nm-dn-sm: inset 2px 2px 5px var(--nm-shd), inset -1px -1px 4px var(--nm-shl);
+  --nm-dn-xs: inset 1px 1px 4px var(--nm-shd), inset -1px -1px 3px var(--nm-shl);
+
+  --nm-text: #ede0c8;
+  --nm-muted: #8a7860;
+  --nm-faint: #5a5040;
+
+  --nm-accent: #b86828;
+  --nm-green: #3a7838;
+  --nm-red: #b02818;
+  --nm-blue: #2858a0;
+
+  --nm-on-accent: #fff0dc;
+  --nm-on-green: #f0faf0;
+  --nm-on-red: #fff0dc;
+  --nm-on-blue: #e0eaff;
+
+  --nm-border: rgba(255, 240, 200, 0.1);
+  --nm-scroll: rgba(180, 150, 100, 0.3);
+}
+
+/* ─────────────────────────────────────────────
+   RESETS GLOBAUX (tous thèmes)
+───────────────────────────────────────────── */
+html,
+body,
+#root {
+  background-color: var(--nm-bg);
+  color: var(--nm-text);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+button:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none !important;
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--nm-scroll) transparent;
+}
+*::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--nm-scroll);
+  border-radius: 10px;
+}

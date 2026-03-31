@@ -771,3 +771,147 @@ select:focus {
   background: var(--nm-border);
   border-radius: 10px;
 }
+/*
+  ═══════════════════════════════════════════════════════
+  EUTHYMIA — STYLE NEUMORPHIQUE DASHBOARD
+  Palette ivoireChaud uniquement — tous modes
+
+  À coller à la FIN de theme-ivoire-chaud.css
+  APRÈS le bloc nm-themes.css déjà présent.
+  ═══════════════════════════════════════════════════════
+*/
+
+/* ─── FOND GÉNÉRAL ───────────────────────────────────── */
+[data-palette="ivoireChaud"] .bg-background,
+[data-palette="ivoireChaud"] #root > div {
+  background-color: var(--nm-bg) !important;
+}
+
+/* ─── CARDS → neumorphiques raised ───────────────────── */
+[data-palette="ivoireChaud"] .bg-card,
+[data-palette="ivoireChaud"] [class*="bg-card"] {
+  background-color: var(--nm-bg) !important;
+  border: none !important;
+  box-shadow: var(--nm-up) !important;
+  backdrop-filter: none !important;
+}
+
+/* ─── CARD HOVER ─────────────────────────────────────── */
+[data-palette="ivoireChaud"] .shadow-lg {
+  box-shadow: var(--nm-up) !important;
+}
+
+/* ─── BORDURES → invisibles en nm ───────────────────── */
+[data-palette="ivoireChaud"] [class*="border-border"] {
+  border-color: var(--nm-border) !important;
+}
+
+/* ─── MUTED → fond inset pour les zones secondaires ──── */
+[data-palette="ivoireChaud"] .bg-muted,
+[data-palette="ivoireChaud"] [class*="bg-muted/"] {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-dn-xs) !important;
+}
+
+/* ─── PROGRESS BAR ───────────────────────────────────── */
+[data-palette="ivoireChaud"] [role="progressbar"] {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-dn-xs) !important;
+  border-radius: 100px !important;
+  overflow: hidden;
+}
+[data-palette="ivoireChaud"] [role="progressbar"] > div {
+  background-color: var(--nm-green) !important;
+  border-radius: 100px !important;
+}
+
+/* ─── BADGES PRIORITÉ ────────────────────────────────── */
+[data-palette="ivoireChaud"] .bg-destructive\/10 {
+  background-color: rgba(122, 30, 14, 0.1) !important;
+}
+[data-palette="ivoireChaud"] .text-destructive {
+  color: var(--nm-red) !important;
+}
+
+/* ─── TEXTES ─────────────────────────────────────────── */
+[data-palette="ivoireChaud"] .text-foreground {
+  color: var(--nm-text) !important;
+}
+[data-palette="ivoireChaud"] .text-muted-foreground {
+  color: var(--nm-muted) !important;
+}
+[data-palette="ivoireChaud"] .text-primary {
+  color: var(--nm-accent) !important;
+}
+
+/* ─── BOUTONS HOVER ──────────────────────────────────── */
+[data-palette="ivoireChaud"] .hover\:bg-primary\/5:hover {
+  background-color: rgba(122, 69, 24, 0.06) !important;
+}
+[data-palette="ivoireChaud"] .hover\:bg-muted:hover {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-dn-xs) !important;
+}
+
+/* ─── RECHARTS ───────────────────────────────────────── */
+[data-palette="ivoireChaud"] .recharts-wrapper {
+  filter: none !important;
+}
+[data-palette="ivoireChaud"] .recharts-cartesian-grid line {
+  stroke: var(--nm-border) !important;
+}
+[data-palette="ivoireChaud"] .recharts-text {
+  fill: var(--nm-muted) !important;
+}
+
+/* ─── SCROLLBAR ──────────────────────────────────────── */
+[data-palette="ivoireChaud"] ::-webkit-scrollbar-thumb {
+  background: var(--nm-border) !important;
+}
+
+/* ─── STAT TILES (chiffres dashboard) ───────────────── */
+[data-palette="ivoireChaud"] .rounded-xl,
+[data-palette="ivoireChaud"] .rounded-lg {
+  border-radius: 14px !important;
+}
+
+/* ─── INPUT / SEARCH ─────────────────────────────────── */
+[data-palette="ivoireChaud"] input,
+[data-palette="ivoireChaud"] textarea,
+[data-palette="ivoireChaud"] select {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-dn-sm) !important;
+  border-color: transparent !important;
+  color: var(--nm-text) !important;
+}
+[data-palette="ivoireChaud"] input::placeholder,
+[data-palette="ivoireChaud"] textarea::placeholder {
+  color: var(--nm-muted) !important;
+}
+
+/* ─── HEADER / NAV BAR ───────────────────────────────── */
+[data-palette="ivoireChaud"] header.border-b {
+  background-color: var(--nm-bg) !important;
+  border-bottom-color: var(--nm-border) !important;
+  box-shadow: 0 2px 8px var(--nm-shd) !important;
+}
+
+/* ─── VIEW TABS (Dashboard/Kanban/etc.) ──────────────── */
+[data-palette="ivoireChaud"] .bg-muted\/50 {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-dn-sm) !important;
+  padding: 3px !important;
+  border-radius: 10px !important;
+}
+[data-palette="ivoireChaud"] .bg-background.shadow-sm {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-up-xs) !important;
+  border-radius: 7px !important;
+}
+
+/* ─── SIDEBAR ────────────────────────────────────────── */
+[data-palette="ivoireChaud"] aside,
+[data-palette="ivoireChaud"] [data-sidebar] {
+  background-color: var(--nm-bg) !important;
+  border-right-color: var(--nm-border) !important;
+}

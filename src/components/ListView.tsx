@@ -210,17 +210,13 @@ export default function ListView() {
 
     return (
       <React.Fragment key={task.id}>
-        <motion.tr
-          initial={{ opacity: 0, x: -8 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, transition: { duration: 0.12 } }}
-          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-          className="border-b border-border hover:bg-muted/50 transition-colors cursor-pointer group"
+        <tr
+          className="border-b border-border hover:bg-muted/50 transition-colors cursor-pointer group animate-in fade-in slide-in-from-left-2 duration-200"
           draggable
           onDragStart={e => {
-            (e as unknown as React.DragEvent).dataTransfer.setData('type', 'task');
-            (e as unknown as React.DragEvent).dataTransfer.setData('taskId', task.id);
-            (e as unknown as React.DragEvent).dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('type', 'task');
+            e.dataTransfer.setData('taskId', task.id);
+            e.dataTransfer.effectAllowed = 'move';
           }}
           onClick={() => setSelectedTaskId(task.id)}
         >
@@ -267,7 +263,7 @@ export default function ListView() {
               </span>
             ) : <span className="text-foreground/40 text-sm">—</span>}
           </td>
-        </motion.tr>
+        </tr>
         {isExpanded && subtasks.map(st => renderRow(st, depth + 1))}
       </React.Fragment>
     );

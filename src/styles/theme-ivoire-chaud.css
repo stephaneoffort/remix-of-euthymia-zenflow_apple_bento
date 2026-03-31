@@ -1,0 +1,180 @@
+/* ═══════════════════════════════════════════════════════
+   EUTHYMIA — Ivoire Chaud
+   Crème doré · Terre cuite · Chaleur naturelle
+   ═══════════════════════════════════════════════════════
+   
+   Palette warm ivory : tons crème/ivoire en fond,
+   accents terre cuite et or bruni.
+   Contraste WCAG AA ≥ 4.5:1 sur tous les modes.
+   ═══════════════════════════════════════════════════════ */
+
+/* ─── DARK MODE ─── */
+[data-palette="ivoireChaud"] {
+  --background: 32 18% 6%;
+  --foreground: 36 22% 90%;
+  --card: 32 16% 9%;
+  --card-foreground: 36 22% 90%;
+  --popover: 32 18% 7%;
+  --popover-foreground: 36 22% 90%;
+  --primary: 24 72% 50%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 32 12% 14%;
+  --secondary-foreground: 36 14% 68%;
+  --muted: 32 10% 12%;
+  --muted-foreground: 34 8% 68%;
+  --accent: 38 40% 16%;
+  --accent-foreground: 38 50% 72%;
+  --destructive: 0 68% 52%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 32 12% 16%;
+  --input: 32 12% 14%;
+  --ring: 24 72% 50%;
+
+  /* Sidebar — ancrage sombre */
+  --sidebar-bg: 32 20% 4%;
+  --sidebar-fg: 36 10% 72%;
+  --sidebar-fg-bright: 36 18% 90%;
+  --sidebar-hover: 32 14% 10%;
+  --sidebar-active: 24 72% 50%;
+  --sidebar-active-fg: 0 0% 100%;
+  --sidebar-border: 32 12% 12%;
+  --sidebar-background: 32 20% 4%;
+  --sidebar-foreground: 36 10% 78%;
+  --sidebar-primary: 24 72% 50%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 32 14% 10%;
+  --sidebar-accent-foreground: 36 18% 90%;
+  --sidebar-ring: 24 72% 50%;
+
+  /* Priorités & statuts */
+  --priority-urgent: 0 72% 56%;
+  --priority-high: 24 80% 54%;
+  --priority-normal: 38 50% 52%;
+  --priority-low: 34 16% 52%;
+  --status-todo: 34 12% 52%;
+  --status-progress: 200 65% 50%;
+  --status-review: 38 60% 52%;
+  --status-done: 152 55% 42%;
+  --status-blocked: 0 60% 50%;
+
+  /* Bento */
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(194, 120, 56, 0.06);
+  --bento-border: rgba(194, 120, 56, 0.10);
+  --bento-border-h: rgba(194, 120, 56, 0.20);
+  --bento-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(194, 120, 56, 0.06);
+}
+
+/* ─── LIGHT MODE ─── */
+[data-palette="ivoireChaud"].light {
+  --background: 38 38% 96%;
+  --foreground: 28 18% 14%;
+  --card: 38 32% 98%;
+  --card-foreground: 28 18% 14%;
+  --popover: 38 32% 97%;
+  --popover-foreground: 28 18% 14%;
+  --primary: 24 68% 40%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 36 20% 90%;
+  --secondary-foreground: 28 12% 36%;
+  --muted: 36 16% 92%;
+  --muted-foreground: 28 10% 42%;
+  --accent: 38 30% 86%;
+  --accent-foreground: 24 50% 28%;
+  --destructive: 0 68% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 36 18% 84%;
+  --input: 36 18% 87%;
+  --ring: 24 68% 42%;
+
+  /* Sidebar — clair chaud */
+  --sidebar-bg: 38 30% 94%;
+  --sidebar-fg: 28 10% 32%;
+  --sidebar-fg-bright: 28 18% 14%;
+  --sidebar-hover: 36 20% 90%;
+  --sidebar-active: 24 72% 50%;
+  --sidebar-active-fg: 0 0% 100%;
+  --sidebar-border: 36 18% 84%;
+  --sidebar-background: 38 30% 94%;
+  --sidebar-foreground: 28 10% 30%;
+  --sidebar-primary: 24 72% 50%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 36 20% 90%;
+  --sidebar-accent-foreground: 28 18% 14%;
+  --sidebar-ring: 24 72% 50%;
+
+  /* Priorités & statuts */
+  --priority-urgent: 0 72% 48%;
+  --priority-high: 24 76% 44%;
+  --priority-normal: 38 44% 42%;
+  --priority-low: 34 12% 50%;
+  --status-todo: 34 10% 50%;
+  --status-progress: 200 60% 42%;
+  --status-review: 38 55% 42%;
+  --status-done: 152 50% 34%;
+  --status-blocked: 0 55% 46%;
+
+  /* Bento */
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(194, 120, 56, 0.04);
+  --bento-border: rgba(0, 0, 0, 0.06);
+  --bento-border-h: rgba(0, 0, 0, 0.12);
+  --bento-shadow: 0 8px 32px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+/* ─── MIXED MODE — contenu clair + sidebar sombre ─── */
+[data-palette="ivoireChaud"].mixed {
+  --background: 38 38% 96%;
+  --foreground: 28 18% 14%;
+  --card: 38 32% 98%;
+  --card-foreground: 28 18% 14%;
+  --popover: 38 32% 97%;
+  --popover-foreground: 28 18% 14%;
+  --primary: 24 68% 40%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 36 20% 90%;
+  --secondary-foreground: 28 12% 36%;
+  --muted: 36 16% 92%;
+  --muted-foreground: 28 10% 42%;
+  --accent: 38 30% 86%;
+  --accent-foreground: 24 50% 28%;
+  --destructive: 0 68% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 36 18% 84%;
+  --input: 36 18% 87%;
+  --ring: 24 68% 42%;
+
+  /* Sidebar — reste sombre */
+  --sidebar-bg: 32 20% 4%;
+  --sidebar-fg: 36 10% 72%;
+  --sidebar-fg-bright: 36 18% 90%;
+  --sidebar-hover: 32 14% 10%;
+  --sidebar-active: 24 72% 50%;
+  --sidebar-active-fg: 0 0% 100%;
+  --sidebar-border: 32 12% 12%;
+  --sidebar-background: 32 20% 4%;
+  --sidebar-foreground: 36 10% 78%;
+  --sidebar-primary: 24 72% 50%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 32 14% 10%;
+  --sidebar-accent-foreground: 36 18% 90%;
+  --sidebar-ring: 24 72% 50%;
+
+  /* Priorités & statuts */
+  --priority-urgent: 0 72% 48%;
+  --priority-high: 24 76% 44%;
+  --priority-normal: 38 44% 42%;
+  --priority-low: 34 12% 50%;
+  --status-todo: 34 10% 50%;
+  --status-progress: 200 60% 42%;
+  --status-review: 38 55% 42%;
+  --status-done: 152 50% 34%;
+  --status-blocked: 0 55% 46%;
+
+  /* Bento */
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(194, 120, 56, 0.04);
+  --bento-border: rgba(0, 0, 0, 0.06);
+  --bento-border-h: rgba(0, 0, 0, 0.12);
+  --bento-shadow: 0 8px 32px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}

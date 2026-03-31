@@ -211,7 +211,7 @@ export default function ListView() {
     return (
       <React.Fragment key={task.id}>
         <tr
-          className="border-b border-border hover:bg-muted/50 transition-colors cursor-pointer group animate-in fade-in slide-in-from-left-2 duration-200"
+          className="border-b border-border hover:bg-accent/60 transition-colors cursor-pointer group animate-in fade-in slide-in-from-left-2 duration-200"
           draggable
           onDragStart={e => {
             e.dataTransfer.setData('type', 'task');

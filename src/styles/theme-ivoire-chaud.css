@@ -1406,3 +1406,106 @@ select:focus {
   border: none !important;
   border-radius: 12px !important;
 }
+/*
+  ═══════════════════════════════════════════════════════
+  EUTHYMIA — FIX GANTT NEUMORPHIQUE
+  À coller à la FIN de theme-ivoire-chaud.css
+  après nm-gantt.css (remplace les règles insuffisantes)
+  ═══════════════════════════════════════════════════════
+*/
+
+/* ─── FOND GLOBAL GANTT ──────────────────────────────── */
+[data-palette="ivoireChaud"] .flex.flex-col.h-full.overflow-hidden {
+  background-color: var(--nm-bg) !important;
+}
+
+/* ─── TIMELINE : fond ivoire ─────────────────────────── */
+[data-palette="ivoireChaud"] .flex-1.overflow-auto,
+[data-palette="ivoireChaud"] .flex-1.overflow-auto > div,
+[data-palette="ivoireChaud"] .relative.flex-1 {
+  background-color: var(--nm-bg) !important;
+}
+
+/* ─── TOUTES LES DIVS DE LA GRILLE ──────────────────── */
+[data-palette="ivoireChaud"] .absolute.left-0.right-0.border-b {
+  background-color: transparent !important;
+  border-bottom-color: var(--nm-border) !important;
+}
+[data-palette="ivoireChaud"] .absolute.left-0.right-0.border-b:nth-child(odd) {
+  background-color: rgba(140, 118, 88, 0.03) !important;
+}
+
+/* ─── HEADER TIMELINE (dates) ────────────────────────── */
+[data-palette="ivoireChaud"] .sticky.top-0 {
+  background-color: var(--nm-bg) !important;
+  border-bottom-color: var(--nm-border) !important;
+  box-shadow: 0 2px 8px var(--nm-shd) !important;
+}
+[data-palette="ivoireChaud"] .sticky.top-0 > div {
+  border-right-color: var(--nm-border) !important;
+  color: var(--nm-muted) !important;
+}
+
+/* ─── COLONNE LISTE GAUCHE ───────────────────────────── */
+[data-palette="ivoireChaud"] .shrink-0.border-r {
+  background-color: var(--nm-bg) !important;
+  border-right-color: var(--nm-border) !important;
+}
+
+/* ─── HEADER LISTE ───────────────────────────────────── */
+[data-palette="ivoireChaud"] .shrink-0.border-r .h-12 {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-dn-xs) !important;
+  border-bottom-color: var(--nm-border) !important;
+  color: var(--nm-muted) !important;
+}
+
+/* ─── LIGNES TÂCHES LISTE ────────────────────────────── */
+[data-palette="ivoireChaud"] .shrink-0.border-r .overflow-y-auto > div {
+  border-bottom-color: var(--nm-border) !important;
+  background-color: transparent !important;
+  color: var(--nm-text) !important;
+}
+[data-palette="ivoireChaud"] .shrink-0.border-r .overflow-y-auto > div:hover {
+  background-color: rgba(122, 69, 24, 0.05) !important;
+}
+
+/* ─── LIGNE AUJOURD'HUI (rouge → vert) ───────────────── */
+[data-palette="ivoireChaud"] .absolute.top-0.bottom-0.w-0\.5.bg-destructive {
+  background-color: var(--nm-green) !important;
+  opacity: 0.7 !important;
+}
+[data-palette="ivoireChaud"] .absolute.top-0.bottom-0.w-px.bg-destructive {
+  background-color: var(--nm-green) !important;
+  opacity: 0.7 !important;
+}
+
+/* ─── BARRES GANTT ───────────────────────────────────── */
+[data-palette="ivoireChaud"] .absolute.rounded-md.cursor-pointer {
+  box-shadow: 2px 2px 6px rgba(140, 118, 88, 0.4) !important;
+  border-radius: 8px !important;
+}
+
+/* ─── TOOLBAR GANTT ──────────────────────────────────── */
+[data-palette="ivoireChaud"] .flex.items-center.gap-2.px-4.py-2.border-b {
+  background-color: var(--nm-bg) !important;
+  border-bottom-color: var(--nm-border) !important;
+}
+
+/* ─── LÉGENDE BAS ────────────────────────────────────── */
+[data-palette="ivoireChaud"] .flex.items-center.gap-4.px-4.py-1\.5.border-t {
+  background-color: var(--nm-bg) !important;
+  border-top-color: var(--nm-border) !important;
+  color: var(--nm-muted) !important;
+}
+
+/* ─── SÉPARATEUR VERTICAL COLONNES ──────────────────── */
+[data-palette="ivoireChaud"] .border-r.border-border\/30 {
+  border-right-color: var(--nm-border) !important;
+  opacity: 0.6 !important;
+}
+
+/* ─── WEEKENDS ───────────────────────────────────────── */
+[data-palette="ivoireChaud"] .bg-muted\/20 {
+  background-color: rgba(140, 118, 88, 0.05) !important;
+}

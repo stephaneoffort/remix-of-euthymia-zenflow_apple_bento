@@ -1020,3 +1020,103 @@ select:focus {
   background-color: var(--nm-bg) !important;
   box-shadow: var(--nm-dn-xs) !important;
 }
+/*
+  ═══════════════════════════════════════════════════════
+  EUTHYMIA — STYLE NEUMORPHIQUE LISTE
+  À coller à la FIN de theme-ivoire-chaud.css
+  après nm-kanban.css
+  ═══════════════════════════════════════════════════════
+*/
+
+/* ─── FOND LISTE ─────────────────────────────────────── */
+[data-palette="ivoireChaud"] .p-3.overflow-auto.h-full.space-y-2 {
+  background-color: var(--nm-bg) !important;
+}
+
+/* ─── CARTES TÂCHES ──────────────────────────────────── */
+[data-palette="ivoireChaud"] .space-y-2 > div.rounded-lg,
+[data-palette="ivoireChaud"] .space-y-2 > motion-div {
+  background-color: var(--nm-bg) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--nm-up-xs) !important;
+  border: none !important;
+  transition: box-shadow 0.15s ease !important;
+}
+[data-palette="ivoireChaud"] .space-y-2 > div.rounded-lg:hover {
+  box-shadow: var(--nm-up-sm) !important;
+}
+
+/* ─── CARTE AVEC BORDURE GAUCHE RETARD ───────────────── */
+[data-palette="ivoireChaud"] .border-l-destructive,
+[data-palette="ivoireChaud"] [class*="border-l-2"] {
+  border-left-width: 3px !important;
+}
+
+/* ─── SOUS-TÂCHES INDENTÉES ──────────────────────────── */
+[data-palette="ivoireChaud"] .pl-6 > div.rounded-lg,
+[data-palette="ivoireChaud"] .pl-8 > div.rounded-lg {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-dn-xs) !important;
+  border-radius: 10px !important;
+  border: none !important;
+}
+
+/* ─── INPUT AJOUT TÂCHE ──────────────────────────────── */
+[data-palette="ivoireChaud"] .bg-card.rounded-lg.border.border-border {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-dn-sm) !important;
+  border: none !important;
+  border-radius: 12px !important;
+}
+
+/* ─── BOUTON AJOUTER ─────────────────────────────────── */
+[data-palette="ivoireChaud"] .border-dashed.border-border {
+  background-color: var(--nm-bg) !important;
+  border: 1.5px dashed var(--nm-border) !important;
+  box-shadow: none !important;
+  color: var(--nm-muted) !important;
+  border-radius: 10px !important;
+}
+[data-palette="ivoireChaud"] .border-dashed.border-border:hover {
+  box-shadow: var(--nm-dn-xs) !important;
+  border-color: var(--nm-accent) !important;
+  color: var(--nm-accent) !important;
+}
+
+/* ─── BOUTON AJOUTER (primaire) ──────────────────────── */
+[data-palette="ivoireChaud"] .bg-primary.text-primary-foreground {
+  background-color: var(--nm-green) !important;
+  color: var(--nm-on-green) !important;
+  box-shadow: 3px 3px 7px rgba(20, 50, 20, 0.4) !important;
+  border-radius: 7px !important;
+}
+[data-palette="ivoireChaud"] .bg-primary.text-primary-foreground:hover {
+  opacity: 0.92 !important;
+}
+
+/* ─── EN-TÊTES GROUPES (tri par statut/priorité) ─────── */
+[data-palette="ivoireChaud"] .sticky.top-0 {
+  background-color: var(--nm-bg) !important;
+  border-bottom: 1px solid var(--nm-border) !important;
+}
+
+/* ─── BADGE CHEVRON EXPAND ───────────────────────────── */
+[data-palette="ivoireChaud"] .hover\:bg-muted.rounded {
+  background-color: transparent !important;
+}
+[data-palette="ivoireChaud"] .hover\:bg-muted.rounded:hover {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-dn-xs) !important;
+}
+
+/* ─── TRI / SORT BUTTON ──────────────────────────────── */
+[data-palette="ivoireChaud"] button:has(.lucide-arrow-up-down) {
+  background-color: var(--nm-bg) !important;
+  box-shadow: var(--nm-up-xs) !important;
+  border-radius: 8px !important;
+  border: none !important;
+  color: var(--nm-text) !important;
+}
+[data-palette="ivoireChaud"] button:has(.lucide-arrow-up-down):hover {
+  box-shadow: var(--nm-dn-xs) !important;
+}

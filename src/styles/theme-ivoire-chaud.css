@@ -630,3 +630,144 @@ select:focus {
   box-sizing: border-box;
   transition-timing-function: ease;
 }
+/*
+  ═══════════════════════════════════════════════════════
+  EUTHYMIA — VARIABLES NEUMORPHIQUES
+  
+  À coller à la FIN de theme-ivoire-chaud.css dans Lovable.
+  
+  Ces variables répondent aux classes .light / .dark / .mixed
+  appliquées sur <html> par le ThemeProvider existant,
+  ET à data-palette="ivoireChaud" pour la palette active.
+  ═══════════════════════════════════════════════════════
+*/
+
+/* ─── PALETTE IVOIRE CHAUD — MODE CLAIR ─────────────────── */
+[data-palette="ivoireChaud"].light,
+[data-palette="ivoireChaud"]:not(.dark):not(.mixed) {
+  --nm-bg: #ede6da;
+  --nm-shd: rgba(140, 118, 88, 0.45);
+  --nm-shl: rgba(255, 250, 242, 0.88);
+  --nm-text: #1a1208;
+  --nm-muted: #5a5040;
+  --nm-faint: #8a7060;
+  --nm-accent: #7a4518;
+  --nm-green: #2a5828;
+  --nm-red: #7a1e0e;
+  --nm-blue: #1e4878;
+  --nm-on-accent: #fff0dc;
+  --nm-on-green: #f0faf0;
+  --nm-on-red: #fff0dc;
+  --nm-on-blue: #e0eaff;
+  --nm-border: rgba(140, 118, 88, 0.15);
+}
+
+/* ─── PALETTE IVOIRE CHAUD — MODE SOMBRE ────────────────── */
+[data-palette="ivoireChaud"].dark {
+  --nm-bg: #1c1710;
+  --nm-shd: rgba(0, 0, 0, 0.55);
+  --nm-shl: rgba(70, 52, 28, 0.3);
+  --nm-text: #f0e8d8;
+  --nm-muted: #9a8870;
+  --nm-faint: #6a5e50;
+  --nm-accent: #c47a38;
+  --nm-green: #4a8848;
+  --nm-red: #c03820;
+  --nm-blue: #3868a8;
+  --nm-on-accent: #fff0dc;
+  --nm-on-green: #f0faf0;
+  --nm-on-red: #fff0dc;
+  --nm-on-blue: #e0eaff;
+  --nm-border: rgba(255, 240, 200, 0.08);
+}
+
+/* ─── PALETTE IVOIRE CHAUD — MODE MIXTE ─────────────────── */
+[data-palette="ivoireChaud"].mixed {
+  --nm-bg: #2e2518;
+  --nm-shd: rgba(0, 0, 0, 0.48);
+  --nm-shl: rgba(80, 60, 30, 0.22);
+  --nm-text: #ede0c8;
+  --nm-muted: #8a7860;
+  --nm-faint: #5a5040;
+  --nm-accent: #b86828;
+  --nm-green: #3a7838;
+  --nm-red: #b02818;
+  --nm-blue: #2858a0;
+  --nm-on-accent: #fff0dc;
+  --nm-on-green: #f0faf0;
+  --nm-on-red: #fff0dc;
+  --nm-on-blue: #e0eaff;
+  --nm-border: rgba(255, 240, 200, 0.1);
+}
+
+/* ─── TOUTES LES AUTRES PALETTES — FALLBACK ─────────────── */
+/* Pour nmSand, nmCloud, sapphire etc. — on hérite du fond Shadcn */
+:not([data-palette="ivoireChaud"]).light,
+:not([data-palette="ivoireChaud"]):not(.dark):not(.mixed) {
+  --nm-bg: hsl(var(--background));
+  --nm-shd: rgba(0, 0, 0, 0.12);
+  --nm-shl: rgba(255, 255, 255, 0.8);
+  --nm-text: hsl(var(--foreground));
+  --nm-muted: hsl(var(--muted-foreground));
+  --nm-faint: hsl(var(--muted-foreground));
+  --nm-accent: hsl(var(--primary));
+  --nm-green: hsl(var(--primary));
+  --nm-red: hsl(var(--destructive));
+  --nm-blue: hsl(var(--primary));
+  --nm-on-accent: hsl(var(--primary-foreground));
+  --nm-on-green: hsl(var(--primary-foreground));
+  --nm-on-red: hsl(var(--destructive-foreground));
+  --nm-on-blue: hsl(var(--primary-foreground));
+  --nm-border: hsl(var(--border));
+}
+
+:not([data-palette="ivoireChaud"]).dark {
+  --nm-bg: hsl(var(--background));
+  --nm-shd: rgba(0, 0, 0, 0.45);
+  --nm-shl: rgba(255, 255, 255, 0.05);
+  --nm-text: hsl(var(--foreground));
+  --nm-muted: hsl(var(--muted-foreground));
+  --nm-faint: hsl(var(--muted-foreground));
+  --nm-accent: hsl(var(--primary));
+  --nm-green: hsl(var(--primary));
+  --nm-red: hsl(var(--destructive));
+  --nm-blue: hsl(var(--primary));
+  --nm-on-accent: hsl(var(--primary-foreground));
+  --nm-on-green: hsl(var(--primary-foreground));
+  --nm-on-red: hsl(var(--destructive-foreground));
+  --nm-on-blue: hsl(var(--primary-foreground));
+  --nm-border: hsl(var(--border));
+}
+
+/* ─── SHADOWS PRÉCOMPILÉES ───────────────────────────────── */
+:root {
+  --nm-up: 4px 4px 10px var(--nm-shd), -4px -4px 10px var(--nm-shl);
+  --nm-up-sm: 3px 3px 8px var(--nm-shd), -3px -3px 8px var(--nm-shl);
+  --nm-up-xs: 2px 2px 5px var(--nm-shd), -2px -2px 5px var(--nm-shl);
+  --nm-dn: inset 3px 3px 8px var(--nm-shd), inset -3px -3px 8px var(--nm-shl);
+  --nm-dn-sm: inset 2px 2px 5px var(--nm-shd), inset -2px -2px 5px var(--nm-shl);
+  --nm-dn-xs: inset 1px 1px 4px var(--nm-shd), inset -1px -1px 4px var(--nm-shl);
+}
+
+/* ─── RESETS GLOBAUX ─────────────────────────────────────── */
+button:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none !important;
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--nm-border, rgba(140, 118, 88, 0.3)) transparent;
+}
+*::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--nm-border);
+  border-radius: 10px;
+}

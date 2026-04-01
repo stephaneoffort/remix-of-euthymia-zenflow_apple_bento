@@ -534,7 +534,7 @@ export default function DashboardViewNM() {
               const next = new Date(d);
               next.setDate(next.getDate() + 1);
               return all.filter((t) => {
-                const u = new Date(t.updatedAt ?? t.createdAt);
+                const u = new Date(t.createdAt);
                 return u >= d && u < next;
               }).length;
             });

@@ -26,7 +26,7 @@ const C = {
 
 /* ─── Sub-components ─── */
 const Lbl = ({ children }: { children: React.ReactNode }) => (
-  <div style={{ fontSize: 8, letterSpacing: 2, textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>
+  <div style={{ fontSize: 11, letterSpacing: 2, textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>
     {children}
   </div>
 );
@@ -51,9 +51,9 @@ const Tag = ({ children }: { children: React.ReactNode }) => (
       background: BG,
       borderRadius: 4,
       boxShadow: pill,
-      fontSize: 8,
+      fontSize: 11,
       fontWeight: 500,
-      padding: "1px 5px",
+      padding: "2px 7px",
       color: C.muted,
     }}
   >
@@ -161,12 +161,12 @@ export default function DashboardViewNM() {
             >
               Bonjour, <em style={{ color: C.orange, fontStyle: "italic" }}>{firstName}</em>
             </div>
-            <div style={{ fontSize: 10, color: C.orange, marginTop: 4 }}>{stats.pending} tâches en attente</div>
+            <div style={{ fontSize: 13, color: C.orange, marginTop: 4 }}>{stats.pending} tâches en attente</div>
             <div style={{ marginTop: 10 }}>
               <div style={{ height: 5, borderRadius: 3, background: BG, boxShadow: barIn, overflow: "hidden" }}>
                 <div style={{ width: `${stats.pct}%`, height: "100%", background: C.green, borderRadius: 3 }} />
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 8, color: C.light, marginTop: 3 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.light, marginTop: 3 }}>
                 <span>0</span>
                 <span>{stats.pct}% · {stats.done}/{stats.total}</span>
                 <span>{stats.total}</span>
@@ -181,7 +181,7 @@ export default function DashboardViewNM() {
               <div style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300, fontSize: 36, color: C.text, lineHeight: 1 }}>
                 {stats.pending}
               </div>
-              <div style={{ fontSize: 8, color: C.light, marginTop: 2 }}>en attente</div>
+              <div style={{ fontSize: 11, color: C.light, marginTop: 2 }}>en attente</div>
               <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 4 }}>
                 {[
                   { label: "Urgentes", count: stats.urgent, color: C.orange },
@@ -190,8 +190,8 @@ export default function DashboardViewNM() {
                 ].map(({ label, count, color }) => (
                   <div key={label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
                     <Dot color={color} />
-                    <span style={{ fontSize: 9, color: C.muted, flex: 1 }}>{label}</span>
-                    <span style={{ fontSize: 12, color: C.text, fontWeight: 500 }}>{count}</span>
+                    <span style={{ fontSize: 12, color: C.muted, flex: 1 }}>{label}</span>
+                    <span style={{ fontSize: 14, color: C.text, fontWeight: 500 }}>{count}</span>
                   </div>
                 ))}
               </div>
@@ -209,7 +209,7 @@ export default function DashboardViewNM() {
                   strokeDasharray={stats.circ} strokeDashoffset={stats.offset}
                   strokeLinecap="round" transform="rotate(-90 24 24)" />
               </svg>
-              <div style={{ fontSize: 8, color: C.light, marginTop: 3 }}>{stats.done} / {stats.total}</div>
+              <div style={{ fontSize: 11, color: C.light, marginTop: 3 }}>{stats.done} / {stats.total}</div>
             </Tile>
           </div>
 
@@ -217,18 +217,18 @@ export default function DashboardViewNM() {
           <Tile>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 14px 7px", borderBottom: "1px solid rgba(160,140,108,0.1)" }}>
               <Lbl>À traiter</Lbl>
-              <span style={{ background: BG, borderRadius: 100, boxShadow: pill, fontSize: 9, fontWeight: 500, padding: "2px 8px", color: C.orange }}>
+              <span style={{ background: BG, borderRadius: 100, boxShadow: pill, fontSize: 12, fontWeight: 500, padding: "3px 10px", color: C.orange }}>
                 {stats.urgent} urgentes
               </span>
             </div>
             {urgentTasks.length === 0 ? (
-              <div style={{ padding: "12px 14px", fontSize: 10, color: C.light }}>Aucune tâche urgente 🎉</div>
+              <div style={{ padding: "12px 14px", fontSize: 13, color: C.light }}>Aucune tâche urgente 🎉</div>
             ) : (
               urgentTasks.map((t) => (
                 <div key={t.id} onClick={() => setSelectedTaskId(t.id)}
                   style={{ display: "flex", alignItems: "center", gap: 7, padding: "8px 14px", borderLeft: `2px solid ${statusColor(t.status)}`, cursor: "pointer" }}>
-                  <span style={{ fontSize: 11, color: C.text, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.title}</span>
-                  <span style={{ fontSize: 9, color: C.red, fontWeight: 500 }}>{daysLabel(t.dueDate)}</span>
+                  <span style={{ fontSize: 14, color: C.text, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.title}</span>
+                   <span style={{ fontSize: 12, color: C.red, fontWeight: 500 }}>{daysLabel(t.dueDate)}</span>
                 </div>
               ))
             )}
@@ -240,14 +240,14 @@ export default function DashboardViewNM() {
               <Lbl>Prochaines échéances</Lbl>
             </div>
             {deadlines.length === 0 ? (
-              <div style={{ padding: "12px 14px", fontSize: 10, color: C.light }}>Aucune échéance à venir</div>
+              <div style={{ padding: "12px 14px", fontSize: 13, color: C.light }}>Aucune échéance à venir</div>
             ) : (
               deadlines.map((t, i) => (
                 <div key={t.id} onClick={() => setSelectedTaskId(t.id)}
                   style={{ display: "flex", alignItems: "center", gap: 7, padding: "8px 14px", borderBottom: i < deadlines.length - 1 ? "1px solid rgba(160,140,108,0.08)" : "none", cursor: "pointer" }}>
                   <Dot color={statusColor(t.status)} />
-                  <span style={{ fontSize: 11, color: C.text, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.title}</span>
-                  <span style={{ fontSize: 9, color: statusColor(t.status), fontWeight: 500, whiteSpace: "nowrap" }}>{daysLabel(t.dueDate)}</span>
+                   <span style={{ fontSize: 14, color: C.text, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.title}</span>
+                   <span style={{ fontSize: 12, color: statusColor(t.status), fontWeight: 500, whiteSpace: "nowrap" }}>{daysLabel(t.dueDate)}</span>
                 </div>
               ))
             )}
@@ -258,7 +258,7 @@ export default function DashboardViewNM() {
             <Lbl>Équipe</Lbl>
             <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 8 }}>
               {teamMembers.length === 0 ? (
-                <div style={{ fontSize: 9, color: C.light }}>—</div>
+                 <div style={{ fontSize: 12, color: C.light }}>—</div>
               ) : (
                 teamMembers.map((m, i) => {
                   const initials = (m.name ?? m.email ?? "?").split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
@@ -268,16 +268,16 @@ export default function DashboardViewNM() {
                   const taskLabel = mc ? `${mc.done}/${mc.total}` : "0/0";
                   return (
                     <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: "50%", background: BG, boxShadow: pillMd, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 500, color: colors[i], flexShrink: 0 }}>
+                      <div style={{ width: 32, height: 32, borderRadius: "50%", background: BG, boxShadow: pillMd, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 500, color: colors[i], flexShrink: 0 }}>
                         {initials}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 10, color: C.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{m.name ?? m.email}</div>
+                        <div style={{ fontSize: 13, color: C.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{m.name ?? m.email}</div>
                         <div style={{ height: 3, background: BG, borderRadius: 2, boxShadow: barIn, marginTop: 3 }}>
                           <div style={{ height: 3, borderRadius: 2, background: colors[i], width: `${pct}%` }} />
                         </div>
                       </div>
-                      <span style={{ fontSize: 9, color: C.light, whiteSpace: "nowrap" }}>{taskLabel} · {pct}%</span>
+                      <span style={{ fontSize: 12, color: C.light, whiteSpace: "nowrap" }}>{taskLabel} · {pct}%</span>
                     </div>
                   );
                 })
@@ -316,13 +316,13 @@ export default function DashboardViewNM() {
             <br />
             <em style={{ color: C.orange, fontStyle: "italic" }}>{firstName}</em>
           </div>
-          <div style={{ fontSize: 10, color: C.orange, marginTop: 4 }}>{stats.pending} tâches en attente</div>
+          <div style={{ fontSize: 13, color: C.orange, marginTop: 4 }}>{stats.pending} tâches en attente</div>
           <div style={{ marginTop: 12 }}>
             <div style={{ height: 5, borderRadius: 3, background: BG, boxShadow: barIn, overflow: "hidden" }}>
               <div style={{ width: `${stats.pct}%`, height: "100%", background: C.green, borderRadius: 3 }} />
             </div>
             <div
-              style={{ display: "flex", justifyContent: "space-between", fontSize: 8, color: C.light, marginTop: 3 }}
+              style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.light, marginTop: 3 }}
             >
               <span>0</span>
               <span>
@@ -347,7 +347,7 @@ export default function DashboardViewNM() {
           >
             {stats.pending}
           </div>
-          <div style={{ fontSize: 8, color: C.light, marginTop: 2, letterSpacing: 0.5 }}>tâches en attente</div>
+          <div style={{ fontSize: 11, color: C.light, marginTop: 2, letterSpacing: 0.5 }}>tâches en attente</div>
           <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 6 }}>
             {[
               { label: "Urgentes", count: stats.urgent, color: C.orange },
@@ -367,8 +367,8 @@ export default function DashboardViewNM() {
                 }}
               >
                 <Dot color={color} />
-                <span style={{ fontSize: 9, color: C.muted, flex: 1 }}>{label}</span>
-                <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 15, color: C.text }}>{count}</span>
+                <span style={{ fontSize: 12, color: C.muted, flex: 1 }}>{label}</span>
+                <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 17, color: C.text }}>{count}</span>
               </div>
             ))}
           </div>
@@ -412,7 +412,7 @@ export default function DashboardViewNM() {
               transform="rotate(-90 24 24)"
             />
           </svg>
-          <div style={{ fontSize: 8, color: C.light, marginTop: 3 }}>
+          <div style={{ fontSize: 11, color: C.light, marginTop: 3 }}>
             {stats.done} / {stats.total}
           </div>
         </Tile>
@@ -434,9 +434,9 @@ export default function DashboardViewNM() {
                 background: BG,
                 borderRadius: 100,
                 boxShadow: pill,
-                fontSize: 9,
+                fontSize: 12,
                 fontWeight: 500,
-                padding: "2px 8px",
+                padding: "3px 10px",
                 color: C.orange,
               }}
             >
@@ -444,7 +444,7 @@ export default function DashboardViewNM() {
             </span>
           </div>
           {urgentTasks.length === 0 ? (
-            <div style={{ padding: "12px 14px", fontSize: 10, color: C.light }}>Aucune tâche urgente 🎉</div>
+            <div style={{ padding: "12px 14px", fontSize: 13, color: C.light }}>Aucune tâche urgente 🎉</div>
           ) : (
             urgentTasks.map((t) => (
               <div
@@ -461,8 +461,8 @@ export default function DashboardViewNM() {
               >
                 <span
                   style={{
-                    fontSize: 10,
-                    color: C.text,
+                  fontSize: 13,
+                  color: C.text,
                     flex: 1,
                     overflow: "hidden",
                     textOverflow: "ellipsis",
@@ -472,12 +472,12 @@ export default function DashboardViewNM() {
                   {t.title}
                 </span>
                 <Tag>{t.status}</Tag>
-                <span style={{ fontSize: 9, color: C.red, fontWeight: 500 }}>{daysLabel(t.dueDate)}</span>
+                <span style={{ fontSize: 12, color: C.red, fontWeight: 500 }}>{daysLabel(t.dueDate)}</span>
               </div>
             ))
           )}
           {stats.urgent > 4 && (
-            <div style={{ padding: "6px 14px", fontSize: 9, color: C.orange, cursor: "pointer" }}>
+            <div style={{ padding: "6px 14px", fontSize: 12, color: C.orange, cursor: "pointer" }}>
               + {stats.urgent - 4} autres urgentes →
             </div>
           )}
@@ -529,8 +529,8 @@ export default function DashboardViewNM() {
             ].map(({ label, count, color }) => (
               <div key={label} style={{ display: "flex", alignItems: "center", gap: 7 }}>
                 <Dot color={color} />
-                <span style={{ fontSize: 8, color: C.muted, flex: 1 }}>{label}</span>
-                <span style={{ fontSize: 8, color: C.text, fontWeight: 500 }}>{count}</span>
+                <span style={{ fontSize: 11, color: C.muted, flex: 1 }}>{label}</span>
+                <span style={{ fontSize: 11, color: C.text, fontWeight: 500 }}>{count}</span>
               </div>
             ))}
           </div>
@@ -541,7 +541,7 @@ export default function DashboardViewNM() {
           <Lbl>Équipe</Lbl>
           <div style={{ marginTop: 9, display: "flex", flexDirection: "column", gap: 9 }}>
             {teamMembers.length === 0 ? (
-              <div style={{ fontSize: 9, color: C.light }}>—</div>
+              <div style={{ fontSize: 12, color: C.light }}>—</div>
             ) : (
               teamMembers.map((m, i) => {
                 const initials = (m.name ?? m.email ?? "?")
@@ -566,7 +566,7 @@ export default function DashboardViewNM() {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        fontSize: 8,
+                        fontSize: 10,
                         fontWeight: 500,
                         color: colors[i],
                         flexShrink: 0,
@@ -577,7 +577,7 @@ export default function DashboardViewNM() {
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div
                         style={{
-                          fontSize: 9,
+                          fontSize: 12,
                           color: C.text,
                           whiteSpace: "nowrap",
                           overflow: "hidden",
@@ -590,7 +590,7 @@ export default function DashboardViewNM() {
                         <div style={{ height: 2, borderRadius: 1, background: colors[i], width: `${pct}%` }} />
                       </div>
                     </div>
-                    <span style={{ fontSize: 8, color: C.light, whiteSpace: "nowrap" }}>{taskLabel} · {pct}%</span>
+                    <span style={{ fontSize: 11, color: C.light, whiteSpace: "nowrap" }}>{taskLabel} · {pct}%</span>
                   </div>
                 );
               })
@@ -610,7 +610,7 @@ export default function DashboardViewNM() {
             }}
           >
             <Lbl>Prochaines échéances</Lbl>
-            <span style={{ fontSize: 9, color: C.orange, cursor: "pointer", fontWeight: 500 }}>Voir tout →</span>
+            <span style={{ fontSize: 12, color: C.orange, cursor: "pointer", fontWeight: 500 }}>Voir tout →</span>
           </div>
           {deadlines.map((t, i) => (
             <div
@@ -628,7 +628,7 @@ export default function DashboardViewNM() {
               <Dot color={statusColor(t.status)} />
               <span
                 style={{
-                  fontSize: 10,
+                  fontSize: 13,
                   color: C.text,
                   flex: 1,
                   overflow: "hidden",
@@ -639,13 +639,13 @@ export default function DashboardViewNM() {
                 {t.title}
               </span>
               <Tag>{t.status}</Tag>
-              <span style={{ fontSize: 9, color: statusColor(t.status), fontWeight: 500, whiteSpace: "nowrap" }}>
+              <span style={{ fontSize: 12, color: statusColor(t.status), fontWeight: 500, whiteSpace: "nowrap" }}>
                 {daysLabel(t.dueDate)}
               </span>
             </div>
           ))}
           {deadlines.length === 0 && (
-            <div style={{ padding: "12px 14px", fontSize: 10, color: C.light }}>Aucune échéance à venir</div>
+            <div style={{ padding: "12px 14px", fontSize: 13, color: C.light }}>Aucune échéance à venir</div>
           )}
         </Tile>
 
@@ -690,7 +690,7 @@ export default function DashboardViewNM() {
                   <polyline points={pts} fill="none" stroke={C.green} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   <circle cx={peakX} cy={peakY} r="3" fill={C.green} />
                 </svg>
-                <div style={{ fontSize: 8, color: C.muted, marginTop: 4 }}>
+                <div style={{ fontSize: 11, color: C.muted, marginTop: 4 }}>
                   Pic <span style={{ color: C.orange }}>{peakDay}</span> ({counts[peakIdx]}) · <span style={{ color: C.text }}>{weekTotal} actions</span>
                 </div>
               </>
@@ -847,10 +847,10 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
                 boxShadow: `0 0 6px ${color}44`,
               }}
             />
-            <span style={{ fontSize: 9, fontWeight: 600, color: C.text, letterSpacing: 0.3 }}>{name}</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: C.text, letterSpacing: 0.3 }}>{name}</span>
             <span style={{
               marginLeft: "auto",
-              fontSize: 8,
+              fontSize: 11,
               fontWeight: 500,
               color: C.muted,
               background: BG,
@@ -878,15 +878,15 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
                     borderBottom: i < Math.min(items.length, 3) - 1 ? "1px solid rgba(160,140,108,0.08)" : "none",
                   }}
                 >
-                  <span style={{ fontSize: 9, color: C.text, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                   <span style={{ fontSize: 12, color: C.text, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {item.label}
                   </span>
-                  <span style={{ fontSize: 8, color: C.light, whiteSpace: "nowrap" }}>{item.sub}</span>
+                   <span style={{ fontSize: 11, color: C.light, whiteSpace: "nowrap" }}>{item.sub}</span>
                 </a>
               ))}
             </div>
           ) : (
-            <div style={{ fontSize: 8, color: C.light }}>{count > 0 ? `${count} élément${count > 1 ? "s" : ""} liés` : "Connecté"}</div>
+            <div style={{ fontSize: 11, color: C.light }}>{count > 0 ? `${count} élément${count > 1 ? "s" : ""} liés` : "Connecté"}</div>
           )}
         </Tile>
       ))}

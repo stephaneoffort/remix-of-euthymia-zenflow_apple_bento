@@ -1,6 +1,7 @@
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useMemo } from "react";
+import { motion } from "framer-motion";
 
 /* ─── Design tokens ─── */
 const BG = "#EDE6DA";

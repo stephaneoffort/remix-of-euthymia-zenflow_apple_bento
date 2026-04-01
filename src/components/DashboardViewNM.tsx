@@ -591,9 +591,10 @@ export default function DashboardViewNM() {
                 </svg>
               ),
             },
-          ].map(({ name, sub, icon }) => (
+          ].map(({ name, sub, icon }, idx) => (
             <Tile
               key={name}
+              delay={0.45 + idx * 0.05}
               style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 13px", cursor: "pointer" }}
             >
               <div

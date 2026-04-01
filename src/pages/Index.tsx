@@ -8,6 +8,7 @@ import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import AppSidebar from "@/components/AppSidebar";
+import SidebarNM from "@/components/SidebarNM";
 import KanbanBoard from "@/components/KanbanBoard";
 import ListView from "@/components/ListView";
 import CalendarView from "@/components/CalendarView";

@@ -1,4 +1,5 @@
 import DashboardView from "@/components/DashboardView";
+import DashboardViewNM from "@/components/DashboardViewNM";
 import GanttView from "@/components/GanttView";
 import TimelineView from "@/components/TimelineView";
 import VoiceTaskCreator from "@/components/VoiceTaskCreator";
@@ -515,7 +516,7 @@ export default function Index() {
         <main className={`flex-1 overflow-hidden ${isMobile ? "pb-16" : ""}`}>
           {selectedView === "dashboard" && (
             <div className="h-full overflow-y-auto">
-              <DashboardView />
+              {designMode === "neumorphic" ? <DashboardViewNM /> : <DashboardView />}
             </div>
           )}
           {selectedView === "kanban" && <KanbanBoard />}

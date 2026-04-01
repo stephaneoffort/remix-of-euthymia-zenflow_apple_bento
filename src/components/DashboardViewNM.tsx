@@ -321,7 +321,7 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* DONUT */}
-        <Tile
+        <Tile delay={0.25}
           style={{
             gridColumn: 2,
             gridRow: 2,

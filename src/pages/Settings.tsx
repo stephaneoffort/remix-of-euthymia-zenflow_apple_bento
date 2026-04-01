@@ -496,7 +496,7 @@ function StatusesPanel() {
 
 
 function ThemePalettePanel() {
-  const { palette, setPalette } = useThemeMode();
+  const { palette, setPalette, theme, setTheme, designMode, setDesignMode } = useThemeMode();
   const palettes = Object.entries(PALETTE_META) as [ThemePalette, typeof PALETTE_META[ThemePalette]][];
 
   const handleSelect = (key: ThemePalette) => {
@@ -505,55 +505,132 @@ function ThemePalettePanel() {
     toast.success(`Palette "${PALETTE_META[key].label}" appliquée`);
   };
 
+  const PALETTE_GROUPS: { title: string; keys: ThemePalette[] }[] = [
+    { title: "Classiques", keys: ["clubroom", "neutrals", "sapphire", "cinematic", "teal"] },
+    { title: "Bento 2026", keys: ["bento2026", "bentoOcean", "bentoRose", "bentoAmber"] },
+    { title: "Liquid Glass", keys: ["liquidGlass", "liquidGlassOcean", "liquidGlassAurora", "liquidGlassRose", "liquidGlassAmber", "liquidGlassViolet", "liquidGlassCoral", "liquidGlassSlate", "liquidGlassMidnight"] },
+    { title: "Soft UI (Neumorphisme)", keys: ["nmCloud", "nmMidnight", "nmSand", "nmForest", "nmLavender", "nmDeepForest", "ivoireChaud"] },
+  ];
+
   return (
-    <Card className="border-border bg-card">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-foreground">
-          <Palette className="w-5 h-5 text-primary" />
-          Palette de couleurs
-        </CardTitle>
-        <p className="text-sm text-muted-foreground">
-          Choisissez votre identité visuelle. Ce choix est personnel et ne modifie pas l'affichage des autres membres.
-        </p>
-      </CardHeader>
-      <CardContent>
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
-          {palettes.map(([key, meta]) => {
-            const active = palette === key;
-            return (
+    <div className="space-y-6">
+      {/* Mode clair / sombre / mixte */}
+      <Card className="border-border bg-card">
+        <CardHeader>
+          <CardTitle className="text-base text-foreground">Mode d'affichage</CardTitle>
+          <p className="text-sm text-muted-foreground">Clair, sombre ou mixte (contenu clair + sidebar sombre).</p>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-3">
+            {([
+              { key: "light" as const, label: "☀ Clair" },
+              { key: "dark" as const, label: "☽ Sombre" },
+              { key: "mixed" as const, label: "⊙ Mixte" },
+            ]).map(({ key, label }) => (
               <button
                 key={key}
-                onClick={() => handleSelect(key)}
-                className={`group relative flex flex-col gap-3 p-5 rounded-xl border-2 transition-all text-left ${
-                  active
-                    ? 'border-primary bg-accent/40 shadow-md'
-                    : 'border-border bg-card hover:border-muted-foreground/30 hover:bg-muted/30'
+                onClick={() => { setTheme(key); toast.success(`Mode ${label} activé`); }}
+                className={`flex items-center gap-2 px-5 py-3 rounded-xl border-2 transition-all text-sm font-medium ${
+                  theme === key
+                    ? 'border-primary bg-accent/40 text-foreground shadow-md'
+                    : 'border-border bg-card text-muted-foreground hover:border-muted-foreground/30 hover:bg-muted/30'
                 }`}
               >
-                {active && (
-                  <span className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                    <Check className="w-3.5 h-3.5 text-primary-foreground" />
+                {label}
+                {theme === key && (
+                  <span className="ml-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                    <Check className="w-3 h-3 text-primary-foreground" />
                   </span>
                 )}
-                <div className="flex gap-1.5">
-                  {meta.colors.map((c, i) => (
-                    <div
-                      key={i}
-                      className="w-8 h-8 rounded-lg border border-border/50"
-                      style={{ backgroundColor: c }}
-                    />
-                  ))}
-                </div>
-                <div>
-                  <p className="font-semibold text-sm text-foreground">{meta.label}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{meta.description}</p>
-                </div>
               </button>
-            );
-          })}
-        </div>
-      </CardContent>
-    </Card>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Mode de design */}
+      <Card className="border-border bg-card">
+        <CardHeader>
+          <CardTitle className="text-base text-foreground">Mode de design</CardTitle>
+          <p className="text-sm text-muted-foreground">Interface classique ou neumorphique (Soft UI).</p>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-3">
+            {([
+              { key: "classic" as const, label: "⊞ Classic" },
+              { key: "neumorphic" as const, label: "✦ Ivoire" },
+            ]).map(({ key, label }) => (
+              <button
+                key={key}
+                onClick={() => { setDesignMode(key); toast.success(`Mode ${label} activé`); }}
+                className={`flex items-center gap-2 px-5 py-3 rounded-xl border-2 transition-all text-sm font-medium ${
+                  designMode === key
+                    ? 'border-primary bg-accent/40 text-foreground shadow-md'
+                    : 'border-border bg-card text-muted-foreground hover:border-muted-foreground/30 hover:bg-muted/30'
+                }`}
+              >
+                {label}
+                {designMode === key && (
+                  <span className="ml-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                    <Check className="w-3 h-3 text-primary-foreground" />
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Palettes groupées */}
+      {PALETTE_GROUPS.map(group => (
+        <Card key={group.title} className="border-border bg-card">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-foreground text-base">
+              <Palette className="w-5 h-5 text-primary" />
+              {group.title}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
+              {group.keys.map(key => {
+                const meta = PALETTE_META[key];
+                const active = palette === key;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => handleSelect(key)}
+                    className={`group relative flex flex-col gap-3 p-5 rounded-xl border-2 transition-all text-left ${
+                      active
+                        ? 'border-primary bg-accent/40 shadow-md'
+                        : 'border-border bg-card hover:border-muted-foreground/30 hover:bg-muted/30'
+                    }`}
+                  >
+                    {active && (
+                      <span className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                        <Check className="w-3.5 h-3.5 text-primary-foreground" />
+                      </span>
+                    )}
+                    <div className="flex gap-1.5">
+                      {meta.colors.map((c, i) => (
+                        <div
+                          key={i}
+                          className="w-8 h-8 rounded-lg border border-border/50"
+                          style={{ backgroundColor: c }}
+                        />
+                      ))}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm text-foreground">{meta.label}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{meta.description}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
   );
 }
 

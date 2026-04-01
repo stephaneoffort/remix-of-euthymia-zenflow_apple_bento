@@ -461,8 +461,8 @@ export default function DashboardViewNM() {
               >
                 <span
                   style={{
-                    fontSize: 10,
-                    color: C.text,
+                  fontSize: 13,
+                  color: C.text,
                     flex: 1,
                     overflow: "hidden",
                     textOverflow: "ellipsis",

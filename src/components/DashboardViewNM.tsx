@@ -171,7 +171,7 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* TOTAL inset */}
-        <Tile nm style={{ padding: 14, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+        <Tile nm delay={0.1} style={{ padding: 14, display: "flex", flexDirection: "column", justifyContent: "center" }}>
           <div
             style={{
               fontFamily: "'Cormorant Garamond', serif",

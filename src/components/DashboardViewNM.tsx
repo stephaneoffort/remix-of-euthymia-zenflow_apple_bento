@@ -134,7 +134,7 @@ export default function DashboardViewNM() {
     [tasks],
   );
 
-  const teamMembers = useMemo(() => (members ?? []).slice(0, 3), [members]);
+  const displayMembers = useMemo(() => (members ?? []).slice(0, 3), [members]);
 
   const daysLabel = (due?: string | null) => {
     if (!due) return "";

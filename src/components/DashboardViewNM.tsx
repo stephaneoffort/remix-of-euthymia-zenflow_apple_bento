@@ -8,7 +8,6 @@ import { useZoom } from "@/hooks/useZoom";
 import { format, parseISO, isToday, isTomorrow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
-import { fr } from "date-fns/locale";
 
 /* ─── Design tokens ─── */
 const BG = "#EDE6DA";

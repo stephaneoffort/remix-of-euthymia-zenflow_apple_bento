@@ -295,7 +295,7 @@ export default function DashboardViewNM() {
   /* ─── DESKTOP LAYOUT ─── */
   return (
     <div
-      style={{ fontFamily: "'DM Sans', sans-serif", background: BG, padding: "16px 20px", minHeight: "100%", width: "100%", boxSizing: "border-box" as const }}
+      style={{ fontFamily: "'DM Sans', sans-serif", background: BG, padding: "16px 20px", minHeight: "100%", height: "100%", width: "100%", boxSizing: "border-box" as const }}
     >
       {/* ── Grid ── */}
       <div style={{ display: "grid", gridTemplateColumns: "minmax(0,7fr) minmax(0,3fr) minmax(0,2fr)", gap: 10 }}>

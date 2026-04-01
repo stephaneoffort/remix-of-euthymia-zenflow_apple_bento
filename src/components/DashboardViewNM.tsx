@@ -427,10 +427,10 @@ export default function DashboardViewNM() {
         <Tile nm delay={0.3} style={{ gridColumn: 3, gridRow: 2, padding: "11px 12px" }}>
           <Lbl>Équipe</Lbl>
           <div style={{ marginTop: 9, display: "flex", flexDirection: "column", gap: 9 }}>
-            {teamMembers.length === 0 ? (
+            {displayMembers.length === 0 ? (
               <div style={{ fontSize: 9, color: C.light }}>—</div>
             ) : (
-              teamMembers.map((m, i) => {
+              displayMembers.map((m, i) => {
                 const initials = (m.name ?? m.email ?? "?")
                   .split(" ")
                   .map((w: string) => w[0])

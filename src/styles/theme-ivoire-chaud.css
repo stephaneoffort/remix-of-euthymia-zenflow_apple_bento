@@ -1557,7 +1557,7 @@ select:focus {
 
 .nm-sidebar .bg-accent,
 .nm-sidebar [data-state="open"] > div {
-  background: #EDE6DA !important;
+  background: #C8BDAD !important;
   box-shadow: inset 2px 2px 5px rgba(160,140,108,0.4), inset -2px -2px 5px rgba(255,252,246,0.85) !important;
   border-radius: 8px !important;
 }

@@ -395,7 +395,7 @@ export default function SidebarNM() {
           width: isMobile ? "85vw" : sidebarWidth,
           maxWidth: isMobile ? 320 : undefined,
           height: "100vh",
-          background: "#D9CFC0",
+          background: "#C8BDAD",
           display: "flex",
           flexDirection: "column",
           fontFamily: "'DM Sans', sans-serif",

@@ -124,13 +124,23 @@ export function useCalendarSync() {
     }
 
     setLoading(true);
+    let errorCount = 0;
     try {
       for (const acc of activeAccounts) {
-        await invokeCalendarSync({ account_id: acc.id, direction: 'pull' });
+        try {
+          await invokeCalendarSync({ account_id: acc.id, direction: 'pull' });
+        } catch (err: any) {
+          console.warn(`Sync failed for account ${acc.id}:`, err.message);
+          errorCount++;
+        }
       }
       await fetchEvents();
       await fetchAccounts();
-      toast.success('Synchronisation terminée ✅');
+      if (errorCount > 0) {
+        toast.warning(`Synchronisation partielle — ${errorCount} agenda(s) en erreur`);
+      } else {
+        toast.success('Synchronisation terminée ✅');
+      }
     } catch (err: any) {
       toast.error('Erreur de synchronisation : ' + (err.message || 'Inconnue'));
     } finally {

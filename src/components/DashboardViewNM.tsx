@@ -51,9 +51,9 @@ const Tag = ({ children }: { children: React.ReactNode }) => (
       background: BG,
       borderRadius: 4,
       boxShadow: pill,
-      fontSize: 8,
+      fontSize: 11,
       fontWeight: 500,
-      padding: "1px 5px",
+      padding: "2px 7px",
       color: C.muted,
     }}
   >

@@ -1509,3 +1509,83 @@ select:focus {
 [data-palette="ivoireChaud"] .bg-muted\/20 {
   background-color: rgba(140, 118, 88, 0.05) !important;
 }
+
+/* ─── Sidebar Ivoire Neumorphique ─── */
+
+.nm-sidebar {
+  background: #EDE6DA !important;
+  border-right: none !important;
+  box-shadow: 4px 0 12px rgba(160, 140, 108, 0.25) !important;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.nm-sidebar * {
+  border-color: rgba(160, 140, 108, 0.15) !important;
+}
+
+.nm-sidebar .text-foreground,
+.nm-sidebar .text-muted-foreground {
+  color: #2D2820 !important;
+}
+
+.nm-sidebar .text-muted-foreground {
+  color: #8A7E6E !important;
+}
+
+.nm-sidebar .bg-background,
+.nm-sidebar .bg-card,
+.nm-sidebar .bg-muted {
+  background: #EDE6DA !important;
+}
+
+.nm-sidebar .bg-primary {
+  background: #EDE6DA !important;
+  box-shadow: 6px 6px 14px rgba(160,140,108,0.45), -6px -6px 14px rgba(255,252,246,0.85) !important;
+  color: #B87440 !important;
+  border-radius: 10px !important;
+}
+
+.nm-sidebar .bg-primary * {
+  color: #B87440 !important;
+}
+
+.nm-sidebar button:hover,
+.nm-sidebar a:hover {
+  background: rgba(184, 116, 64, 0.06) !important;
+  border-radius: 8px !important;
+}
+
+.nm-sidebar .bg-accent,
+.nm-sidebar [data-state="open"] > div {
+  background: #EDE6DA !important;
+  box-shadow: inset 2px 2px 5px rgba(160,140,108,0.4), inset -2px -2px 5px rgba(255,252,246,0.85) !important;
+  border-radius: 8px !important;
+}
+
+.nm-sidebar .uppercase {
+  color: #8A7E6E !important;
+  letter-spacing: 2px !important;
+}
+
+.nm-sidebar .bg-destructive {
+  background: #B85040 !important;
+  box-shadow: 2px 2px 5px rgba(160,140,108,0.45), -2px -2px 5px rgba(255,252,246,0.85) !important;
+}
+
+.nm-sidebar hr,
+.nm-sidebar [class*="border"] {
+  border-color: rgba(160, 140, 108, 0.15) !important;
+}
+
+.nm-sidebar .rounded-full {
+  box-shadow: 3px 3px 8px rgba(160,140,108,0.45), -3px -3px 8px rgba(255,252,246,0.85) !important;
+}
+
+.nm-sidebar svg {
+  opacity: 0.75;
+}
+
+.nm-sidebar .bg-primary svg,
+.nm-sidebar button:hover svg {
+  opacity: 1;
+}

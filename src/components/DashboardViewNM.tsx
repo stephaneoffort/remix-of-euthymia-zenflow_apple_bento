@@ -26,7 +26,7 @@ const C = {
 
 /* ─── Sub-components ─── */
 const Lbl = ({ children }: { children: React.ReactNode }) => (
-  <div style={{ fontSize: 8, letterSpacing: 2, textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>
+  <div style={{ fontSize: 11, letterSpacing: 2, textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>
     {children}
   </div>
 );

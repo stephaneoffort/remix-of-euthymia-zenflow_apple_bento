@@ -103,7 +103,20 @@ export default function DashboardViewNM() {
       .slice(0, 4);
   }, [tasks]);
 
-  const teamMembers = useMemo(() => (members ?? []).slice(0, 3), [members]);
+  const teamMembers = useMemo(() => (members ?? []).slice(0, 5), [members]);
+
+  const memberCompletion = useMemo(() => {
+    const all = tasks ?? [];
+    const map: Record<string, { total: number; done: number }> = {};
+    for (const t of all) {
+      for (const mid of t.assigneeIds ?? []) {
+        if (!map[mid]) map[mid] = { total: 0, done: 0 };
+        map[mid].total++;
+        if (t.status === "done") map[mid].done++;
+      }
+    }
+    return map;
+  }, [tasks]);
 
   const daysLabel = (due?: string | null) => {
     if (!due) return "";
@@ -406,8 +419,10 @@ export default function DashboardViewNM() {
                   .join("")
                   .slice(0, 2)
                   .toUpperCase();
-                const colors = [C.orange, C.red, C.muted];
-                const pct = Math.round(30 - i * 5 + Math.random() * 10);
+                const colors = [C.orange, C.red, C.muted, C.green, C.light];
+                const mc = memberCompletion[m.id];
+                const pct = mc && mc.total > 0 ? Math.round((mc.done / mc.total) * 100) : 0;
+                const taskLabel = mc ? `${mc.done}/${mc.total}` : "0/0";
                 return (
                   <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 6 }}>
                     <div
@@ -444,7 +459,7 @@ export default function DashboardViewNM() {
                         <div style={{ height: 2, borderRadius: 1, background: colors[i], width: `${pct}%` }} />
                       </div>
                     </div>
-                    <span style={{ fontSize: 8, color: C.light }}>{pct}%</span>
+                    <span style={{ fontSize: 8, color: C.light, whiteSpace: "nowrap" }}>{taskLabel} · {pct}%</span>
                   </div>
                 );
               })

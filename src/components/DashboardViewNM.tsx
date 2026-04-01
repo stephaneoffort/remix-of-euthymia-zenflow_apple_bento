@@ -1,30 +1,6 @@
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
-import { useMemo, useEffect, useRef } from "react";
-import { isPast, parseISO, differenceInDays } from "date-fns";
-import { motion, useSpring, useTransform, useMotionValue } from "framer-motion";
-import ZoomMeetingsDashboard from "@/components/dashboard/ZoomMeetingsDashboard";
-import DashboardMeetSection from "@/components/dashboard/DashboardMeetSection";
-import BrevoStats from "@/components/brevo/BrevoStats";
-import DashboardResourcesSection from "@/components/dashboard/DashboardResourcesSection";
-
-/* ─── Animated counter ─── */
-const AnimatedNumber = ({ value, suffix = "", style }: { value: number; suffix?: string; style?: React.CSSProperties }) => {
-  const ref = useRef<HTMLSpanElement>(null);
-  const motionVal = useMotionValue(0);
-  const spring = useSpring(motionVal, { duration: 1200, bounce: 0 });
-  const display = useTransform(spring, (v) => Math.round(v));
-
-  useEffect(() => { motionVal.set(value); }, [value, motionVal]);
-  useEffect(() => {
-    const unsub = display.on("change", (v) => {
-      if (ref.current) ref.current.textContent = `${v}${suffix}`;
-    });
-    return unsub;
-  }, [display, suffix]);
-
-  return <span ref={ref} style={style}>{0}{suffix}</span>;
-};
+import { useMemo } from "react";
 
 /* ─── Design tokens ─── */
 const BG = "#EDE6DA";
@@ -54,22 +30,14 @@ const Tile = ({
   children,
   nm = false,
   style,
-  delay = 0,
 }: {
   children: React.ReactNode;
   nm?: boolean;
   style?: React.CSSProperties;
-  delay?: number;
 }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 12 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.45, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
-    whileHover={{ y: -2, boxShadow: nm ? inset : "8px 8px 18px rgba(160,140,108,0.5),-8px -8px 18px rgba(255,252,246,0.9)" }}
-    style={{ background: BG, borderRadius: 14, boxShadow: nm ? inset : raised, overflow: "hidden", ...style }}
-  >
+  <div style={{ background: BG, borderRadius: 14, boxShadow: nm ? inset : raised, overflow: "hidden", ...style }}>
     {children}
-  </motion.div>
+  </div>
 );
 
 const Tag = ({ children }: { children: React.ReactNode }) => (
@@ -94,23 +62,22 @@ const Dot = ({ color }: { color: string }) => (
 
 /* ─── Main component ─── */
 export default function DashboardViewNM() {
-  const { tasks, teamMembers, projects, setSelectedTaskId } = useApp();
-  const { user, teamMemberId } = useAuth();
-  const members = teamMembers;
+  const { tasks, teamMembers: members, setSelectedTaskId } = useApp();
+
+  const { user } = useAuth();
 
   const today = useMemo(() => {
     const d = new Date();
     return d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   }, []);
 
-  const currentMember = useMemo(() => (members ?? []).find((m) => m.email === user?.email), [members, user]);
-  const firstName = currentMember?.name?.split(" ")[0] ?? user?.user_metadata?.full_name?.split(" ")[0] ?? user?.email?.split("@")[0] ?? "Stephane";
+  const firstName = user?.user_metadata?.full_name?.split(" ")[0] ?? user?.email?.split("@")[0] ?? "Stephane";
 
   const stats = useMemo(() => {
     const all = tasks ?? [];
     const total = all.length;
     const done = all.filter((t) => t.status === "done").length;
-    const overdue = all.filter((t) => t.dueDate && isPast(parseISO(t.dueDate)) && t.status !== "done").length;
+    const overdue = all.filter((t) => t.status !== "done" && t.dueDate && new Date(t.dueDate) < new Date()).length;
     const urgent = all.filter((t) => (t.priority === "urgent" || t.priority === "high") && t.status !== "done").length;
     const inReview = all.filter((t) => t.status === "in_review").length;
     const pending = total - done;
@@ -131,26 +98,17 @@ export default function DashboardViewNM() {
   const deadlines = useMemo(
     () =>
       (tasks ?? [])
-        .filter((t) => t.dueDate && t.status !== "done")
+        .filter((t) => t.dueDate)
         .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime())
         .slice(0, 4),
     [tasks],
   );
 
-  const teamWorkload = useMemo(
-    () =>
-      (teamMembers ?? []).map((m) => {
-        const memberTasks = (tasks ?? []).filter((t) => t.assigneeIds?.includes(m.id));
-        const done = memberTasks.filter((t) => t.status === "done").length;
-        const completion = memberTasks.length > 0 ? Math.round((done / memberTasks.length) * 100) : 0;
-        return { ...m, memberTasks: memberTasks.length, done, completion };
-      }).slice(0, 3),
-    [tasks, teamMembers],
-  );
+  const teamMembers = useMemo(() => (members ?? []).slice(0, 3), [members]);
 
   const daysLabel = (due?: string | null) => {
     if (!due) return "";
-    const diff = differenceInDays(parseISO(due), new Date());
+    const diff = Math.round((new Date(due).getTime() - Date.now()) / 86400000);
     if (diff < 0) return `${Math.abs(diff)}j retard`;
     if (diff === 0) return "aujourd'hui";
     return `dans ${diff}j`;
@@ -172,7 +130,7 @@ export default function DashboardViewNM() {
       {/* ── Grid ── */}
       <div style={{ display: "grid", gridTemplateColumns: "minmax(0,7fr) minmax(0,3fr) minmax(0,2fr)", gap: 10 }}>
         {/* HERO */}
-        <Tile delay={0.05} style={{ padding: "18px 20px" }}>
+        <Tile style={{ padding: "18px 20px" }}>
           <Lbl>{today}</Lbl>
           <div
             style={{
@@ -188,7 +146,7 @@ export default function DashboardViewNM() {
             <br />
             <em style={{ color: C.orange, fontStyle: "italic" }}>{firstName}</em>
           </div>
-          <div style={{ fontSize: 10, color: C.orange, marginTop: 4 }}><AnimatedNumber value={stats.pending} /> tâches en attente</div>
+          <div style={{ fontSize: 10, color: C.orange, marginTop: 4 }}>{stats.pending} tâches en attente</div>
           <div style={{ marginTop: 12 }}>
             <div style={{ height: 5, borderRadius: 3, background: BG, boxShadow: barIn, overflow: "hidden" }}>
               <div style={{ width: `${stats.pct}%`, height: "100%", background: C.green, borderRadius: 3 }} />
@@ -206,7 +164,7 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* TOTAL inset */}
-        <Tile nm delay={0.1} style={{ padding: 14, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+        <Tile nm style={{ padding: 14, display: "flex", flexDirection: "column", justifyContent: "center" }}>
           <div
             style={{
               fontFamily: "'Cormorant Garamond', serif",
@@ -217,7 +175,7 @@ export default function DashboardViewNM() {
               lineHeight: 1,
             }}
           >
-            <AnimatedNumber value={stats.pending} />
+            {stats.pending}
           </div>
           <div style={{ fontSize: 8, color: C.light, marginTop: 2, letterSpacing: 0.5 }}>tâches en attente</div>
           <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 6 }}>
@@ -240,14 +198,14 @@ export default function DashboardViewNM() {
               >
                 <Dot color={color} />
                 <span style={{ fontSize: 9, color: C.muted, flex: 1 }}>{label}</span>
-                <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 15, color: C.text }}><AnimatedNumber value={count} /></span>
+                <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 15, color: C.text }}>{count}</span>
               </div>
             ))}
           </div>
         </Tile>
 
         {/* PROGRESSION */}
-        <Tile delay={0.15}
+        <Tile
           style={{
             padding: "14px 10px",
             display: "flex",
@@ -267,7 +225,7 @@ export default function DashboardViewNM() {
               marginTop: 3,
             }}
           >
-            <AnimatedNumber value={stats.pct} suffix="%" />
+            {stats.pct}%
           </div>
           <svg width="48" height="48" viewBox="0 0 48 48" style={{ margin: "8px auto 0", display: "block" }}>
             <circle cx="24" cy="24" r="19" fill="none" stroke="rgba(160,140,108,0.2)" strokeWidth="5" />
@@ -285,12 +243,12 @@ export default function DashboardViewNM() {
             />
           </svg>
           <div style={{ fontSize: 8, color: C.light, marginTop: 3 }}>
-            <AnimatedNumber value={stats.done} /> / <AnimatedNumber value={stats.total} />
+            {stats.done} / {stats.total}
           </div>
         </Tile>
 
         {/* URGENTES */}
-        <Tile delay={0.2} style={{ gridColumn: 1, gridRow: 2 }}>
+        <Tile style={{ gridColumn: 1, gridRow: 2 }}>
           <div
             style={{
               display: "flex",
@@ -356,7 +314,7 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* DONUT */}
-        <Tile delay={0.25}
+        <Tile
           style={{
             gridColumn: 2,
             gridRow: 2,
@@ -417,7 +375,7 @@ export default function DashboardViewNM() {
                 color: C.text,
               }}
             >
-              <AnimatedNumber value={stats.total} />
+              {stats.total}
             </div>
           </div>
           <div style={{ marginTop: 9, width: "100%", display: "flex", flexDirection: "column", gap: 3 }}>
@@ -436,29 +394,58 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* ÉQUIPE inset */}
-        <Tile nm delay={0.3} style={{ gridColumn: 3, gridRow: 2, padding: "11px 12px" }}>
+        <Tile nm style={{ gridColumn: 3, gridRow: 2, padding: "11px 12px" }}>
           <Lbl>Équipe</Lbl>
           <div style={{ marginTop: 9, display: "flex", flexDirection: "column", gap: 9 }}>
-            {teamWorkload.length === 0 ? (
+            {teamMembers.length === 0 ? (
               <div style={{ fontSize: 9, color: C.light }}>—</div>
             ) : (
-              teamWorkload.map((m, i) => {
+              teamMembers.map((m, i) => {
+                const initials = (m.name ?? m.email ?? "?")
+                  .split(" ")
+                  .map((w: string) => w[0])
+                  .join("")
+                  .slice(0, 2)
+                  .toUpperCase();
                 const colors = [C.orange, C.red, C.muted];
-                const initials = (m.name ?? "?").split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
+                const pct = Math.round(30 - i * 5 + Math.random() * 10);
                 return (
                   <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <div style={{ width: 24, height: 24, borderRadius: "50%", background: m.avatarColor ?? BG, boxShadow: pillMd, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, fontWeight: 500, color: "white", flexShrink: 0 }}>
+                    <div
+                      style={{
+                        width: 24,
+                        height: 24,
+                        borderRadius: "50%",
+                        background: BG,
+                        boxShadow: pillMd,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 8,
+                        fontWeight: 500,
+                        color: colors[i],
+                        flexShrink: 0,
+                      }}
+                    >
                       {initials}
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 9, color: C.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                        {m.name}
+                      <div
+                        style={{
+                          fontSize: 9,
+                          color: C.text,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {m.name ?? m.email}
                       </div>
                       <div style={{ height: 2, background: BG, borderRadius: 1, boxShadow: barIn, marginTop: 3 }}>
-                        <div style={{ height: 2, borderRadius: 1, background: m.avatarColor ?? colors[i], width: `${m.completion}%` }} />
+                        <div style={{ height: 2, borderRadius: 1, background: colors[i], width: `${pct}%` }} />
                       </div>
                     </div>
-                    <span style={{ fontSize: 8, color: C.light }}>{m.completion}%</span>
+                    <span style={{ fontSize: 8, color: C.light }}>{pct}%</span>
                   </div>
                 );
               })
@@ -467,7 +454,7 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* ÉCHÉANCES */}
-        <Tile delay={0.35} style={{ gridColumn: "1 / 3", gridRow: 3 }}>
+        <Tile style={{ gridColumn: "1 / 3", gridRow: 3 }}>
           <div
             style={{
               display: "flex",
@@ -518,7 +505,7 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* ACTIVITÉ inset */}
-        <Tile nm delay={0.4} style={{ gridColumn: 3, gridRow: 3, padding: "11px 12px" }}>
+        <Tile nm style={{ gridColumn: 3, gridRow: 3, padding: "11px 12px" }}>
           <Lbl>Activité · 7j</Lbl>
           <svg width="100%" height="48" viewBox="0 0 110 48" preserveAspectRatio="none" style={{ marginTop: 7 }}>
             <path
@@ -543,11 +530,87 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* INTÉGRATIONS */}
-        <div style={{ gridColumn: "1 / 4", gridRow: 4, display: "grid", gridTemplateColumns: "repeat(2, minmax(0,1fr))", gap: 10 }}>
-          <ZoomMeetingsDashboard />
-          <DashboardMeetSection />
-          <BrevoStats />
-          <DashboardResourcesSection projects={projects} />
+        <div
+          style={{
+            gridColumn: "1 / 4",
+            gridRow: 4,
+            display: "grid",
+            gridTemplateColumns: "repeat(4, minmax(0,1fr))",
+            gap: 10,
+          }}
+        >
+          {[
+            {
+              name: "Zoom",
+              sub: "0 réunions · Connecter",
+              icon: (
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                  <rect x="1" y="3" width="8" height="8" rx="2" fill="#2D8CFF" />
+                  <path d="M9 6l4-2v6l-4-2V6Z" fill="#2D8CFF" />
+                </svg>
+              ),
+            },
+            {
+              name: "Meet",
+              sub: "0 réunions · Connecter",
+              icon: (
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                  <rect x="1" y="2" width="8" height="10" rx="2" fill="#00832D" />
+                  <path d="M9 5.5l4-2v7l-4-2V5.5Z" fill="#00832D" />
+                  <rect x="2.5" y="4" width="5" height="1.5" rx="0.5" fill="white" opacity="0.9" />
+                  <rect x="2.5" y="6.5" width="3.5" height="1.5" rx="0.5" fill="white" opacity="0.9" />
+                </svg>
+              ),
+            },
+            {
+              name: "Drive",
+              sub: "0 fichiers · Connecter",
+              icon: (
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                  <path d="M1 11l3-5.5 3 5.5H1Z" fill="#4285F4" />
+                  <path d="M7 11l3-5.5L13 11H7Z" fill="#0F9D58" />
+                  <path d="M4.5 5.5l2.5-4 2.5 4H4.5Z" fill="#FBBC05" />
+                </svg>
+              ),
+            },
+            {
+              name: "Canva",
+              sub: "0 designs · Connecter",
+              icon: (
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                  <circle cx="7" cy="7" r="5" fill="#7D2AE7" opacity="0.2" />
+                  <circle cx="7" cy="7" r="3.5" fill="#7D2AE7" />
+                  <circle cx="7" cy="3.5" r="1.8" fill="#00C4CC" />
+                </svg>
+              ),
+            },
+          ].map(({ name, sub, icon }) => (
+            <Tile
+              key={name}
+              style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 13px", cursor: "pointer" }}
+            >
+              <div
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 7,
+                  background: BG,
+                  boxShadow: pillMd,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                {icon}
+              </div>
+              <div>
+                <div style={{ fontSize: 10, color: C.text, fontWeight: 500 }}>{name}</div>
+                <div style={{ fontSize: 8, color: C.light, marginTop: 1 }}>{sub}</div>
+              </div>
+              <span style={{ fontSize: 12, color: C.orange, marginLeft: "auto" }}>→</span>
+            </Tile>
+          ))}
         </div>
       </div>
     </div>

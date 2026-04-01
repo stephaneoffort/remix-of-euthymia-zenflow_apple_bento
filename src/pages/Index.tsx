@@ -515,7 +515,7 @@ export default function Index() {
         </header>
 
         {/* Main content - add bottom padding on mobile for nav bar */}
-        <main className={`flex-1 overflow-hidden ${isMobile ? "pb-16" : ""}`}>
+        <main className={`flex-1 overflow-hidden ${isMobile ? "pb-16" : ""}`} style={designMode === "neumorphic" ? { background: "#EDE6DA" } : {}}>
           {selectedView === "dashboard" && (
             <div className="h-full overflow-y-auto w-full">
               {designMode === "neumorphic" ? <DashboardViewNM /> : <DashboardView />}

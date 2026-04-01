@@ -1,7 +1,25 @@
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
-import { useMemo } from "react";
-import { motion } from "framer-motion";
+import { useMemo, useEffect, useRef, useState } from "react";
+import { motion, useSpring, useTransform, useMotionValue } from "framer-motion";
+
+/* ─── Animated counter ─── */
+const AnimatedNumber = ({ value, suffix = "", style }: { value: number; suffix?: string; style?: React.CSSProperties }) => {
+  const ref = useRef<HTMLSpanElement>(null);
+  const motionVal = useMotionValue(0);
+  const spring = useSpring(motionVal, { duration: 1200, bounce: 0 });
+  const display = useTransform(spring, (v) => Math.round(v));
+
+  useEffect(() => { motionVal.set(value); }, [value, motionVal]);
+  useEffect(() => {
+    const unsub = display.on("change", (v) => {
+      if (ref.current) ref.current.textContent = `${v}${suffix}`;
+    });
+    return unsub;
+  }, [display, suffix]);
+
+  return <span ref={ref} style={style}>{0}{suffix}</span>;
+};
 
 /* ─── Design tokens ─── */
 const BG = "#EDE6DA";
@@ -153,7 +171,7 @@ export default function DashboardViewNM() {
             <br />
             <em style={{ color: C.orange, fontStyle: "italic" }}>{firstName}</em>
           </div>
-          <div style={{ fontSize: 10, color: C.orange, marginTop: 4 }}>{stats.pending} tâches en attente</div>
+          <div style={{ fontSize: 10, color: C.orange, marginTop: 4 }}><AnimatedNumber value={stats.pending} /> tâches en attente</div>
           <div style={{ marginTop: 12 }}>
             <div style={{ height: 5, borderRadius: 3, background: BG, boxShadow: barIn, overflow: "hidden" }}>
               <div style={{ width: `${stats.pct}%`, height: "100%", background: C.green, borderRadius: 3 }} />
@@ -182,7 +200,7 @@ export default function DashboardViewNM() {
               lineHeight: 1,
             }}
           >
-            {stats.pending}
+            <AnimatedNumber value={stats.pending} />
           </div>
           <div style={{ fontSize: 8, color: C.light, marginTop: 2, letterSpacing: 0.5 }}>tâches en attente</div>
           <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 6 }}>
@@ -205,7 +223,7 @@ export default function DashboardViewNM() {
               >
                 <Dot color={color} />
                 <span style={{ fontSize: 9, color: C.muted, flex: 1 }}>{label}</span>
-                <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 15, color: C.text }}>{count}</span>
+                <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 15, color: C.text }}><AnimatedNumber value={count} /></span>
               </div>
             ))}
           </div>
@@ -232,7 +250,7 @@ export default function DashboardViewNM() {
               marginTop: 3,
             }}
           >
-            {stats.pct}%
+            <AnimatedNumber value={stats.pct} suffix="%" />
           </div>
           <svg width="48" height="48" viewBox="0 0 48 48" style={{ margin: "8px auto 0", display: "block" }}>
             <circle cx="24" cy="24" r="19" fill="none" stroke="rgba(160,140,108,0.2)" strokeWidth="5" />
@@ -250,7 +268,7 @@ export default function DashboardViewNM() {
             />
           </svg>
           <div style={{ fontSize: 8, color: C.light, marginTop: 3 }}>
-            {stats.done} / {stats.total}
+            <AnimatedNumber value={stats.done} /> / <AnimatedNumber value={stats.total} />
           </div>
         </Tile>
 
@@ -382,7 +400,7 @@ export default function DashboardViewNM() {
                 color: C.text,
               }}
             >
-              {stats.total}
+              <AnimatedNumber value={stats.total} />
             </div>
           </div>
           <div style={{ marginTop: 9, width: "100%", display: "flex", flexDirection: "column", gap: 3 }}>

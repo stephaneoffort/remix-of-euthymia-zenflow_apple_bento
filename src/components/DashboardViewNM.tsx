@@ -31,14 +31,22 @@ const Tile = ({
   children,
   nm = false,
   style,
+  delay = 0,
 }: {
   children: React.ReactNode;
   nm?: boolean;
   style?: React.CSSProperties;
+  delay?: number;
 }) => (
-  <div style={{ background: BG, borderRadius: 14, boxShadow: nm ? inset : raised, overflow: "hidden", ...style }}>
+  <motion.div
+    initial={{ opacity: 0, y: 12 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.45, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
+    whileHover={{ y: -2, boxShadow: nm ? inset : "8px 8px 18px rgba(160,140,108,0.5),-8px -8px 18px rgba(255,252,246,0.9)" }}
+    style={{ background: BG, borderRadius: 14, boxShadow: nm ? inset : raised, overflow: "hidden", ...style }}
+  >
     {children}
-  </div>
+  </motion.div>
 );
 
 const Tag = ({ children }: { children: React.ReactNode }) => (

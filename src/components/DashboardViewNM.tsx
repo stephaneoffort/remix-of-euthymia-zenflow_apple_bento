@@ -223,7 +223,7 @@ export default function DashboardViewNM() {
               >
                 <Dot color={color} />
                 <span style={{ fontSize: 9, color: C.muted, flex: 1 }}>{label}</span>
-                <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 15, color: C.text }}>{count}</span>
+                <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 15, color: C.text }}><AnimatedNumber value={count} /></span>
               </div>
             ))}
           </div>

@@ -14,10 +14,10 @@ import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { useThemeMode } from '@/context/ThemeContext';
 import { STATUS_LABELS, PRIORITY_LABELS, type Priority } from '@/types';
-import { ZoomMeetingsDashboard } from '@/components/dashboard/ZoomMeetingsDashboard';
-import { DashboardMeetSection } from '@/components/dashboard/DashboardMeetSection';
-import { BrevoStats } from '@/components/brevo/BrevoStats';
-import { DashboardResourcesSection } from '@/components/dashboard/DashboardResourcesSection';
+import ZoomMeetingsDashboard from '@/components/dashboard/ZoomMeetingsDashboard';
+import DashboardMeetSection from '@/components/dashboard/DashboardMeetSection';
+import BrevoStats from '@/components/brevo/BrevoStats';
+import DashboardResourcesSection from '@/components/dashboard/DashboardResourcesSection';
 
 function getChartColors() {
   const root = getComputedStyle(document.documentElement);

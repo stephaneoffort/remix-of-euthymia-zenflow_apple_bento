@@ -1,4 +1,4 @@
-import { useApp } from "@/context/AppContext";
+import { useAppContext } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useMemo } from "react";
 
@@ -62,7 +62,7 @@ const Dot = ({ color }: { color: string }) => (
 
 /* ─── Main component ─── */
 export default function DashboardViewNM() {
-  const { tasks, teamMembers: members } = useApp();
+  const { tasks, members } = useAppContext();
   const { user } = useAuth();
 
   const today = useMemo(() => {
@@ -70,13 +70,13 @@ export default function DashboardViewNM() {
     return d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   }, []);
 
-  const firstName = user?.user_metadata?.name?.split(" ")[0] ?? user?.email?.split("@")[0] ?? "Stephane";
+  const firstName = user?.user_metadata?.full_name?.split(" ")[0] ?? user?.email?.split("@")[0] ?? "Stephane";
 
   const stats = useMemo(() => {
     const all = tasks ?? [];
     const total = all.length;
     const done = all.filter((t) => t.status === "done").length;
-    const overdue = all.filter((t) => t.status !== "done" && t.dueDate && new Date(t.dueDate) < new Date()).length;
+    const overdue = all.filter((t) => t.status !== "done" && t.due_date && new Date(t.due_date) < new Date()).length;
     const urgent = all.filter((t) => t.priority === "high" && t.status !== "done").length;
     const inReview = all.filter((t) => t.status === "in_review").length;
     const pending = total - done;
@@ -94,8 +94,8 @@ export default function DashboardViewNM() {
   const deadlines = useMemo(
     () =>
       (tasks ?? [])
-        .filter((t) => t.dueDate)
-        .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime())
+        .filter((t) => t.due_date)
+        .sort((a, b) => new Date(a.due_date!).getTime() - new Date(b.due_date!).getTime())
         .slice(0, 4),
     [tasks],
   );
@@ -297,7 +297,7 @@ export default function DashboardViewNM() {
                   {t.title}
                 </span>
                 <Tag>{t.status}</Tag>
-                <span style={{ fontSize: 9, color: C.red, fontWeight: 500 }}>{daysLabel(t.dueDate)}</span>
+                <span style={{ fontSize: 9, color: C.red, fontWeight: 500 }}>{daysLabel(t.due_date)}</span>
               </div>
             ))
           )}
@@ -396,7 +396,7 @@ export default function DashboardViewNM() {
               <div style={{ fontSize: 9, color: C.light }}>—</div>
             ) : (
               teamMembers.map((m, i) => {
-                const initials = (m.name ?? m.email ?? "?")
+                const initials = (m.full_name ?? m.email ?? "?")
                   .split(" ")
                   .map((w: string) => w[0])
                   .join("")
@@ -434,7 +434,7 @@ export default function DashboardViewNM() {
                           textOverflow: "ellipsis",
                         }}
                       >
-                        {m.name ?? m.email}
+                        {m.full_name ?? m.email}
                       </div>
                       <div style={{ height: 2, background: BG, borderRadius: 1, boxShadow: barIn, marginTop: 3 }}>
                         <div style={{ height: 2, borderRadius: 1, background: colors[i], width: `${pct}%` }} />
@@ -489,7 +489,7 @@ export default function DashboardViewNM() {
               </span>
               <Tag>{t.status}</Tag>
               <span style={{ fontSize: 9, color: statusColor(t.status), fontWeight: 500, whiteSpace: "nowrap" }}>
-                {daysLabel(t.dueDate)}
+                {daysLabel(t.due_date)}
               </span>
             </div>
           ))}
@@ -529,7 +529,7 @@ export default function DashboardViewNM() {
             gridColumn: "1 / 4",
             gridRow: 4,
             display: "grid",
-            gridTemplateColumns: "repeat(3, minmax(0,1fr))",
+            gridTemplateColumns: "repeat(4, minmax(0,1fr))",
             gap: 10,
           }}
         >
@@ -541,6 +541,18 @@ export default function DashboardViewNM() {
                 <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
                   <rect x="1" y="3" width="8" height="8" rx="2" fill="#2D8CFF" />
                   <path d="M9 6l4-2v6l-4-2V6Z" fill="#2D8CFF" />
+                </svg>
+              ),
+            },
+            {
+              name: "Meet",
+              sub: "0 réunions · Connecter",
+              icon: (
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                  <rect x="1" y="2" width="8" height="10" rx="2" fill="#00832D" />
+                  <path d="M9 5.5l4-2v7l-4-2V5.5Z" fill="#00832D" />
+                  <rect x="2.5" y="4" width="5" height="1.5" rx="0.5" fill="white" opacity="0.9" />
+                  <rect x="2.5" y="6.5" width="3.5" height="1.5" rx="0.5" fill="white" opacity="0.9" />
                 </svg>
               ),
             },

@@ -245,7 +245,7 @@ export default function SidebarNM() {
         style={{
           width: COLLAPSED_WIDTH,
           height: "100vh",
-          background: "#D9CFC0",
+          background: "#C8BDAD",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",

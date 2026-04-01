@@ -1513,7 +1513,7 @@ select:focus {
 /* ─── Sidebar Ivoire Neumorphique ─── */
 
 .nm-sidebar {
-  background: #EDE6DA !important;
+  background: #C8BDAD !important;
   border-right: none !important;
   box-shadow: 4px 0 12px rgba(160, 140, 108, 0.25) !important;
   font-family: 'DM Sans', sans-serif;
@@ -1535,11 +1535,11 @@ select:focus {
 .nm-sidebar .bg-background,
 .nm-sidebar .bg-card,
 .nm-sidebar .bg-muted {
-  background: #EDE6DA !important;
+  background: #C8BDAD !important;
 }
 
 .nm-sidebar .bg-primary {
-  background: #EDE6DA !important;
+  background: #C8BDAD !important;
   box-shadow: 6px 6px 14px rgba(160,140,108,0.45), -6px -6px 14px rgba(255,252,246,0.85) !important;
   color: #B87440 !important;
   border-radius: 10px !important;
@@ -1557,7 +1557,7 @@ select:focus {
 
 .nm-sidebar .bg-accent,
 .nm-sidebar [data-state="open"] > div {
-  background: #EDE6DA !important;
+  background: #C8BDAD !important;
   box-shadow: inset 2px 2px 5px rgba(160,140,108,0.4), inset -2px -2px 5px rgba(255,252,246,0.85) !important;
   border-radius: 8px !important;
 }

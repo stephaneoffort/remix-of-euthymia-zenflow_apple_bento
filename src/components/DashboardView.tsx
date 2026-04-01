@@ -6,7 +6,7 @@ import {
   AreaChart, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Area, Bar,
   PieChart, Pie, Cell, ResponsiveContainer,
 } from 'recharts';
-import { AlertTriangle, BarChart3, ChevronDown, ChevronUp, Flame, ListTodo, TrendingUp, Users } from 'lucide-react';
+import { AlertTriangle, BarChart3, CalendarDays, CheckCircle2, ChevronDown, ChevronUp, Flame, ListTodo, TrendingUp, Users } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { PriorityBadge, StatusBadge } from '@/components/TaskBadges';

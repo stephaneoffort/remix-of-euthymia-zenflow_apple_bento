@@ -566,7 +566,7 @@ export default function DashboardViewNM() {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        fontSize: 8,
+                        fontSize: 10,
                         fontWeight: 500,
                         color: colors[i],
                         flexShrink: 0,

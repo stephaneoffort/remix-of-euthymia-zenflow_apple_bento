@@ -1,10 +1,10 @@
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
-import { useMemo } from "react";
-import ZoomMeetingsDashboard from "@/components/dashboard/ZoomMeetingsDashboard";
-import DashboardMeetSection from "@/components/dashboard/DashboardMeetSection";
-import BrevoStats from "@/components/brevo/BrevoStats";
-import DashboardResourcesSection from "@/components/dashboard/DashboardResourcesSection";
+import { useMemo, useState, useEffect, useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useIntegrations } from "@/hooks/useIntegrations";
+import { format, parseISO, isToday, isTomorrow } from "date-fns";
+import { fr } from "date-fns/locale";
 
 /* ─── Design tokens ─── */
 const BG = "#EDE6DA";
@@ -66,7 +66,7 @@ const Dot = ({ color }: { color: string }) => (
 
 /* ─── Main component ─── */
 export default function DashboardViewNM() {
-  const { tasks, teamMembers: members, projects, setSelectedTaskId } = useApp();
+  const { tasks, teamMembers: members, setSelectedTaskId } = useApp();
 
   const { user } = useAuth();
 
@@ -573,13 +573,195 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* INTÉGRATIONS */}
-        <div style={{ gridColumn: "1 / 4", gridRow: 4, display: "grid", gridTemplateColumns: "repeat(2, minmax(0,1fr))", gap: 10 }}>
-          <ZoomMeetingsDashboard />
-          <DashboardMeetSection />
-          <BrevoStats />
-          <DashboardResourcesSection projects={projects} />
-        </div>
+        <NMIntegrations />
       </div>
+    </div>
+  );
+}
+
+/* ─── NM Integrations sub-component ─── */
+function NMIntegrations() {
+  const { isActive } = useIntegrations();
+  const [zoomCount, setZoomCount] = useState(0);
+  const [meetEvents, setMeetEvents] = useState<{ id: string; title: string; start_time: string; meet_link: string }[]>([]);
+  const [zoomMeetings, setZoomMeetings] = useState<{ id: string; topic: string; start_time: string | null; join_url: string }[]>([]);
+  const [driveCount, setDriveCount] = useState(0);
+  const [canvaCount, setCanvaCount] = useState(0);
+  const [brevoCount, setBrevoCount] = useState(0);
+
+  const fetchAll = useCallback(async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    // Zoom
+    if (isActive("zoom")) {
+      const { data } = await supabase
+        .from("zoom_meetings")
+        .select("id, topic, start_time, join_url")
+        .eq("user_id", user.id)
+        .neq("status", "ended")
+        .order("start_time", { ascending: true })
+        .limit(5);
+      setZoomMeetings(data ?? []);
+      setZoomCount((data ?? []).length);
+    }
+
+    // Meet
+    if (isActive("google_meet")) {
+      const { data } = await supabase
+        .from("calendar_events")
+        .select("id, title, start_time, meet_link")
+        .eq("has_meet", true)
+        .not("meet_link", "is", null)
+        .gte("start_time", new Date().toISOString())
+        .order("start_time", { ascending: true })
+        .limit(5);
+      const meetOnly = (data ?? []).filter((e: any) => e.meet_link?.includes("meet.google.com"));
+      setMeetEvents(meetOnly);
+    }
+
+    // Drive
+    if (isActive("google_drive")) {
+      const { count } = await supabase
+        .from("drive_attachments")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id);
+      setDriveCount(count ?? 0);
+    }
+
+    // Canva
+    if (isActive("canva")) {
+      const { count } = await supabase
+        .from("canva_attachments")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id);
+      setCanvaCount(count ?? 0);
+    }
+
+    // Brevo
+    if (isActive("brevo")) {
+      const { count } = await supabase
+        .from("brevo_campaigns")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id);
+      setBrevoCount(count ?? 0);
+    }
+  }, [isActive]);
+
+  useEffect(() => { fetchAll(); }, [fetchAll]);
+
+  const fmtDate = (s: string | null) => {
+    if (!s) return "—";
+    const d = parseISO(s);
+    if (isToday(d)) return `Auj. ${format(d, "HH'h'mm")}`;
+    if (isTomorrow(d)) return `Dem. ${format(d, "HH'h'mm")}`;
+    return format(d, "d MMM HH'h'mm", { locale: fr });
+  };
+
+  const integrations = [
+    {
+      key: "zoom",
+      active: isActive("zoom"),
+      name: "Zoom",
+      color: "#2D8CFF",
+      count: zoomCount,
+      unit: "réunion",
+      items: zoomMeetings.map((m) => ({ label: m.topic, sub: fmtDate(m.start_time), url: m.join_url })),
+    },
+    {
+      key: "meet",
+      active: isActive("google_meet"),
+      name: "Meet",
+      color: "#00832D",
+      count: meetEvents.length,
+      unit: "réunion",
+      items: meetEvents.map((e) => ({ label: e.title, sub: fmtDate(e.start_time), url: e.meet_link })),
+    },
+    {
+      key: "drive",
+      active: isActive("google_drive"),
+      name: "Drive",
+      color: "#4285F4",
+      count: driveCount,
+      unit: "fichier",
+      items: [],
+    },
+    {
+      key: "canva",
+      active: isActive("canva"),
+      name: "Canva",
+      color: "#7D2AE7",
+      count: canvaCount,
+      unit: "design",
+      items: [],
+    },
+    {
+      key: "brevo",
+      active: isActive("brevo"),
+      name: "Brevo",
+      color: "#0B996E",
+      count: brevoCount,
+      unit: "campagne",
+      items: [],
+    },
+  ].filter((i) => i.active);
+
+  if (integrations.length === 0) return null;
+
+  return (
+    <div style={{ gridColumn: "1 / 4", gridRow: 4, display: "grid", gridTemplateColumns: `repeat(${Math.min(integrations.length, 4)}, minmax(0,1fr))`, gap: 10 }}>
+      {integrations.map(({ key, name, color, count, unit, items }) => (
+        <Tile key={key} style={{ padding: "10px 13px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+            <div
+              style={{
+                width: 8, height: 8, borderRadius: "50%", background: color, flexShrink: 0,
+                boxShadow: `0 0 6px ${color}44`,
+              }}
+            />
+            <span style={{ fontSize: 9, fontWeight: 600, color: C.text, letterSpacing: 0.3 }}>{name}</span>
+            <span style={{
+              marginLeft: "auto",
+              fontSize: 8,
+              fontWeight: 500,
+              color: C.muted,
+              background: BG,
+              borderRadius: 4,
+              boxShadow: pill,
+              padding: "1px 6px",
+            }}>
+              {count} {unit}{count > 1 ? "s" : ""}
+            </span>
+          </div>
+          {items.length > 0 ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              {items.slice(0, 3).map((item, i) => (
+                <a
+                  key={i}
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 5,
+                    padding: "3px 0",
+                    textDecoration: "none",
+                    borderBottom: i < Math.min(items.length, 3) - 1 ? "1px solid rgba(160,140,108,0.08)" : "none",
+                  }}
+                >
+                  <span style={{ fontSize: 9, color: C.text, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {item.label}
+                  </span>
+                  <span style={{ fontSize: 8, color: C.light, whiteSpace: "nowrap" }}>{item.sub}</span>
+                </a>
+              ))}
+            </div>
+          ) : (
+            <div style={{ fontSize: 8, color: C.light }}>{count > 0 ? `${count} élément${count > 1 ? "s" : ""} liés` : "Connecté"}</div>
+          )}
+        </Tile>
+      ))}
     </div>
   );
 }

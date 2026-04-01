@@ -710,12 +710,21 @@ export default function DashboardViewNM() {
 /* ─── NM Integrations sub-component ─── */
 function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {}) {
   const { isActive } = useIntegrations();
+  const { setSelectedView } = useApp();
+  const zoom = useZoom();
   const [zoomCount, setZoomCount] = useState(0);
   const [meetEvents, setMeetEvents] = useState<{ id: string; title: string; start_time: string; meet_link: string }[]>([]);
   const [zoomMeetings, setZoomMeetings] = useState<{ id: string; topic: string; start_time: string | null; join_url: string }[]>([]);
   const [driveCount, setDriveCount] = useState(0);
   const [canvaCount, setCanvaCount] = useState(0);
   const [brevoCount, setBrevoCount] = useState(0);
+
+  // Zoom create dialog state
+  const [zoomDialogOpen, setZoomDialogOpen] = useState(false);
+  const [zoomTopic, setZoomTopic] = useState("Réunion rapide");
+  const [zoomStartTime, setZoomStartTime] = useState("");
+  const [zoomDuration, setZoomDuration] = useState(30);
+  const [zoomCreating, setZoomCreating] = useState(false);
 
   const fetchAll = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -773,6 +782,28 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
 
   useEffect(() => { fetchAll(); }, [fetchAll]);
 
+  const handleZoomCreate = async (instant = false) => {
+    setZoomCreating(true);
+    try {
+      await zoom.createMeeting(
+        zoomTopic || "Réunion rapide",
+        "project",
+        "",
+        instant ? undefined : zoomStartTime || undefined,
+        zoomDuration
+      );
+      toast.success("Réunion Zoom créée ✅");
+      setZoomDialogOpen(false);
+      setZoomTopic("Réunion rapide");
+      setZoomStartTime("");
+      setZoomDuration(30);
+      await fetchAll();
+    } catch (e: any) {
+      toast.error(e?.message || "Erreur lors de la création");
+    }
+    setZoomCreating(false);
+  };
+
   const fmtDate = (s: string | null) => {
     if (!s) return "—";
     const d = parseISO(s);
@@ -790,6 +821,8 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
       count: zoomCount,
       unit: "réunion",
       items: zoomMeetings.map((m) => ({ label: m.topic, sub: fmtDate(m.start_time), url: m.join_url })),
+      canCreate: zoom.isConnected,
+      onCreate: () => setZoomDialogOpen(true),
     },
     {
       key: "meet",
@@ -799,6 +832,8 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
       count: meetEvents.length,
       unit: "réunion",
       items: meetEvents.map((e) => ({ label: e.title, sub: fmtDate(e.start_time), url: e.meet_link })),
+      canCreate: true,
+      onCreate: () => setSelectedView("calendar"),
     },
     {
       key: "drive",
@@ -834,13 +869,14 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
   const cols = isMobileProp ? Math.min(integrations.length, 2) : Math.min(integrations.length, 4);
 
   return (
+    <>
     <div style={{
       ...(isMobileProp ? {} : { gridColumn: "1 / 4", gridRow: 4 }),
       display: "grid",
       gridTemplateColumns: `repeat(${cols}, minmax(0,1fr))`,
       gap: 10,
     }}>
-      {integrations.map(({ key, name, color, count, unit, items }) => (
+      {integrations.map(({ key, name, color, count, unit, items, canCreate, onCreate }) => (
         <Tile key={key} style={{ padding: "10px 13px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
             <div
@@ -850,6 +886,22 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
               }}
             />
             <span style={{ fontSize: 12, fontWeight: 600, color: C.text, letterSpacing: 0.3 }}>{name}</span>
+            {canCreate && onCreate && (
+              <button
+                onClick={onCreate}
+                style={{
+                  marginLeft: 4,
+                  width: 20, height: 20, borderRadius: "50%",
+                  background: BG, boxShadow: pill,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  border: "none", cursor: "pointer",
+                  fontSize: 14, fontWeight: 600, color: color, lineHeight: 1,
+                }}
+                title={key === "meet" ? "Créer via le calendrier" : "Nouvelle session"}
+              >
+                +
+              </button>
+            )}
             <span style={{
               marginLeft: "auto",
               fontSize: 13,
@@ -893,5 +945,104 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
         </Tile>
       ))}
     </div>
+
+    {/* Zoom create dialog – neumorphic style */}
+    {zoomDialogOpen && (
+      <div
+        onClick={() => setZoomDialogOpen(false)}
+        style={{
+          position: "fixed", inset: 0, zIndex: 9999,
+          background: "rgba(45,40,32,0.35)", backdropFilter: "blur(4px)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}
+      >
+        <div
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            background: BG, borderRadius: 18, boxShadow: raised,
+            padding: "22px 24px", width: "90%", maxWidth: 380,
+          }}
+        >
+          <div style={{ fontSize: 16, fontWeight: 600, color: C.text, marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ color: "#2D8CFF" }}>🎥</span> Nouvelle réunion Zoom
+          </div>
+
+          <div style={{ marginBottom: 12 }}>
+            <label style={{ fontSize: 12, color: C.muted, fontWeight: 500, display: "block", marginBottom: 4 }}>Sujet</label>
+            <input
+              value={zoomTopic}
+              onChange={(e) => setZoomTopic(e.target.value)}
+              placeholder="Nom de la réunion"
+              style={{
+                width: "100%", padding: "8px 10px", borderRadius: 10,
+                border: "none", background: BG, boxShadow: inset,
+                fontSize: 14, color: C.text, outline: "none",
+              }}
+            />
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
+            <div>
+              <label style={{ fontSize: 12, color: C.muted, fontWeight: 500, display: "block", marginBottom: 4 }}>Date & heure</label>
+              <input
+                type="datetime-local"
+                value={zoomStartTime}
+                onChange={(e) => setZoomStartTime(e.target.value)}
+                style={{
+                  width: "100%", padding: "8px 10px", borderRadius: 10,
+                  border: "none", background: BG, boxShadow: inset,
+                  fontSize: 13, color: C.text, outline: "none",
+                }}
+              />
+            </div>
+            <div>
+              <label style={{ fontSize: 12, color: C.muted, fontWeight: 500, display: "block", marginBottom: 4 }}>Durée (min)</label>
+              <input
+                type="number"
+                min={5}
+                max={480}
+                value={zoomDuration}
+                onChange={(e) => setZoomDuration(Number(e.target.value))}
+                style={{
+                  width: "100%", padding: "8px 10px", borderRadius: 10,
+                  border: "none", background: BG, boxShadow: inset,
+                  fontSize: 14, color: C.text, outline: "none",
+                }}
+              />
+            </div>
+          </div>
+
+          <div style={{ display: "flex", gap: 10 }}>
+            <button
+              onClick={() => handleZoomCreate(true)}
+              disabled={zoomCreating}
+              style={{
+                flex: 1, padding: "9px 0", borderRadius: 10,
+                background: BG, boxShadow: raised,
+                border: "none", cursor: zoomCreating ? "wait" : "pointer",
+                fontSize: 13, fontWeight: 600, color: C.text,
+                opacity: zoomCreating ? 0.6 : 1,
+              }}
+            >
+              {zoomCreating ? "⏳" : "⚡"} Instantanée
+            </button>
+            <button
+              onClick={() => handleZoomCreate(false)}
+              disabled={zoomCreating}
+              style={{
+                flex: 1, padding: "9px 0", borderRadius: 10,
+                background: BG, boxShadow: raised,
+                border: "none", cursor: zoomCreating ? "wait" : "pointer",
+                fontSize: 13, fontWeight: 600, color: "#2D8CFF",
+                opacity: zoomCreating ? 0.6 : 1,
+              }}
+            >
+              {zoomCreating ? "⏳" : "📅"} Planifier
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

@@ -419,8 +419,10 @@ export default function DashboardViewNM() {
                   .join("")
                   .slice(0, 2)
                   .toUpperCase();
-                const colors = [C.orange, C.red, C.muted];
-                const pct = Math.round(30 - i * 5 + Math.random() * 10);
+                const colors = [C.orange, C.red, C.muted, C.green, C.light];
+                const mc = memberCompletion[m.id];
+                const pct = mc && mc.total > 0 ? Math.round((mc.done / mc.total) * 100) : 0;
+                const taskLabel = mc ? `${mc.done}/${mc.total}` : "0/0";
                 return (
                   <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 6 }}>
                     <div

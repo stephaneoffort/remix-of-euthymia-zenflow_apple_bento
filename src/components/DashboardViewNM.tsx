@@ -268,7 +268,7 @@ export default function DashboardViewNM() {
                   const taskLabel = mc ? `${mc.done}/${mc.total}` : "0/0";
                   return (
                     <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: "50%", background: BG, boxShadow: pillMd, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 500, color: colors[i], flexShrink: 0 }}>
+                      <div style={{ width: 32, height: 32, borderRadius: "50%", background: BG, boxShadow: pillMd, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 500, color: colors[i], flexShrink: 0 }}>
                         {initials}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>

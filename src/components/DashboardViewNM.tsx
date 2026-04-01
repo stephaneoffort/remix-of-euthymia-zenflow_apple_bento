@@ -1,6 +1,7 @@
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useMemo } from "react";
+import { motion } from "framer-motion";
 
 /* ─── Design tokens ─── */
 const BG = "#EDE6DA";
@@ -30,14 +31,22 @@ const Tile = ({
   children,
   nm = false,
   style,
+  delay = 0,
 }: {
   children: React.ReactNode;
   nm?: boolean;
   style?: React.CSSProperties;
+  delay?: number;
 }) => (
-  <div style={{ background: BG, borderRadius: 14, boxShadow: nm ? inset : raised, overflow: "hidden", ...style }}>
+  <motion.div
+    initial={{ opacity: 0, y: 12 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.45, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
+    whileHover={{ y: -2, boxShadow: nm ? inset : "8px 8px 18px rgba(160,140,108,0.5),-8px -8px 18px rgba(255,252,246,0.9)" }}
+    style={{ background: BG, borderRadius: 14, boxShadow: nm ? inset : raised, overflow: "hidden", ...style }}
+  >
     {children}
-  </div>
+  </motion.div>
 );
 
 const Tag = ({ children }: { children: React.ReactNode }) => (
@@ -128,7 +137,7 @@ export default function DashboardViewNM() {
       {/* ── Grid ── */}
       <div style={{ display: "grid", gridTemplateColumns: "minmax(0,7fr) minmax(0,3fr) minmax(0,2fr)", gap: 10 }}>
         {/* HERO */}
-        <Tile style={{ padding: "18px 20px" }}>
+        <Tile delay={0.05} style={{ padding: "18px 20px" }}>
           <Lbl>{today}</Lbl>
           <div
             style={{
@@ -162,7 +171,7 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* TOTAL inset */}
-        <Tile nm style={{ padding: 14, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+        <Tile nm delay={0.1} style={{ padding: 14, display: "flex", flexDirection: "column", justifyContent: "center" }}>
           <div
             style={{
               fontFamily: "'Cormorant Garamond', serif",
@@ -203,7 +212,7 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* PROGRESSION */}
-        <Tile
+        <Tile delay={0.15}
           style={{
             padding: "14px 10px",
             display: "flex",
@@ -246,7 +255,7 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* URGENTES */}
-        <Tile style={{ gridColumn: 1, gridRow: 2 }}>
+        <Tile delay={0.2} style={{ gridColumn: 1, gridRow: 2 }}>
           <div
             style={{
               display: "flex",
@@ -312,7 +321,7 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* DONUT */}
-        <Tile
+        <Tile delay={0.25}
           style={{
             gridColumn: 2,
             gridRow: 2,
@@ -392,7 +401,7 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* ÉQUIPE inset */}
-        <Tile nm style={{ gridColumn: 3, gridRow: 2, padding: "11px 12px" }}>
+        <Tile nm delay={0.3} style={{ gridColumn: 3, gridRow: 2, padding: "11px 12px" }}>
           <Lbl>Équipe</Lbl>
           <div style={{ marginTop: 9, display: "flex", flexDirection: "column", gap: 9 }}>
             {teamMembers.length === 0 ? (
@@ -452,7 +461,7 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* ÉCHÉANCES */}
-        <Tile style={{ gridColumn: "1 / 3", gridRow: 3 }}>
+        <Tile delay={0.35} style={{ gridColumn: "1 / 3", gridRow: 3 }}>
           <div
             style={{
               display: "flex",
@@ -503,7 +512,7 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* ACTIVITÉ inset */}
-        <Tile nm style={{ gridColumn: 3, gridRow: 3, padding: "11px 12px" }}>
+        <Tile nm delay={0.4} style={{ gridColumn: 3, gridRow: 3, padding: "11px 12px" }}>
           <Lbl>Activité · 7j</Lbl>
           <svg width="100%" height="48" viewBox="0 0 110 48" preserveAspectRatio="none" style={{ marginTop: 7 }}>
             <path
@@ -582,9 +591,10 @@ export default function DashboardViewNM() {
                 </svg>
               ),
             },
-          ].map(({ name, sub, icon }) => (
+          ].map(({ name, sub, icon }, idx) => (
             <Tile
               key={name}
+              delay={0.45 + idx * 0.05}
               style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 13px", cursor: "pointer" }}
             >
               <div

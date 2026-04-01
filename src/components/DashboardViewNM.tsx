@@ -131,7 +131,7 @@ export default function DashboardViewNM() {
   const deadlines = useMemo(
     () =>
       (tasks ?? [])
-        .filter((t) => t.dueDate)
+        .filter((t) => t.dueDate && t.status !== "done")
         .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime())
         .slice(0, 4),
     [tasks],

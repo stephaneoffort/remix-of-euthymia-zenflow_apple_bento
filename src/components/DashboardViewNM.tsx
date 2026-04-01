@@ -217,7 +217,7 @@ export default function DashboardViewNM() {
           <Tile>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 14px 7px", borderBottom: "1px solid rgba(160,140,108,0.1)" }}>
               <Lbl>À traiter</Lbl>
-              <span style={{ background: BG, borderRadius: 100, boxShadow: pill, fontSize: 9, fontWeight: 500, padding: "2px 8px", color: C.orange }}>
+              <span style={{ background: BG, borderRadius: 100, boxShadow: pill, fontSize: 12, fontWeight: 500, padding: "3px 10px", color: C.orange }}>
                 {stats.urgent} urgentes
               </span>
             </div>

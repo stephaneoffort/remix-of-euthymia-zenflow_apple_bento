@@ -521,26 +521,50 @@ export default function DashboardViewNM() {
         {/* ACTIVITÉ inset */}
         <Tile nm style={{ gridColumn: 3, gridRow: 3, padding: "11px 12px" }}>
           <Lbl>Activité · 7j</Lbl>
-          <svg width="100%" height="48" viewBox="0 0 110 48" preserveAspectRatio="none" style={{ marginTop: 7 }}>
-            <path
-              d="M0,40 L16,35 L32,20 L48,27 L64,10 L80,27 L96,19 L110,32 L110,48 L0,48 Z"
-              fill={C.green}
-              fillOpacity="0.1"
-            />
-            <polyline
-              points="0,40 16,35 32,20 48,27 64,10 80,27 96,19 110,32"
-              fill="none"
-              stroke={C.green}
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <circle cx="64" cy="10" r="3" fill={C.green} />
-          </svg>
-          <div style={{ fontSize: 8, color: C.muted, marginTop: 4 }}>
-            Pic <span style={{ color: C.orange }}>cette semaine</span> ·{" "}
-            <span style={{ color: C.text }}>{stats.done} tâches</span>
-          </div>
+          {(() => {
+            const all = tasks ?? [];
+            const now = new Date();
+            const days = Array.from({ length: 7 }, (_, i) => {
+              const d = new Date(now);
+              d.setDate(d.getDate() - (6 - i));
+              d.setHours(0, 0, 0, 0);
+              return d;
+            });
+            const counts = days.map((d) => {
+              const next = new Date(d);
+              next.setDate(next.getDate() + 1);
+              return all.filter((t) => {
+                const u = new Date(t.updatedAt ?? t.createdAt);
+                return u >= d && u < next;
+              }).length;
+            });
+            const max = Math.max(...counts, 1);
+            const h = 42;
+            const w = 110;
+            const step = w / (counts.length - 1);
+            const pts = counts.map((c, i) => `${i * step},${h - (c / max) * (h - 6)}`).join(" ");
+            const areaD = `M0,${h - (counts[0] / max) * (h - 6)} ` +
+              counts.map((c, i) => `L${i * step},${h - (c / max) * (h - 6)}`).join(" ") +
+              ` L${w},${h} L0,${h} Z`;
+            const peakIdx = counts.indexOf(Math.max(...counts));
+            const peakX = peakIdx * step;
+            const peakY = h - (counts[peakIdx] / max) * (h - 6);
+            const weekTotal = counts.reduce((a, b) => a + b, 0);
+            const dayLabels = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
+            const peakDay = dayLabels[days[peakIdx].getDay()];
+            return (
+              <>
+                <svg width="100%" height="48" viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" style={{ marginTop: 7 }}>
+                  <path d={areaD} fill={C.green} fillOpacity="0.1" />
+                  <polyline points={pts} fill="none" stroke={C.green} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <circle cx={peakX} cy={peakY} r="3" fill={C.green} />
+                </svg>
+                <div style={{ fontSize: 8, color: C.muted, marginTop: 4 }}>
+                  Pic <span style={{ color: C.orange }}>{peakDay}</span> ({counts[peakIdx]}) · <span style={{ color: C.text }}>{weekTotal} actions</span>
+                </div>
+              </>
+            );
+          })()}
         </Tile>
 
         {/* INTÉGRATIONS */}

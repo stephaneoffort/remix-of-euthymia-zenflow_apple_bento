@@ -95,14 +95,13 @@ export default function DashboardViewNM() {
     [tasks],
   );
 
-  const deadlines = useMemo(
-    () =>
-      (tasks ?? [])
-        .filter((t) => t.dueDate)
-        .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime())
-        .slice(0, 4),
-    [tasks],
-  );
+  const deadlines = useMemo(() => {
+    const now = new Date();
+    return (tasks ?? [])
+      .filter((t) => t.dueDate && t.status !== "done" && new Date(t.dueDate) >= now)
+      .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime())
+      .slice(0, 4);
+  }, [tasks]);
 
   const teamMembers = useMemo(() => (members ?? []).slice(0, 3), [members]);
 

@@ -268,7 +268,7 @@ export default function DashboardViewNM() {
             />
           </svg>
           <div style={{ fontSize: 8, color: C.light, marginTop: 3 }}>
-            {stats.done} / {stats.total}
+            <AnimatedNumber value={stats.done} /> / <AnimatedNumber value={stats.total} />
           </div>
         </Tile>
 

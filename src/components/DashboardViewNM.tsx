@@ -878,10 +878,10 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
                     borderBottom: i < Math.min(items.length, 3) - 1 ? "1px solid rgba(160,140,108,0.08)" : "none",
                   }}
                 >
-                  <span style={{ fontSize: 9, color: C.text, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                   <span style={{ fontSize: 12, color: C.text, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {item.label}
                   </span>
-                  <span style={{ fontSize: 8, color: C.light, whiteSpace: "nowrap" }}>{item.sub}</span>
+                   <span style={{ fontSize: 11, color: C.light, whiteSpace: "nowrap" }}>{item.sub}</span>
                 </a>
               ))}
             </div>

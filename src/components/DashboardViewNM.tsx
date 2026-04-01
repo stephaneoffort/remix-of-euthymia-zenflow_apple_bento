@@ -461,7 +461,7 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* ÉCHÉANCES */}
-        <Tile style={{ gridColumn: "1 / 3", gridRow: 3 }}>
+        <Tile delay={0.35} style={{ gridColumn: "1 / 3", gridRow: 3 }}>
           <div
             style={{
               display: "flex",

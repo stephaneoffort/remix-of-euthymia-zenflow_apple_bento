@@ -577,7 +577,7 @@ export default function DashboardViewNM() {
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div
                         style={{
-                          fontSize: 9,
+                          fontSize: 12,
                           color: C.text,
                           whiteSpace: "nowrap",
                           overflow: "hidden",

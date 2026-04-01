@@ -443,51 +443,22 @@ export default function DashboardViewNM() {
               <div style={{ fontSize: 9, color: C.light }}>—</div>
             ) : (
               teamWorkload.map((m, i) => {
-                const initials = (m.name ?? m.email ?? "?")
-                  .split(" ")
-                  .map((w: string) => w[0])
-                  .join("")
-                  .slice(0, 2)
-                  .toUpperCase();
                 const colors = [C.orange, C.red, C.muted];
-                const pct = m.completion;
+                const initials = (m.name ?? "?").split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
                 return (
                   <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <div
-                      style={{
-                        width: 24,
-                        height: 24,
-                        borderRadius: "50%",
-                        background: BG,
-                        boxShadow: pillMd,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: 8,
-                        fontWeight: 500,
-                        color: colors[i],
-                        flexShrink: 0,
-                      }}
-                    >
+                    <div style={{ width: 24, height: 24, borderRadius: "50%", background: m.avatarColor ?? BG, boxShadow: pillMd, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, fontWeight: 500, color: "white", flexShrink: 0 }}>
                       {initials}
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div
-                        style={{
-                          fontSize: 9,
-                          color: C.text,
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
-                      >
-                         {m.name ?? m.email}
+                      <div style={{ fontSize: 9, color: C.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        {m.name}
                       </div>
                       <div style={{ height: 2, background: BG, borderRadius: 1, boxShadow: barIn, marginTop: 3 }}>
-                        <div style={{ height: 2, borderRadius: 1, background: colors[i], width: `${pct}%` }} />
+                        <div style={{ height: 2, borderRadius: 1, background: m.avatarColor ?? colors[i], width: `${m.completion}%` }} />
                       </div>
                     </div>
-                    <span style={{ fontSize: 8, color: C.light }}>{pct}%</span>
+                    <span style={{ fontSize: 8, color: C.light }}>{m.completion}%</span>
                   </div>
                 );
               })

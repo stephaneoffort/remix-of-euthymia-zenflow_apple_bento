@@ -21,6 +21,12 @@ const C = {
   green: "#2A5828",
   border: "rgba(140,118,88,0.12)",
 };
+const SPACE_DOT_PALETTE = [C.orange, C.green, "#4A6FA5", "#8B5E3C", "#6B4C8A", "#2A7A6E"];
+function spaceDotColor(icon: string): string {
+  let h = 0;
+  for (let i = 0; i < icon.length; i++) h = (h * 31 + icon.charCodeAt(i)) | 0;
+  return SPACE_DOT_PALETTE[Math.abs(h) % SPACE_DOT_PALETTE.length];
+}
 
 /* ─── Helpers ─── */
 function Lbl({ children }: { children: React.ReactNode }) {

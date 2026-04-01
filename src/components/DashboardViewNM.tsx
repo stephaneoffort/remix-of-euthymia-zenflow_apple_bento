@@ -94,9 +94,9 @@ const Dot = ({ color }: { color: string }) => (
 
 /* ─── Main component ─── */
 export default function DashboardViewNM() {
-  const { tasks, teamMembers: members, setSelectedTaskId } = useApp();
-
-  const { user } = useAuth();
+  const { tasks, teamMembers, projects, setSelectedTaskId } = useApp();
+  const { user, teamMemberId } = useAuth();
+  const members = teamMembers;
 
   const today = useMemo(() => {
     const d = new Date();

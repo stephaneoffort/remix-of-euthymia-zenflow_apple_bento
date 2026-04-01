@@ -71,7 +71,8 @@ export default function DashboardViewNM() {
     return d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   }, []);
 
-  const firstName = user?.user_metadata?.full_name?.split(" ")[0] ?? user?.email?.split("@")[0] ?? "Stephane";
+  const rawFirst = user?.user_metadata?.full_name?.split(" ")[0] ?? user?.email?.split("@")[0] ?? "Utilisateur";
+  const firstName = rawFirst.charAt(0).toUpperCase() + rawFirst.slice(1).toLowerCase();
 
   const stats = useMemo(() => {
     const all = tasks ?? [];

@@ -272,7 +272,7 @@ export default function DashboardViewNM() {
                         {initials}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 10, color: C.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{m.name ?? m.email}</div>
+                        <div style={{ fontSize: 13, color: C.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{m.name ?? m.email}</div>
                         <div style={{ height: 3, background: BG, borderRadius: 2, boxShadow: barIn, marginTop: 3 }}>
                           <div style={{ height: 3, borderRadius: 2, background: colors[i], width: `${pct}%` }} />
                         </div>

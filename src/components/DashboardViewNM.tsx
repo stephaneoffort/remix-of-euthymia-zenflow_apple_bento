@@ -450,7 +450,7 @@ export default function DashboardViewNM() {
                   .slice(0, 2)
                   .toUpperCase();
                 const colors = [C.orange, C.red, C.muted];
-                const pct = Math.round(30 - i * 5 + Math.random() * 10);
+                const pct = m.completion;
                 return (
                   <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 6 }}>
                     <div

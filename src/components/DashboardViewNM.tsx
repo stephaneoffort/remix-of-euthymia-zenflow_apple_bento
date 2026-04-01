@@ -1,6 +1,10 @@
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useMemo } from "react";
+import ZoomMeetingsDashboard from "@/components/dashboard/ZoomMeetingsDashboard";
+import DashboardMeetSection from "@/components/dashboard/DashboardMeetSection";
+import BrevoStats from "@/components/brevo/BrevoStats";
+import DashboardResourcesSection from "@/components/dashboard/DashboardResourcesSection";
 
 /* ─── Design tokens ─── */
 const BG = "#EDE6DA";

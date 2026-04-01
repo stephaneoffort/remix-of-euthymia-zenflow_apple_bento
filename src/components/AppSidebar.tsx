@@ -151,6 +151,7 @@ export default function AppSidebar() {
   const navigate = useNavigate();
   const { isOnline } = usePresence();
   const { user } = useAuth();
+  const { designMode } = useThemeMode();
 
   // Resizable sidebar
   const [sidebarWidth, setSidebarWidth] = useState<number>(() => {

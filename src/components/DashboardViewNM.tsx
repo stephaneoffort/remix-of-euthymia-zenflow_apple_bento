@@ -137,7 +137,16 @@ export default function DashboardViewNM() {
     [tasks],
   );
 
-  const displayMembers = useMemo(() => (members ?? []).slice(0, 3), [members]);
+  const teamWorkload = useMemo(
+    () =>
+      (teamMembers ?? []).map((m) => {
+        const memberTasks = (tasks ?? []).filter((t) => t.assigneeIds?.includes(m.id));
+        const done = memberTasks.filter((t) => t.status === "done").length;
+        const completion = memberTasks.length > 0 ? Math.round((done / memberTasks.length) * 100) : 0;
+        return { ...m, memberTasks: memberTasks.length, done, completion };
+      }).slice(0, 3),
+    [tasks, teamMembers],
+  );
 
   const daysLabel = (due?: string | null) => {
     if (!due) return "";

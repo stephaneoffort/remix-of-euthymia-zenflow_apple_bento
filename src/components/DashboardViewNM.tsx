@@ -200,7 +200,7 @@ export default function DashboardViewNM() {
               lineHeight: 1,
             }}
           >
-            {stats.pending}
+            <AnimatedNumber value={stats.pending} />
           </div>
           <div style={{ fontSize: 8, color: C.light, marginTop: 2, letterSpacing: 0.5 }}>tâches en attente</div>
           <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 6 }}>

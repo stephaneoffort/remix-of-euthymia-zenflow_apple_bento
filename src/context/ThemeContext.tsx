@@ -177,8 +177,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     return (localStorage.getItem("euthymia-design-mode") as DesignMode) || "classic";
   });
   const setDesignMode = (m: DesignMode) => {
+    const root = document.documentElement;
+    root.classList.add("design-transitioning");
     setDesignModeState(m);
     localStorage.setItem("euthymia-design-mode", m);
+    setTimeout(() => root.classList.remove("design-transitioning"), 600);
   };
   const [palette, setPaletteState] = useState<ThemePalette>(() => {
     return (localStorage.getItem("euthymia-palette") as ThemePalette) || "sapphire";

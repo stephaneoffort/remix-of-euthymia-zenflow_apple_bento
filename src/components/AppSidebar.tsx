@@ -1682,6 +1682,13 @@ function ThemeSwitcher() {
     { key: "liquidGlassCoral", label: "LG Coral", colors: ["#fb7185", "#dc2626"] },
     { key: "liquidGlassSlate", label: "LG Slate", colors: ["#94a3b8", "#475569"] },
     { key: "liquidGlassMidnight", label: "LG Midnight", colors: ["#6366f1", "#1e1b4b"] },
+    { key: "nmCloud", label: "Cloud", colors: ["#E8ECEF", "#4A7FA5"] },
+    { key: "nmMidnight", label: "Midnight", colors: ["#1E2028", "#6B9BC0"] },
+    { key: "nmSand", label: "Sand", colors: ["#EDE8E3", "#A07840"] },
+    { key: "nmForest", label: "Forest", colors: ["#E6EDE8", "#4E7A45"] },
+    { key: "nmLavender", label: "Lavender", colors: ["#EDE8F0", "#7B5EA7"] },
+    { key: "nmDeepForest", label: "Deep Forest", colors: ["#1A1F1A", "#5A9A6A"] },
+    { key: "ivoireChaud", label: "Ivoire Chaud", colors: ["#f5efe3", "#c27838"] },
   ];
 
   return (

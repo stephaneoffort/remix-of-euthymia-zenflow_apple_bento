@@ -240,7 +240,7 @@ export default function DashboardViewNM() {
               <Lbl>Prochaines échéances</Lbl>
             </div>
             {deadlines.length === 0 ? (
-              <div style={{ padding: "12px 14px", fontSize: 10, color: C.light }}>Aucune échéance à venir</div>
+              <div style={{ padding: "12px 14px", fontSize: 13, color: C.light }}>Aucune échéance à venir</div>
             ) : (
               deadlines.map((t, i) => (
                 <div key={t.id} onClick={() => setSelectedTaskId(t.id)}

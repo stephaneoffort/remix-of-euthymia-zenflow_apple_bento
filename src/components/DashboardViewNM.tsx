@@ -847,7 +847,7 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
                 boxShadow: `0 0 6px ${color}44`,
               }}
             />
-            <span style={{ fontSize: 9, fontWeight: 600, color: C.text, letterSpacing: 0.3 }}>{name}</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: C.text, letterSpacing: 0.3 }}>{name}</span>
             <span style={{
               marginLeft: "auto",
               fontSize: 8,

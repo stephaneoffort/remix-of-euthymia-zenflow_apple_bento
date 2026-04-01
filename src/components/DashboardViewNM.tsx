@@ -690,7 +690,7 @@ export default function DashboardViewNM() {
                   <polyline points={pts} fill="none" stroke={C.green} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   <circle cx={peakX} cy={peakY} r="3" fill={C.green} />
                 </svg>
-                <div style={{ fontSize: 8, color: C.muted, marginTop: 4 }}>
+                <div style={{ fontSize: 11, color: C.muted, marginTop: 4 }}>
                   Pic <span style={{ color: C.orange }}>{peakDay}</span> ({counts[peakIdx]}) · <span style={{ color: C.text }}>{weekTotal} actions</span>
                 </div>
               </>

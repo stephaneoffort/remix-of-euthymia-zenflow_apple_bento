@@ -250,7 +250,7 @@ export default function DashboardViewNM() {
               marginTop: 3,
             }}
           >
-            {stats.pct}%
+            <AnimatedNumber value={stats.pct} suffix="%" />
           </div>
           <svg width="48" height="48" viewBox="0 0 48 48" style={{ margin: "8px auto 0", display: "block" }}>
             <circle cx="24" cy="24" r="19" fill="none" stroke="rgba(160,140,108,0.2)" strokeWidth="5" />

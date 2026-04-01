@@ -87,15 +87,15 @@
   --input: 36 18% 87%;
   --ring: 24 68% 42%;
 
-  /* Sidebar — clair chaud */
-  --sidebar-bg: 38 30% 94%;
-  --sidebar-fg: 28 10% 32%;
+  /* Sidebar — ivoire chaud */
+  --sidebar-bg: 30 16% 73%;
+  --sidebar-fg: 28 10% 22%;
   --sidebar-fg-bright: 28 18% 14%;
-  --sidebar-hover: 36 20% 90%;
+  --sidebar-hover: 30 18% 68%;
   --sidebar-active: 24 72% 50%;
   --sidebar-active-fg: 0 0% 100%;
-  --sidebar-border: 36 18% 84%;
-  --sidebar-background: 38 30% 94%;
+  --sidebar-border: 30 14% 65%;
+  --sidebar-background: 30 16% 73%;
   --sidebar-foreground: 28 10% 30%;
   --sidebar-primary: 24 72% 50%;
   --sidebar-primary-foreground: 0 0% 100%;

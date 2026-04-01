@@ -138,6 +138,7 @@ export default function Index() {
   const [todayEventCount, setTodayEventCount] = useState(0);
   const [viewOrder, setViewOrder] = useState<ViewType[]>(loadViewOrder);
   const { designMode } = useThemeMode();
+  console.log("designMode:", designMode);
 
   const orderedViews = useMemo(() => viewOrder.map((key) => VIEW_MAP[key]).filter(Boolean), [viewOrder]);
 

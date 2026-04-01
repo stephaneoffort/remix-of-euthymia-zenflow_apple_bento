@@ -1,1 +1,12 @@
 project_id = "jivfyaqpuhutixfjttga"
+
+[auth]
+site_url = "https://euthymia-zenflow-bento.lovable.app"
+additional_redirect_urls = [
+  "https://id-preview--0bc87be4-346b-443f-9d4d-a55071eb85f4.lovable.app",
+  "https://id-preview--0bc87be4-346b-443f-9d4d-a55071eb85f4.lovable.app/**",
+  "https://euthymia-zenflow-bento.lovable.app",
+  "https://euthymia-zenflow-bento.lovable.app/**",
+  "http://localhost:8080",
+  "http://localhost:8080/**"
+]

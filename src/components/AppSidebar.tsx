@@ -489,7 +489,7 @@ export default function AppSidebar() {
   if (sidebarCollapsed) {
     return (
       <TooltipProvider delayDuration={200}>
-        <div className="w-[52px] bg-sidebar-bg flex flex-col items-center py-3 border-r border-sidebar-border-color shrink-0 gap-0.5">
+        <div className={`w-[52px] bg-sidebar-bg flex flex-col items-center py-3 border-r border-sidebar-border-color shrink-0 gap-0.5${designMode === "neumorphic" ? " nm-sidebar" : ""}`}>
           {/* Expand */}
           <Tooltip>
             <TooltipTrigger asChild>
@@ -647,7 +647,7 @@ export default function AppSidebar() {
     <>
       {isMobile && <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setSidebarCollapsed(true)} />}
       <div
-        className={`${isMobile ? "fixed inset-y-0 left-0 z-50" : "relative"} bg-sidebar-bg flex flex-col border-r border-sidebar-border-color shrink-0 h-screen`}
+        className={`${isMobile ? "fixed inset-y-0 left-0 z-50" : "relative"} bg-sidebar-bg flex flex-col border-r border-sidebar-border-color shrink-0 h-screen${designMode === "neumorphic" ? " nm-sidebar" : ""}`}
         style={{ width: isMobile ? 256 : sidebarWidth }}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}

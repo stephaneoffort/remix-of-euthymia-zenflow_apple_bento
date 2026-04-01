@@ -181,7 +181,7 @@ export default function DashboardViewNM() {
               <div style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300, fontSize: 36, color: C.text, lineHeight: 1 }}>
                 {stats.pending}
               </div>
-              <div style={{ fontSize: 8, color: C.light, marginTop: 2 }}>en attente</div>
+              <div style={{ fontSize: 11, color: C.light, marginTop: 2 }}>en attente</div>
               <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 4 }}>
                 {[
                   { label: "Urgentes", count: stats.urgent, color: C.orange },

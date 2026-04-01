@@ -512,7 +512,7 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* ACTIVITÉ inset */}
-        <Tile nm style={{ gridColumn: 3, gridRow: 3, padding: "11px 12px" }}>
+        <Tile nm delay={0.4} style={{ gridColumn: 3, gridRow: 3, padding: "11px 12px" }}>
           <Lbl>Activité · 7j</Lbl>
           <svg width="100%" height="48" viewBox="0 0 110 48" preserveAspectRatio="none" style={{ marginTop: 7 }}>
             <path

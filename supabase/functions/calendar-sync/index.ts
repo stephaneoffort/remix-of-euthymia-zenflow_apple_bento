@@ -824,10 +824,17 @@ async function authenticateUser(req: Request): Promise<string> {
     Deno.env.get("SUPABASE_ANON_KEY")!,
     { global: { headers: { Authorization: authHeader } } }
   )
+  // Try getClaims first, fall back to getUser
   const token = authHeader.replace("Bearer ", "")
-  const { data, error } = await supabaseUser.auth.getClaims(token)
-  if (error || !data?.claims) throw new Error("UNAUTHORIZED")
-  return data.claims.sub as string
+  try {
+    const { data, error } = await supabaseUser.auth.getClaims(token)
+    if (!error && data?.claims?.sub) return data.claims.sub as string
+  } catch {
+    // getClaims not available, fall back
+  }
+  const { data: { user }, error: userErr } = await supabaseUser.auth.getUser()
+  if (userErr || !user) throw new Error("UNAUTHORIZED")
+  return user.id
 }
 
 // ─── MAIN HANDLER ───

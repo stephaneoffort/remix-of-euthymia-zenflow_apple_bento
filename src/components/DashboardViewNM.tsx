@@ -639,7 +639,7 @@ export default function DashboardViewNM() {
                 {t.title}
               </span>
               <Tag>{t.status}</Tag>
-              <span style={{ fontSize: 9, color: statusColor(t.status), fontWeight: 500, whiteSpace: "nowrap" }}>
+              <span style={{ fontSize: 12, color: statusColor(t.status), fontWeight: 500, whiteSpace: "nowrap" }}>
                 {daysLabel(t.dueDate)}
               </span>
             </div>

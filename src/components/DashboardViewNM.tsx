@@ -610,7 +610,7 @@ export default function DashboardViewNM() {
             }}
           >
             <Lbl>Prochaines échéances</Lbl>
-            <span style={{ fontSize: 9, color: C.orange, cursor: "pointer", fontWeight: 500 }}>Voir tout →</span>
+            <span style={{ fontSize: 12, color: C.orange, cursor: "pointer", fontWeight: 500 }}>Voir tout →</span>
           </div>
           {deadlines.map((t, i) => (
             <div

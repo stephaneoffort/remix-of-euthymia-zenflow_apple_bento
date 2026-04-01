@@ -209,7 +209,7 @@ export default function DashboardViewNM() {
                   strokeDasharray={stats.circ} strokeDashoffset={stats.offset}
                   strokeLinecap="round" transform="rotate(-90 24 24)" />
               </svg>
-              <div style={{ fontSize: 8, color: C.light, marginTop: 3 }}>{stats.done} / {stats.total}</div>
+              <div style={{ fontSize: 11, color: C.light, marginTop: 3 }}>{stats.done} / {stats.total}</div>
             </Tile>
           </div>
 

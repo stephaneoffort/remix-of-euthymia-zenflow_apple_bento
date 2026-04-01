@@ -121,7 +121,10 @@ export default function DashboardViewNM() {
   }, [tasks]);
 
   const urgentTasks = useMemo(
-    () => (tasks ?? []).filter((t) => t.priority === "high" && t.status !== "done").slice(0, 4),
+    () =>
+      (tasks ?? [])
+        .filter((t) => (t.priority === "urgent" || t.priority === "high") && t.status !== "done")
+        .slice(0, 4),
     [tasks],
   );
 

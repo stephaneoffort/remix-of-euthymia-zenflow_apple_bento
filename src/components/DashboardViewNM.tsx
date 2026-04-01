@@ -434,9 +434,9 @@ export default function DashboardViewNM() {
                 background: BG,
                 borderRadius: 100,
                 boxShadow: pill,
-                fontSize: 9,
+                fontSize: 12,
                 fontWeight: 500,
-                padding: "2px 8px",
+                padding: "3px 10px",
                 color: C.orange,
               }}
             >

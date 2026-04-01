@@ -26,7 +26,7 @@ const C = {
 
 /* ─── Sub-components ─── */
 const Lbl = ({ children }: { children: React.ReactNode }) => (
-  <div style={{ fontSize: 11, letterSpacing: 2, textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>
+  <div style={{ fontSize: 13, letterSpacing: 2, textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>
     {children}
   </div>
 );
@@ -51,7 +51,7 @@ const Tag = ({ children }: { children: React.ReactNode }) => (
       background: BG,
       borderRadius: 4,
       boxShadow: pill,
-      fontSize: 11,
+      fontSize: 13,
       fontWeight: 500,
       padding: "2px 7px",
       color: C.muted,
@@ -166,7 +166,7 @@ export default function DashboardViewNM() {
               <div style={{ height: 5, borderRadius: 3, background: BG, boxShadow: barIn, overflow: "hidden" }}>
                 <div style={{ width: `${stats.pct}%`, height: "100%", background: C.green, borderRadius: 3 }} />
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.light, marginTop: 3 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: C.light, marginTop: 3 }}>
                 <span>0</span>
                 <span>{stats.pct}% · {stats.done}/{stats.total}</span>
                 <span>{stats.total}</span>
@@ -181,7 +181,7 @@ export default function DashboardViewNM() {
               <div style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300, fontSize: 36, color: C.text, lineHeight: 1 }}>
                 {stats.pending}
               </div>
-              <div style={{ fontSize: 11, color: C.light, marginTop: 2 }}>en attente</div>
+              <div style={{ fontSize: 13, color: C.light, marginTop: 2 }}>en attente</div>
               <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 4 }}>
                 {[
                   { label: "Urgentes", count: stats.urgent, color: C.orange },
@@ -209,7 +209,7 @@ export default function DashboardViewNM() {
                   strokeDasharray={stats.circ} strokeDashoffset={stats.offset}
                   strokeLinecap="round" transform="rotate(-90 24 24)" />
               </svg>
-              <div style={{ fontSize: 11, color: C.light, marginTop: 3 }}>{stats.done} / {stats.total}</div>
+              <div style={{ fontSize: 13, color: C.light, marginTop: 3 }}>{stats.done} / {stats.total}</div>
             </Tile>
           </div>
 
@@ -268,7 +268,7 @@ export default function DashboardViewNM() {
                   const taskLabel = mc ? `${mc.done}/${mc.total}` : "0/0";
                   return (
                     <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <div style={{ width: 32, height: 32, borderRadius: "50%", background: BG, boxShadow: pillMd, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 500, color: colors[i], flexShrink: 0 }}>
+                      <div style={{ width: 32, height: 32, borderRadius: "50%", background: BG, boxShadow: pillMd, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 500, color: colors[i], flexShrink: 0 }}>
                         {initials}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -322,7 +322,7 @@ export default function DashboardViewNM() {
               <div style={{ width: `${stats.pct}%`, height: "100%", background: C.green, borderRadius: 3 }} />
             </div>
             <div
-              style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.light, marginTop: 3 }}
+              style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: C.light, marginTop: 3 }}
             >
               <span>0</span>
               <span>
@@ -347,7 +347,7 @@ export default function DashboardViewNM() {
           >
             {stats.pending}
           </div>
-          <div style={{ fontSize: 11, color: C.light, marginTop: 2, letterSpacing: 0.5 }}>tâches en attente</div>
+          <div style={{ fontSize: 13, color: C.light, marginTop: 2, letterSpacing: 0.5 }}>tâches en attente</div>
           <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 6 }}>
             {[
               { label: "Urgentes", count: stats.urgent, color: C.orange },
@@ -412,7 +412,7 @@ export default function DashboardViewNM() {
               transform="rotate(-90 24 24)"
             />
           </svg>
-          <div style={{ fontSize: 11, color: C.light, marginTop: 3 }}>
+          <div style={{ fontSize: 13, color: C.light, marginTop: 3 }}>
             {stats.done} / {stats.total}
           </div>
         </Tile>
@@ -529,8 +529,8 @@ export default function DashboardViewNM() {
             ].map(({ label, count, color }) => (
               <div key={label} style={{ display: "flex", alignItems: "center", gap: 7 }}>
                 <Dot color={color} />
-                <span style={{ fontSize: 11, color: C.muted, flex: 1 }}>{label}</span>
-                <span style={{ fontSize: 11, color: C.text, fontWeight: 500 }}>{count}</span>
+                <span style={{ fontSize: 13, color: C.muted, flex: 1 }}>{label}</span>
+                <span style={{ fontSize: 13, color: C.text, fontWeight: 500 }}>{count}</span>
               </div>
             ))}
           </div>
@@ -566,7 +566,7 @@ export default function DashboardViewNM() {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        fontSize: 10,
+                        fontSize: 12,
                         fontWeight: 500,
                         color: colors[i],
                         flexShrink: 0,
@@ -590,7 +590,7 @@ export default function DashboardViewNM() {
                         <div style={{ height: 2, borderRadius: 1, background: colors[i], width: `${pct}%` }} />
                       </div>
                     </div>
-                    <span style={{ fontSize: 11, color: C.light, whiteSpace: "nowrap" }}>{taskLabel} · {pct}%</span>
+                    <span style={{ fontSize: 13, color: C.light, whiteSpace: "nowrap" }}>{taskLabel} · {pct}%</span>
                   </div>
                 );
               })
@@ -690,7 +690,7 @@ export default function DashboardViewNM() {
                   <polyline points={pts} fill="none" stroke={C.green} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   <circle cx={peakX} cy={peakY} r="3" fill={C.green} />
                 </svg>
-                <div style={{ fontSize: 11, color: C.muted, marginTop: 4 }}>
+                <div style={{ fontSize: 13, color: C.muted, marginTop: 4 }}>
                   Pic <span style={{ color: C.orange }}>{peakDay}</span> ({counts[peakIdx]}) · <span style={{ color: C.text }}>{weekTotal} actions</span>
                 </div>
               </>
@@ -850,7 +850,7 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
             <span style={{ fontSize: 12, fontWeight: 600, color: C.text, letterSpacing: 0.3 }}>{name}</span>
             <span style={{
               marginLeft: "auto",
-              fontSize: 11,
+              fontSize: 13,
               fontWeight: 500,
               color: C.muted,
               background: BG,
@@ -881,12 +881,12 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
                    <span style={{ fontSize: 12, color: C.text, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {item.label}
                   </span>
-                   <span style={{ fontSize: 11, color: C.light, whiteSpace: "nowrap" }}>{item.sub}</span>
+                   <span style={{ fontSize: 13, color: C.light, whiteSpace: "nowrap" }}>{item.sub}</span>
                 </a>
               ))}
             </div>
           ) : (
-            <div style={{ fontSize: 11, color: C.light }}>{count > 0 ? `${count} élément${count > 1 ? "s" : ""} liés` : "Connecté"}</div>
+            <div style={{ fontSize: 13, color: C.light }}>{count > 0 ? `${count} élément${count > 1 ? "s" : ""} liés` : "Connecté"}</div>
           )}
         </Tile>
       ))}

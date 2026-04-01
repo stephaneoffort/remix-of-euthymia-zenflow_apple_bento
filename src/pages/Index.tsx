@@ -277,7 +277,7 @@ export default function Index() {
   }
 
   return (
-    <div className="flex h-screen bg-background overflow-hidden">
+    <div className={`flex h-screen overflow-hidden ${designMode === "neumorphic" ? "" : "bg-background"}`}>
       {designMode === "neumorphic" ? <SidebarNM /> : <AppSidebar />}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}

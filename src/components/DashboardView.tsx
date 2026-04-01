@@ -1,3 +1,47 @@
+import React, { useState, useMemo } from 'react';
+import { format, parseISO, isPast, differenceInDays } from 'date-fns';
+import { fr } from 'date-fns/locale';
+import { motion } from 'framer-motion';
+import {
+  AreaChart, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Area, Bar,
+  PieChart, Pie, Cell, ResponsiveContainer,
+} from 'recharts';
+import { AlertTriangle, BarChart3, CalendarDays, CheckCircle2, ChevronDown, ChevronUp, Flame, ListTodo, TrendingUp, Users } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { PriorityBadge, StatusBadge } from '@/components/TaskBadges';
+import { useApp } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
+import { useThemeMode } from '@/context/ThemeContext';
+import { STATUS_LABELS, PRIORITY_LABELS, type Priority } from '@/types';
+import ZoomMeetingsDashboard from '@/components/dashboard/ZoomMeetingsDashboard';
+import DashboardMeetSection from '@/components/dashboard/DashboardMeetSection';
+import BrevoStats from '@/components/brevo/BrevoStats';
+import DashboardResourcesSection from '@/components/dashboard/DashboardResourcesSection';
+
+function getChartColors() {
+  const root = getComputedStyle(document.documentElement);
+  const hsl = (v: string, fallback: string) => {
+    const val = root.getPropertyValue(v).trim();
+    return val ? `hsl(${val})` : fallback;
+  };
+  return {
+    status: {
+      todo: hsl('--status-todo', 'hsl(var(--muted-foreground))'),
+      in_progress: hsl('--status-progress', 'hsl(var(--primary))'),
+      in_review: hsl('--status-review', 'hsl(38, 92%, 50%)'),
+      done: hsl('--status-done', 'hsl(142, 71%, 45%)'),
+      blocked: hsl('--status-blocked', 'hsl(0, 84%, 60%)'),
+    } as Record<string, string>,
+    priority: {
+      urgent: hsl('--priority-urgent', 'hsl(0, 84%, 60%)'),
+      high: hsl('--priority-high', 'hsl(25, 95%, 53%)'),
+      normal: hsl('--priority-normal', 'hsl(var(--primary))'),
+      low: hsl('--priority-low', 'hsl(var(--muted-foreground))'),
+    } as Record<string, string>,
+  };
+}
+
 /* ─── Animation ─── */
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },

@@ -166,7 +166,7 @@ export default function DashboardViewNM() {
               <div style={{ height: 5, borderRadius: 3, background: BG, boxShadow: barIn, overflow: "hidden" }}>
                 <div style={{ width: `${stats.pct}%`, height: "100%", background: C.green, borderRadius: 3 }} />
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 8, color: C.light, marginTop: 3 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.light, marginTop: 3 }}>
                 <span>0</span>
                 <span>{stats.pct}% · {stats.done}/{stats.total}</span>
                 <span>{stats.total}</span>

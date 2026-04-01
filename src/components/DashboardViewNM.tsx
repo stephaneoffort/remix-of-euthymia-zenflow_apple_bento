@@ -543,88 +543,11 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* INTÉGRATIONS */}
-        <div
-          style={{
-            gridColumn: "1 / 4",
-            gridRow: 4,
-            display: "grid",
-            gridTemplateColumns: "repeat(4, minmax(0,1fr))",
-            gap: 10,
-          }}
-        >
-          {[
-            {
-              name: "Zoom",
-              sub: "0 réunions · Connecter",
-              icon: (
-                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
-                  <rect x="1" y="3" width="8" height="8" rx="2" fill="#2D8CFF" />
-                  <path d="M9 6l4-2v6l-4-2V6Z" fill="#2D8CFF" />
-                </svg>
-              ),
-            },
-            {
-              name: "Meet",
-              sub: "0 réunions · Connecter",
-              icon: (
-                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
-                  <rect x="1" y="2" width="8" height="10" rx="2" fill="#00832D" />
-                  <path d="M9 5.5l4-2v7l-4-2V5.5Z" fill="#00832D" />
-                  <rect x="2.5" y="4" width="5" height="1.5" rx="0.5" fill="white" opacity="0.9" />
-                  <rect x="2.5" y="6.5" width="3.5" height="1.5" rx="0.5" fill="white" opacity="0.9" />
-                </svg>
-              ),
-            },
-            {
-              name: "Drive",
-              sub: "0 fichiers · Connecter",
-              icon: (
-                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
-                  <path d="M1 11l3-5.5 3 5.5H1Z" fill="#4285F4" />
-                  <path d="M7 11l3-5.5L13 11H7Z" fill="#0F9D58" />
-                  <path d="M4.5 5.5l2.5-4 2.5 4H4.5Z" fill="#FBBC05" />
-                </svg>
-              ),
-            },
-            {
-              name: "Canva",
-              sub: "0 designs · Connecter",
-              icon: (
-                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
-                  <circle cx="7" cy="7" r="5" fill="#7D2AE7" opacity="0.2" />
-                  <circle cx="7" cy="7" r="3.5" fill="#7D2AE7" />
-                  <circle cx="7" cy="3.5" r="1.8" fill="#00C4CC" />
-                </svg>
-              ),
-            },
-          ].map(({ name, sub, icon }, idx) => (
-            <Tile
-              key={name}
-              delay={0.45 + idx * 0.05}
-              style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 13px", cursor: "pointer" }}
-            >
-              <div
-                style={{
-                  width: 28,
-                  height: 28,
-                  borderRadius: 7,
-                  background: BG,
-                  boxShadow: pillMd,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
-                {icon}
-              </div>
-              <div>
-                <div style={{ fontSize: 10, color: C.text, fontWeight: 500 }}>{name}</div>
-                <div style={{ fontSize: 8, color: C.light, marginTop: 1 }}>{sub}</div>
-              </div>
-              <span style={{ fontSize: 12, color: C.orange, marginLeft: "auto" }}>→</span>
-            </Tile>
-          ))}
+        <div style={{ gridColumn: "1 / 4", gridRow: 4, display: "grid", gridTemplateColumns: "repeat(2, minmax(0,1fr))", gap: 10 }}>
+          <ZoomMeetingsDashboard />
+          <DashboardMeetSection />
+          <BrevoStats />
+          <DashboardResourcesSection projects={projects} />
         </div>
       </div>
     </div>

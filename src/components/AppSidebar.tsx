@@ -858,7 +858,9 @@ export default function AppSidebar() {
                       >
                         <button
                           onClick={() => toggleSpace(space.id)}
-                          className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors"
+                          className={`flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors hover:bg-sidebar-hover ${
+                            selectedSpaceId === space.id ? "text-sidebar-fg-bright" : "text-sidebar-fg"
+                          }`}
                         >
                           {expandedSpaces.has(space.id) ? (
                             <ChevronDown className="w-3.5 h-3.5" />
@@ -866,55 +868,55 @@ export default function AppSidebar() {
                             <ChevronRight className="w-3.5 h-3.5" />
                           )}
                           <span>{space.icon}</span>
-                        </button>
-                        {editingSpaceId === space.id ? (
-                          <input
-                            autoFocus
-                            value={editingSpaceName}
-                            onChange={(e) => setEditingSpaceName(e.target.value)}
-                            onBlur={() => {
-                              if (editingSpaceName.trim() && editingSpaceName.trim() !== space.name) {
-                                renameSpace(space.id, editingSpaceName.trim());
-                              }
-                              setEditingSpaceId(null);
-                            }}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") {
+                          {editingSpaceId === space.id ? (
+                            <input
+                              autoFocus
+                              value={editingSpaceName}
+                              onChange={(e) => { e.stopPropagation(); setEditingSpaceName(e.target.value); }}
+                              onBlur={() => {
                                 if (editingSpaceName.trim() && editingSpaceName.trim() !== space.name) {
                                   renameSpace(space.id, editingSpaceName.trim());
                                 }
                                 setEditingSpaceId(null);
-                              }
-                              if (e.key === "Escape") setEditingSpaceId(null);
-                            }}
-                            className="flex-1 text-sm bg-sidebar-bg border border-sidebar-border-color rounded-md px-2 py-0.5 outline-none text-sidebar-fg-bright font-medium min-w-0"
-                          />
-                        ) : dragOverSpaceId === space.id ? (
-                          <span className="flex-1 font-medium text-sm text-primary flex items-center gap-1.5 animate-pulse">
-                            <ArrowDownToLine className="w-3.5 h-3.5" />
-                            Déposer ici
-                          </span>
-                        ) : (
-                          <span
-                            className={`flex-1 font-semibold text-sm cursor-pointer truncate flex items-center gap-1 ${
-                              selectedSpaceId === space.id ? "text-sidebar-fg-bright" : "text-sidebar-fg"
-                            }`}
-                            onClick={() => {
-                              setSelectedSpaceId(space.id);
-                              setQuickFilter("all");
-                              handleNavClick();
-                              if (!expandedSpaces.has(space.id)) toggleSpace(space.id);
-                            }}
-                            onDoubleClick={(e) => {
-                              e.stopPropagation();
-                              setEditingSpaceId(space.id);
-                              setEditingSpaceName(space.name);
-                            }}
-                          >
-                            {space.name}
-                            {space.isPrivate && <Lock className="w-3 h-3 text-sidebar-fg shrink-0" />}
-                          </span>
-                        )}
+                              }}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  if (editingSpaceName.trim() && editingSpaceName.trim() !== space.name) {
+                                    renameSpace(space.id, editingSpaceName.trim());
+                                  }
+                                  setEditingSpaceId(null);
+                                }
+                                if (e.key === "Escape") setEditingSpaceId(null);
+                              }}
+                              onClick={(e) => e.stopPropagation()}
+                              className="flex-1 text-sm bg-sidebar-bg border border-sidebar-border-color rounded-md px-2 py-0.5 outline-none text-sidebar-fg-bright font-medium min-w-0"
+                            />
+                          ) : dragOverSpaceId === space.id ? (
+                            <span className="flex-1 font-medium text-sm text-primary flex items-center gap-1.5 animate-pulse">
+                              <ArrowDownToLine className="w-3.5 h-3.5" />
+                              Déposer ici
+                            </span>
+                          ) : (
+                            <span
+                              className="flex-1 font-semibold text-sm cursor-pointer truncate flex items-center gap-1"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedSpaceId(space.id);
+                                setQuickFilter("all");
+                                handleNavClick();
+                                if (!expandedSpaces.has(space.id)) toggleSpace(space.id);
+                              }}
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                setEditingSpaceId(space.id);
+                                setEditingSpaceName(space.name);
+                              }}
+                            >
+                              {space.name}
+                              {space.isPrivate && <Lock className="w-3 h-3 text-sidebar-fg shrink-0" />}
+                            </span>
+                          )}
+                        </button>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <button

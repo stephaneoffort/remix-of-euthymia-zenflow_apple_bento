@@ -245,13 +245,14 @@ export default function SidebarNM() {
         style={{
           width: COLLAPSED_WIDTH,
           height: "100vh",
-          background: BG,
+          background: "#E8DFD0",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           paddingTop: 12,
           gap: 6,
-          boxShadow: "4px 0 16px rgba(140,118,88,0.3)",
+          boxShadow: "4px 0 20px rgba(140,118,88,0.35)",
+          borderRight: "1px solid rgba(140,118,88,0.25)",
           flexShrink: 0,
           fontFamily: "'DM Sans', sans-serif",
         }}

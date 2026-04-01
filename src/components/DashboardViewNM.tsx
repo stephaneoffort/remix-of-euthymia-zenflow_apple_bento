@@ -477,7 +477,7 @@ export default function DashboardViewNM() {
             ))
           )}
           {stats.urgent > 4 && (
-            <div style={{ padding: "6px 14px", fontSize: 9, color: C.orange, cursor: "pointer" }}>
+            <div style={{ padding: "6px 14px", fontSize: 12, color: C.orange, cursor: "pointer" }}>
               + {stats.urgent - 4} autres urgentes →
             </div>
           )}

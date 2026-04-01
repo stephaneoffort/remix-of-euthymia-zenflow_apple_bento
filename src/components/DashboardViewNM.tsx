@@ -541,7 +541,7 @@ export default function DashboardViewNM() {
           <Lbl>Équipe</Lbl>
           <div style={{ marginTop: 9, display: "flex", flexDirection: "column", gap: 9 }}>
             {teamMembers.length === 0 ? (
-              <div style={{ fontSize: 9, color: C.light }}>—</div>
+              <div style={{ fontSize: 12, color: C.light }}>—</div>
             ) : (
               teamMembers.map((m, i) => {
                 const initials = (m.name ?? m.email ?? "?")

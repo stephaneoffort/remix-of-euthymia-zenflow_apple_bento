@@ -77,7 +77,7 @@ export default function DashboardViewNM() {
     const all = tasks ?? [];
     const total = all.length;
     const done = all.filter((t) => t.status === "done").length;
-    const overdue = all.filter((t) => t.status !== "done" && t.due_date && new Date(t.due_date) < new Date()).length;
+    const overdue = all.filter((t) => t.status !== "done" && t.dueDate && new Date(t.dueDate) < new Date()).length;
     const urgent = all.filter((t) => t.priority === "high" && t.status !== "done").length;
     const inReview = all.filter((t) => t.status === "in_review").length;
     const pending = total - done;
@@ -95,8 +95,8 @@ export default function DashboardViewNM() {
   const deadlines = useMemo(
     () =>
       (tasks ?? [])
-        .filter((t) => t.due_date)
-        .sort((a, b) => new Date(a.due_date!).getTime() - new Date(b.due_date!).getTime())
+        .filter((t) => t.dueDate)
+        .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime())
         .slice(0, 4),
     [tasks],
   );
@@ -299,7 +299,7 @@ export default function DashboardViewNM() {
                   {t.title}
                 </span>
                 <Tag>{t.status}</Tag>
-                <span style={{ fontSize: 9, color: C.red, fontWeight: 500 }}>{daysLabel(t.due_date)}</span>
+                <span style={{ fontSize: 9, color: C.red, fontWeight: 500 }}>{daysLabel(t.dueDate)}</span>
               </div>
             ))
           )}
@@ -398,7 +398,7 @@ export default function DashboardViewNM() {
               <div style={{ fontSize: 9, color: C.light }}>—</div>
             ) : (
               teamMembers.map((m, i) => {
-                const initials = (m.full_name ?? m.email ?? "?")
+                const initials = (m.name ?? m.email ?? "?")
                   .split(" ")
                   .map((w: string) => w[0])
                   .join("")
@@ -436,7 +436,7 @@ export default function DashboardViewNM() {
                           textOverflow: "ellipsis",
                         }}
                       >
-                        {m.full_name ?? m.email}
+                         {m.name ?? m.email}
                       </div>
                       <div style={{ height: 2, background: BG, borderRadius: 1, boxShadow: barIn, marginTop: 3 }}>
                         <div style={{ height: 2, borderRadius: 1, background: colors[i], width: `${pct}%` }} />
@@ -492,7 +492,7 @@ export default function DashboardViewNM() {
               </span>
               <Tag>{t.status}</Tag>
               <span style={{ fontSize: 9, color: statusColor(t.status), fontWeight: 500, whiteSpace: "nowrap" }}>
-                {daysLabel(t.due_date)}
+                {daysLabel(t.dueDate)}
               </span>
             </div>
           ))}

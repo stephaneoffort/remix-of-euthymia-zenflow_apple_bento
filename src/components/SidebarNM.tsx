@@ -325,7 +325,7 @@ export default function SidebarNM() {
                     }}
                     onClick={() => goSpace(selSpace.id)}
                   >
-                    <div style={{ width: 7, height: 7, borderRadius: "50%", background: spaceDotColor(selSpace.icon), flexShrink: 0 }} />
+                    <div style={{ width: 7, height: 7, borderRadius: "50%", background: (selSpace as any).color ?? C.orange, flexShrink: 0 }} />
                     <span style={{ fontSize: 8, color: C.light }}>Espace</span>
                     {selSpace.name}
                   </span>
@@ -477,7 +477,7 @@ export default function SidebarNM() {
                       transition: "all 0.2s ease",
                     }}
                   >
-                    <div style={{ width: 7, height: 7, borderRadius: "50%", background: spaceDotColor(space.icon), flexShrink: 0 }} />
+                    <div style={{ width: 7, height: 7, borderRadius: "50%", background: (space as any).color ?? C.orange, flexShrink: 0 }} />
                     <span style={{ flex: 1, textAlign: "left", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {space.name}
                     </span>

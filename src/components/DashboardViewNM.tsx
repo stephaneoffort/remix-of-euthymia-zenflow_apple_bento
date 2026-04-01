@@ -212,7 +212,7 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* PROGRESSION */}
-        <Tile
+        <Tile delay={0.15}
           style={{
             padding: "14px 10px",
             display: "flex",

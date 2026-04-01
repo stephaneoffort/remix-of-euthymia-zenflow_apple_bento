@@ -850,7 +850,7 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
             <span style={{ fontSize: 12, fontWeight: 600, color: C.text, letterSpacing: 0.3 }}>{name}</span>
             <span style={{
               marginLeft: "auto",
-              fontSize: 8,
+              fontSize: 11,
               fontWeight: 500,
               color: C.muted,
               background: BG,

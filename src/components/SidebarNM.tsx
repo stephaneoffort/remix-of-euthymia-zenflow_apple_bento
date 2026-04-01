@@ -251,7 +251,7 @@ export default function SidebarNM() {
           alignItems: "center",
           paddingTop: 12,
           gap: 6,
-          boxShadow: "4px 0 16px rgba(140,118,88,0.18)",
+          boxShadow: "4px 0 16px rgba(140,118,88,0.3)",
           flexShrink: 0,
           fontFamily: "'DM Sans', sans-serif",
         }}

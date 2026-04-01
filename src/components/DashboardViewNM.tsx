@@ -400,7 +400,7 @@ export default function DashboardViewNM() {
                 color: C.text,
               }}
             >
-              {stats.total}
+              <AnimatedNumber value={stats.total} />
             </div>
           </div>
           <div style={{ marginTop: 9, width: "100%", display: "flex", flexDirection: "column", gap: 3 }}>

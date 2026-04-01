@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useThemeMode } from "@/context/ThemeContext";
@@ -27,6 +27,12 @@ function spaceDotColor(icon: string): string {
   for (let i = 0; i < icon.length; i++) h = (h * 31 + icon.charCodeAt(i)) | 0;
   return SPACE_DOT_PALETTE[Math.abs(h) % SPACE_DOT_PALETTE.length];
 }
+
+const MIN_WIDTH = 200;
+const MAX_WIDTH = 400;
+const COLLAPSED_WIDTH = 52;
+const DEFAULT_WIDTH = 260;
+const LS_KEY = "nm-sidebar-width";
 
 /* ─── Helpers ─── */
 function Lbl({ children }: { children: React.ReactNode }) {
@@ -108,6 +114,18 @@ const viewLabel: Record<string, string> = {
   timeline: "⟶ Timeline",
 };
 
+/* ─── Mini sidebar icons ─── */
+function DashboardIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+      <rect x="1" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+      <rect x="9" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+      <rect x="1" y="9" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+      <rect x="9" y="9" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+    </svg>
+  );
+}
+
 export default function SidebarNM() {
   const {
     spaces,
@@ -131,6 +149,35 @@ export default function SidebarNM() {
   const isMobile = useIsMobile();
 
   const [openSpaces, setOpenSpaces] = useState<Set<string>>(new Set());
+  const [sidebarWidth, setSidebarWidth] = useState(() => {
+    const saved = localStorage.getItem(LS_KEY);
+    return saved ? Math.max(MIN_WIDTH, Math.min(MAX_WIDTH, Number(saved))) : DEFAULT_WIDTH;
+  });
+  const isResizing = useRef(false);
+
+  /* ─── Resize handlers ─── */
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    isResizing.current = true;
+    const startX = e.clientX;
+    const startW = sidebarWidth;
+    const onMove = (ev: MouseEvent) => {
+      if (!isResizing.current) return;
+      const newW = Math.max(MIN_WIDTH, Math.min(MAX_WIDTH, startW + (ev.clientX - startX)));
+      setSidebarWidth(newW);
+    };
+    const onUp = () => {
+      isResizing.current = false;
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+      setSidebarWidth((w) => {
+        localStorage.setItem(LS_KEY, String(w));
+        return w;
+      });
+    };
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+  }, [sidebarWidth]);
 
   /* ─── Current member ─── */
   const member = teamMembers.find((m) => m.id === teamMemberId);
@@ -191,6 +238,142 @@ export default function SidebarNM() {
   // On mobile: hidden when collapsed, overlay when open
   if (isMobile && sidebarCollapsed) return null;
 
+  /* ─── COLLAPSED mini sidebar (desktop only) ─── */
+  if (!isMobile && sidebarCollapsed) {
+    return (
+      <aside
+        style={{
+          width: COLLAPSED_WIDTH,
+          height: "100vh",
+          background: BG,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          paddingTop: 12,
+          gap: 6,
+          boxShadow: "4px 0 16px rgba(140,118,88,0.18)",
+          flexShrink: 0,
+          fontFamily: "'DM Sans', sans-serif",
+        }}
+      >
+        {/* Expand button */}
+        <button
+          onClick={() => setSidebarCollapsed(false)}
+          title="Ouvrir la sidebar"
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: 8,
+            border: "none",
+            background: BG,
+            boxShadow: raisedSm,
+            cursor: "pointer",
+            color: C.muted,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 8,
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+
+        {/* Logo */}
+        <div
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: 8,
+            background: BG,
+            boxShadow: raisedSm,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            overflow: "hidden",
+            marginBottom: 8,
+          }}
+        >
+          <img src={logoEuthymia} alt="E" style={{ width: 20, height: 20, objectFit: "contain" }}
+            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+        </div>
+
+        {/* Dashboard */}
+        <button
+          onClick={goDashboard}
+          title="Dashboard"
+          style={{
+            width: 34,
+            height: 34,
+            borderRadius: 8,
+            border: "none",
+            background: BG,
+            boxShadow: selectedView === "dashboard" && !selectedSpaceId && !selectedProjectId ? insetSm : raisedSm,
+            color: selectedView === "dashboard" && !selectedSpaceId && !selectedProjectId ? C.orange : C.muted,
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <DashboardIcon />
+        </button>
+
+        {/* Space dots */}
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4, paddingTop: 8, overflowY: "auto" }}>
+          {spaces.map((space) => (
+            <button
+              key={space.id}
+              onClick={() => goSpace(space.id)}
+              title={space.name}
+              style={{
+                width: 28,
+                height: 28,
+                borderRadius: 8,
+                border: "none",
+                background: BG,
+                boxShadow: selectedSpaceId === space.id ? insetSm : raisedSm,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <div style={{ width: 10, height: 10, borderRadius: "50%", background: (space as any).color ?? C.orange }} />
+            </button>
+          ))}
+        </div>
+
+        {/* Settings */}
+        <button
+          onClick={() => { navigate("/settings"); }}
+          title="Réglages"
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: 8,
+            border: "none",
+            background: BG,
+            boxShadow: raisedSm,
+            cursor: "pointer",
+            color: C.muted,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 12,
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <circle cx="7" cy="7" r="2.5" stroke="currentColor" strokeWidth="1.2" />
+            <path d="M7 1V3M7 11V13M1 7H3M11 7H13M2.5 2.5L4 4M10 10L11.5 11.5M11.5 2.5L10 4M4 10L2.5 11.5" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" />
+          </svg>
+        </button>
+      </aside>
+    );
+  }
+
+  /* ─── FULL SIDEBAR ─── */
   return (
     <>
       {/* Backdrop overlay on mobile */}
@@ -208,7 +391,7 @@ export default function SidebarNM() {
       )}
       <aside
         style={{
-          width: isMobile ? "85vw" : 260,
+          width: isMobile ? "85vw" : sidebarWidth,
           maxWidth: isMobile ? 320 : undefined,
           height: "100vh",
           background: BG,
@@ -220,6 +403,7 @@ export default function SidebarNM() {
           boxShadow: "4px 0 16px rgba(140,118,88,0.18)",
           overflow: "hidden",
           flexShrink: 0,
+          position: "relative",
           ...(isMobile
             ? {
                 position: "fixed",
@@ -270,28 +454,31 @@ export default function SidebarNM() {
               <div style={{ fontSize: 15, fontWeight: 800, color: C.text, letterSpacing: 0.5 }}>Euthymia</div>
               <div style={{ fontSize: 9, color: C.muted, letterSpacing: 0.5 }}>Gestion de projets</div>
             </div>
-            {/* Close button on mobile */}
-            {isMobile && (
-              <button
-                onClick={() => setSidebarCollapsed(true)}
-                style={{
-                  width: 28,
-                  height: 28,
-                  borderRadius: 8,
-                  border: "none",
-                  background: BG,
-                  boxShadow: raisedSm,
-                  cursor: "pointer",
-                  fontSize: 16,
-                  color: C.muted,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                ✕
-              </button>
-            )}
+            {/* Collapse button on desktop / Close on mobile */}
+            <button
+              onClick={() => setSidebarCollapsed(true)}
+              title={isMobile ? "Fermer" : "Réduire la sidebar"}
+              style={{
+                width: 28,
+                height: 28,
+                borderRadius: 8,
+                border: "none",
+                background: BG,
+                boxShadow: raisedSm,
+                cursor: "pointer",
+                fontSize: 16,
+                color: C.muted,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {isMobile ? "✕" : (
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                  <path d="M11 3L6 8L11 13" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              )}
+            </button>
           </div>
         </div>
 
@@ -779,6 +966,25 @@ export default function SidebarNM() {
             ))}
           </div>
         </div>
+
+        {/* ── RESIZE HANDLE (desktop only) ── */}
+        {!isMobile && (
+          <div
+            onMouseDown={handleMouseDown}
+            style={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+              width: 5,
+              height: "100%",
+              cursor: "col-resize",
+              zIndex: 10,
+              background: "transparent",
+            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(122,69,24,0.12)"; }}
+            onMouseLeave={(e) => { if (!isResizing.current) (e.currentTarget as HTMLElement).style.background = "transparent"; }}
+          />
+        )}
       </aside>
 
       {/* Animation keyframes injected once */}

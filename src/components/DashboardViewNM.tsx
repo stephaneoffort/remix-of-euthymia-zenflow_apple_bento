@@ -137,7 +137,16 @@ export default function DashboardViewNM() {
     [tasks],
   );
 
-  const displayMembers = useMemo(() => (members ?? []).slice(0, 3), [members]);
+  const teamWorkload = useMemo(
+    () =>
+      (teamMembers ?? []).map((m) => {
+        const memberTasks = (tasks ?? []).filter((t) => t.assigneeIds?.includes(m.id));
+        const done = memberTasks.filter((t) => t.status === "done").length;
+        const completion = memberTasks.length > 0 ? Math.round((done / memberTasks.length) * 100) : 0;
+        return { ...m, memberTasks: memberTasks.length, done, completion };
+      }).slice(0, 3),
+    [tasks, teamMembers],
+  );
 
   const daysLabel = (due?: string | null) => {
     if (!due) return "";
@@ -430,10 +439,10 @@ export default function DashboardViewNM() {
         <Tile nm delay={0.3} style={{ gridColumn: 3, gridRow: 2, padding: "11px 12px" }}>
           <Lbl>Équipe</Lbl>
           <div style={{ marginTop: 9, display: "flex", flexDirection: "column", gap: 9 }}>
-            {displayMembers.length === 0 ? (
+            {teamWorkload.length === 0 ? (
               <div style={{ fontSize: 9, color: C.light }}>—</div>
             ) : (
-              displayMembers.map((m, i) => {
+              teamWorkload.map((m, i) => {
                 const initials = (m.name ?? m.email ?? "?")
                   .split(" ")
                   .map((w: string) => w[0])
@@ -441,7 +450,7 @@ export default function DashboardViewNM() {
                   .slice(0, 2)
                   .toUpperCase();
                 const colors = [C.orange, C.red, C.muted];
-                const pct = Math.round(30 - i * 5 + Math.random() * 10);
+                const pct = m.completion;
                 return (
                   <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 6 }}>
                     <div

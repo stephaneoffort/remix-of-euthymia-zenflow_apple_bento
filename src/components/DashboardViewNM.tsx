@@ -529,8 +529,8 @@ export default function DashboardViewNM() {
             ].map(({ label, count, color }) => (
               <div key={label} style={{ display: "flex", alignItems: "center", gap: 7 }}>
                 <Dot color={color} />
-                <span style={{ fontSize: 8, color: C.muted, flex: 1 }}>{label}</span>
-                <span style={{ fontSize: 8, color: C.text, fontWeight: 500 }}>{count}</span>
+                <span style={{ fontSize: 11, color: C.muted, flex: 1 }}>{label}</span>
+                <span style={{ fontSize: 11, color: C.text, fontWeight: 500 }}>{count}</span>
               </div>
             ))}
           </div>

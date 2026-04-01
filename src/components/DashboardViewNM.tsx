@@ -161,7 +161,7 @@ export default function DashboardViewNM() {
             >
               Bonjour, <em style={{ color: C.orange, fontStyle: "italic" }}>{firstName}</em>
             </div>
-            <div style={{ fontSize: 10, color: C.orange, marginTop: 4 }}>{stats.pending} tâches en attente</div>
+            <div style={{ fontSize: 13, color: C.orange, marginTop: 4 }}>{stats.pending} tâches en attente</div>
             <div style={{ marginTop: 10 }}>
               <div style={{ height: 5, borderRadius: 3, background: BG, boxShadow: barIn, overflow: "hidden" }}>
                 <div style={{ width: `${stats.pct}%`, height: "100%", background: C.green, borderRadius: 3 }} />

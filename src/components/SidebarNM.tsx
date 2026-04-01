@@ -75,18 +75,22 @@ function NavBtn({
         border: "none",
         cursor: "pointer",
         background: BG,
-        boxShadow: active ? inset : "none",
+        boxShadow: active ? inset : raisedSm,
         color: active ? C.orange : C.text,
         fontFamily: "'DM Sans', sans-serif",
         fontSize: 13,
         fontWeight: active ? 700 : 500,
-        transition: "all 0.15s ease",
+        transition: "all 0.18s ease",
       }}
       onMouseEnter={(e) => {
-        if (!active) (e.currentTarget as HTMLElement).style.background = "rgba(122,69,24,0.06)";
+        if (!active) {
+          (e.currentTarget as HTMLElement).style.background = "rgba(122,69,24,0.06)";
+          (e.currentTarget as HTMLElement).style.boxShadow = raised;
+        }
       }}
       onMouseLeave={(e) => {
         (e.currentTarget as HTMLElement).style.background = BG;
+        (e.currentTarget as HTMLElement).style.boxShadow = active ? inset : raisedSm;
       }}
     >
       {children}

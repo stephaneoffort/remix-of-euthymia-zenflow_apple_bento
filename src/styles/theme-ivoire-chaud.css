@@ -1513,7 +1513,7 @@ select:focus {
 /* ─── Sidebar Ivoire Neumorphique ─── */
 
 .nm-sidebar {
-  background: #EDE6DA !important;
+  background: #C8BDAD !important;
   border-right: none !important;
   box-shadow: 4px 0 12px rgba(160, 140, 108, 0.25) !important;
   font-family: 'DM Sans', sans-serif;

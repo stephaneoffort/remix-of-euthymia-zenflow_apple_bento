@@ -258,7 +258,7 @@ export default function DashboardViewNM() {
             <Lbl>Équipe</Lbl>
             <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 8 }}>
               {teamMembers.length === 0 ? (
-                <div style={{ fontSize: 9, color: C.light }}>—</div>
+                 <div style={{ fontSize: 12, color: C.light }}>—</div>
               ) : (
                 teamMembers.map((m, i) => {
                   const initials = (m.name ?? m.email ?? "?").split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();

@@ -63,7 +63,7 @@ const Dot = ({ color }: { color: string }) => (
 /* ─── Main component ─── */
 export default function DashboardViewNM() {
   const { tasks, teamMembers: members, setSelectedTaskId } = useAppContext();
-  console.log("tasks sample:", tasks?.[0]);
+
   const { user } = useAuth();
 
   const today = useMemo(() => {

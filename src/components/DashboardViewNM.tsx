@@ -1,10 +1,10 @@
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
-import { useMemo } from "react";
-import ZoomMeetingsDashboard from "@/components/dashboard/ZoomMeetingsDashboard";
-import DashboardMeetSection from "@/components/dashboard/DashboardMeetSection";
-import BrevoStats from "@/components/brevo/BrevoStats";
-import DashboardResourcesSection from "@/components/dashboard/DashboardResourcesSection";
+import { useMemo, useState, useEffect, useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useIntegrations } from "@/hooks/useIntegrations";
+import { format, parseISO, isToday, isTomorrow } from "date-fns";
+import { fr } from "date-fns/locale";
 
 /* ─── Design tokens ─── */
 const BG = "#EDE6DA";

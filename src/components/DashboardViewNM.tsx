@@ -246,8 +246,8 @@ export default function DashboardViewNM() {
                 <div key={t.id} onClick={() => setSelectedTaskId(t.id)}
                   style={{ display: "flex", alignItems: "center", gap: 7, padding: "8px 14px", borderBottom: i < deadlines.length - 1 ? "1px solid rgba(160,140,108,0.08)" : "none", cursor: "pointer" }}>
                   <Dot color={statusColor(t.status)} />
-                  <span style={{ fontSize: 11, color: C.text, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.title}</span>
-                  <span style={{ fontSize: 9, color: statusColor(t.status), fontWeight: 500, whiteSpace: "nowrap" }}>{daysLabel(t.dueDate)}</span>
+                   <span style={{ fontSize: 14, color: C.text, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.title}</span>
+                   <span style={{ fontSize: 12, color: statusColor(t.status), fontWeight: 500, whiteSpace: "nowrap" }}>{daysLabel(t.dueDate)}</span>
                 </div>
               ))
             )}

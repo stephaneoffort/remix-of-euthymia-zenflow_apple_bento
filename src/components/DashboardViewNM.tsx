@@ -66,7 +66,7 @@ const Dot = ({ color }: { color: string }) => (
 
 /* ─── Main component ─── */
 export default function DashboardViewNM() {
-  const { tasks, teamMembers: members, projects, setSelectedTaskId } = useApp();
+  const { tasks, teamMembers: members, setSelectedTaskId } = useApp();
 
   const { user } = useAuth();
 

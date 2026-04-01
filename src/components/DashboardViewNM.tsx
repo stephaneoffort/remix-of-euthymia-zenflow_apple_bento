@@ -1,558 +1,600 @@
-import React, { useMemo, useState } from "react";
-import ZoomMeetingsDashboard from "@/components/dashboard/ZoomMeetingsDashboard";
-import DashboardMeetSection from "@/components/dashboard/DashboardMeetSection";
-import DashboardResourcesSection from "@/components/dashboard/DashboardResourcesSection";
-import BrevoStats from "@/components/brevo/BrevoStats";
-import { useApp } from "@/context/AppContext";
+import { useAppContext } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
-import { useThemeMode } from "@/context/ThemeContext";
-import { Progress } from "@/components/ui/progress";
-import { STATUS_LABELS, PRIORITY_LABELS, Priority } from "@/types";
-import { PriorityBadge, StatusBadge } from "@/components/TaskBadges";
-import {
-  CheckCircle2, Clock, AlertTriangle, TrendingUp, ListTodo, Users,
-  CalendarDays, BarChart3, Flame, ChevronDown, ChevronUp,
-} from "lucide-react";
-import { format, isToday, isPast, parseISO, differenceInDays } from "date-fns";
-import { fr } from "date-fns/locale";
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, AreaChart, Area,
-} from "recharts";
-import { motion } from "framer-motion";
+import { useMemo } from "react";
 
-/* ─── Chart colors from CSS tokens ─── */
-function getChartColors() {
-  const root = getComputedStyle(document.documentElement);
-  const hsl = (v: string, fallback: string) => {
-    const val = root.getPropertyValue(v).trim();
-    return val ? `hsl(${val})` : fallback;
-  };
-  return {
-    status: {
-      todo: hsl("--status-todo", "hsl(var(--muted-foreground))"),
-      in_progress: hsl("--status-progress", "hsl(var(--primary))"),
-      in_review: hsl("--status-review", "hsl(38, 92%, 50%)"),
-      done: hsl("--status-done", "hsl(142, 71%, 45%)"),
-      blocked: hsl("--status-blocked", "hsl(0, 84%, 60%)"),
-    } as Record<string, string>,
-    priority: {
-      urgent: hsl("--priority-urgent", "hsl(0, 84%, 60%)"),
-      high: hsl("--priority-high", "hsl(25, 95%, 53%)"),
-      normal: hsl("--priority-normal", "hsl(var(--primary))"),
-      low: hsl("--priority-low", "hsl(var(--muted-foreground))"),
-    } as Record<string, string>,
-  };
-}
+/* ─── Design tokens ─── */
+const BG = "#EDE6DA";
+const raised = "6px 6px 14px rgba(160,140,108,0.45),-6px -6px 14px rgba(255,252,246,0.85)";
+const inset = "inset 4px 4px 10px rgba(160,140,108,0.45),inset -4px -4px 10px rgba(255,252,246,0.85)";
+const pill = "2px 2px 5px rgba(160,140,108,0.45),-2px -2px 5px rgba(255,252,246,0.85)";
+const pillMd = "3px 3px 8px rgba(160,140,108,0.45),-3px -3px 8px rgba(255,252,246,0.85)";
+const barIn = "inset 1px 1px 4px rgba(160,140,108,0.45),inset -1px -1px 4px rgba(255,252,246,0.85)";
 
-/* ─── Animation variants ─── */
-const fadeUp = {
-  hidden: { opacity: 0, y: 16 },
-  show: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.06, duration: 0.35 } }),
+const C = {
+  text: "#2D2820",
+  muted: "#8A7E6E",
+  light: "#B0A494",
+  orange: "#B87440",
+  red: "#B85040",
+  green: "#6B8F6A",
 };
 
-/* ─── Neumorphic tile wrapper ─── */
-function NmTile({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return (
-    <div className={`nm-tile ${className}`}>
-      {children}
-    </div>
-  );
-}
+/* ─── Sub-components ─── */
+const Lbl = ({ children }: { children: React.ReactNode }) => (
+  <div style={{ fontSize: 8, letterSpacing: 2, textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>
+    {children}
+  </div>
+);
 
-/* ─── My Tasks foldable card (NM style) ─── */
-function MyTasksCardNM({
-  tasks,
-  onTaskClick,
+const Tile = ({
+  children,
+  nm = false,
+  style,
 }: {
-  tasks: ReturnType<typeof Array<any>>;
-  onTaskClick: (id: string) => void;
-}) {
-  const [expanded, setExpanded] = useState(false);
-  const COLLAPSED_COUNT = 4;
-  const visibleTasks = expanded ? tasks : tasks.slice(0, COLLAPSED_COUNT);
-  const hasMore = tasks.length > COLLAPSED_COUNT;
+  children: React.ReactNode;
+  nm?: boolean;
+  style?: React.CSSProperties;
+}) => (
+  <div style={{ background: BG, borderRadius: 14, boxShadow: nm ? inset : raised, overflow: "hidden", ...style }}>
+    {children}
+  </div>
+);
 
-  return (
-    <NmTile>
-      <div className="pb-3 pt-4 px-5">
-        <h3 className="text-sm font-semibold text-foreground flex items-center gap-2.5 tracking-wide uppercase">
-          <div className="p-1.5 rounded-md bg-destructive/10">
-            <Flame className="w-3.5 h-3.5 text-destructive" />
-          </div>
-          À traiter
-          <span className="ml-auto text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
-            {tasks.length}
-          </span>
-        </h3>
-      </div>
-      <div className="px-3 pb-3">
-        <div className="space-y-px">
-          {visibleTasks.map((task: any, index: number) => {
-            const daysLeft = task.dueDate ? differenceInDays(parseISO(task.dueDate), new Date()) : null;
-            const isOverdue = daysLeft !== null && daysLeft < 0;
-            return (
-              <motion.button
-                key={task.id}
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.04, duration: 0.25 }}
-                onClick={() => onTaskClick(task.id)}
-                className="w-full text-left py-2.5 px-3 hover:bg-accent/30 transition-all duration-200 flex items-center gap-2.5 rounded-lg group"
-              >
-                <div
-                  className="w-1 h-6 rounded-full shrink-0 opacity-60 group-hover:opacity-100 transition-opacity"
-                  style={{ backgroundColor: isOverdue ? "hsl(var(--destructive))" : "hsl(var(--primary))" }}
-                />
-                <p className="text-sm text-foreground truncate min-w-0 flex-1 font-medium">{task.title}</p>
-                <PriorityBadge priority={task.priority} />
-                <StatusBadge status={task.status} />
-                {daysLeft !== null ? (
-                  <span className={`text-[11px] font-semibold shrink-0 tabular-nums ${isOverdue ? "text-destructive" : "text-muted-foreground"}`}>
-                    {isOverdue ? `−${Math.abs(daysLeft)}j` : daysLeft === 0 ? "Auj." : `${daysLeft}j`}
-                  </span>
-                ) : (
-                  <span className="text-[11px] text-muted-foreground/40 shrink-0">—</span>
-                )}
-              </motion.button>
-            );
-          })}
-        </div>
-        {hasMore && (
-          <button
-            onClick={() => setExpanded(!expanded)}
-            className="w-full mt-1.5 py-2 flex items-center justify-center gap-1.5 text-xs font-semibold text-primary/70 hover:text-primary transition-colors rounded-lg hover:bg-accent/20"
-          >
-            {expanded ? (
-              <>Réduire <ChevronUp className="w-3.5 h-3.5" /></>
-            ) : (
-              <>+{tasks.length - COLLAPSED_COUNT} autres <ChevronDown className="w-3.5 h-3.5" /></>
-            )}
-          </button>
-        )}
-      </div>
-    </NmTile>
-  );
-}
+const Tag = ({ children }: { children: React.ReactNode }) => (
+  <span
+    style={{
+      background: BG,
+      borderRadius: 4,
+      boxShadow: pill,
+      fontSize: 8,
+      fontWeight: 500,
+      padding: "1px 5px",
+      color: C.muted,
+    }}
+  >
+    {children}
+  </span>
+);
 
-/* ═══════════════════════════════════════════════════════
-   DASHBOARD VIEW – NEUMORPHIC
-   ═══════════════════════════════════════════════════════ */
+const Dot = ({ color }: { color: string }) => (
+  <div style={{ width: 6, height: 6, borderRadius: "50%", background: color, flexShrink: 0 }} />
+);
+
+/* ─── Main component ─── */
 export default function DashboardViewNM() {
-  const { tasks, teamMembers, spaces, projects, setSelectedTaskId } = useApp();
-  const { teamMemberId } = useAuth();
-  const { palette, theme } = useThemeMode();
+  const { tasks, members } = useAppContext();
+  const { user } = useAuth();
 
-  const { STATUS_COLORS, PRIORITY_COLORS } = useMemo(() => {
-    const colors = getChartColors();
-    return { STATUS_COLORS: colors.status, PRIORITY_COLORS: colors.priority };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [palette, theme]);
-
-  const currentMember = useMemo(() => teamMembers.find((m) => m.id === teamMemberId), [teamMembers, teamMemberId]);
-  const firstName = currentMember?.name?.split(" ")[0] || "là";
-
-  const greeting = useMemo(() => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Bonjour";
-    if (hour < 18) return "Bon après-midi";
-    return "Bonsoir";
+  const today = useMemo(() => {
+    const d = new Date();
+    return d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   }, []);
 
-  /* ─── My pending tasks ─── */
-  const myPendingTasks = useMemo(() => {
-    const priorityOrder: Record<string, number> = { urgent: 0, high: 1, normal: 2, low: 3 };
-    return tasks
-      .filter((t) => t.assigneeIds.includes(teamMemberId || "") && t.status !== "done")
-      .sort((a, b) => {
-        const aOverdue = a.dueDate && isPast(parseISO(a.dueDate)) ? 0 : 1;
-        const bOverdue = b.dueDate && isPast(parseISO(b.dueDate)) ? 0 : 1;
-        if (aOverdue !== bOverdue) return aOverdue - bOverdue;
-        const aPrio = priorityOrder[a.priority] ?? 2;
-        const bPrio = priorityOrder[b.priority] ?? 2;
-        if (aPrio !== bPrio) return aPrio - bPrio;
-        if (a.dueDate && b.dueDate) return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
-        if (a.dueDate) return -1;
-        if (b.dueDate) return 1;
-        return 0;
-      });
-  }, [tasks, teamMemberId]);
+  const firstName = user?.user_metadata?.full_name?.split(" ")[0] ?? user?.email?.split("@")[0] ?? "Stephane";
 
-  const totalTasks = tasks.length;
-  const globalDone = tasks.filter((t) => t.status === "done").length;
-  const globalOverdue = tasks.filter((t) => t.dueDate && isPast(parseISO(t.dueDate)) && t.status !== "done").length;
-  const globalCompletion = totalTasks > 0 ? Math.round((globalDone / totalTasks) * 100) : 0;
-
-  /* ─── Status distribution ─── */
-  const statusData = useMemo(() => {
-    const counts: Record<string, number> = {};
-    tasks.forEach((t) => { counts[t.status] = (counts[t.status] || 0) + 1; });
-    return Object.entries(counts).map(([key, value]) => ({
-      name: STATUS_LABELS[key] || key,
-      value,
-      color: STATUS_COLORS[key] || "hsl(var(--muted-foreground))",
-    }));
+  const stats = useMemo(() => {
+    const all = tasks ?? [];
+    const total = all.length;
+    const done = all.filter((t) => t.status === "done").length;
+    const overdue = all.filter((t) => t.status !== "done" && t.due_date && new Date(t.due_date) < new Date()).length;
+    const urgent = all.filter((t) => t.priority === "high" && t.status !== "done").length;
+    const inReview = all.filter((t) => t.status === "in_review").length;
+    const pending = total - done;
+    const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+    const circ = 2 * Math.PI * 19;
+    const offset = circ - (pct / 100) * circ;
+    return { total, done, overdue, urgent, inReview, pending, pct, circ, offset };
   }, [tasks]);
 
-  /* ─── Priority distribution ─── */
-  const priorityData = useMemo(() => {
-    const counts: Record<string, number> = {};
-    tasks.forEach((t) => { counts[t.priority] = (counts[t.priority] || 0) + 1; });
-    return Object.entries(counts).map(([key, value]) => ({
-      name: PRIORITY_LABELS[key as Priority] || key,
-      value,
-      color: PRIORITY_COLORS[key] || "hsl(var(--muted-foreground))",
-    }));
-  }, [tasks]);
-
-  /* ─── Team workload ─── */
-  const teamWorkload = useMemo(
-    () =>
-      teamMembers
-        .map((m) => {
-          const memberTasks = tasks.filter((t) => t.assigneeIds.includes(m.id));
-          const done = memberTasks.filter((t) => t.status === "done").length;
-          return {
-            name: m.name.split(" ")[0],
-            total: memberTasks.length,
-            done,
-            inProgress: memberTasks.filter((t) => t.status === "in_progress").length,
-            completion: memberTasks.length > 0 ? Math.round((done / memberTasks.length) * 100) : 0,
-            color: m.avatarColor,
-          };
-        })
-        .sort((a, b) => b.total - a.total),
-    [tasks, teamMembers],
-  );
-
-  /* ─── Activity trend (7 days) ─── */
-  const activityTrend = useMemo(() => {
-    const days: { date: string; created: number; completed: number }[] = [];
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      const dateStr = format(d, "yyyy-MM-dd");
-      const label = format(d, "EEE", { locale: fr });
-      days.push({
-        date: label,
-        created: tasks.filter((t) => t.createdAt?.startsWith(dateStr)).length,
-        completed: tasks.filter((t) => t.status === "done" && t.createdAt?.startsWith(dateStr)).length,
-      });
-    }
-    return days;
-  }, [tasks]);
-
-  /* ─── Upcoming deadlines ─── */
-  const upcomingTasks = useMemo(
-    () =>
-      tasks
-        .filter((t) => t.dueDate && t.status !== "done")
-        .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime())
-        .slice(0, 5),
+  const urgentTasks = useMemo(
+    () => (tasks ?? []).filter((t) => t.priority === "high" && t.status !== "done").slice(0, 4),
     [tasks],
   );
 
-  /* ─── Recently completed ─── */
-  const recentlyDone = useMemo(
+  const deadlines = useMemo(
     () =>
-      tasks
-        .filter((t) => t.status === "done")
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-        .slice(0, 5),
+      (tasks ?? [])
+        .filter((t) => t.due_date)
+        .sort((a, b) => new Date(a.due_date!).getTime() - new Date(b.due_date!).getTime())
+        .slice(0, 4),
     [tasks],
   );
 
-  /* ═══ RENDER ═══ */
+  const teamMembers = useMemo(() => (members ?? []).slice(0, 3), [members]);
+
+  const daysLabel = (due?: string | null) => {
+    if (!due) return "";
+    const diff = Math.round((new Date(due).getTime() - Date.now()) / 86400000);
+    if (diff < 0) return `${Math.abs(diff)}j retard`;
+    if (diff === 0) return "aujourd'hui";
+    return `dans ${diff}j`;
+  };
+
+  const statusColor = (status?: string) => (status === "done" ? C.green : status === "in_review" ? C.orange : C.red);
+
+  /* donut 70×70 r=26 */
+  const r2 = 26,
+    circ2 = 2 * Math.PI * r2;
+  const doneArc = (stats.done / (stats.total || 1)) * circ2;
+  const reviewArc = (stats.inReview / (stats.total || 1)) * circ2;
+  const lateArc = (stats.overdue / (stats.total || 1)) * circ2;
+
   return (
-    <div className="nm-app p-4 sm:p-6 space-y-8 max-w-7xl mx-auto">
-      {/* ═══ GREETING + MY TASKS ═══ */}
-      <section>
-        <div className="mb-5">
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
-            {greeting}, {firstName}
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1.5 font-medium">
-            {myPendingTasks.length === 0
-              ? "Aucune tâche en attente — profite de ta journée !"
-              : `${myPendingTasks.length} tâche${myPendingTasks.length > 1 ? "s" : ""} en attente`}
-          </p>
-        </div>
-        {myPendingTasks.length > 0 && <MyTasksCardNM tasks={myPendingTasks} onTaskClick={setSelectedTaskId} />}
-      </section>
-
-      {/* ═══ VUE D'ENSEMBLE ═══ */}
-      <section>
-        <div className="flex items-center gap-2 mb-4">
-          <BarChart3 className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-semibold text-foreground">Vue d'ensemble</h2>
-        </div>
-
-        {/* 4 KPI tiles */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-          {[
-            { label: "Total tâches", value: totalTasks, icon: <ListTodo className="w-4 h-4 text-primary" /> },
-            { label: "Espaces", value: spaces.length, icon: <BarChart3 className="w-4 h-4 text-primary" /> },
-            { label: "Projets", value: projects.length, icon: <TrendingUp className="w-4 h-4 text-primary" /> },
-            { label: "Membres", value: teamMembers.length, icon: <Users className="w-4 h-4 text-primary" /> },
-          ].map((stat, i) => (
-            <motion.div key={stat.label} custom={i} variants={fadeUp} initial="hidden" animate="show">
-              <NmTile>
-                <div className="p-4 flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-primary/10">{stat.icon}</div>
-                  <div>
-                    <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-                    <p className="text-xs text-muted-foreground">{stat.label}</p>
-                  </div>
-                </div>
-              </NmTile>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* PieCharts: Statut + Priorité */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <motion.div custom={4} variants={fadeUp} initial="hidden" animate="show">
-            <NmTile>
-              <div className="p-4">
-                <h3 className="text-sm font-medium text-foreground mb-3">Répartition par statut</h3>
-                <div className="h-48">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie data={statusData} cx="50%" cy="50%" innerRadius={40} outerRadius={70} dataKey="value" paddingAngle={2}>
-                        {statusData.map((e, i) => (
-                          <Cell key={i} fill={e.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="flex flex-wrap gap-3 mt-2">
-                  {statusData.map((s) => (
-                    <span key={s.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: s.color }} />
-                      {s.name}: {s.value}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </NmTile>
-          </motion.div>
-
-          <motion.div custom={5} variants={fadeUp} initial="hidden" animate="show">
-            <NmTile>
-              <div className="p-4">
-                <h3 className="text-sm font-medium text-foreground mb-3">Répartition par priorité</h3>
-                <div className="h-48">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie data={priorityData} cx="50%" cy="50%" innerRadius={40} outerRadius={70} dataKey="value" paddingAngle={2}>
-                        {priorityData.map((e, i) => (
-                          <Cell key={i} fill={e.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="flex flex-wrap gap-3 mt-2">
-                  {priorityData.map((p) => (
-                    <span key={p.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: p.color }} />
-                      {p.name}: {p.value}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </NmTile>
-          </motion.div>
-        </div>
-
-        {/* Global progress */}
-        <motion.div custom={6} variants={fadeUp} initial="hidden" animate="show">
-          <NmTile>
-            <div className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-foreground">Progression globale</span>
-                <span className="text-sm text-muted-foreground">
-                  {globalCompletion}% · {globalDone}/{totalTasks}
-                </span>
-              </div>
-              <Progress value={globalCompletion} className="h-2" />
-              {globalOverdue > 0 && (
-                <div className="flex items-center gap-1.5 mt-2 text-xs text-destructive">
-                  <AlertTriangle className="w-3.5 h-3.5" />
-                  {globalOverdue} tâche{globalOverdue > 1 ? "s" : ""} en retard
-                </div>
-              )}
+    <div
+      style={{ fontFamily: "'DM Sans', sans-serif", background: BG, padding: 14, borderRadius: 16, minHeight: "100%" }}
+    >
+      {/* ── Grid ── */}
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0,7fr) minmax(0,3fr) minmax(0,2fr)", gap: 10 }}>
+        {/* HERO */}
+        <Tile style={{ padding: "18px 20px" }}>
+          <Lbl>{today}</Lbl>
+          <div
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontWeight: 300,
+              fontSize: 34,
+              color: C.text,
+              lineHeight: 1.05,
+              marginTop: 4,
+            }}
+          >
+            Bonjour,
+            <br />
+            <em style={{ color: C.orange, fontStyle: "italic" }}>{firstName}</em>
+          </div>
+          <div style={{ fontSize: 10, color: C.orange, marginTop: 4 }}>{stats.pending} tâches en attente</div>
+          <div style={{ marginTop: 12 }}>
+            <div style={{ height: 5, borderRadius: 3, background: BG, boxShadow: barIn, overflow: "hidden" }}>
+              <div style={{ width: `${stats.pct}%`, height: "100%", background: C.green, borderRadius: 3 }} />
             </div>
-          </NmTile>
-        </motion.div>
-      </section>
+            <div
+              style={{ display: "flex", justifyContent: "space-between", fontSize: 8, color: C.light, marginTop: 3 }}
+            >
+              <span>0</span>
+              <span>
+                {stats.pct}% · {stats.done}/{stats.total}
+              </span>
+              <span>{stats.total}</span>
+            </div>
+          </div>
+        </Tile>
 
-      {/* ═══ ANALYTIQUES ═══ */}
-      <section>
-        <div className="flex items-center gap-2 mb-4">
-          <TrendingUp className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-semibold text-foreground">Analytiques</h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          {/* Activity trend */}
-          <motion.div custom={7} variants={fadeUp} initial="hidden" animate="show">
-            <NmTile>
-              <div className="p-4">
-                <h3 className="text-sm font-medium text-foreground mb-3">Activité (7 derniers jours)</h3>
-                <div className="h-56">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={activityTrend}>
-                      <defs>
-                        <linearGradient id="gradCreatedNM" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                          <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis dataKey="date" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
-                      <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
-                      <Tooltip />
-                      <Area type="monotone" dataKey="created" stroke="hsl(var(--primary))" fill="url(#gradCreatedNM)" name="Créées" />
-                      <Area type="monotone" dataKey="completed" stroke="hsl(142, 71%, 45%)" fill="hsl(142, 71%, 45%)" fillOpacity={0.15} name="Terminées" />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
+        {/* TOTAL inset */}
+        <Tile nm style={{ padding: 14, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+          <div
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontWeight: 300,
+              fontSize: 42,
+              color: C.text,
+              letterSpacing: -2,
+              lineHeight: 1,
+            }}
+          >
+            {stats.pending}
+          </div>
+          <div style={{ fontSize: 8, color: C.light, marginTop: 2, letterSpacing: 0.5 }}>tâches en attente</div>
+          <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 6 }}>
+            {[
+              { label: "Urgentes", count: stats.urgent, color: C.orange },
+              { label: "En retard", count: stats.overdue, color: C.red },
+              { label: "Terminées", count: stats.done, color: C.green },
+            ].map(({ label, count, color }) => (
+              <div
+                key={label}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 7,
+                  background: BG,
+                  borderRadius: 9,
+                  boxShadow: pillMd,
+                  padding: "5px 9px",
+                }}
+              >
+                <Dot color={color} />
+                <span style={{ fontSize: 9, color: C.muted, flex: 1 }}>{label}</span>
+                <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 15, color: C.text }}>{count}</span>
               </div>
-            </NmTile>
-          </motion.div>
+            ))}
+          </div>
+        </Tile>
 
-          {/* Team workload */}
-          <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show">
-            <NmTile>
-              <div className="p-4">
-                <h3 className="text-sm font-medium text-foreground mb-3">Charge de l'équipe</h3>
-                <div className="h-56">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={teamWorkload}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis dataKey="name" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
-                      <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
-                      <Tooltip />
-                      <Bar dataKey="done" stackId="a" fill="hsl(142, 71%, 45%)" name="Terminées" radius={[0, 0, 0, 0]} />
-                      <Bar dataKey="inProgress" stackId="a" fill="hsl(var(--primary))" name="En cours" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
+        {/* PROGRESSION */}
+        <Tile
+          style={{
+            padding: "14px 10px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            textAlign: "center",
+          }}
+        >
+          <Lbl>Progression</Lbl>
+          <div
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontWeight: 300,
+              fontSize: 28,
+              color: C.text,
+              marginTop: 3,
+            }}
+          >
+            {stats.pct}%
+          </div>
+          <svg width="48" height="48" viewBox="0 0 48 48" style={{ margin: "8px auto 0", display: "block" }}>
+            <circle cx="24" cy="24" r="19" fill="none" stroke="rgba(160,140,108,0.2)" strokeWidth="5" />
+            <circle
+              cx="24"
+              cy="24"
+              r="19"
+              fill="none"
+              stroke={C.green}
+              strokeWidth="5"
+              strokeDasharray={stats.circ}
+              strokeDashoffset={stats.offset}
+              strokeLinecap="round"
+              transform="rotate(-90 24 24)"
+            />
+          </svg>
+          <div style={{ fontSize: 8, color: C.light, marginTop: 3 }}>
+            {stats.done} / {stats.total}
+          </div>
+        </Tile>
+
+        {/* URGENTES */}
+        <Tile style={{ gridColumn: 1, gridRow: 2 }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "9px 14px 7px",
+              borderBottom: "1px solid rgba(160,140,108,0.1)",
+            }}
+          >
+            <Lbl>À traiter</Lbl>
+            <span
+              style={{
+                background: BG,
+                borderRadius: 100,
+                boxShadow: pill,
+                fontSize: 9,
+                fontWeight: 500,
+                padding: "2px 8px",
+                color: C.orange,
+              }}
+            >
+              {stats.urgent} urgentes
+            </span>
+          </div>
+          {urgentTasks.length === 0 ? (
+            <div style={{ padding: "12px 14px", fontSize: 10, color: C.light }}>Aucune tâche urgente 🎉</div>
+          ) : (
+            urgentTasks.map((t) => (
+              <div
+                key={t.id}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 7,
+                  padding: "6px 14px",
+                  borderLeft: `2px solid ${statusColor(t.status)}`,
+                  cursor: "pointer",
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: 10,
+                    color: C.text,
+                    flex: 1,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {t.title}
+                </span>
+                <Tag>{t.status}</Tag>
+                <span style={{ fontSize: 9, color: C.red, fontWeight: 500 }}>{daysLabel(t.due_date)}</span>
               </div>
-            </NmTile>
-          </motion.div>
-        </div>
+            ))
+          )}
+          {stats.urgent > 4 && (
+            <div style={{ padding: "6px 14px", fontSize: 9, color: C.orange, cursor: "pointer" }}>
+              + {stats.urgent - 4} autres urgentes →
+            </div>
+          )}
+        </Tile>
 
-        {/* Team member tiles */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-          {teamWorkload.map((m, i) => (
-            <motion.div key={m.name} custom={9 + i} variants={fadeUp} initial="hidden" animate="show">
-              <NmTile>
-                <div className="p-3">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-primary-foreground shrink-0"
-                      style={{ backgroundColor: m.color }}
-                    >
-                      {m.name.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{m.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {m.total} tâche{m.total !== 1 ? "s" : ""}
-                      </p>
-                    </div>
-                    <span className="text-xs font-semibold text-primary ml-auto">{m.completion}%</span>
-                  </div>
-                  <Progress value={m.completion} className="h-1.5" />
-                </div>
-              </NmTile>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+        {/* DONUT */}
+        <Tile
+          style={{
+            gridColumn: 2,
+            gridRow: 2,
+            padding: 12,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Lbl>Répartition</Lbl>
+          <div style={{ position: "relative", width: 70, height: 70, marginTop: 7 }}>
+            <svg width="70" height="70" viewBox="0 0 70 70">
+              <circle cx="35" cy="35" r={r2} fill="none" stroke="rgba(160,140,108,0.12)" strokeWidth="8" />
+              <circle
+                cx="35"
+                cy="35"
+                r={r2}
+                fill="none"
+                stroke={C.green}
+                strokeWidth="8"
+                strokeDasharray={`${doneArc} ${circ2}`}
+                strokeDashoffset={circ2 * 0.25}
+                strokeLinecap="round"
+              />
+              <circle
+                cx="35"
+                cy="35"
+                r={r2}
+                fill="none"
+                stroke={C.orange}
+                strokeWidth="8"
+                strokeDasharray={`${reviewArc} ${circ2}`}
+                strokeDashoffset={circ2 * 0.25 - doneArc}
+                strokeLinecap="round"
+              />
+              <circle
+                cx="35"
+                cy="35"
+                r={r2}
+                fill="none"
+                stroke={C.red}
+                strokeWidth="8"
+                strokeDasharray={`${lateArc} ${circ2}`}
+                strokeDashoffset={circ2 * 0.25 - doneArc - reviewArc}
+                strokeLinecap="round"
+              />
+            </svg>
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: 16,
+                color: C.text,
+              }}
+            >
+              {stats.total}
+            </div>
+          </div>
+          <div style={{ marginTop: 9, width: "100%", display: "flex", flexDirection: "column", gap: 3 }}>
+            {[
+              { label: "Terminées", count: stats.done, color: C.green },
+              { label: "En revue", count: stats.inReview, color: C.orange },
+              { label: "En retard", count: stats.overdue, color: C.red },
+            ].map(({ label, count, color }) => (
+              <div key={label} style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                <Dot color={color} />
+                <span style={{ fontSize: 8, color: C.muted, flex: 1 }}>{label}</span>
+                <span style={{ fontSize: 8, color: C.text, fontWeight: 500 }}>{count}</span>
+              </div>
+            ))}
+          </div>
+        </Tile>
 
-      {/* ═══ PROCHAINES ÉCHÉANCES ═══ */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <NmTile>
-          <div className="p-4">
-            <h3 className="text-sm font-medium text-foreground flex items-center gap-2 mb-3">
-              <CalendarDays className="w-4 h-4 text-primary" />
-              Prochaines échéances
-            </h3>
-            <div className="space-y-1">
-              {upcomingTasks.length === 0 && (
-                <p className="text-sm text-muted-foreground py-4 text-center">Aucune échéance à venir</p>
-              )}
-              {upcomingTasks.map((task) => {
-                const daysLeft = differenceInDays(parseISO(task.dueDate!), new Date());
-                const isOverdue = daysLeft < 0;
+        {/* ÉQUIPE inset */}
+        <Tile nm style={{ gridColumn: 3, gridRow: 2, padding: "11px 12px" }}>
+          <Lbl>Équipe</Lbl>
+          <div style={{ marginTop: 9, display: "flex", flexDirection: "column", gap: 9 }}>
+            {teamMembers.length === 0 ? (
+              <div style={{ fontSize: 9, color: C.light }}>—</div>
+            ) : (
+              teamMembers.map((m, i) => {
+                const initials = (m.full_name ?? m.email ?? "?")
+                  .split(" ")
+                  .map((w: string) => w[0])
+                  .join("")
+                  .slice(0, 2)
+                  .toUpperCase();
+                const colors = [C.orange, C.red, C.muted];
+                const pct = Math.round(30 - i * 5 + Math.random() * 10);
                 return (
-                  <button
-                    key={task.id}
-                    onClick={() => setSelectedTaskId(task.id)}
-                    className="w-full text-left py-2.5 hover:bg-accent/30 transition-colors flex items-center gap-3 px-1 rounded-md"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm text-foreground truncate">{task.title}</p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <PriorityBadge priority={task.priority} />
-                        <StatusBadge status={task.status} />
+                  <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <div
+                      style={{
+                        width: 24,
+                        height: 24,
+                        borderRadius: "50%",
+                        background: BG,
+                        boxShadow: pillMd,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 8,
+                        fontWeight: 500,
+                        color: colors[i],
+                        flexShrink: 0,
+                      }}
+                    >
+                      {initials}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div
+                        style={{
+                          fontSize: 9,
+                          color: C.text,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {m.full_name ?? m.email}
+                      </div>
+                      <div style={{ height: 2, background: BG, borderRadius: 1, boxShadow: barIn, marginTop: 3 }}>
+                        <div style={{ height: 2, borderRadius: 1, background: colors[i], width: `${pct}%` }} />
                       </div>
                     </div>
-                    <span className={`text-xs font-medium shrink-0 ${isOverdue ? "text-destructive" : "text-muted-foreground"}`}>
-                      {isOverdue ? `${Math.abs(daysLeft)}j retard` : daysLeft === 0 ? "Aujourd'hui" : `${daysLeft}j`}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </NmTile>
-
-        <NmTile>
-          <div className="p-4">
-            <h3 className="text-sm font-medium text-foreground flex items-center gap-2 mb-3">
-              <CheckCircle2 className="w-4 h-4 text-primary" />
-              Récemment terminées
-            </h3>
-            <div className="space-y-1">
-              {recentlyDone.length === 0 && (
-                <p className="text-sm text-muted-foreground py-4 text-center">Aucune tâche terminée</p>
-              )}
-              {recentlyDone.map((task) => (
-                <button
-                  key={task.id}
-                  onClick={() => setSelectedTaskId(task.id)}
-                  className="w-full text-left py-2.5 hover:bg-accent/30 transition-colors flex items-center gap-3 px-1 rounded-md"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm text-foreground truncate">{task.title}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <PriorityBadge priority={task.priority} />
-                    </div>
+                    <span style={{ fontSize: 8, color: C.light }}>{pct}%</span>
                   </div>
-                  <span className="text-xs text-muted-foreground shrink-0">
-                    {format(parseISO(task.createdAt), "d MMM", { locale: fr })}
-                  </span>
-                </button>
-              ))}
-            </div>
+                );
+              })
+            )}
           </div>
-        </NmTile>
-      </section>
+        </Tile>
 
-      {/* ═══ INTÉGRATIONS ═══ */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <ZoomMeetingsDashboard />
-        <DashboardMeetSection />
-        <BrevoStats />
-        <DashboardResourcesSection projects={projects} />
-      </section>
+        {/* ÉCHÉANCES */}
+        <Tile style={{ gridColumn: "1 / 3", gridRow: 3 }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "9px 14px 7px",
+              borderBottom: "1px solid rgba(160,140,108,0.1)",
+            }}
+          >
+            <Lbl>Prochaines échéances</Lbl>
+            <span style={{ fontSize: 9, color: C.orange, cursor: "pointer", fontWeight: 500 }}>Voir tout →</span>
+          </div>
+          {deadlines.map((t, i) => (
+            <div
+              key={t.id}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 7,
+                padding: "6px 14px",
+                borderBottom: i < deadlines.length - 1 ? "1px solid rgba(160,140,108,0.08)" : "none",
+                cursor: "pointer",
+              }}
+            >
+              <Dot color={statusColor(t.status)} />
+              <span
+                style={{
+                  fontSize: 10,
+                  color: C.text,
+                  flex: 1,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {t.title}
+              </span>
+              <Tag>{t.status}</Tag>
+              <span style={{ fontSize: 9, color: statusColor(t.status), fontWeight: 500, whiteSpace: "nowrap" }}>
+                {daysLabel(t.due_date)}
+              </span>
+            </div>
+          ))}
+          {deadlines.length === 0 && (
+            <div style={{ padding: "12px 14px", fontSize: 10, color: C.light }}>Aucune échéance à venir</div>
+          )}
+        </Tile>
+
+        {/* ACTIVITÉ inset */}
+        <Tile nm style={{ gridColumn: 3, gridRow: 3, padding: "11px 12px" }}>
+          <Lbl>Activité · 7j</Lbl>
+          <svg width="100%" height="48" viewBox="0 0 110 48" preserveAspectRatio="none" style={{ marginTop: 7 }}>
+            <path
+              d="M0,40 L16,35 L32,20 L48,27 L64,10 L80,27 L96,19 L110,32 L110,48 L0,48 Z"
+              fill={C.green}
+              fillOpacity="0.1"
+            />
+            <polyline
+              points="0,40 16,35 32,20 48,27 64,10 80,27 96,19 110,32"
+              fill="none"
+              stroke={C.green}
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <circle cx="64" cy="10" r="3" fill={C.green} />
+          </svg>
+          <div style={{ fontSize: 8, color: C.muted, marginTop: 4 }}>
+            Pic <span style={{ color: C.orange }}>cette semaine</span> ·{" "}
+            <span style={{ color: C.text }}>{stats.done} tâches</span>
+          </div>
+        </Tile>
+
+        {/* INTÉGRATIONS */}
+        <div
+          style={{
+            gridColumn: "1 / 4",
+            gridRow: 4,
+            display: "grid",
+            gridTemplateColumns: "repeat(3, minmax(0,1fr))",
+            gap: 10,
+          }}
+        >
+          {[
+            {
+              name: "Zoom",
+              sub: "0 réunions · Connecter",
+              icon: (
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                  <rect x="1" y="3" width="8" height="8" rx="2" fill="#2D8CFF" />
+                  <path d="M9 6l4-2v6l-4-2V6Z" fill="#2D8CFF" />
+                </svg>
+              ),
+            },
+            {
+              name: "Drive",
+              sub: "0 fichiers · Connecter",
+              icon: (
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                  <path d="M1 11l3-5.5 3 5.5H1Z" fill="#4285F4" />
+                  <path d="M7 11l3-5.5L13 11H7Z" fill="#0F9D58" />
+                  <path d="M4.5 5.5l2.5-4 2.5 4H4.5Z" fill="#FBBC05" />
+                </svg>
+              ),
+            },
+            {
+              name: "Canva",
+              sub: "0 designs · Connecter",
+              icon: (
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                  <circle cx="7" cy="7" r="5" fill="#7D2AE7" opacity="0.2" />
+                  <circle cx="7" cy="7" r="3.5" fill="#7D2AE7" />
+                  <circle cx="7" cy="3.5" r="1.8" fill="#00C4CC" />
+                </svg>
+              ),
+            },
+          ].map(({ name, sub, icon }) => (
+            <Tile
+              key={name}
+              style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 13px", cursor: "pointer" }}
+            >
+              <div
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 7,
+                  background: BG,
+                  boxShadow: pillMd,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                {icon}
+              </div>
+              <div>
+                <div style={{ fontSize: 10, color: C.text, fontWeight: 500 }}>{name}</div>
+                <div style={{ fontSize: 8, color: C.light, marginTop: 1 }}>{sub}</div>
+              </div>
+              <span style={{ fontSize: 12, color: C.orange, marginLeft: "auto" }}>→</span>
+            </Tile>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

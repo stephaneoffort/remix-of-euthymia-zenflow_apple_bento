@@ -277,7 +277,7 @@ export default function DashboardViewNM() {
                           <div style={{ height: 3, borderRadius: 2, background: colors[i], width: `${pct}%` }} />
                         </div>
                       </div>
-                      <span style={{ fontSize: 9, color: C.light, whiteSpace: "nowrap" }}>{taskLabel} · {pct}%</span>
+                      <span style={{ fontSize: 12, color: C.light, whiteSpace: "nowrap" }}>{taskLabel} · {pct}%</span>
                     </div>
                   );
                 })

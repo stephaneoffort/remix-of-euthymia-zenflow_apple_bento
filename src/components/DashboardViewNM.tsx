@@ -3,6 +3,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useMemo, useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useIntegrations } from "@/hooks/useIntegrations";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { format, parseISO, isToday, isTomorrow } from "date-fns";
 import { fr } from "date-fns/locale";
 
@@ -67,8 +68,8 @@ const Dot = ({ color }: { color: string }) => (
 /* ─── Main component ─── */
 export default function DashboardViewNM() {
   const { tasks, teamMembers: members, setSelectedTaskId } = useApp();
-
   const { user } = useAuth();
+  const isMobile = useIsMobile();
 
   const today = useMemo(() => {
     const d = new Date();
@@ -140,6 +141,158 @@ export default function DashboardViewNM() {
   const reviewArc = (stats.inReview / (stats.total || 1)) * circ2;
   const lateArc = (stats.overdue / (stats.total || 1)) * circ2;
 
+  /* ─── MOBILE LAYOUT ─── */
+  if (isMobile) {
+    return (
+      <div style={{ fontFamily: "'DM Sans', sans-serif", background: BG, padding: 12, minHeight: "100%" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {/* HERO */}
+          <Tile style={{ padding: "16px 18px" }}>
+            <Lbl>{today}</Lbl>
+            <div
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontWeight: 300,
+                fontSize: 28,
+                color: C.text,
+                lineHeight: 1.05,
+                marginTop: 4,
+              }}
+            >
+              Bonjour, <em style={{ color: C.orange, fontStyle: "italic" }}>{firstName}</em>
+            </div>
+            <div style={{ fontSize: 10, color: C.orange, marginTop: 4 }}>{stats.pending} tâches en attente</div>
+            <div style={{ marginTop: 10 }}>
+              <div style={{ height: 5, borderRadius: 3, background: BG, boxShadow: barIn, overflow: "hidden" }}>
+                <div style={{ width: `${stats.pct}%`, height: "100%", background: C.green, borderRadius: 3 }} />
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 8, color: C.light, marginTop: 3 }}>
+                <span>0</span>
+                <span>{stats.pct}% · {stats.done}/{stats.total}</span>
+                <span>{stats.total}</span>
+              </div>
+            </div>
+          </Tile>
+
+          {/* STATS ROW */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            {/* TOTAL */}
+            <Tile nm style={{ padding: 14 }}>
+              <div style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300, fontSize: 36, color: C.text, lineHeight: 1 }}>
+                {stats.pending}
+              </div>
+              <div style={{ fontSize: 8, color: C.light, marginTop: 2 }}>en attente</div>
+              <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 4 }}>
+                {[
+                  { label: "Urgentes", count: stats.urgent, color: C.orange },
+                  { label: "En retard", count: stats.overdue, color: C.red },
+                  { label: "Terminées", count: stats.done, color: C.green },
+                ].map(({ label, count, color }) => (
+                  <div key={label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                    <Dot color={color} />
+                    <span style={{ fontSize: 9, color: C.muted, flex: 1 }}>{label}</span>
+                    <span style={{ fontSize: 12, color: C.text, fontWeight: 500 }}>{count}</span>
+                  </div>
+                ))}
+              </div>
+            </Tile>
+
+            {/* PROGRESSION */}
+            <Tile style={{ padding: 14, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+              <Lbl>Progression</Lbl>
+              <div style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300, fontSize: 24, color: C.text, marginTop: 3 }}>
+                {stats.pct}%
+              </div>
+              <svg width="48" height="48" viewBox="0 0 48 48" style={{ margin: "6px auto 0" }}>
+                <circle cx="24" cy="24" r="19" fill="none" stroke="rgba(160,140,108,0.2)" strokeWidth="5" />
+                <circle cx="24" cy="24" r="19" fill="none" stroke={C.green} strokeWidth="5"
+                  strokeDasharray={stats.circ} strokeDashoffset={stats.offset}
+                  strokeLinecap="round" transform="rotate(-90 24 24)" />
+              </svg>
+              <div style={{ fontSize: 8, color: C.light, marginTop: 3 }}>{stats.done} / {stats.total}</div>
+            </Tile>
+          </div>
+
+          {/* URGENTES */}
+          <Tile>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 14px 7px", borderBottom: "1px solid rgba(160,140,108,0.1)" }}>
+              <Lbl>À traiter</Lbl>
+              <span style={{ background: BG, borderRadius: 100, boxShadow: pill, fontSize: 9, fontWeight: 500, padding: "2px 8px", color: C.orange }}>
+                {stats.urgent} urgentes
+              </span>
+            </div>
+            {urgentTasks.length === 0 ? (
+              <div style={{ padding: "12px 14px", fontSize: 10, color: C.light }}>Aucune tâche urgente 🎉</div>
+            ) : (
+              urgentTasks.map((t) => (
+                <div key={t.id} onClick={() => setSelectedTaskId(t.id)}
+                  style={{ display: "flex", alignItems: "center", gap: 7, padding: "8px 14px", borderLeft: `2px solid ${statusColor(t.status)}`, cursor: "pointer" }}>
+                  <span style={{ fontSize: 11, color: C.text, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.title}</span>
+                  <span style={{ fontSize: 9, color: C.red, fontWeight: 500 }}>{daysLabel(t.dueDate)}</span>
+                </div>
+              ))
+            )}
+          </Tile>
+
+          {/* ÉCHÉANCES */}
+          <Tile>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 14px 7px", borderBottom: "1px solid rgba(160,140,108,0.1)" }}>
+              <Lbl>Prochaines échéances</Lbl>
+            </div>
+            {deadlines.length === 0 ? (
+              <div style={{ padding: "12px 14px", fontSize: 10, color: C.light }}>Aucune échéance à venir</div>
+            ) : (
+              deadlines.map((t, i) => (
+                <div key={t.id} onClick={() => setSelectedTaskId(t.id)}
+                  style={{ display: "flex", alignItems: "center", gap: 7, padding: "8px 14px", borderBottom: i < deadlines.length - 1 ? "1px solid rgba(160,140,108,0.08)" : "none", cursor: "pointer" }}>
+                  <Dot color={statusColor(t.status)} />
+                  <span style={{ fontSize: 11, color: C.text, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.title}</span>
+                  <span style={{ fontSize: 9, color: statusColor(t.status), fontWeight: 500, whiteSpace: "nowrap" }}>{daysLabel(t.dueDate)}</span>
+                </div>
+              ))
+            )}
+          </Tile>
+
+          {/* ÉQUIPE */}
+          <Tile nm style={{ padding: "11px 14px" }}>
+            <Lbl>Équipe</Lbl>
+            <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 8 }}>
+              {teamMembers.length === 0 ? (
+                <div style={{ fontSize: 9, color: C.light }}>—</div>
+              ) : (
+                teamMembers.map((m, i) => {
+                  const initials = (m.name ?? m.email ?? "?").split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
+                  const colors = [C.orange, C.red, C.muted, C.green, C.light];
+                  const mc = memberCompletion[m.id];
+                  const pct = mc && mc.total > 0 ? Math.round((mc.done / mc.total) * 100) : 0;
+                  const taskLabel = mc ? `${mc.done}/${mc.total}` : "0/0";
+                  return (
+                    <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <div style={{ width: 28, height: 28, borderRadius: "50%", background: BG, boxShadow: pillMd, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 500, color: colors[i], flexShrink: 0 }}>
+                        {initials}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 10, color: C.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{m.name ?? m.email}</div>
+                        <div style={{ height: 3, background: BG, borderRadius: 2, boxShadow: barIn, marginTop: 3 }}>
+                          <div style={{ height: 3, borderRadius: 2, background: colors[i], width: `${pct}%` }} />
+                        </div>
+                      </div>
+                      <span style={{ fontSize: 9, color: C.light, whiteSpace: "nowrap" }}>{taskLabel} · {pct}%</span>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </Tile>
+
+          {/* INTÉGRATIONS */}
+          <NMIntegrations isMobile />
+        </div>
+      </div>
+    );
+  }
+
+  /* ─── DESKTOP LAYOUT ─── */
   return (
     <div
       style={{ fontFamily: "'DM Sans', sans-serif", background: BG, padding: 14, borderRadius: 16, minHeight: "100%" }}
@@ -346,39 +499,12 @@ export default function DashboardViewNM() {
           <div style={{ position: "relative", width: 70, height: 70, marginTop: 7 }}>
             <svg width="70" height="70" viewBox="0 0 70 70">
               <circle cx="35" cy="35" r={r2} fill="none" stroke="rgba(160,140,108,0.12)" strokeWidth="8" />
-              <circle
-                cx="35"
-                cy="35"
-                r={r2}
-                fill="none"
-                stroke={C.green}
-                strokeWidth="8"
-                strokeDasharray={`${doneArc} ${circ2}`}
-                strokeDashoffset={circ2 * 0.25}
-                strokeLinecap="round"
-              />
-              <circle
-                cx="35"
-                cy="35"
-                r={r2}
-                fill="none"
-                stroke={C.orange}
-                strokeWidth="8"
-                strokeDasharray={`${reviewArc} ${circ2}`}
-                strokeDashoffset={circ2 * 0.25 - doneArc}
-                strokeLinecap="round"
-              />
-              <circle
-                cx="35"
-                cy="35"
-                r={r2}
-                fill="none"
-                stroke={C.red}
-                strokeWidth="8"
-                strokeDasharray={`${lateArc} ${circ2}`}
-                strokeDashoffset={circ2 * 0.25 - doneArc - reviewArc}
-                strokeLinecap="round"
-              />
+              <circle cx="35" cy="35" r={r2} fill="none" stroke={C.green} strokeWidth="8"
+                strokeDasharray={`${doneArc} ${circ2}`} strokeDashoffset={circ2 * 0.25} strokeLinecap="round" />
+              <circle cx="35" cy="35" r={r2} fill="none" stroke={C.orange} strokeWidth="8"
+                strokeDasharray={`${reviewArc} ${circ2}`} strokeDashoffset={circ2 * 0.25 - doneArc} strokeLinecap="round" />
+              <circle cx="35" cy="35" r={r2} fill="none" stroke={C.red} strokeWidth="8"
+                strokeDasharray={`${lateArc} ${circ2}`} strokeDashoffset={circ2 * 0.25 - doneArc - reviewArc} strokeLinecap="round" />
             </svg>
             <div
               style={{
@@ -580,7 +706,7 @@ export default function DashboardViewNM() {
 }
 
 /* ─── NM Integrations sub-component ─── */
-function NMIntegrations() {
+function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {}) {
   const { isActive } = useIntegrations();
   const [zoomCount, setZoomCount] = useState(0);
   const [meetEvents, setMeetEvents] = useState<{ id: string; title: string; start_time: string; meet_link: string }[]>([]);
@@ -593,7 +719,6 @@ function NMIntegrations() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    // Zoom
     if (isActive("zoom")) {
       const { data } = await supabase
         .from("zoom_meetings")
@@ -606,7 +731,6 @@ function NMIntegrations() {
       setZoomCount((data ?? []).length);
     }
 
-    // Meet
     if (isActive("google_meet")) {
       const { data } = await supabase
         .from("calendar_events")
@@ -620,7 +744,6 @@ function NMIntegrations() {
       setMeetEvents(meetOnly);
     }
 
-    // Drive
     if (isActive("google_drive")) {
       const { count } = await supabase
         .from("drive_attachments")
@@ -629,7 +752,6 @@ function NMIntegrations() {
       setDriveCount(count ?? 0);
     }
 
-    // Canva
     if (isActive("canva")) {
       const { count } = await supabase
         .from("canva_attachments")
@@ -638,7 +760,6 @@ function NMIntegrations() {
       setCanvaCount(count ?? 0);
     }
 
-    // Brevo
     if (isActive("brevo")) {
       const { count } = await supabase
         .from("brevo_campaigns")
@@ -708,8 +829,15 @@ function NMIntegrations() {
 
   if (integrations.length === 0) return null;
 
+  const cols = isMobileProp ? Math.min(integrations.length, 2) : Math.min(integrations.length, 4);
+
   return (
-    <div style={{ gridColumn: "1 / 4", gridRow: 4, display: "grid", gridTemplateColumns: `repeat(${Math.min(integrations.length, 4)}, minmax(0,1fr))`, gap: 10 }}>
+    <div style={{
+      ...(isMobileProp ? {} : { gridColumn: "1 / 4", gridRow: 4 }),
+      display: "grid",
+      gridTemplateColumns: `repeat(${cols}, minmax(0,1fr))`,
+      gap: 10,
+    }}>
       {integrations.map(({ key, name, color, count, unit, items }) => (
         <Tile key={key} style={{ padding: "10px 13px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>

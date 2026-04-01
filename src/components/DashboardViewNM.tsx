@@ -1,4 +1,4 @@
-import { useAppContext } from "@/context/AppContext";
+import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useMemo } from "react";
 
@@ -62,7 +62,7 @@ const Dot = ({ color }: { color: string }) => (
 
 /* ─── Main component ─── */
 export default function DashboardViewNM() {
-  const { tasks, teamMembers: members, setSelectedTaskId } = useAppContext();
+  const { tasks, teamMembers: members, setSelectedTaskId } = useApp();
 
   const { user } = useAuth();
 

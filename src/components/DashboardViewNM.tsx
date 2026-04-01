@@ -227,8 +227,8 @@ export default function DashboardViewNM() {
               urgentTasks.map((t) => (
                 <div key={t.id} onClick={() => setSelectedTaskId(t.id)}
                   style={{ display: "flex", alignItems: "center", gap: 7, padding: "8px 14px", borderLeft: `2px solid ${statusColor(t.status)}`, cursor: "pointer" }}>
-                  <span style={{ fontSize: 11, color: C.text, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.title}</span>
-                  <span style={{ fontSize: 9, color: C.red, fontWeight: 500 }}>{daysLabel(t.dueDate)}</span>
+                  <span style={{ fontSize: 14, color: C.text, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.title}</span>
+                   <span style={{ fontSize: 12, color: C.red, fontWeight: 500 }}>{daysLabel(t.dueDate)}</span>
                 </div>
               ))
             )}

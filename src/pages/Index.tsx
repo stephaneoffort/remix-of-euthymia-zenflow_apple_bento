@@ -281,7 +281,7 @@ export default function Index() {
       {designMode === "neumorphic" ? <SidebarNM /> : <AppSidebar />}
       <div className="flex-1 flex flex-col min-w-0" style={designMode === "neumorphic" ? { background: "#EDE6DA" } : {}}>
         {/* Top bar */}
-        <header className={`shrink-0 ${designMode === "neumorphic" ? "border-b" : "border-b border-border bg-card"}`} style={designMode === "neumorphic" ? { background: "#D9CFC0", borderColor: "rgba(140,118,88,0.2)" } : {}}>
+        <header className={`shrink-0 ${designMode === "neumorphic" ? "border-b" : "border-b border-border bg-card"}`} style={designMode === "neumorphic" ? { background: "#C8BDAD", borderColor: "rgba(140,118,88,0.25)" } : {}}>
           {/* Row 1: Title + actions */}
           <div className="h-12 sm:h-14 flex items-center px-3 sm:px-6 gap-1.5 sm:gap-2">
             <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 flex-1 overflow-hidden">

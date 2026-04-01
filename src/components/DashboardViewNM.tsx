@@ -255,7 +255,7 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* URGENTES */}
-        <Tile style={{ gridColumn: 1, gridRow: 2 }}>
+        <Tile delay={0.2} style={{ gridColumn: 1, gridRow: 2 }}>
           <div
             style={{
               display: "flex",

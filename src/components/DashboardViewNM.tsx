@@ -110,8 +110,8 @@ export default function DashboardViewNM() {
     const all = tasks ?? [];
     const total = all.length;
     const done = all.filter((t) => t.status === "done").length;
-    const overdue = all.filter((t) => t.status !== "done" && t.dueDate && new Date(t.dueDate) < new Date()).length;
-    const urgent = all.filter((t) => t.priority === "high" && t.status !== "done").length;
+    const overdue = all.filter((t) => t.dueDate && isPast(parseISO(t.dueDate)) && t.status !== "done").length;
+    const urgent = all.filter((t) => (t.priority === "urgent" || t.priority === "high") && t.status !== "done").length;
     const inReview = all.filter((t) => t.status === "in_review").length;
     const pending = total - done;
     const pct = total > 0 ? Math.round((done / total) * 100) : 0;

@@ -462,27 +462,27 @@ export default function SidebarNM() {
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      gap: 8,
+                      gap: 7,
                       width: "100%",
-                      padding: "7px 10px",
-                      borderRadius: 10,
+                      padding: "5px 10px",
+                      borderRadius: 7,
                       border: "none",
                       cursor: "pointer",
                       background: BG,
-                      boxShadow: isActive ? raised : "none",
-                      color: isActive ? C.orange : C.text,
+                      boxShadow: isActive ? insetSm : "none",
+                      color: isActive ? C.green : C.text,
                       fontFamily: "'DM Sans', sans-serif",
-                      fontSize: 13,
-                      fontWeight: isActive ? 700 : 600,
+                      fontSize: 10,
+                      fontWeight: isActive ? 700 : 500,
                       transition: "all 0.2s ease",
                     }}
                   >
                     <div style={{ width: 7, height: 7, borderRadius: "50%", background: (space as any).color ?? C.orange, flexShrink: 0 }} />
-                    <span style={{ flex: 1, textAlign: "left", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <span style={{ fontSize: 10, color: isActive ? C.green : C.text, fontWeight: isActive ? 700 : 500, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {space.name}
                     </span>
                     {spaceProjects.length > 0 && (
-                      <span style={{ fontSize: 10, color: C.light }}>{isOpen ? "▴" : "▾"}</span>
+                      <span style={{ fontSize: 8, color: C.muted }}>{isOpen ? "▴" : "▾"}</span>
                     )}
                   </button>
 

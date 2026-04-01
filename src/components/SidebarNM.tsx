@@ -471,7 +471,7 @@ export default function SidebarNM() {
                       transition: "all 0.2s ease",
                     }}
                   >
-                    <span style={{ fontSize: 16 }}>{space.icon}</span>
+                    <div style={{ width: 7, height: 7, borderRadius: "50%", background: space.color ?? C.orange, flexShrink: 0 }} />
                     <span style={{ flex: 1, textAlign: "left", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {space.name}
                     </span>

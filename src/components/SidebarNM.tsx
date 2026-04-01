@@ -148,7 +148,7 @@ export default function SidebarNM() {
     setSidebarCollapsed,
   } = useApp();
   const { teamMemberId } = useAuth();
-  const { theme, setTheme, designMode, setDesignMode } = useThemeMode();
+  const { theme, setTheme, designMode, setDesignMode, palette, setPalette } = useThemeMode();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 

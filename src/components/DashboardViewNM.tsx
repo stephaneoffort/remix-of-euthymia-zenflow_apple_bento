@@ -444,7 +444,7 @@ export default function DashboardViewNM() {
             </span>
           </div>
           {urgentTasks.length === 0 ? (
-            <div style={{ padding: "12px 14px", fontSize: 10, color: C.light }}>Aucune tâche urgente 🎉</div>
+            <div style={{ padding: "12px 14px", fontSize: 13, color: C.light }}>Aucune tâche urgente 🎉</div>
           ) : (
             urgentTasks.map((t) => (
               <div

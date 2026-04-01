@@ -489,7 +489,7 @@ export default function AppSidebar() {
   if (sidebarCollapsed) {
     return (
       <TooltipProvider delayDuration={200}>
-        <div className="w-[52px] bg-sidebar-bg flex flex-col items-center py-3 border-r border-sidebar-border-color shrink-0 gap-0.5">
+        <div className={`w-[52px] bg-sidebar-bg flex flex-col items-center py-3 border-r border-sidebar-border-color shrink-0 gap-0.5${designMode === "neumorphic" ? " nm-sidebar" : ""}`}>
           {/* Expand */}
           <Tooltip>
             <TooltipTrigger asChild>

@@ -62,7 +62,7 @@ const Dot = ({ color }: { color: string }) => (
 
 /* ─── Main component ─── */
 export default function DashboardViewNM() {
-  const { tasks, members, setSelectedTaskId } = useAppContext();
+  const { tasks, members } = useAppContext();
   const { user } = useAuth();
 
   const today = useMemo(() => {
@@ -275,7 +275,6 @@ export default function DashboardViewNM() {
             urgentTasks.map((t) => (
               <div
                 key={t.id}
-                onClick={() => setSelectedTaskId(t.id)}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -466,7 +465,6 @@ export default function DashboardViewNM() {
           {deadlines.map((t, i) => (
             <div
               key={t.id}
-              onClick={() => setSelectedTaskId(t.id)}
               style={{
                 display: "flex",
                 alignItems: "center",

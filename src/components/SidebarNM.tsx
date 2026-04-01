@@ -534,11 +534,11 @@ export default function SidebarNM() {
             {[
               { value: "light", label: "☀ Clair" },
               { value: "dark", label: "☽ Sombre" },
-              { value: "system", label: "⊙ Mixte" },
+              { value: "mixed", label: "⊙ Mixte" },
             ].map(({ value, label }) => (
               <button
                 key={value}
-                onClick={() => setTheme(value as "light" | "dark" | "system")}
+                onClick={() => setTheme(value as "light" | "dark" | "mixed")}
                 style={{
                   flex: 1,
                   background: theme === value ? BG : "transparent",

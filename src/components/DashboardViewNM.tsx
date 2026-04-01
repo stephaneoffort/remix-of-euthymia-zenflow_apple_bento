@@ -62,7 +62,7 @@ const Dot = ({ color }: { color: string }) => (
 
 /* ─── Main component ─── */
 export default function DashboardViewNM() {
-  const { tasks, teamMembers: members } = useAppContext();
+  const { tasks, teamMembers: members, setSelectedTaskId } = useAppContext();
   const { user } = useAuth();
 
   const today = useMemo(() => {
@@ -466,8 +466,8 @@ export default function DashboardViewNM() {
           {deadlines.map((t, i) => (
             <div
               key={t.id}
-              onClick={() => setSelectedTaskId(t.id)
-                style={{
+              onClick={() => setSelectedTaskId(t.id)}
+              style={{
                 display: "flex",
                 alignItems: "center",
                 gap: 7,

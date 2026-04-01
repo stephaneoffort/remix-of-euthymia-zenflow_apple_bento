@@ -412,7 +412,7 @@ export default function DashboardViewNM() {
               transform="rotate(-90 24 24)"
             />
           </svg>
-          <div style={{ fontSize: 8, color: C.light, marginTop: 3 }}>
+          <div style={{ fontSize: 11, color: C.light, marginTop: 3 }}>
             {stats.done} / {stats.total}
           </div>
         </Tile>

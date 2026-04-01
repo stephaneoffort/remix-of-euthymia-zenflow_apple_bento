@@ -4,7 +4,10 @@ import { useMemo, useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useIntegrations } from "@/hooks/useIntegrations";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useZoom } from "@/hooks/useZoom";
 import { format, parseISO, isToday, isTomorrow } from "date-fns";
+import { fr } from "date-fns/locale";
+import { toast } from "sonner";
 import { fr } from "date-fns/locale";
 
 /* ─── Design tokens ─── */

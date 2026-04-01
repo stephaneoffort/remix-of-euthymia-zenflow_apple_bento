@@ -628,7 +628,7 @@ export default function DashboardViewNM() {
               <Dot color={statusColor(t.status)} />
               <span
                 style={{
-                  fontSize: 10,
+                  fontSize: 13,
                   color: C.text,
                   flex: 1,
                   overflow: "hidden",

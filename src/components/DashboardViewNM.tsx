@@ -150,7 +150,7 @@ export default function DashboardViewNM() {
 
   const daysLabel = (due?: string | null) => {
     if (!due) return "";
-    const diff = Math.round((new Date(due).getTime() - Date.now()) / 86400000);
+    const diff = differenceInDays(parseISO(due), new Date());
     if (diff < 0) return `${Math.abs(diff)}j retard`;
     if (diff === 0) return "aujourd'hui";
     return `dans ${diff}j`;

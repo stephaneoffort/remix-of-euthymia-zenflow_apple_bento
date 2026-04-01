@@ -71,7 +71,8 @@ export default function DashboardViewNM() {
     return d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   }, []);
 
-  const firstName = user?.user_metadata?.full_name?.split(" ")[0] ?? user?.email?.split("@")[0] ?? "Stephane";
+  const currentMember = useMemo(() => (members ?? []).find((m) => m.email === user?.email), [members, user]);
+  const firstName = currentMember?.name?.split(" ")[0] ?? user?.user_metadata?.full_name?.split(" ")[0] ?? user?.email?.split("@")[0] ?? "Stephane";
 
   const stats = useMemo(() => {
     const all = tasks ?? [];

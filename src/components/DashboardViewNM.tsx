@@ -137,7 +137,7 @@ export default function DashboardViewNM() {
       {/* ── Grid ── */}
       <div style={{ display: "grid", gridTemplateColumns: "minmax(0,7fr) minmax(0,3fr) minmax(0,2fr)", gap: 10 }}>
         {/* HERO */}
-        <Tile style={{ padding: "18px 20px" }}>
+        <Tile delay={0.05} style={{ padding: "18px 20px" }}>
           <Lbl>{today}</Lbl>
           <div
             style={{

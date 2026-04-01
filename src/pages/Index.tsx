@@ -8,6 +8,7 @@ import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import AppSidebar from "@/components/AppSidebar";
+import SidebarNM from "@/components/SidebarNM";
 import KanbanBoard from "@/components/KanbanBoard";
 import ListView from "@/components/ListView";
 import CalendarView from "@/components/CalendarView";
@@ -277,7 +278,7 @@ export default function Index() {
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
-      <AppSidebar />
+      {designMode === "neumorphic" ? <SidebarNM /> : <AppSidebar />}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
         <header className="border-b border-border bg-card shrink-0">

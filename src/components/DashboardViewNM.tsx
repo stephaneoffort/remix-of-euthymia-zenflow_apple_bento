@@ -886,7 +886,7 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
               ))}
             </div>
           ) : (
-            <div style={{ fontSize: 8, color: C.light }}>{count > 0 ? `${count} élément${count > 1 ? "s" : ""} liés` : "Connecté"}</div>
+            <div style={{ fontSize: 11, color: C.light }}>{count > 0 ? `${count} élément${count > 1 ? "s" : ""} liés` : "Connecté"}</div>
           )}
         </Tile>
       ))}

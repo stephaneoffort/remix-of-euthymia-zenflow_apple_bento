@@ -277,7 +277,7 @@ export default function TaskDetailPanel() {
   return (
     <div className={`flex flex-col h-full border-l border-border shadow-xl task-detail-panel ${
       expanded ? 'fixed inset-0 z-[60]' : ''
-    }`}
+    } ${designMode === "neumorphic" ? 'nm-task-detail' : ''}`}
     style={designMode === "neumorphic" ? {
       background: "#EDE6DA",
       borderLeft: "1px solid rgba(140,118,88,0.2)",

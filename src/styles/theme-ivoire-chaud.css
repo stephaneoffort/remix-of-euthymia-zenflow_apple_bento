@@ -1805,3 +1805,20 @@ select:focus {
 .nm-task-detail button.w-full:hover {
   background: rgba(140,118,88,0.08) !important;
 }
+
+/* Rappels — selects natifs forcés */
+.nm-task-detail select,
+.nm-task-detail select option,
+.nm-task-detail [class*="Select"] *,
+.nm-task-detail [class*="select"] * {
+  color: #1A1208 !important;
+  background-color: #EDE6DA !important;
+}
+
+/* Boutons IA — fond ivoire + texte orange */
+.nm-task-detail button[class*="bg-primary/10"],
+.nm-task-detail button[class*="bg-primary\\/10"] {
+  background: #EDE6DA !important;
+  color: #7A4518 !important;
+  box-shadow: 3px 3px 8px rgba(140,118,88,0.5), -3px -3px 8px rgba(255,250,242,0.9) !important;
+}

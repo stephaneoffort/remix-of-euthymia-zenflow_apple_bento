@@ -73,7 +73,7 @@ function NmBtn({ children, active, accent, onClick, style }: {
 }
 
 export default function CalendarViewNM() {
-  const { getFilteredTasks, setSelectedTaskId, addTask, selectedProjectId, getListsForProject, teamMembers, tasks: allTasks } = useApp();
+  const { getFilteredTasks, setSelectedTaskId, addTask, updateTask, selectedProjectId, getListsForProject, teamMembers, tasks: allTasks } = useApp();
   const calSync = useCalendarSync();
   const { zoomTaskIds, meetTaskIds } = useTaskMeetings();
 

@@ -1054,6 +1054,14 @@ function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {
             {isExpanded && hasChildren && (
               <SubtaskTree taskId={st.id} depth={depth + 1} />
             )}
+
+            {shareTaskId === st.id && (
+              <ShareTaskDialog
+                open={true}
+                onOpenChange={(open) => { if (!open) setShareTaskId(null); }}
+                taskId={st.id}
+              />
+            )}
           </div>
         );
       })}

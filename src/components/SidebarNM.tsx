@@ -763,6 +763,9 @@ export default function SidebarNM() {
             display: "flex",
             flexDirection: "column",
             gap: 10,
+            flexShrink: 0,
+            overflowY: "auto",
+            maxHeight: "45vh",
           }}
         >
           {/* Thème clair/sombre */}

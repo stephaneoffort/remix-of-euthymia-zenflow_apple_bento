@@ -814,7 +814,7 @@ export default function SidebarNM() {
                 borderRadius: 10,
                 background: BG,
                 boxShadow: inset,
-                maxHeight: 140,
+                maxHeight: 200,
                 overflowY: "auto",
               }}
             >

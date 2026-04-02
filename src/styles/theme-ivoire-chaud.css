@@ -2140,8 +2140,28 @@ select:focus {
 /* Fond général */
 .nm-gantt .bg-background,
 .nm-gantt .bg-card,
-.nm-gantt .bg-muted {
+.nm-gantt .bg-muted,
+.nm-gantt [class*="bg-muted"] {
   background: #EDE6DA !important;
+}
+
+/* Timeline header sticky */
+.nm-gantt .sticky {
+  background: #EDE6DA !important;
+  backdrop-filter: none !important;
+}
+
+/* Timeline container & overflow areas */
+.nm-gantt .overflow-auto,
+.nm-gantt .overflow-auto > div {
+  background: #EDE6DA !important;
+}
+
+/* Weekend overlay columns */
+.nm-gantt [class*="weekend"],
+.nm-gantt .bg-muted\/10,
+.nm-gantt .bg-muted\/20 {
+  background: rgba(140,118,88,0.06) !important;
 }
 
 /* Toolbar */

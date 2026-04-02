@@ -5,6 +5,7 @@ import { useThemeMode, PALETTE_META, type ThemePalette } from "@/context/ThemeCo
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
+import { useChatNotifications } from "@/hooks/useChatNotifications";
 import logoEuthymia from "@/assets/logo-euthymia.png";
 
 /* ─── Tokens ─── */
@@ -151,6 +152,7 @@ export default function SidebarNM() {
   const { theme, setTheme, designMode, setDesignMode, palette, setPalette } = useThemeMode();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { totalUnread } = useChatNotifications();
 
   const [openSpaces, setOpenSpaces] = useState<Set<string>>(new Set());
   const [sidebarWidth, setSidebarWidth] = useState(() => {
@@ -610,6 +612,31 @@ export default function SidebarNM() {
               {label}
             </NavBtn>
           ))}
+
+          <NavBtn
+            active={false}
+            onClick={() => { navigate("/chat"); if (isMobile) setSidebarCollapsed(true); }}
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v7A1.5 1.5 0 0112.5 12H5l-3 2.5V3.5z" stroke="currentColor" strokeWidth="1.3" fill="none"/>
+            </svg>
+            Chat d'équipe
+            {totalUnread > 0 && (
+              <span style={{
+                marginLeft: "auto",
+                fontSize: 10,
+                fontWeight: 700,
+                background: "#7A4518",
+                color: "#FFF",
+                borderRadius: 99,
+                padding: "1px 6px",
+                minWidth: 18,
+                textAlign: "center" as const,
+              }}>
+                {totalUnread}
+              </span>
+            )}
+          </NavBtn>
         </div>
 
         {/* ── ESPACES ── */}

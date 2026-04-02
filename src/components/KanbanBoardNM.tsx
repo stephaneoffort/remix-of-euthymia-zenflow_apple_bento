@@ -65,8 +65,8 @@ const Avatar = ({ name, color }: { name: string; color?: string }) => {
 };
 
 /* ─── Task Card ─── */
-function TaskCard({ task, onOpen, getMemberById, getProjectName }: {
-  task: any; onOpen: (id: string) => void;
+function TaskCard({ task, allTasks, onOpen, getMemberById, getProjectName }: {
+  task: any; allTasks: any[]; onOpen: (id: string) => void;
   getMemberById: (id: string) => any;
   getProjectName: (listId: string) => any;
 }) {
@@ -77,10 +77,10 @@ function TaskCard({ task, onOpen, getMemberById, getProjectName }: {
   const isOverdue = daysLeft !== null && daysLeft < 0;
   const isDone = task.status === "done";
 
-  const subtasks = task.subtasks ?? [];
+  const subtasks = allTasks.filter((t: any) => t.parentTaskId === task.id);
   const subtaskDone = subtasks.filter((s: any) => s.status === "done").length;
-  const hasProgress = subtasks.length > 0;
-  const progress = hasProgress ? Math.round((subtaskDone / subtasks.length) * 100) : 0;
+  const hasSubtasks = subtasks.length > 0;
+  const progress = hasSubtasks ? Math.round((subtaskDone / subtasks.length) * 100) : 0;
 
   return (
     <div

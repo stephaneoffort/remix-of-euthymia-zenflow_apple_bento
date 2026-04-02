@@ -1267,6 +1267,44 @@ export type Database = {
           },
         ]
       }
+      task_shares: {
+        Row: {
+          created_at: string
+          id: string
+          message: string | null
+          method: string
+          sender_member_id: string
+          target_member_id: string | null
+          task_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          method: string
+          sender_member_id: string
+          target_member_id?: string | null
+          task_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          method?: string
+          sender_member_id?: string
+          target_member_id?: string | null
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_shares_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tasks: {
         Row: {
           ai_summary: string | null

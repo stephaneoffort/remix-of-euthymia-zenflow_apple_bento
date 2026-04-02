@@ -242,6 +242,33 @@ export default function SidebarNM() {
     navigate("/auth");
   };
 
+  /* ─── Drag & drop project between spaces ─── */
+  const handleProjectDragStart = (e: React.DragEvent, projectId: string) => {
+    setDraggedProjectId(projectId);
+    e.dataTransfer.setData("text/plain", projectId);
+    e.dataTransfer.effectAllowed = "move";
+  };
+  const handleSpaceDragOver = (e: React.DragEvent, spaceId: string) => {
+    if (!draggedProjectId) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    setDropTargetSpaceId(spaceId);
+  };
+  const handleSpaceDragLeave = () => setDropTargetSpaceId(null);
+  const handleSpaceDrop = (e: React.DragEvent, spaceId: string) => {
+    e.preventDefault();
+    setDropTargetSpaceId(null);
+    if (!draggedProjectId) return;
+    const proj = projects.find((p) => p.id === draggedProjectId);
+    if (proj && proj.spaceId !== spaceId) {
+      moveProject(draggedProjectId, spaceId);
+      const targetSpace = spaces.find((s) => s.id === spaceId);
+      toast({ title: "Projet déplacé", description: `« ${proj.name} » → ${targetSpace?.icon ?? ""} ${targetSpace?.name ?? ""}` });
+    }
+    setDraggedProjectId(null);
+  };
+  const handleProjectDragEnd = () => { setDraggedProjectId(null); setDropTargetSpaceId(null); };
+
   const archiveCount = (archivedSpaces?.length ?? 0) + (archivedProjects?.length ?? 0);
 
   // On mobile: hidden when collapsed, overlay when open

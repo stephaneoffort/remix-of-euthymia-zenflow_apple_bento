@@ -5,6 +5,7 @@ import { useThemeMode, PALETTE_META, type ThemePalette } from "@/context/ThemeCo
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
+import { useChatNotifications } from "@/hooks/useChatNotifications";
 import logoEuthymia from "@/assets/logo-euthymia.png";
 
 /* ─── Tokens ─── */

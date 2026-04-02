@@ -945,7 +945,8 @@ function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {
         return (
           <div key={st.id}>
             <div
-              className={`rounded-md hover:bg-muted/50 group transition-colors cursor-pointer ${isOverdue ? 'border-l-2 border-l-priority-urgent' : ''}`}
+              className={`rounded-md hover:bg-muted/50 group transition-colors cursor-pointer border-l-2`}
+              style={{ borderLeftColor: STATUS_LINE_COLORS[st.status] ?? '#8A7060' }}
               onClick={() => setSelectedTaskId(st.id)}
             >
               <div className="flex items-center gap-1.5 sm:gap-2 py-1.5 px-1.5 sm:px-2">

@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import AppSidebar from "@/components/AppSidebar";
 import SidebarNM from "@/components/SidebarNM";
 import KanbanBoard from "@/components/KanbanBoard";
+import KanbanBoardNM from "@/components/KanbanBoardNM";
 import ListView from "@/components/ListView";
 import CalendarView from "@/components/CalendarView";
 import WorkloadView from "@/components/WorkloadView";

@@ -388,8 +388,19 @@ export default function TaskDetailPanel() {
           <div className="space-y-4 sm:space-y-6">
             {/* Title */}
             <input
-              value={task.title}
-              onChange={e => updateTask(task.id, { title: e.target.value })}
+              value={titleDraft}
+              onChange={e => {
+                const val = e.target.value;
+                setTitleDraft(val);
+                if (titleDebounceRef.current) clearTimeout(titleDebounceRef.current);
+                titleDebounceRef.current = setTimeout(() => {
+                  updateTask(task.id, { title: val });
+                }, 800);
+              }}
+              onBlur={() => {
+                if (titleDebounceRef.current) clearTimeout(titleDebounceRef.current);
+                if (titleDraft !== task.title) updateTask(task.id, { title: titleDraft });
+              }}
               className={`font-bold text-foreground bg-transparent w-full outline-none border-none ${expanded ? 'text-xl sm:text-2xl' : 'text-base sm:text-lg'}`}
             />
 

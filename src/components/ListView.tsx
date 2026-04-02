@@ -172,7 +172,7 @@ export default function ListView() {
           <EmptyState variant="list" onAction={() => setIsAdding(true)} />
         )}
         {isAdding ? (
-          <div className="flex items-center gap-2 p-2 bg-card rounded-lg border border-border">
+          <div className="flex items-center gap-2 p-2 bg-card/95 backdrop-blur-sm rounded-lg border border-border shadow-sm">
             <input
               autoFocus
               value={newTaskTitle}
@@ -302,7 +302,7 @@ export default function ListView() {
               <tr><td colSpan={5}><EmptyState variant="list" onAction={() => setIsAdding(true)} /></td></tr>
             )}
             {isAdding ? (
-              <tr className="border-b border-border">
+              <tr className="border-b border-border bg-card/95">
                 <td colSpan={5} className="py-2 px-3">
                   <div className="flex items-center gap-2">
                     <input

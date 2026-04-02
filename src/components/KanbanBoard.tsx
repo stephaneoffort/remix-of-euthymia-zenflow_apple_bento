@@ -322,7 +322,7 @@ export default function KanbanBoard() {
 
           {/* Inline add task */}
           {newTaskStatus === status && (
-            <div className="bg-card rounded-lg border p-2.5 sm:p-3">
+            <div className="bg-card/95 backdrop-blur-sm rounded-lg border shadow-sm p-2.5 sm:p-3">
               <input
                 autoFocus
                 value={newTaskTitle}
@@ -450,7 +450,7 @@ export default function KanbanBoard() {
 
                 {/* Inline add task */}
                 {newTaskStatus === mobileActiveStatus && (
-                  <div className="bg-card rounded-lg border p-3">
+                  <div className="bg-card/95 backdrop-blur-sm rounded-lg border shadow-sm p-3">
                     <input
                       autoFocus
                       value={newTaskTitle}

@@ -87,6 +87,7 @@ export default function CalendarViewNM() {
   const [eventDialogDate, setEventDialogDate] = useState<string | undefined>();
   const [hourHeight, setHourHeight] = useState(64);
   const [dragOverHour, setDragOverHour] = useState<string | null>(null);
+  const [droppedHour, setDroppedHour] = useState<string | null>(null);
 
   const handleWheel = useCallback((e: React.WheelEvent) => {
     if (e.ctrlKey || e.metaKey) {
@@ -100,14 +101,21 @@ export default function CalendarViewNM() {
     e.dataTransfer.effectAllowed = "move";
   }, []);
 
+  const flashDrop = useCallback((key: string) => {
+    setDroppedHour(key);
+    setTimeout(() => setDroppedHour(null), 500);
+  }, []);
+
   const handleDropOnHour = useCallback((e: React.DragEvent, dateStr: string, hour: number) => {
     e.preventDefault();
     setDragOverHour(null);
     const taskId = e.dataTransfer.getData("text/plain");
     if (!taskId) return;
+    const hourKey = `${dateStr}|${hour}`;
+    flashDrop(hourKey);
     const newDue = new Date(`${dateStr}T${String(hour).padStart(2, "0")}:00:00`).toISOString();
     updateTask(taskId, { dueDate: newDue });
-  }, [updateTask]);
+  }, [updateTask, flashDrop]);
 
   const handleDropOnDay = useCallback((e: React.DragEvent, dateStr: string) => {
     e.preventDefault();

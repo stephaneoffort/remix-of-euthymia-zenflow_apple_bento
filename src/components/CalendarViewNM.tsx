@@ -570,8 +570,8 @@ export default function CalendarViewNM() {
                   onDrop={e => handleDropOnHour(e, dayDateStr, h)}
                   style={{
                     height: hourHeight, padding: "4px 12px", borderBottom: `1px solid ${C.border}`,
-                    transition: "height .1s ease, background .12s ease", position: "relative",
-                    background: dragOverHour === hourKey ? "rgba(184,116,64,0.08)" : "transparent",
+                    transition: "height .1s ease, background .35s ease", position: "relative",
+                    background: droppedHour === hourKey ? "rgba(107,143,106,0.18)" : dragOverHour === hourKey ? "rgba(184,116,64,0.08)" : "transparent",
                   }}
                   className="nm-hour-cell"
                 >

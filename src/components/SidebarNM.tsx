@@ -149,6 +149,10 @@ export default function SidebarNM() {
     sidebarCollapsed,
     setSidebarCollapsed,
     moveProject,
+    updateTask,
+    getListsForProject,
+    getTaskById,
+    getProjectsForSpace,
   } = useApp();
   const { teamMemberId } = useAuth();
   const { theme, setTheme, designMode, setDesignMode, palette, setPalette } = useThemeMode();

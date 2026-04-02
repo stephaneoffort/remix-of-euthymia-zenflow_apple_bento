@@ -154,6 +154,7 @@ export default function TaskReminders({ taskId, hasStartDate, hasDueDate }: Task
                 ))}
               </select>
               <button
+                data-nm="reminder"
                 onClick={() => addReminder(type.key)}
                 className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full border border-border text-foreground hover:text-primary hover:border-primary/20 transition-colors"
               >

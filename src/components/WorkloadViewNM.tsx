@@ -159,9 +159,13 @@ export default function WorkloadViewNM() {
           {workload.map(m => {
             const initials = m.name.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
             const total = m.total;
+            const isSelected = selectedMemberId === m.id;
             return (
-              <div key={m.id} style={{
-                background: BG, borderRadius: 12, boxShadow: raisedXs, padding: "10px 12px",
+              <div key={m.id} onClick={() => setSelectedMemberId(isSelected ? null : m.id)} style={{
+                background: BG, borderRadius: 12, padding: "10px 12px", cursor: "pointer",
+                boxShadow: isSelected ? inset : raisedXs,
+                outline: isSelected ? `2px solid ${C.green}` : "none",
+                transition: "all 0.2s ease",
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
                   <div style={{

@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useThemeMode, PALETTE_META, type ThemePalette } from "@/context/ThemeContext";
@@ -149,6 +150,10 @@ export default function SidebarNM() {
     sidebarCollapsed,
     setSidebarCollapsed,
     moveProject,
+    updateTask,
+    getListsForProject,
+    getTaskById,
+    getProjectsForSpace,
   } = useApp();
   const { teamMemberId } = useAuth();
   const { theme, setTheme, designMode, setDesignMode, palette, setPalette } = useThemeMode();
@@ -159,6 +164,7 @@ export default function SidebarNM() {
   const [openSpaces, setOpenSpaces] = useState<Set<string>>(new Set());
   const [draggedProjectId, setDraggedProjectId] = useState<string | null>(null);
   const [dropTargetSpaceId, setDropTargetSpaceId] = useState<string | null>(null);
+  const [dropTargetProjectId, setDropTargetProjectId] = useState<string | null>(null);
   const [sidebarWidth, setSidebarWidth] = useState(() => {
     const saved = localStorage.getItem(LS_KEY);
     return saved ? Math.max(MIN_WIDTH, Math.min(MAX_WIDTH, Number(saved))) : DEFAULT_WIDTH;
@@ -268,7 +274,71 @@ export default function SidebarNM() {
     }
     setDraggedProjectId(null);
   };
-  const handleProjectDragEnd = () => { setDraggedProjectId(null); setDropTargetSpaceId(null); };
+  const handleProjectDragEnd = () => { setDraggedProjectId(null); setDropTargetSpaceId(null); setDropTargetProjectId(null); };
+
+  /* ─── Task drop on project ─── */
+  const handleProjectDropOver = (e: React.DragEvent, projectId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.dataTransfer.dropEffect = "move";
+    setDropTargetProjectId(projectId);
+  };
+  const handleProjectDropLeave = (e: React.DragEvent) => {
+    e.stopPropagation();
+    setDropTargetProjectId(null);
+  };
+  const handleProjectDrop = (e: React.DragEvent, projectId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDropTargetProjectId(null);
+    setDraggedProjectId(null);
+    const type = e.dataTransfer.getData("type");
+    if (type === "task") {
+      const taskId = e.dataTransfer.getData("taskId");
+      if (taskId) {
+        const targetLists = getListsForProject(projectId);
+        if (targetLists.length > 0) {
+          const task = getTaskById(taskId);
+          const targetProject = projects.find((p) => p.id === projectId);
+          const prevListId = task?.listId;
+          const previousParentTaskId = task?.parentTaskId ?? null;
+          const isCrossProjectSubtask = !!task?.parentTaskId && task.listId !== targetLists[0].id;
+          updateTask(taskId, {
+            listId: targetLists[0].id,
+            ...(isCrossProjectSubtask ? { parentTaskId: null } : {}),
+          });
+          setSelectedProjectId(projectId);
+          toast({
+            title: "Tâche déplacée",
+            description: `« ${task?.title || "Tâche"} » → ${targetProject?.name || "projet"}`,
+            action: prevListId ? (
+              <ToastAction
+                altText="Annuler"
+                onClick={() =>
+                  updateTask(taskId, {
+                    listId: prevListId,
+                    ...(isCrossProjectSubtask ? { parentTaskId: previousParentTaskId } : {}),
+                  })
+                }
+              >
+                Annuler
+              </ToastAction>
+            ) : undefined,
+          });
+        }
+      }
+    } else if (type === "project") {
+      const draggedProjId = e.dataTransfer.getData("projectId");
+      const targetProject = projects.find((p) => p.id === projectId);
+      if (draggedProjId && targetProject) {
+        const sourceProject = projects.find((p) => p.id === draggedProjId);
+        if (sourceProject && sourceProject.spaceId !== targetProject.spaceId) {
+          moveProject(draggedProjId, targetProject.spaceId);
+          toast({ title: "Projet déplacé", description: `« ${sourceProject.name} » → espace de ${targetProject.name}` });
+        }
+      }
+    }
+  };
 
   const archiveCount = (archivedSpaces?.length ?? 0) + (archivedProjects?.length ?? 0);
 
@@ -751,6 +821,9 @@ export default function SidebarNM() {
                             draggable
                             onDragStart={(e) => handleProjectDragStart(e, proj.id)}
                             onDragEnd={handleProjectDragEnd}
+                            onDragOver={(e) => handleProjectDropOver(e, proj.id)}
+                            onDragLeave={handleProjectDropLeave}
+                            onDrop={(e) => handleProjectDrop(e, proj.id)}
                             onClick={() => goProject(proj.id)}
                             style={{
                               display: "flex",
@@ -759,9 +832,9 @@ export default function SidebarNM() {
                               width: "100%",
                               padding: "5px 8px",
                               borderRadius: 8,
-                              border: "none",
+                              border: dropTargetProjectId === proj.id ? "2px dashed #7A4518" : "none",
                               cursor: draggedProjectId === proj.id ? "grabbing" : "grab",
-                              background: BG,
+                              background: dropTargetProjectId === proj.id ? "rgba(122,69,24,0.08)" : BG,
                               opacity: draggedProjectId === proj.id ? 0.5 : 1,
                               boxShadow: isProjActive ? insetSm : "none",
                               color: isProjActive ? C.orange : C.muted,

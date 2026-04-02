@@ -15,6 +15,7 @@ import ListView from "@/components/ListView";
 import CalendarView from "@/components/CalendarView";
 import CalendarViewNM from "@/components/CalendarViewNM";
 import WorkloadView from "@/components/WorkloadView";
+import WorkloadViewNM from "@/components/WorkloadViewNM";
 import MindMapView from "@/components/MindMapView";
 import TaskDetailPanel from "@/components/TaskDetailPanel";
 import TaskFilterBar from "@/components/TaskFilterBar";

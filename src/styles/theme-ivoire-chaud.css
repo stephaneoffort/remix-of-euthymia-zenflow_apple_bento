@@ -1755,3 +1755,36 @@ select:focus {
   background: #7A1E0E !important;
   color: #FFF0DC !important;
 }
+
+/* Rappels — boutons sélecteurs */
+.nm-task-detail [class*="reminder"] button,
+.nm-task-detail [class*="reminder"] select {
+  color: #1A1208 !important;
+  background: #EDE6DA !important;
+  box-shadow: 2px 2px 5px rgba(140,118,88,0.5), -2px -2px 5px rgba(255,250,242,0.9) !important;
+}
+
+/* Boutons IA — fond ivoire + texte orange */
+.nm-task-detail button[class*="outline"]:has(svg),
+.nm-task-detail button:contains("IA"),
+.nm-task-detail button:contains("Résumé"),
+.nm-task-detail button:contains("Sous-tâches") {
+  background: #EDE6DA !important;
+  color: #7A4518 !important;
+  box-shadow: 3px 3px 8px rgba(140,118,88,0.5), -3px -3px 8px rgba(255,250,242,0.9) !important;
+}
+
+/* Icônes actions sous-tâches */
+.nm-task-detail [class*="subtask"] button,
+.nm-task-detail [class*="subtask"] svg {
+  color: #5A5040 !important;
+  opacity: 0.8;
+}
+
+/* Bouton Envoyer commentaire */
+.nm-task-detail button:last-child {
+  background: #2A5828 !important;
+  color: #F0FAF0 !important;
+  box-shadow: 4px 4px 10px rgba(20,50,20,0.45) !important;
+}
+}

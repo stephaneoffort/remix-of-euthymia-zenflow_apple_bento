@@ -168,6 +168,7 @@ export default function KanbanBoardNM() {
     getListsForProject, quickFilter,
   } = useApp();
   const { teamMemberId } = useAuth();
+  const isMobile = useIsMobile();
 
   const [search, setSearch] = useState("");
   const [newTaskStatus, setNewTaskStatus] = useState<string | null>(null);

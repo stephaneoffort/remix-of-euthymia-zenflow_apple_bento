@@ -1799,9 +1799,17 @@ select:focus {
   background: var(--nm-bg) !important;
   color: var(--nm-accent) !important;
   box-shadow: var(--nm-up-sm) !important;
+  transition: box-shadow 0.3s cubic-bezier(.4,0,.2,1),
+              transform 0.3s cubic-bezier(.4,0,.2,1),
+              background 0.3s ease !important;
 }
 .nm-task-detail button[data-nm="ia"]:hover {
-  box-shadow: var(--nm-up) !important;
+  box-shadow: var(--nm-up), 0 0 12px hsl(var(--nm-accent-raw, 28 60% 50%) / .18) !important;
+  transform: translateY(-1px) !important;
+}
+.nm-task-detail button[data-nm="ia"]:active {
+  box-shadow: var(--nm-up-sm) !important;
+  transform: translateY(0) !important;
 }
 
 /* ─── TEXTES ILLISIBLES — CORRECTIFS GLOBAUX ─────────── */

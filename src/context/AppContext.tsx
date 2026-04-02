@@ -55,6 +55,7 @@ interface AppContextType extends AppState {
   addProject: (name: string, spaceId: string, color: string, memberIds?: string[]) => void;
   duplicateSpace: (spaceId: string) => void;
   duplicateProject: (projectId: string) => void;
+  duplicateTask: (taskId: string) => void;
   archiveSpace: (spaceId: string) => void;
   archiveProject: (projectId: string) => void;
   renameSpace: (id: string, name: string) => void;

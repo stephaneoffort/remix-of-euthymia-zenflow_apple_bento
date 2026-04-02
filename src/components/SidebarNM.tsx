@@ -152,6 +152,7 @@ export default function SidebarNM() {
   const { theme, setTheme, designMode, setDesignMode, palette, setPalette } = useThemeMode();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { totalUnread } = useChatNotifications();
 
   const [openSpaces, setOpenSpaces] = useState<Set<string>>(new Set());
   const [sidebarWidth, setSidebarWidth] = useState(() => {

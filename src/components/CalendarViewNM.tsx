@@ -122,9 +122,10 @@ export default function CalendarViewNM() {
     setDragOverHour(null);
     const taskId = e.dataTransfer.getData("text/plain");
     if (!taskId) return;
+    flashDrop(`month-${dateStr}`);
     const newDue = new Date(dateStr + "T00:00:00").toISOString();
     updateTask(taskId, { dueDate: newDue });
-  }, [updateTask]);
+  }, [updateTask, flashDrop]);
 
   const filteredTasks = getFilteredTasks();
   const tasks = useMemo(() => {

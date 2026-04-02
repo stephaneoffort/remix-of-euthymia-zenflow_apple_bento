@@ -1756,12 +1756,14 @@ select:focus {
   color: #FFF0DC !important;
 }
 
-/* Rappels — boutons sélecteurs */
-.nm-task-detail [class*="reminder"] button,
-.nm-task-detail [class*="reminder"] select {
+/* Rappels — bouton Ajouter */
+.nm-task-detail button[data-nm="reminder"] {
   color: #1A1208 !important;
   background: #EDE6DA !important;
   box-shadow: 2px 2px 5px rgba(140,118,88,0.5), -2px -2px 5px rgba(255,250,242,0.9) !important;
+}
+.nm-task-detail button[data-nm="reminder"]:hover {
+  box-shadow: 3px 3px 8px rgba(140,118,88,0.6), -3px -3px 8px rgba(255,250,242,0.95) !important;
 }
 
 /* Tous les boutons — fond ivoire par défaut */

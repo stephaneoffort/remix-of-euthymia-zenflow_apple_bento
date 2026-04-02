@@ -917,6 +917,7 @@ function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {
   const [addingFor, setAddingFor] = useState<string | null>(null);
   const [newTitle, setNewTitle] = useState('');
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(subtasks.map(s => s.id)));
+  const [shareTaskId, setShareTaskId] = useState<string | null>(null);
 
   const parentTask = getTaskById(taskId);
 

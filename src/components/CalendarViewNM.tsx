@@ -86,6 +86,7 @@ export default function CalendarViewNM() {
   const [eventDialogOpen, setEventDialogOpen] = useState(false);
   const [eventDialogDate, setEventDialogDate] = useState<string | undefined>();
   const [hourHeight, setHourHeight] = useState(64);
+  const [dragOverHour, setDragOverHour] = useState<string | null>(null);
 
   const handleWheel = useCallback((e: React.WheelEvent) => {
     if (e.ctrlKey || e.metaKey) {
@@ -93,6 +94,29 @@ export default function CalendarViewNM() {
       setHourHeight(prev => Math.min(200, Math.max(32, prev - e.deltaY * 0.3)));
     }
   }, []);
+
+  const handleDragStart = useCallback((e: React.DragEvent, taskId: string) => {
+    e.dataTransfer.setData("text/plain", taskId);
+    e.dataTransfer.effectAllowed = "move";
+  }, []);
+
+  const handleDropOnHour = useCallback((e: React.DragEvent, dateStr: string, hour: number) => {
+    e.preventDefault();
+    setDragOverHour(null);
+    const taskId = e.dataTransfer.getData("text/plain");
+    if (!taskId) return;
+    const newDue = new Date(`${dateStr}T${String(hour).padStart(2, "0")}:00:00`).toISOString();
+    updateTask(taskId, { dueDate: newDue });
+  }, [updateTask]);
+
+  const handleDropOnDay = useCallback((e: React.DragEvent, dateStr: string) => {
+    e.preventDefault();
+    setDragOverHour(null);
+    const taskId = e.dataTransfer.getData("text/plain");
+    if (!taskId) return;
+    const newDue = new Date(dateStr + "T00:00:00").toISOString();
+    updateTask(taskId, { dueDate: newDue });
+  }, [updateTask]);
 
   const filteredTasks = getFilteredTasks();
   const tasks = useMemo(() => {

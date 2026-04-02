@@ -221,13 +221,15 @@ export default function CalendarViewNM() {
     return (
       <div
         key={t.id}
+        draggable
+        onDragStart={e => handleDragStart(e, t.id)}
         onClick={e => { e.stopPropagation(); setSelectedTaskId(t.id); }}
         style={{
           background: pc.bg, borderRadius: compact ? 4 : 6,
           padding: compact ? "2px 5px" : "3px 7px",
           fontSize: compact ? 8 : 9, color: pc.text, fontWeight: 600,
           overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-          cursor: "pointer", marginBottom: 2,
+          cursor: "grab", marginBottom: 2,
           boxShadow: t.priority === "low" ? raisedSm : undefined,
           fontFamily: "'DM Sans', sans-serif",
         }}

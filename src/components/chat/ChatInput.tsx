@@ -32,6 +32,7 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, 
   const [mentionFilter, setMentionFilter] = useState('');
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const typingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isMobile = useIsMobile();
 
   const handleSend = useCallback(() => {
     const trimmed = content.trim();

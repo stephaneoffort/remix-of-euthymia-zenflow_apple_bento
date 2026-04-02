@@ -167,6 +167,7 @@ export default function TaskDetailPanel() {
   const [newComment, setNewComment] = useState('');
   const [editingField, setEditingField] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const [addingLink, setAddingLink] = useState(false);
   const [newLinkUrl, setNewLinkUrl] = useState('');
   const [newLinkName, setNewLinkName] = useState('');

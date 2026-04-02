@@ -700,7 +700,7 @@ export default function TaskDetailPanel() {
             <BrevoContacts entityType="task" entityId={task.id} compact />
             <BrevoNewsletterLinks entityType="task" entityId={task.id} compact />
             <GmailCompose entityType="task" entityId={task.id} defaultSubject={task.title} compact />
-            <GmailInbox compact />
+            
 
             {/* Per-integration guiding messages */}
             {!isActive('google_drive') && !isActive('canva') && !isActive('zoom') && !isActive('brevo') && !isActive('gmail') && (

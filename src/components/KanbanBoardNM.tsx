@@ -244,34 +244,38 @@ export default function KanbanBoardNM() {
     setNewTaskStatus(null);
   };
 
-  return (
-    <div style={{ fontFamily: "'DM Sans', sans-serif", background: BG, padding: "12px 16px", height: "100%", width: "100%", boxSizing: "border-box", display: "flex", flexDirection: "column", gap: 10 }}>
+  const mobileColTasks = filtered.filter(t => t.status === mobileActiveStatus);
+  const mobileCol = COLUMNS.find(c => c.key === mobileActiveStatus);
 
-      {/* ── Légende priorités ── */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-        <span style={{ fontSize: 11, color: C.light, fontWeight: 500 }}>Priorités :</span>
-        {[
-          { label: "Urgent",  bg: C.red,    color: "#FFF0DC" },
-          { label: "Haute",   bg: C.orange, color: "#FFF0DC" },
-          { label: "Normale", bg: C.blue,   color: "#E0EAFF" },
-          { label: "Basse",   bg: BG,       color: C.muted, shadow: raisedSm },
-        ].map(({ label, bg, color, shadow }) => (
-          <span
-            key={label}
-            style={{
-              fontSize: 10, fontWeight: 600, padding: "2px 7px", borderRadius: 6,
-              background: bg, color, boxShadow: shadow ?? "none",
-            }}
-          >
-            {label}
-          </span>
-        ))}
-      </div>
+  return (
+    <div style={{ fontFamily: "'DM Sans', sans-serif", background: BG, padding: isMobile ? "8px 8px" : "12px 16px", height: "100%", width: "100%", boxSizing: "border-box", display: "flex", flexDirection: "column", gap: 10 }}>
+
+      {/* ── Légende priorités (desktop only) ── */}
+      {!isMobile && (
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 11, color: C.light, fontWeight: 500 }}>Priorités :</span>
+          {[
+            { label: "Urgent",  bg: C.red,    color: "#FFF0DC" },
+            { label: "Haute",   bg: C.orange, color: "#FFF0DC" },
+            { label: "Normale", bg: C.blue,   color: "#E0EAFF" },
+            { label: "Basse",   bg: BG,       color: C.muted, shadow: raisedSm },
+          ].map(({ label, bg, color, shadow }) => (
+            <span
+              key={label}
+              style={{
+                fontSize: 10, fontWeight: 600, padding: "2px 7px", borderRadius: 6,
+                background: bg, color, boxShadow: shadow ?? "none",
+              }}
+            >
+              {label}
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* ── Toolbar ── */}
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        {/* Search */}
-        <div style={{ display: "flex", alignItems: "center", gap: 6, background: BG, boxShadow: inset, borderRadius: 10, padding: "6px 10px", flex: 1, maxWidth: 260 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, background: BG, boxShadow: inset, borderRadius: 10, padding: "6px 10px", flex: 1, maxWidth: isMobile ? "100%" : 260 }}>
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
             <circle cx="6" cy="6" r="4.5" stroke={C.light} strokeWidth="1.2" />
             <line x1="9.5" y1="9.5" x2="12.5" y2="12.5" stroke={C.light} strokeWidth="1.2" strokeLinecap="round" />
@@ -287,188 +291,312 @@ export default function KanbanBoardNM() {
             }}
           />
         </div>
-        <span style={{ fontSize: 12, color: C.light, fontWeight: 500, whiteSpace: "nowrap" }}>
-          {filtered.length} tâche{filtered.length !== 1 ? "s" : ""}
-        </span>
+        {!isMobile && (
+          <span style={{ fontSize: 12, color: C.light, fontWeight: 500, whiteSpace: "nowrap" }}>
+            {filtered.length} tâche{filtered.length !== 1 ? "s" : ""}
+          </span>
+        )}
       </div>
 
-      {/* ── Collapsed chips ── */}
-      {columns.some(c => collapsedColumns.has(c.key)) && (
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-          {columns.filter(c => collapsedColumns.has(c.key)).map(col => {
-            const count = filtered.filter(t => t.status === col.key).length;
-            return (
-              <button
-                key={col.key}
-                onClick={() => toggleCollapse(col.key)}
-                onDragOver={e => handleDragOver(e, col.key)}
-                onDrop={e => handleDrop(e, col.key)}
-                style={{
-                  display: "flex", alignItems: "center", gap: 5,
-                  background: BG, boxShadow: raisedSm, border: "none",
-                  borderRadius: 8, padding: "4px 10px", cursor: "pointer",
-                  fontSize: 11, fontWeight: 600, color: C.text,
-                  fontFamily: "'DM Sans', sans-serif",
-                }}
-              >
-                <div style={{ width: 6, height: 6, borderRadius: "50%", background: col.color }} />
-                {col.label}
-                <span style={{ color: C.light, fontWeight: 500 }}>{count}</span>
-              </button>
-            );
-          })}
-        </div>
-      )}
-
-      {/* ── Colonnes ── */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: `repeat(${columns.filter(c => !collapsedColumns.has(c.key)).length}, minmax(0,1fr))`,
-        gap: 10, flex: 1, overflow: "auto",
-      }}>
-        {columns.filter(c => !collapsedColumns.has(c.key)).map(col => {
-          const colTasks = filtered.filter(t => t.status === col.key);
-          const isDropping = dropTarget === col.key;
-
-          return (
-            <div
-              key={col.key}
-              onDragOver={e => handleDragOver(e, col.key)}
-              onDrop={e => handleDrop(e, col.key)}
-              onDragLeave={() => { if (dropTarget === col.key) setDropTarget(null); }}
-              style={{
-                display: "flex", flexDirection: "column", gap: 8,
-                transition: "background .15s",
-                background: isDropping ? "rgba(122,69,24,0.04)" : "transparent",
-                borderRadius: 14, padding: isDropping ? 4 : 0,
-              }}
-            >
-              {/* Header colonne */}
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 4px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <button
-                    onClick={() => toggleCollapse(col.key)}
-                    title="Réduire la colonne"
-                    style={{
-                      background: "none", border: "none", cursor: "pointer", padding: 0,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      width: 16, height: 16, color: C.light, fontSize: 10,
-                    }}
-                  >
-                    ‹
-                  </button>
-                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: col.color, flexShrink: 0 }} />
-                  <span style={{ fontSize: 13, fontWeight: 700, color: C.text, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-                    {col.label}
-                  </span>
-                  <span
-                    style={{
-                      fontSize: 11, fontWeight: 600, color: C.light,
-                      background: BG, boxShadow: raisedSm,
-                      borderRadius: 6, padding: "1px 7px",
-                    }}
-                  >
-                    {colTasks.length}
-                  </span>
-                </div>
-                {col.key !== "done" && col.key !== "blocked" && (
-                  <button
-                    onClick={() => setNewTaskStatus(col.key)}
-                    style={{
-                      width: 22, height: 22, borderRadius: "50%",
-                      background: BG, boxShadow: raisedSm,
-                      border: "none", cursor: "pointer",
-                      fontSize: 14, fontWeight: 700, color: C.orange,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      lineHeight: 1,
-                    }}
-                  >
-                    +
-                  </button>
-                )}
-              </div>
-
-              {/* Drop indicator */}
-              {isDropping && (
-                <div style={{ height: 3, borderRadius: 2, background: C.orange, opacity: 0.5, margin: "0 8px" }} />
-              )}
-
-              {/* Cartes */}
-              {colTasks.map(task => (
-                <div
-                  key={task.id}
-                  draggable
-                  onDragStart={e => handleDragStart(e, task.id)}
-                  onDragEnd={() => { setDraggedTaskId(null); setDropTarget(null); }}
-                  style={{ opacity: draggedTaskId === task.id ? 0.4 : 1, transition: "opacity .15s" }}
+      {/* ══════ MOBILE ══════ */}
+      {isMobile ? (
+        <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
+          {/* Status tabs */}
+          <div style={{ display: "flex", gap: 6, padding: "4px 0", overflowX: "auto", flexShrink: 0 }}>
+            {columns.map(col => {
+              const count = filtered.filter(t => t.status === col.key).length;
+              const isActive = mobileActiveStatus === col.key;
+              return (
+                <button
+                  key={col.key}
+                  onClick={() => setMobileActiveStatus(col.key)}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 5,
+                    padding: "6px 12px", borderRadius: 10, border: "none",
+                    cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0,
+                    fontSize: 12, fontWeight: 600,
+                    fontFamily: "'DM Sans', sans-serif",
+                    background: BG,
+                    boxShadow: isActive ? inset : raisedSm,
+                    color: isActive ? C.orange : C.text,
+                    transition: "all .15s",
+                  }}
                 >
+                  <div style={{ width: 7, height: 7, borderRadius: "50%", background: col.color }} />
+                  {col.label}
+                  <span style={{ color: isActive ? C.orange : C.light, fontWeight: 500, fontSize: 11 }}>{count}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Active column content */}
+          <div style={{ flex: 1, overflowY: "auto", paddingTop: 6 }}>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={mobileActiveStatus}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.15 }}
+                style={{ display: "flex", flexDirection: "column", gap: 8 }}
+              >
+                {/* Add task button */}
+                <div
+                  onClick={() => setNewTaskStatus(mobileActiveStatus)}
+                  style={{
+                    background: BG, borderRadius: 12, boxShadow: inset,
+                    padding: 10, cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                    fontSize: 12, color: C.light, fontWeight: 500,
+                    fontFamily: "'DM Sans', sans-serif",
+                  }}
+                >
+                  <span style={{ fontSize: 14, fontWeight: 700 }}>+</span>
+                  Ajouter une tâche
+                </div>
+
+                {/* Inline add task */}
+                {newTaskStatus === mobileActiveStatus && (
+                  <div style={{ background: BG, borderRadius: 12, boxShadow: inset, padding: 10 }}>
+                    <input
+                      autoFocus
+                      value={newTaskTitle}
+                      onChange={e => setNewTaskTitle(e.target.value)}
+                      onKeyDown={e => { if (e.key === "Enter") handleAddTask(mobileActiveStatus); if (e.key === "Escape") setNewTaskStatus(null); }}
+                      placeholder="Titre de la tâche…"
+                      style={{
+                        width: "100%", border: "none", background: "transparent", outline: "none",
+                        fontSize: 13, color: C.text, fontFamily: "'DM Sans', sans-serif", marginBottom: 6,
+                      }}
+                    />
+                    <div style={{ display: "flex", gap: 6 }}>
+                      <button
+                        onClick={() => handleAddTask(mobileActiveStatus)}
+                        style={{
+                          flex: 1, background: C.green, border: "none", borderRadius: 7,
+                          color: "#F0FAF0", fontSize: 12, fontWeight: 700, padding: "5px 0",
+                          cursor: "pointer", fontFamily: "'DM Sans', sans-serif",
+                        }}
+                      >
+                        Ajouter
+                      </button>
+                      <button
+                        onClick={() => setNewTaskStatus(null)}
+                        style={{
+                          flex: 1, background: BG, border: "none", borderRadius: 7,
+                          boxShadow: raisedSm, color: C.muted, fontSize: 12, padding: "5px 0",
+                          cursor: "pointer", fontFamily: "'DM Sans', sans-serif",
+                        }}
+                      >
+                        Annuler
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Cards */}
+                {mobileColTasks.map(task => (
                   <TaskCard
+                    key={task.id}
                     task={task}
                     onOpen={setSelectedTaskId}
                     getMemberById={getMemberById}
                     getProjectName={getProjectName}
                   />
-                </div>
-              ))}
+                ))}
 
-              {/* Nouvelle tâche inline */}
-              {newTaskStatus === col.key ? (
-                <div style={{ background: BG, borderRadius: 12, boxShadow: inset, padding: 10 }}>
-                  <input
-                    autoFocus
-                    value={newTaskTitle}
-                    onChange={e => setNewTaskTitle(e.target.value)}
-                    onKeyDown={e => { if (e.key === "Enter") handleAddTask(col.key); if (e.key === "Escape") setNewTaskStatus(null); }}
-                    placeholder="Titre de la tâche…"
-                    style={{
-                      width: "100%", border: "none", background: "transparent", outline: "none",
-                      fontSize: 13, color: C.text, fontFamily: "'DM Sans', sans-serif", marginBottom: 6,
-                    }}
-                  />
-                  <div style={{ display: "flex", gap: 6 }}>
-                    <button
-                      onClick={() => handleAddTask(col.key)}
-                      style={{
-                        flex: 1, background: C.green, border: "none", borderRadius: 7,
-                        color: "#F0FAF0", fontSize: 12, fontWeight: 700, padding: "5px 0",
-                        cursor: "pointer", fontFamily: "'DM Sans', sans-serif",
-                      }}
-                    >
-                      Ajouter
-                    </button>
-                    <button
-                      onClick={() => setNewTaskStatus(null)}
-                      style={{
-                        flex: 1, background: BG, border: "none", borderRadius: 7,
-                        boxShadow: raisedSm, color: C.muted, fontSize: 12, padding: "5px 0",
-                        cursor: "pointer", fontFamily: "'DM Sans', sans-serif",
-                      }}
-                    >
-                      Annuler
-                    </button>
+                {mobileColTasks.length === 0 && newTaskStatus !== mobileActiveStatus && (
+                  <div style={{ textAlign: "center", padding: "40px 0", color: C.light, fontSize: 13, fontFamily: "'DM Sans', sans-serif" }}>
+                    Aucune tâche
                   </div>
-                </div>
-              ) : (
-                col.key !== "done" && col.key !== "blocked" && (
-                  <div
-                    onClick={() => setNewTaskStatus(col.key)}
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </div>
+      ) : (
+        /* ══════ DESKTOP ══════ */
+        <>
+          {/* Collapsed chips */}
+          {columns.some(c => collapsedColumns.has(c.key)) && (
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+              {columns.filter(c => collapsedColumns.has(c.key)).map(col => {
+                const count = filtered.filter(t => t.status === col.key).length;
+                return (
+                  <button
+                    key={col.key}
+                    onClick={() => toggleCollapse(col.key)}
+                    onDragOver={e => handleDragOver(e, col.key)}
+                    onDrop={e => handleDrop(e, col.key)}
                     style={{
-                      background: BG, borderRadius: 12, boxShadow: inset,
-                      padding: 10, cursor: "pointer",
-                      display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                      fontSize: 12, color: C.light, fontWeight: 500,
+                      display: "flex", alignItems: "center", gap: 5,
+                      background: BG, boxShadow: raisedSm, border: "none",
+                      borderRadius: 8, padding: "4px 10px", cursor: "pointer",
+                      fontSize: 11, fontWeight: 600, color: C.text,
                       fontFamily: "'DM Sans', sans-serif",
                     }}
                   >
-                    <span style={{ fontSize: 14, fontWeight: 700 }}>+</span>
-                    Ajouter
-                  </div>
-                )
-              )}
+                    <div style={{ width: 6, height: 6, borderRadius: "50%", background: col.color }} />
+                    {col.label}
+                    <span style={{ color: C.light, fontWeight: 500 }}>{count}</span>
+                  </button>
+                );
+              })}
             </div>
-          );
-        })}
-      </div>
+          )}
+
+          {/* Columns grid */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: `repeat(${columns.filter(c => !collapsedColumns.has(c.key)).length}, minmax(0,1fr))`,
+            gap: 10, flex: 1, overflow: "auto",
+          }}>
+            {columns.filter(c => !collapsedColumns.has(c.key)).map(col => {
+              const colTasks = filtered.filter(t => t.status === col.key);
+              const isDropping = dropTarget === col.key;
+
+              return (
+                <div
+                  key={col.key}
+                  onDragOver={e => handleDragOver(e, col.key)}
+                  onDrop={e => handleDrop(e, col.key)}
+                  onDragLeave={() => { if (dropTarget === col.key) setDropTarget(null); }}
+                  style={{
+                    display: "flex", flexDirection: "column", gap: 8,
+                    transition: "background .15s",
+                    background: isDropping ? "rgba(122,69,24,0.04)" : "transparent",
+                    borderRadius: 14, padding: isDropping ? 4 : 0,
+                  }}
+                >
+                  {/* Header */}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 4px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <button
+                        onClick={() => toggleCollapse(col.key)}
+                        title="Réduire la colonne"
+                        style={{
+                          background: "none", border: "none", cursor: "pointer", padding: 0,
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          width: 16, height: 16, color: C.light, fontSize: 10,
+                        }}
+                      >
+                        ‹
+                      </button>
+                      <div style={{ width: 8, height: 8, borderRadius: "50%", background: col.color, flexShrink: 0 }} />
+                      <span style={{ fontSize: 13, fontWeight: 700, color: C.text, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                        {col.label}
+                      </span>
+                      <span
+                        style={{
+                          fontSize: 11, fontWeight: 600, color: C.light,
+                          background: BG, boxShadow: raisedSm,
+                          borderRadius: 6, padding: "1px 7px",
+                        }}
+                      >
+                        {colTasks.length}
+                      </span>
+                    </div>
+                    {col.key !== "done" && col.key !== "blocked" && (
+                      <button
+                        onClick={() => setNewTaskStatus(col.key)}
+                        style={{
+                          width: 22, height: 22, borderRadius: "50%",
+                          background: BG, boxShadow: raisedSm,
+                          border: "none", cursor: "pointer",
+                          fontSize: 14, fontWeight: 700, color: C.orange,
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          lineHeight: 1,
+                        }}
+                      >
+                        +
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Drop indicator */}
+                  {isDropping && (
+                    <div style={{ height: 3, borderRadius: 2, background: C.orange, opacity: 0.5, margin: "0 8px" }} />
+                  )}
+
+                  {/* Cards */}
+                  {colTasks.map(task => (
+                    <div
+                      key={task.id}
+                      draggable
+                      onDragStart={e => handleDragStart(e, task.id)}
+                      onDragEnd={() => { setDraggedTaskId(null); setDropTarget(null); }}
+                      style={{ opacity: draggedTaskId === task.id ? 0.4 : 1, transition: "opacity .15s" }}
+                    >
+                      <TaskCard
+                        task={task}
+                        onOpen={setSelectedTaskId}
+                        getMemberById={getMemberById}
+                        getProjectName={getProjectName}
+                      />
+                    </div>
+                  ))}
+
+                  {/* Inline add */}
+                  {newTaskStatus === col.key ? (
+                    <div style={{ background: BG, borderRadius: 12, boxShadow: inset, padding: 10 }}>
+                      <input
+                        autoFocus
+                        value={newTaskTitle}
+                        onChange={e => setNewTaskTitle(e.target.value)}
+                        onKeyDown={e => { if (e.key === "Enter") handleAddTask(col.key); if (e.key === "Escape") setNewTaskStatus(null); }}
+                        placeholder="Titre de la tâche…"
+                        style={{
+                          width: "100%", border: "none", background: "transparent", outline: "none",
+                          fontSize: 13, color: C.text, fontFamily: "'DM Sans', sans-serif", marginBottom: 6,
+                        }}
+                      />
+                      <div style={{ display: "flex", gap: 6 }}>
+                        <button
+                          onClick={() => handleAddTask(col.key)}
+                          style={{
+                            flex: 1, background: C.green, border: "none", borderRadius: 7,
+                            color: "#F0FAF0", fontSize: 12, fontWeight: 700, padding: "5px 0",
+                            cursor: "pointer", fontFamily: "'DM Sans', sans-serif",
+                          }}
+                        >
+                          Ajouter
+                        </button>
+                        <button
+                          onClick={() => setNewTaskStatus(null)}
+                          style={{
+                            flex: 1, background: BG, border: "none", borderRadius: 7,
+                            boxShadow: raisedSm, color: C.muted, fontSize: 12, padding: "5px 0",
+                            cursor: "pointer", fontFamily: "'DM Sans', sans-serif",
+                          }}
+                        >
+                          Annuler
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    col.key !== "done" && col.key !== "blocked" && (
+                      <div
+                        onClick={() => setNewTaskStatus(col.key)}
+                        style={{
+                          background: BG, borderRadius: 12, boxShadow: inset,
+                          padding: 10, cursor: "pointer",
+                          display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                          fontSize: 12, color: C.light, fontWeight: 500,
+                          fontFamily: "'DM Sans', sans-serif",
+                        }}
+                      >
+                        <span style={{ fontSize: 14, fontWeight: 700 }}>+</span>
+                        Ajouter
+                      </div>
+                    )
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 }

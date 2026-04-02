@@ -73,7 +73,7 @@ function NmBtn({ children, active, accent, onClick, style }: {
 }
 
 export default function CalendarViewNM() {
-  const { getFilteredTasks, setSelectedTaskId, addTask, selectedProjectId, getListsForProject, teamMembers, tasks: allTasks } = useApp();
+  const { getFilteredTasks, setSelectedTaskId, addTask, updateTask, selectedProjectId, getListsForProject, teamMembers, tasks: allTasks } = useApp();
   const calSync = useCalendarSync();
   const { zoomTaskIds, meetTaskIds } = useTaskMeetings();
 
@@ -86,6 +86,7 @@ export default function CalendarViewNM() {
   const [eventDialogOpen, setEventDialogOpen] = useState(false);
   const [eventDialogDate, setEventDialogDate] = useState<string | undefined>();
   const [hourHeight, setHourHeight] = useState(64);
+  const [dragOverHour, setDragOverHour] = useState<string | null>(null);
 
   const handleWheel = useCallback((e: React.WheelEvent) => {
     if (e.ctrlKey || e.metaKey) {
@@ -93,6 +94,29 @@ export default function CalendarViewNM() {
       setHourHeight(prev => Math.min(200, Math.max(32, prev - e.deltaY * 0.3)));
     }
   }, []);
+
+  const handleDragStart = useCallback((e: React.DragEvent, taskId: string) => {
+    e.dataTransfer.setData("text/plain", taskId);
+    e.dataTransfer.effectAllowed = "move";
+  }, []);
+
+  const handleDropOnHour = useCallback((e: React.DragEvent, dateStr: string, hour: number) => {
+    e.preventDefault();
+    setDragOverHour(null);
+    const taskId = e.dataTransfer.getData("text/plain");
+    if (!taskId) return;
+    const newDue = new Date(`${dateStr}T${String(hour).padStart(2, "0")}:00:00`).toISOString();
+    updateTask(taskId, { dueDate: newDue });
+  }, [updateTask]);
+
+  const handleDropOnDay = useCallback((e: React.DragEvent, dateStr: string) => {
+    e.preventDefault();
+    setDragOverHour(null);
+    const taskId = e.dataTransfer.getData("text/plain");
+    if (!taskId) return;
+    const newDue = new Date(dateStr + "T00:00:00").toISOString();
+    updateTask(taskId, { dueDate: newDue });
+  }, [updateTask]);
 
   const filteredTasks = getFilteredTasks();
   const tasks = useMemo(() => {
@@ -197,13 +221,15 @@ export default function CalendarViewNM() {
     return (
       <div
         key={t.id}
+        draggable
+        onDragStart={e => handleDragStart(e, t.id)}
         onClick={e => { e.stopPropagation(); setSelectedTaskId(t.id); }}
         style={{
           background: pc.bg, borderRadius: compact ? 4 : 6,
           padding: compact ? "2px 5px" : "3px 7px",
           fontSize: compact ? 8 : 9, color: pc.text, fontWeight: 600,
           overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-          cursor: "pointer", marginBottom: 2,
+          cursor: "grab", marginBottom: 2,
           boxShadow: t.priority === "low" ? raisedSm : undefined,
           fontFamily: "'DM Sans', sans-serif",
         }}
@@ -315,10 +341,13 @@ export default function CalendarViewNM() {
                     <div
                       key={di}
                       onClick={() => setSelectedDay(day.date)}
+                      onDragOver={e => { e.preventDefault(); setDragOverHour(`month-${dateStr}`); }}
+                      onDragLeave={() => setDragOverHour(null)}
+                      onDrop={e => handleDropOnDay(e, dateStr)}
                       style={{
                         padding: "6px 8px", minHeight: 90, cursor: "pointer",
                         borderRight: di < 6 ? `1px solid ${C.border}` : "none",
-                        background: today_ ? "rgba(107,143,106,0.06)" : selected ? "rgba(184,116,64,0.04)" : "transparent",
+                        background: dragOverHour === `month-${dateStr}` ? "rgba(184,116,64,0.08)" : today_ ? "rgba(107,143,106,0.06)" : selected ? "rgba(184,116,64,0.04)" : "transparent",
                         transition: "background .15s ease",
                       }}
                     >
@@ -436,7 +465,15 @@ export default function CalendarViewNM() {
                   });
                   const hourKey = `${toDateStr(day)}|${h}`;
                   return (
-                    <div key={di} style={{ padding: "2px 4px", borderLeft: `1px solid ${C.border}`, position: "relative" }}
+                    <div key={di}
+                      onDragOver={e => { e.preventDefault(); setDragOverHour(hourKey); }}
+                      onDragLeave={() => setDragOverHour(null)}
+                      onDrop={e => handleDropOnHour(e, toDateStr(day), h)}
+                      style={{
+                        padding: "2px 4px", borderLeft: `1px solid ${C.border}`, position: "relative",
+                        background: dragOverHour === hourKey ? "rgba(184,116,64,0.08)" : "transparent",
+                        transition: "background .12s ease",
+                      }}
                       className="nm-hour-cell"
                     >
                       {hourEvents.map(ev => renderEventPill(ev))}
@@ -518,7 +555,15 @@ export default function CalendarViewNM() {
               const dayDateStr = toDateStr(currentDate);
               const hourKey = `${dayDateStr}|${h}`;
               return (
-                <div key={h} style={{ height: hourHeight, padding: "4px 12px", borderBottom: `1px solid ${C.border}`, transition: "height .1s ease", position: "relative" }}
+                <div key={h}
+                  onDragOver={e => { e.preventDefault(); setDragOverHour(hourKey); }}
+                  onDragLeave={() => setDragOverHour(null)}
+                  onDrop={e => handleDropOnHour(e, dayDateStr, h)}
+                  style={{
+                    height: hourHeight, padding: "4px 12px", borderBottom: `1px solid ${C.border}`,
+                    transition: "height .1s ease, background .12s ease", position: "relative",
+                    background: dragOverHour === hourKey ? "rgba(184,116,64,0.08)" : "transparent",
+                  }}
                   className="nm-hour-cell"
                 >
                   {hourEvents.map(ev => (

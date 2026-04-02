@@ -462,7 +462,15 @@ export default function CalendarViewNM() {
                   });
                   const hourKey = `${toDateStr(day)}|${h}`;
                   return (
-                    <div key={di} style={{ padding: "2px 4px", borderLeft: `1px solid ${C.border}`, position: "relative" }}
+                    <div key={di}
+                      onDragOver={e => { e.preventDefault(); setDragOverHour(hourKey); }}
+                      onDragLeave={() => setDragOverHour(null)}
+                      onDrop={e => handleDropOnHour(e, toDateStr(day), h)}
+                      style={{
+                        padding: "2px 4px", borderLeft: `1px solid ${C.border}`, position: "relative",
+                        background: dragOverHour === hourKey ? "rgba(184,116,64,0.08)" : "transparent",
+                        transition: "background .12s ease",
+                      }}
                       className="nm-hour-cell"
                     >
                       {hourEvents.map(ev => renderEventPill(ev))}

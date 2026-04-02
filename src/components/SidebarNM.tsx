@@ -748,6 +748,9 @@ export default function SidebarNM() {
                         return (
                           <button
                             key={proj.id}
+                            draggable
+                            onDragStart={(e) => handleProjectDragStart(e, proj.id)}
+                            onDragEnd={handleProjectDragEnd}
                             onClick={() => goProject(proj.id)}
                             style={{
                               display: "flex",
@@ -757,8 +760,9 @@ export default function SidebarNM() {
                               padding: "5px 8px",
                               borderRadius: 8,
                               border: "none",
-                              cursor: "pointer",
+                              cursor: draggedProjectId === proj.id ? "grabbing" : "grab",
                               background: BG,
+                              opacity: draggedProjectId === proj.id ? 0.5 : 1,
                               boxShadow: isProjActive ? insetSm : "none",
                               color: isProjActive ? C.orange : C.muted,
                               fontFamily: "'DM Sans', sans-serif",

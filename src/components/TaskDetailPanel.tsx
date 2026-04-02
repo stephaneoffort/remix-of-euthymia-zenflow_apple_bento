@@ -906,6 +906,7 @@ export default function TaskDetailPanel() {
 
         </div>
       </div>
+      <ShareTaskDialog open={shareOpen} onOpenChange={setShareOpen} taskId={task.id} />
     </div>
   );
 }

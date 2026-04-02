@@ -1827,3 +1827,59 @@ select:focus {
 .nm-task-detail button[data-nm="ia"]:hover {
   box-shadow: 4px 4px 10px rgba(140,118,88,0.6), -4px -4px 10px rgba(255,250,242,0.95) !important;
 }
+
+/* ─── TEXTES ILLISIBLES — CORRECTIFS GLOBAUX ─────────── */
+
+/* Forcer opacity pleine sur text-muted-foreground/40 en Ivoire */
+[data-palette="ivoireChaud"].light .text-muted-foreground\/40,
+[data-palette="ivoireChaud"].mixed .text-muted-foreground\/40 {
+  color: hsl(28 12% 50%) !important;
+  opacity: 1 !important;
+}
+
+/* Calendrier — tirets continuation tâches multi-jours */
+[data-palette="ivoireChaud"].light .truncate.opacity-50,
+[data-palette="ivoireChaud"].mixed .truncate.opacity-50 {
+  opacity: 0.75 !important;
+  color: hsl(28 12% 30%) !important;
+}
+
+/* Calendrier — icônes flèches span opacity-50 */
+[data-palette="ivoireChaud"].light .opacity-50:not(.truncate),
+[data-palette="ivoireChaud"].mixed .opacity-50:not(.truncate) {
+  opacity: 0.7 !important;
+}
+
+/* Dashboard — textes "Connecté", sous-labels intégrations */
+[data-palette="ivoireChaud"].light .text-muted-foreground,
+[data-palette="ivoireChaud"].mixed .text-muted-foreground {
+  color: hsl(28 12% 34%) !important;
+}
+
+/* Task detail — textes vides intégrations (Aucun fichier, etc.) */
+[data-palette="ivoireChaud"].light .text-center.text-muted-foreground,
+[data-palette="ivoireChaud"].mixed .text-center.text-muted-foreground {
+  color: hsl(28 14% 40%) !important;
+}
+
+/* Kanban — badge "Basse" priorité lisible */
+[data-palette="ivoireChaud"].light .bg-secondary.text-secondary-foreground,
+[data-palette="ivoireChaud"].mixed .bg-secondary.text-secondary-foreground {
+  color: hsl(28 18% 20%) !important;
+}
+
+/* Forcer foreground/70 à rester lisible */
+[data-palette="ivoireChaud"].light .text-foreground\/70,
+[data-palette="ivoireChaud"].mixed .text-foreground\/70 {
+  color: hsl(28 14% 28%) !important;
+}
+
+/* Opacity-60 et opacity-70 — relever pour lisibilité */
+[data-palette="ivoireChaud"].light .opacity-60,
+[data-palette="ivoireChaud"].mixed .opacity-60 {
+  opacity: 0.8 !important;
+}
+[data-palette="ivoireChaud"].light .opacity-70,
+[data-palette="ivoireChaud"].mixed .opacity-70 {
+  opacity: 0.85 !important;
+}

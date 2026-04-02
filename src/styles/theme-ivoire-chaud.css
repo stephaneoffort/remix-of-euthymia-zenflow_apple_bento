@@ -1794,3 +1794,16 @@ select:focus {
 .nm-task-detail [class*="font-medium"].text-foreground {
   color: #1A1208 !important;
 }
+
+/* Section toggle buttons (Gmail, Drive, etc.) — flat style */
+.nm-task-detail button.w-full {
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #5A5040 !important;
+}
+.nm-task-detail button.w-full span {
+  color: #1A1208 !important;
+}
+.nm-task-detail button.w-full:hover {
+  background: rgba(140,118,88,0.08) !important;
+}

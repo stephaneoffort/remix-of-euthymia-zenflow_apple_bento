@@ -20,6 +20,7 @@ export default function Chat() {
   const chat = useDiscordChat();
   const { teamMembers } = useApp();
   const { onlineMembers } = usePresence();
+  const { designMode } = useThemeMode();
   const [showMembers, setShowMembers] = useState(true);
   const [showChannels, setShowChannels] = useState(true);
   const [showSearch, setShowSearch] = useState(false);

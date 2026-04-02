@@ -273,7 +273,71 @@ export default function SidebarNM() {
     }
     setDraggedProjectId(null);
   };
-  const handleProjectDragEnd = () => { setDraggedProjectId(null); setDropTargetSpaceId(null); };
+  const handleProjectDragEnd = () => { setDraggedProjectId(null); setDropTargetSpaceId(null); setDropTargetProjectId(null); };
+
+  /* ─── Task drop on project ─── */
+  const handleProjectDropOver = (e: React.DragEvent, projectId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.dataTransfer.dropEffect = "move";
+    setDropTargetProjectId(projectId);
+  };
+  const handleProjectDropLeave = (e: React.DragEvent) => {
+    e.stopPropagation();
+    setDropTargetProjectId(null);
+  };
+  const handleProjectDrop = (e: React.DragEvent, projectId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDropTargetProjectId(null);
+    setDraggedProjectId(null);
+    const type = e.dataTransfer.getData("type");
+    if (type === "task") {
+      const taskId = e.dataTransfer.getData("taskId");
+      if (taskId) {
+        const targetLists = getListsForProject(projectId);
+        if (targetLists.length > 0) {
+          const task = getTaskById(taskId);
+          const targetProject = projects.find((p) => p.id === projectId);
+          const prevListId = task?.listId;
+          const previousParentTaskId = task?.parentTaskId ?? null;
+          const isCrossProjectSubtask = !!task?.parentTaskId && task.listId !== targetLists[0].id;
+          updateTask(taskId, {
+            listId: targetLists[0].id,
+            ...(isCrossProjectSubtask ? { parentTaskId: null } : {}),
+          });
+          setSelectedProjectId(projectId);
+          toast({
+            title: "Tâche déplacée",
+            description: `« ${task?.title || "Tâche"} » → ${targetProject?.name || "projet"}`,
+            action: prevListId ? (
+              <ToastAction
+                altText="Annuler"
+                onClick={() =>
+                  updateTask(taskId, {
+                    listId: prevListId,
+                    ...(isCrossProjectSubtask ? { parentTaskId: previousParentTaskId } : {}),
+                  })
+                }
+              >
+                Annuler
+              </ToastAction>
+            ) : undefined,
+          });
+        }
+      }
+    } else if (type === "project") {
+      const draggedProjId = e.dataTransfer.getData("projectId");
+      const targetProject = projects.find((p) => p.id === projectId);
+      if (draggedProjId && targetProject) {
+        const sourceProject = projects.find((p) => p.id === draggedProjId);
+        if (sourceProject && sourceProject.spaceId !== targetProject.spaceId) {
+          moveProject(draggedProjId, targetProject.spaceId);
+          toast({ title: "Projet déplacé", description: `« ${sourceProject.name} » → espace de ${targetProject.name}` });
+        }
+      }
+    }
+  };
 
   const archiveCount = (archivedSpaces?.length ?? 0) + (archivedProjects?.length ?? 0);
 

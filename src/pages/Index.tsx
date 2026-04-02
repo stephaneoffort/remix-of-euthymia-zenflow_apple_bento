@@ -522,7 +522,7 @@ export default function Index() {
               {designMode === "neumorphic" ? <DashboardViewNM /> : <DashboardView />}
             </div>
           )}
-          {selectedView === "kanban" && <KanbanBoard />}
+          {selectedView === "kanban" && (designMode === "neumorphic" ? <KanbanBoardNM /> : <KanbanBoard />)}
           {selectedView === "list" && <ListView />}
           {selectedView === "calendar" && <CalendarView />}
           {selectedView === "workload" && <WorkloadView />}

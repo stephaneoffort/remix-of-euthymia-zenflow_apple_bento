@@ -404,9 +404,9 @@ export default function CalendarViewNM() {
           </div>
 
           {/* Hour rows */}
-          <div style={{ flex: 1, overflowY: "auto" }}>
+          <div style={{ flex: 1, overflowY: "auto" }} onWheel={handleWheel}>
             {HOURS.map(h => (
-              <div key={h} style={{ display: "grid", gridTemplateColumns: "50px repeat(7, 1fr)", borderBottom: `1px solid ${C.border}`, minHeight: 52 }}>
+              <div key={h} style={{ display: "grid", gridTemplateColumns: "50px repeat(7, 1fr)", borderBottom: `1px solid ${C.border}`, minHeight: hourHeight * 0.8, transition: "min-height .1s ease" }}>
                 <div style={{ padding: "4px 8px", fontSize: 10, color: C.muted, fontWeight: 600, textAlign: "right" }}>
                   {h}h
                 </div>

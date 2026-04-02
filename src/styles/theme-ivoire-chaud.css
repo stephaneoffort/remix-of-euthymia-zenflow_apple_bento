@@ -1787,3 +1787,10 @@ select:focus {
   color: #F0FAF0 !important;
   box-shadow: 4px 4px 10px rgba(20,50,20,0.45) !important;
 }
+
+/* Titres sections intégrations (Gmail, Drive, etc.) */
+.nm-task-detail .text-foreground,
+.nm-task-detail span.text-foreground,
+.nm-task-detail [class*="font-medium"].text-foreground {
+  color: #1A1208 !important;
+}

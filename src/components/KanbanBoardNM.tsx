@@ -122,11 +122,20 @@ function TaskCard({ task, allTasks, onOpen, getMemberById, getProjectName }: {
         {task.title}
       </div>
 
-      {/* Progress bar subtasks */}
-      {hasProgress && (
+      {/* Subtasks indicator + progress */}
+      {hasSubtasks && (
         <div style={{ marginBottom: 8 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 4 }}>
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+              <rect x="1" y="1" width="14" height="14" rx="3" stroke={C.light} strokeWidth="1.3" fill="none" />
+              <path d="M4.5 8.5L7 11L11.5 5.5" stroke={subtaskDone === subtasks.length ? C.green : C.orange} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span style={{ fontSize: 10, fontWeight: 600, color: subtaskDone === subtasks.length ? C.green : C.muted, fontFamily: "'DM Sans', sans-serif" }}>
+              {subtaskDone}/{subtasks.length}
+            </span>
+          </div>
           <div style={{ height: 3, borderRadius: 2, background: BG, boxShadow: inset }}>
-            <div style={{ height: 3, borderRadius: 2, background: C.green, width: `${progress}%`, transition: "width .3s" }} />
+            <div style={{ height: 3, borderRadius: 2, background: subtaskDone === subtasks.length ? C.green : C.orange, width: `${progress}%`, transition: "width .3s" }} />
           </div>
         </div>
       )}

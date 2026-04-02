@@ -148,6 +148,13 @@ function DateTimeField({ value, onChange }: { value: string | null | undefined; 
   );
 }
 
+const STATUS_LINE_COLORS: Record<string, string> = {
+  todo: '#5A5040',
+  in_progress: '#7A4518',
+  in_review: '#2A4878',
+  done: '#2A5828',
+  blocked: '#7A1E0E',
+};
 
 export default function TaskDetailPanel() {
   const { selectedTaskId, setSelectedTaskId, setSelectedProjectId, getTaskById, updateTask, deleteTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks, teamMembers, allStatuses, getStatusLabel, addAttachment, deleteAttachment, projects, spaces, getListsForProject, convertTaskToProject } = useApp();
@@ -945,7 +952,8 @@ function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {
         return (
           <div key={st.id}>
             <div
-              className={`rounded-md hover:bg-muted/50 group transition-colors cursor-pointer ${isOverdue ? 'border-l-2 border-l-priority-urgent' : ''}`}
+              className={`rounded-md hover:bg-muted/50 group transition-colors cursor-pointer border-l-2`}
+              style={{ borderLeftColor: STATUS_LINE_COLORS[st.status] ?? '#8A7060' }}
               onClick={() => setSelectedTaskId(st.id)}
             >
               <div className="flex items-center gap-1.5 sm:gap-2 py-1.5 px-1.5 sm:px-2">

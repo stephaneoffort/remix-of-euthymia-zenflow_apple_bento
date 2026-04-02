@@ -147,7 +147,7 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
 
   return (
     <>
-      <div className="w-64 backdrop-blur-2xl bg-card/15 border-r border-border/15 flex flex-col shrink-0 h-full shadow-[inset_-1px_0_0_rgba(255,255,255,0.03)]">
+      <div className="w-64 backdrop-blur-2xl bg-card/15 border-r border-border/15 flex flex-col shrink-0 h-full shadow-[inset_-1px_0_0_rgba(255,255,255,0.03)] sm:w-64 max-sm:w-full">
         {/* Header */}
         <div className="h-14 flex items-center gap-2 px-3 border-b border-border/15 bg-card/20">
           <button onClick={() => navigate('/')}

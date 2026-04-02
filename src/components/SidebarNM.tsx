@@ -163,6 +163,7 @@ export default function SidebarNM() {
   const [openSpaces, setOpenSpaces] = useState<Set<string>>(new Set());
   const [draggedProjectId, setDraggedProjectId] = useState<string | null>(null);
   const [dropTargetSpaceId, setDropTargetSpaceId] = useState<string | null>(null);
+  const [dropTargetProjectId, setDropTargetProjectId] = useState<string | null>(null);
   const [sidebarWidth, setSidebarWidth] = useState(() => {
     const saved = localStorage.getItem(LS_KEY);
     return saved ? Math.max(MIN_WIDTH, Math.min(MAX_WIDTH, Number(saved))) : DEFAULT_WIDTH;

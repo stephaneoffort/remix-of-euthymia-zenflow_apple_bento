@@ -172,6 +172,15 @@ export default function KanbanBoardNM() {
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
   const [dropTarget, setDropTarget] = useState<string | null>(null);
+  const [collapsedColumns, setCollapsedColumns] = useState<Set<string>>(new Set());
+
+  const toggleCollapse = (key: string) => {
+    setCollapsedColumns(prev => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+  };
 
   const getProjectName = useCallback((listId: string) => {
     const list = lists.find(l => l.id === listId);

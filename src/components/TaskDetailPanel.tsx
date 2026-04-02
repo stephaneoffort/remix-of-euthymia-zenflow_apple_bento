@@ -4,7 +4,8 @@ import { ToastAction } from '@/components/ui/toast';
 import { useApp } from '@/context/AppContext';
 import { Status, Priority, PRIORITY_LABELS, RECURRENCE_LABELS, Recurrence } from '@/types';
 import { PriorityBadge, StatusBadge, AvatarGroup, SubtaskProgress, StatusCircle } from '@/components/TaskBadges';
-import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Clock, Paperclip, ChevronDown, Maximize2, Minimize2, CalendarPlus, Link, Upload, Trash2, ExternalLink, FileText, Send, CalendarIcon, Repeat, FolderInput, PackagePlus, GitBranchPlus, Bell } from 'lucide-react';
+import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Clock, Paperclip, ChevronDown, Maximize2, Minimize2, CalendarPlus, Link, Upload, Trash2, ExternalLink, FileText, Send, CalendarIcon, Repeat, FolderInput, PackagePlus, GitBranchPlus, Bell, Share2 } from 'lucide-react';
+import ShareTaskDialog from '@/components/ShareTaskDialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { generateGoogleCalendarUrl, generateOutlookCalendarUrl, generateYahooCalendarUrl } from '@/lib/calendarLinks';
 import { supabase } from '@/integrations/supabase/client';
@@ -166,6 +167,7 @@ export default function TaskDetailPanel() {
   const [newComment, setNewComment] = useState('');
   const [editingField, setEditingField] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const [addingLink, setAddingLink] = useState(false);
   const [newLinkUrl, setNewLinkUrl] = useState('');
   const [newLinkName, setNewLinkName] = useState('');
@@ -308,6 +310,14 @@ export default function TaskDetailPanel() {
           ))}
         </div>
         <div className="flex items-center gap-1 shrink-0 ml-2">
+          {/* Share */}
+          <button
+            onClick={() => setShareOpen(true)}
+            className="p-1.5 hover:bg-primary/10 text-muted-foreground hover:text-primary rounded-md transition-colors"
+            title="Partager la tâche"
+          >
+            <Share2 className="w-4 h-4" />
+          </button>
           {/* Convert to project */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -896,6 +906,7 @@ export default function TaskDetailPanel() {
 
         </div>
       </div>
+      <ShareTaskDialog open={shareOpen} onOpenChange={setShareOpen} taskId={task.id} />
     </div>
   );
 }

@@ -748,10 +748,10 @@ export default function TaskDetailPanel() {
 
             {/* AI Buttons + Calendar */}
             <div className="flex gap-2 flex-wrap">
-              <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors">
+              <button data-nm="ia" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors">
                 <Sparkles className="w-3.5 h-3.5" /> Résumé IA
               </button>
-              <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors">
+              <button data-nm="ia" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors">
                 <Sparkles className="w-3.5 h-3.5" /> Sous-tâches IA
               </button>
               <DropdownMenu>

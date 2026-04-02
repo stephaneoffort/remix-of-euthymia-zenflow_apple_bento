@@ -986,6 +986,13 @@ function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {
                   {st.title}
                 </span>
                 <button
+                  onClick={e => { e.stopPropagation(); setShareTaskId(st.id); }}
+                  className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-muted rounded shrink-0"
+                  title="Partager"
+                >
+                  <Share2 className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+                <button
                   onClick={e => { e.stopPropagation(); setAddingFor(st.id); }}
                   className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-muted rounded shrink-0"
                 >

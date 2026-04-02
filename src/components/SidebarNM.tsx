@@ -821,6 +821,9 @@ export default function SidebarNM() {
                             draggable
                             onDragStart={(e) => handleProjectDragStart(e, proj.id)}
                             onDragEnd={handleProjectDragEnd}
+                            onDragOver={(e) => handleProjectDropOver(e, proj.id)}
+                            onDragLeave={handleProjectDropLeave}
+                            onDrop={(e) => handleProjectDrop(e, proj.id)}
                             onClick={() => goProject(proj.id)}
                             style={{
                               display: "flex",
@@ -829,9 +832,9 @@ export default function SidebarNM() {
                               width: "100%",
                               padding: "5px 8px",
                               borderRadius: 8,
-                              border: "none",
+                              border: dropTargetProjectId === proj.id ? "2px dashed #7A4518" : "none",
                               cursor: draggedProjectId === proj.id ? "grabbing" : "grab",
-                              background: BG,
+                              background: dropTargetProjectId === proj.id ? "rgba(122,69,24,0.08)" : BG,
                               opacity: draggedProjectId === proj.id ? 0.5 : 1,
                               boxShadow: isProjActive ? insetSm : "none",
                               color: isProjActive ? C.orange : C.muted,

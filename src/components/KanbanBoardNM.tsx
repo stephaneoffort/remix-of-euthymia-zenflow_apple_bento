@@ -72,7 +72,7 @@ function TaskCard({ task, allTasks, onOpen, getMemberById, getProjectName }: {
 }) {
   const col = COLUMNS.find(c => c.key === task.status);
   const project = task.listId ? getProjectName(task.listId) : null;
-  const assignee = task.assigneeIds?.[0] ? getMemberById(task.assigneeIds[0]) : null;
+  const assignees = (task.assigneeIds ?? []).map((id: string) => getMemberById(id)).filter(Boolean);
   const daysLeft = task.dueDate ? differenceInDays(parseISO(task.dueDate), new Date()) : null;
   const isOverdue = daysLeft !== null && daysLeft < 0;
   const isDone = task.status === "done";

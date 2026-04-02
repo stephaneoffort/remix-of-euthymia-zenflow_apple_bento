@@ -1902,6 +1902,120 @@ select:focus {
   50%  { box-shadow: 0 0 12px 2px rgba(107,143,106,0.25); transform: scale(1); }
   100% { box-shadow: none; transform: scale(1); }
 }
-.nm-hour-cell[data-dropped="true"] > div[draggable] {
-  animation: nm-drop-flash .45s ease-out;
+}
+
+/* ─── Chat Ivoire ─── */
+
+.nm-chat {
+  background: #EDE6DA !important;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* Tous les fonds */
+.nm-chat .bg-background,
+.nm-chat .bg-card,
+.nm-chat .bg-muted,
+.nm-chat [class*="bg-sidebar"] {
+  background: #EDE6DA !important;
+}
+
+/* Textes */
+.nm-chat .text-foreground { color: #1A1208 !important; }
+.nm-chat .text-muted-foreground { color: #5A5040 !important; }
+
+/* Bordures */
+.nm-chat .border-border,
+.nm-chat .border-l,
+.nm-chat .border-r,
+.nm-chat .border-b,
+.nm-chat .border-t {
+  border-color: rgba(140,118,88,0.15) !important;
+}
+
+/* Sidebar canaux */
+.nm-chat [class*="sidebar"],
+.nm-chat [class*="channel"] {
+  background: #EDE6DA !important;
+}
+
+/* Canal actif */
+.nm-chat [class*="active"],
+.nm-chat [data-active="true"],
+.nm-chat .bg-accent {
+  background: rgba(42,88,40,0.06) !important;
+  border-radius: 8px !important;
+}
+
+/* Messages — bulles reçues */
+.nm-chat [class*="message"] > div,
+.nm-chat [class*="bubble"] {
+  background: #EDE6DA !important;
+  box-shadow: 3px 3px 8px rgba(140,118,88,0.45), -3px -3px 8px rgba(255,250,242,0.85) !important;
+  border-radius: 10px !important;
+  border: none !important;
+}
+
+/* Zone de saisie */
+.nm-chat textarea,
+.nm-chat input[type="text"],
+.nm-chat [class*="input"] {
+  background: #EDE6DA !important;
+  box-shadow: inset 3px 3px 8px rgba(140,118,88,0.42), inset -3px -3px 8px rgba(255,250,242,0.85) !important;
+  border: none !important;
+  border-radius: 14px !important;
+  color: #1A1208 !important;
+}
+
+/* Bouton Envoyer */
+.nm-chat button[class*="send"],
+.nm-chat [class*="submit"] {
+  background: #2A5828 !important;
+  color: #F0FAF0 !important;
+  box-shadow: 3px 3px 8px rgba(20,50,20,0.45), -2px -2px 5px rgba(200,240,200,0.15) !important;
+  border: none !important;
+  border-radius: 9px !important;
+}
+
+/* Boutons toolbar */
+.nm-chat button {
+  background: #EDE6DA !important;
+  box-shadow: 2px 2px 5px rgba(140,118,88,0.45), -2px -2px 5px rgba(255,250,242,0.85) !important;
+  border: none !important;
+  color: #1A1208 !important;
+  border-radius: 8px !important;
+}
+
+/* Avatars */
+.nm-chat .rounded-full {
+  box-shadow: 2px 2px 5px rgba(140,118,88,0.4), -2px -2px 5px rgba(255,250,242,0.85) !important;
+}
+
+/* Panel membres */
+.nm-chat [class*="members"] {
+  background: #EDE6DA !important;
+  border-color: rgba(140,118,88,0.15) !important;
+}
+
+/* Badges non lus */
+.nm-chat .bg-destructive { background: #7A1E0E !important; }
+.nm-chat .bg-primary { background: #7A4518 !important; }
+
+/* Scrollbar */
+.nm-chat ::-webkit-scrollbar { width: 4px; }
+.nm-chat ::-webkit-scrollbar-track { background: #EDE6DA; }
+.nm-chat ::-webkit-scrollbar-thumb { background: rgba(140,118,88,0.4); border-radius: 2px; }
+
+/* Séparateur de date */
+.nm-chat [class*="divider"],
+.nm-chat [class*="separator"] {
+  color: #2A5828 !important;
+  border-color: rgba(140,118,88,0.15) !important;
+}
+
+/* Indicateur typing */
+.nm-chat [class*="typing"] {
+  background: #EDE6DA !important;
+  box-shadow: 2px 2px 5px rgba(140,118,88,0.4), -2px -2px 5px rgba(255,250,242,0.85) !important;
+  border-radius: 100px !important;
+  color: #5A5040 !important;
 }

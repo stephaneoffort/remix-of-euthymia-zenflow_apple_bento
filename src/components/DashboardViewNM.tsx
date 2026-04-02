@@ -341,7 +341,7 @@ export default function DashboardViewNM() {
             style={{
               fontFamily: "'Cormorant Garamond', serif",
               fontWeight: 300,
-              fontSize: 42,
+              fontSize: 48,
               color: C.text,
               letterSpacing: -2,
               lineHeight: 1,

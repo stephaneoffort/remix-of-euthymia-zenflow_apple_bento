@@ -54,6 +54,7 @@ export default function WorkloadViewNM() {
   const { tasks, teamMembers, setSelectedTaskId } = useApp();
   const [period, setPeriod] = useState<"week" | "month" | "quarter">("month");
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
+  const [expandedMembers, setExpandedMembers] = useState<Set<string>>(new Set());
 
   /* ── Stats globales ── */
   const stats = useMemo(() => {
@@ -230,7 +231,10 @@ export default function WorkloadViewNM() {
 
               {/* Tâches */}
               <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-                {m.upcoming.map(t => {
+                {(expandedMembers.has(m.id)
+                  ? m.memberTasks.filter(t => t.status !== "done").sort((a, b) => new Date(a.dueDate ?? "9999").getTime() - new Date(b.dueDate ?? "9999").getTime())
+                  : m.upcoming
+                ).map(t => {
                   const borderColor = PRIORITY_COLORS[t.priority] ?? C.orange;
                   const dColor = t.dueDate ? priorityColor(t.dueDate) : C.muted;
                   return (
@@ -249,11 +253,15 @@ export default function WorkloadViewNM() {
                   );
                 })}
                 {m.total > 3 && (
-                  <div style={{
+                  <div onClick={() => setExpandedMembers(prev => {
+                    const next = new Set(prev);
+                    next.has(m.id) ? next.delete(m.id) : next.add(m.id);
+                    return next;
+                  })} style={{
                     fontSize: 10, color: C.green, fontWeight: 600, textAlign: "center",
                     padding: "4px 0", cursor: "pointer",
                   }}>
-                    + {m.total - 3} autres →
+                    {expandedMembers.has(m.id) ? "↑ Réduire" : `+ ${m.total - 3} autres →`}
                   </div>
                 )}
               </div>

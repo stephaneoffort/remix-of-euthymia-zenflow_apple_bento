@@ -204,6 +204,7 @@ function getEffectiveProgress(task: Task | FlatTask, allTasks: Task[]): number {
 
 export default function GanttView() {
   const { tasks, setSelectedTaskId, updateTask } = useApp();
+  const { designMode } = useThemeMode();
   const [zoom, setZoom] = useState<ZoomLevel>("week");
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [dependencies, setDependencies] = useState<TaskDependency[]>([]);

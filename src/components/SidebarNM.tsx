@@ -703,7 +703,12 @@ export default function SidebarNM() {
               const spaceProjects = projects.filter((p) => p.spaceId === space.id);
 
               return (
-                <div key={space.id}>
+                <div
+                  key={space.id}
+                  onDragOver={(e) => handleSpaceDragOver(e, space.id)}
+                  onDragLeave={handleSpaceDragLeave}
+                  onDrop={(e) => handleSpaceDrop(e, space.id)}
+                >
                   <button
                     onClick={() => {
                       goSpace(space.id);
@@ -716,9 +721,9 @@ export default function SidebarNM() {
                       width: "100%",
                       padding: "5px 10px",
                       borderRadius: 7,
-                      border: "none",
+                      border: dropTargetSpaceId === space.id ? "2px dashed #7A4518" : "none",
                       cursor: "pointer",
-                      background: BG,
+                      background: dropTargetSpaceId === space.id ? "rgba(122,69,24,0.08)" : BG,
                       boxShadow: isActive ? insetSm : "none",
                       color: isActive ? C.green : C.text,
                       fontFamily: "'DM Sans', sans-serif",

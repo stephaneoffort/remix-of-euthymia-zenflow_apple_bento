@@ -825,7 +825,7 @@ export default function SidebarNM() {
                 { label: "Soft UI", keys: ["nmCloud", "nmMidnight", "nmSand", "nmForest", "nmLavender", "nmDeepForest"] as ThemePalette[] },
               ]).map((group) => (
                 <div key={group.label} style={{ marginBottom: 6 }}>
-                  <div style={{ fontSize: 9, fontWeight: 600, color: C.muted, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 3, paddingLeft: 2 }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: C.text, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3, paddingLeft: 2, opacity: 0.55 }}>
                     {group.label}
                   </div>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 2 }}>

@@ -143,7 +143,7 @@ function TaskCard({ task, allTasks, onOpen, getMemberById, getProjectName }: {
       {/* Footer */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 6 }}>
         <PriorityPill priority={task.priority} />
-        <div style={{ display: "flex", alignItems: "center", gap: 6, marginLeft: "auto" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginLeft: "auto" }}>
           {daysLeft !== null && (
             <span
               style={{

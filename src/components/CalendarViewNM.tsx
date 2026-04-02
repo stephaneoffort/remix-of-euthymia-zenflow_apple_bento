@@ -449,7 +449,7 @@ export default function CalendarViewNM() {
           </div>
 
           {/* Events column */}
-          <div style={{ flex: 1, position: "relative", overflowY: "auto" }}>
+          <div style={{ flex: 1, position: "relative", overflowY: "auto" }} onWheel={handleWheel}>
             {/* Now line */}
             {isToday(currentDate) && (() => {
               const now = new Date();

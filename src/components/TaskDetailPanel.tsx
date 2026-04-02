@@ -344,6 +344,14 @@ export default function TaskDetailPanel() {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
+          {/* Duplicate task */}
+          <button
+            onClick={() => duplicateTask(task.id)}
+            className="p-1.5 hover:bg-primary/10 text-muted-foreground hover:text-primary rounded-md transition-colors"
+            title="Dupliquer la tâche"
+          >
+            <Copy className="w-4 h-4" />
+          </button>
           <button
             onClick={() => {
               if (window.confirm('Supprimer cette tâche et ses sous-tâches ?')) {

@@ -805,7 +805,7 @@ export default function TaskDetailPanel() {
                       className="h-full rounded-full transition-all duration-300"
                       style={{
                         width: `${Math.round((doneSubtasks.length / subtasks.length) * 100)}%`,
-                        backgroundColor: doneSubtasks.length === subtasks.length ? 'hsl(142, 71%, 45%)' : 'hsl(var(--primary))',
+                        backgroundColor: doneSubtasks.length === subtasks.length ? '#2A5828' : '#5A8A58',
                       }}
                     />
                   </div>

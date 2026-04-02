@@ -1682,3 +1682,62 @@ select:focus {
 .nm-task-detail ::-webkit-scrollbar { width: 4px; }
 .nm-task-detail ::-webkit-scrollbar-track { background: #EDE6DA; }
 .nm-task-detail ::-webkit-scrollbar-thumb { background: rgba(140,118,88,0.4); border-radius: 2px; }
+
+/* ─── Task Detail — corrections contraste ─── */
+
+/* Selects — texte lisible */
+.nm-task-detail select,
+.nm-task-detail select option {
+  color: #1A1208 !important;
+  font-weight: 500 !important;
+}
+
+/* Overrides boutons qui héritent de couleurs sombres */
+.nm-task-detail button {
+  color: #1A1208 !important;
+}
+
+/* Boutons avec fond coloré (IA, Envoyer) — forcer texte lisible */
+.nm-task-detail button[class*="bg-primary"],
+.nm-task-detail button[class*="primary"],
+.nm-task-detail button[style*="background"] {
+  color: #FFF0DC !important;
+}
+
+/* Barre d'outils éditeur — fond neutre + icônes lisibles */
+.nm-task-detail [class*="toolbar"] button,
+.nm-task-detail [class*="editor"] button,
+.nm-task-detail [class*="ProseMirror"] ~ div button {
+  background: #EDE6DA !important;
+  box-shadow: 2px 2px 4px rgba(140,118,88,0.4), -2px -2px 4px rgba(255,250,242,0.85) !important;
+  color: #1A1208 !important;
+}
+
+/* Boutons Résumé IA, Sous-tâches IA, Ajouter à l'agenda */
+.nm-task-detail button[class*="outline"],
+.nm-task-detail button[class*="secondary"] {
+  background: #EDE6DA !important;
+  box-shadow: 3px 3px 8px rgba(140,118,88,0.5), -3px -3px 8px rgba(255,250,242,0.9) !important;
+  color: #1A1208 !important;
+  border: none !important;
+}
+
+/* Bouton Envoyer — vert sauge */
+.nm-task-detail button[class*="default"]:last-of-type,
+.nm-task-detail .nm-btn-send {
+  background: #2A5828 !important;
+  color: #F0FAF0 !important;
+  box-shadow: 4px 4px 10px rgba(20,50,20,0.45) !important;
+}
+
+/* Checkboxes — visibles */
+.nm-task-detail input[type="checkbox"] {
+  box-shadow: none !important;
+  accent-color: #7A4518;
+}
+
+/* Placeholder texte */
+.nm-task-detail ::placeholder {
+  color: #8A7060 !important;
+  opacity: 1 !important;
+}

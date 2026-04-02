@@ -84,6 +84,14 @@ export default function CalendarViewNM() {
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [eventDialogOpen, setEventDialogOpen] = useState(false);
   const [eventDialogDate, setEventDialogDate] = useState<string | undefined>();
+  const [hourHeight, setHourHeight] = useState(64);
+
+  const handleWheel = useCallback((e: React.WheelEvent) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      setHourHeight(prev => Math.min(200, Math.max(32, prev - e.deltaY * 0.3)));
+    }
+  }, []);
 
   const filteredTasks = getFilteredTasks();
   const tasks = useMemo(() => {

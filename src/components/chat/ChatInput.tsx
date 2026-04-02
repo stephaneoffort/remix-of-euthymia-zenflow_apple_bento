@@ -1,4 +1,5 @@
 import { useState, useRef, KeyboardEvent, useCallback, ChangeEvent } from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { Plus, Smile, Send, Bold, Italic, Code, Paperclip, Image, FileText } from 'lucide-react';
 import {
   Popover,

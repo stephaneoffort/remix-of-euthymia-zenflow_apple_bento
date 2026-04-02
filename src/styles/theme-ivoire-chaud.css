@@ -2067,3 +2067,65 @@ select:focus {
 .nm-chat > div > div {
   box-shadow: none !important;
 }
+
+/* ─── Chat Ivoire — corrections ─── */
+
+/* Zone saisie — conteneur complet */
+.nm-chat [class*="ChatInput"],
+.nm-chat form,
+.nm-chat [class*="input-wrapper"] {
+  background: #EDE6DA !important;
+  box-shadow: inset 3px 3px 8px rgba(140,118,88,0.42), inset -3px -3px 8px rgba(255,250,242,0.85) !important;
+  border-radius: 14px !important;
+  border: none !important;
+}
+
+/* Input texte */
+.nm-chat input[type="text"],
+.nm-chat textarea,
+.nm-chat [contenteditable="true"] {
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #1A1208 !important;
+  font-family: 'DM Sans', sans-serif !important;
+}
+
+/* Bulles messages */
+.nm-chat [class*="group"] > div:nth-child(2),
+.nm-chat [class*="message-content"],
+.nm-chat [class*="prose"] {
+  background: #EDE6DA !important;
+  box-shadow: 3px 3px 8px rgba(140,118,88,0.45), -3px -3px 8px rgba(255,250,242,0.85) !important;
+  border-radius: 10px !important;
+  padding: 8px 12px !important;
+}
+
+/* Toolbar boutons B I <> */
+.nm-chat button[title],
+.nm-chat [class*="toolbar"] button {
+  background: #EDE6DA !important;
+  box-shadow: 2px 2px 4px rgba(140,118,88,0.4), -2px -2px 4px rgba(255,250,242,0.85) !important;
+  border-radius: 6px !important;
+  color: #5A5040 !important;
+  padding: 4px 8px !important;
+}
+
+/* Avatars membres */
+.nm-chat [class*="avatar"],
+.nm-chat .rounded-full {
+  box-shadow: 2px 2px 6px rgba(140,118,88,0.45), -2px -2px 6px rgba(255,250,242,0.85) !important;
+}
+
+/* Membres hors ligne — atténués */
+.nm-chat [class*="offline"] {
+  opacity: 0.5 !important;
+}
+
+/* Canal actif — inset */
+.nm-chat [aria-selected="true"],
+.nm-chat [data-selected="true"],
+.nm-chat [class*="active-channel"] {
+  background: rgba(42,88,40,0.06) !important;
+  box-shadow: inset 1px 1px 4px rgba(140,118,88,0.35), inset -1px -1px 4px rgba(255,250,242,0.8) !important;
+  border-radius: 8px !important;
+}

@@ -173,7 +173,9 @@ export default function TaskDetailPanel() {
   const [newLinkName, setNewLinkName] = useState('');
   const [uploading, setUploading] = useState(false);
   const [descriptionDraft, setDescriptionDraft] = useState('');
+  const [titleDraft, setTitleDraft] = useState('');
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const titleDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const task = selectedTaskId ? getTaskById(selectedTaskId) : null;
 

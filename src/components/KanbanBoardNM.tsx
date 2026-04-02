@@ -174,7 +174,7 @@ export default function KanbanBoardNM() {
     getFilteredTasks, moveTask, setSelectedTaskId,
     getMemberById, addTask, lists, projects,
     allStatuses, getStatusLabel, selectedProjectId,
-    getListsForProject, quickFilter,
+    getListsForProject, quickFilter, tasks,
   } = useApp();
   const { teamMemberId } = useAuth();
   const isMobile = useIsMobile();

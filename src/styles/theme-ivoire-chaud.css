@@ -2129,3 +2129,113 @@ select:focus {
   box-shadow: inset 1px 1px 4px rgba(140,118,88,0.35), inset -1px -1px 4px rgba(255,250,242,0.8) !important;
   border-radius: 8px !important;
 }
+
+/* ─── Gantt Ivoire ─── */
+
+.nm-gantt {
+  background: #EDE6DA !important;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* Fond général */
+.nm-gantt .bg-background,
+.nm-gantt .bg-card,
+.nm-gantt .bg-muted {
+  background: #EDE6DA !important;
+}
+
+/* Toolbar */
+.nm-gantt [class*="toolbar"],
+.nm-gantt > div:first-child {
+  background: #EDE6DA !important;
+  box-shadow: 6px 6px 14px rgba(140,118,88,0.5), -6px -6px 14px rgba(255,250,242,0.9) !important;
+  border-radius: 14px !important;
+  border: none !important;
+}
+
+/* Boutons toolbar */
+.nm-gantt button {
+  background: #EDE6DA !important;
+  box-shadow: 2px 2px 5px rgba(140,118,88,0.45), -2px -2px 5px rgba(255,250,242,0.85) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  color: #1A1208 !important;
+  font-family: 'DM Sans', sans-serif !important;
+}
+
+/* Bouton Aujourd'hui — inset */
+.nm-gantt button[data-today] {
+  box-shadow: inset 2px 2px 5px rgba(140,118,88,0.4), inset -2px -2px 5px rgba(255,250,242,0.85) !important;
+  color: #7A4518 !important;
+}
+
+/* Bouton + Tâche — vert */
+.nm-gantt button[data-add] {
+  background: #2A5828 !important;
+  color: #F0FAF0 !important;
+  box-shadow: 4px 4px 10px rgba(20,50,20,0.4) !important;
+}
+
+/* Conteneur Gantt principal */
+.nm-gantt [class*="gantt"],
+.nm-gantt [class*="grid"] {
+  background: #EDE6DA !important;
+  box-shadow: 6px 6px 14px rgba(140,118,88,0.5), -6px -6px 14px rgba(255,250,242,0.9) !important;
+  border-radius: 14px !important;
+}
+
+/* Bordures grille */
+.nm-gantt [class*="border"],
+.nm-gantt td,
+.nm-gantt th {
+  border-color: rgba(140,118,88,0.12) !important;
+}
+
+/* Header colonnes dates */
+.nm-gantt thead,
+.nm-gantt [class*="header"] {
+  background: rgba(140,118,88,0.04) !important;
+  border-bottom: 2px solid rgba(140,118,88,0.18) !important;
+}
+
+/* Groupes espaces/projets */
+.nm-gantt [class*="group-row"],
+.nm-gantt [class*="space-row"] {
+  background: rgba(140,118,88,0.04) !important;
+}
+
+/* Barres Gantt — inset container */
+.nm-gantt [class*="bar-bg"],
+.nm-gantt [class*="bar-container"] {
+  background: #EDE6DA !important;
+  box-shadow: inset 2px 2px 4px rgba(140,118,88,0.35), inset -2px -2px 4px rgba(255,250,242,0.8) !important;
+  border-radius: 8px !important;
+}
+
+/* Barres Gantt — progression */
+.nm-gantt [class*="bar-progress"] { border-radius: 8px !important; opacity: 0.85; }
+
+/* Ligne aujourd'hui */
+.nm-gantt [class*="today-line"] {
+  background: #2A5828 !important;
+  width: 1.5px !important;
+}
+
+/* Textes */
+.nm-gantt .text-foreground { color: #1A1208 !important; }
+.nm-gantt .text-muted-foreground { color: #5A5040 !important; }
+
+/* Avatars */
+.nm-gantt .rounded-full {
+  box-shadow: 2px 2px 4px rgba(140,118,88,0.4), -2px -2px 4px rgba(255,250,242,0.85) !important;
+}
+
+/* Légende */
+.nm-gantt [class*="legend"] {
+  color: #1A1208 !important;
+}
+
+/* Scrollbar */
+.nm-gantt ::-webkit-scrollbar { width: 4px; height: 4px; }
+.nm-gantt ::-webkit-scrollbar-track { background: #EDE6DA; }
+.nm-gantt ::-webkit-scrollbar-thumb { background: rgba(140,118,88,0.4); border-radius: 2px; }

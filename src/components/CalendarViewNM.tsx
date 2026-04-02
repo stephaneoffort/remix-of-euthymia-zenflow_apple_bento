@@ -439,8 +439,9 @@ export default function CalendarViewNM() {
           <div style={{ width: 56, flexShrink: 0, borderRight: `1px solid ${C.border}` }}>
             {HOURS.map(h => (
               <div key={h} style={{
-                height: 64, padding: "4px 8px", fontSize: 10, color: C.muted,
+                height: hourHeight, padding: "4px 8px", fontSize: 10, color: C.muted,
                 fontWeight: 600, textAlign: "right", borderBottom: `1px solid ${C.border}`,
+                transition: "height .1s ease",
               }}>
                 {h}h
               </div>

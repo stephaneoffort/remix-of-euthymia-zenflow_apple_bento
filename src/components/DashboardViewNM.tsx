@@ -300,9 +300,9 @@ export default function DashboardViewNM() {
       style={{ fontFamily: "'DM Sans', sans-serif", background: BG, padding: "16px 20px", minHeight: "100%", height: "100%", width: "100%", boxSizing: "border-box" as const }}
     >
       {/* ── Grid ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(0,7fr) minmax(0,3fr) minmax(0,2fr)", gap: 10 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0,1fr))", gap: 10 }}>
         {/* HERO */}
-        <Tile style={{ padding: "18px 20px" }}>
+        <Tile style={{ gridColumn: "1 / 3", padding: "18px 20px" }}>
           <Lbl>{today}</Lbl>
           <div
             style={{
@@ -420,7 +420,7 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* URGENTES */}
-        <Tile style={{ gridColumn: 1, gridRow: 2 }}>
+        <Tile style={{ gridColumn: "1 / 3", gridRow: 2 }}>
           <div
             style={{
               display: "flex",
@@ -488,7 +488,7 @@ export default function DashboardViewNM() {
         {/* DONUT */}
         <Tile
           style={{
-            gridColumn: 2,
+            gridColumn: 3,
             gridRow: 2,
             padding: 12,
             display: "flex",
@@ -539,7 +539,7 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* ÉQUIPE inset */}
-        <Tile nm style={{ gridColumn: 3, gridRow: 2, padding: "11px 12px" }}>
+        <Tile nm style={{ gridColumn: 4, gridRow: 2, padding: "11px 12px" }}>
           <Lbl>Équipe</Lbl>
           <div style={{ marginTop: 9, display: "flex", flexDirection: "column", gap: 9 }}>
             {teamMembers.length === 0 ? (
@@ -601,7 +601,7 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* ÉCHÉANCES */}
-        <Tile style={{ gridColumn: "1 / 3", gridRow: 3 }}>
+        <Tile style={{ gridColumn: "1 / 4", gridRow: 3 }}>
           <div
             style={{
               display: "flex",
@@ -652,7 +652,7 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* ACTIVITÉ inset */}
-        <Tile nm style={{ gridColumn: 3, gridRow: 3, padding: "11px 12px" }}>
+        <Tile nm style={{ gridColumn: 4, gridRow: 3, padding: "11px 12px" }}>
           <Lbl>Activité · 7j</Lbl>
           {(() => {
             const all = tasks ?? [];
@@ -871,7 +871,7 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
   return (
     <>
     <div style={{
-      ...(isMobileProp ? {} : { gridColumn: "1 / 4", gridRow: 4 }),
+      ...(isMobileProp ? {} : { gridColumn: "1 / 5", gridRow: 4 }),
       display: "grid",
       gridTemplateColumns: `repeat(${cols}, minmax(0,1fr))`,
       gap: 10,

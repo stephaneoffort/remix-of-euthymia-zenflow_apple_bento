@@ -161,7 +161,15 @@ function TaskCard({ task, allTasks, onOpen, getMemberById, getProjectName }: {
                     : `${daysLeft}j`}
             </span>
           )}
-          {assignee && <Avatar name={assignee.name ?? assignee.email ?? "?"} />}
+          {assignees.length > 0 && (
+            <div style={{ display: "flex", alignItems: "center" }}>
+              {assignees.map((a: any, i: number) => (
+                <div key={a.id ?? i} title={a.name ?? a.email} style={{ marginLeft: i > 0 ? -6 : 0, zIndex: assignees.length - i }}>
+                  <Avatar name={a.name ?? a.email ?? "?"} color={a.avatar_color ?? a.avatarColor} />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from "react";
+import { toast } from "@/hooks/use-toast";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useThemeMode, PALETTE_META, type ThemePalette } from "@/context/ThemeContext";
@@ -147,6 +148,7 @@ export default function SidebarNM() {
     archivedProjects,
     sidebarCollapsed,
     setSidebarCollapsed,
+    moveProject,
   } = useApp();
   const { teamMemberId } = useAuth();
   const { theme, setTheme, designMode, setDesignMode, palette, setPalette } = useThemeMode();
@@ -155,6 +157,8 @@ export default function SidebarNM() {
   const { totalUnread } = useChatNotifications();
 
   const [openSpaces, setOpenSpaces] = useState<Set<string>>(new Set());
+  const [draggedProjectId, setDraggedProjectId] = useState<string | null>(null);
+  const [dropTargetSpaceId, setDropTargetSpaceId] = useState<string | null>(null);
   const [sidebarWidth, setSidebarWidth] = useState(() => {
     const saved = localStorage.getItem(LS_KEY);
     return saved ? Math.max(MIN_WIDTH, Math.min(MAX_WIDTH, Number(saved))) : DEFAULT_WIDTH;
@@ -238,6 +242,33 @@ export default function SidebarNM() {
     await supabase.auth.signOut();
     navigate("/auth");
   };
+
+  /* ─── Drag & drop project between spaces ─── */
+  const handleProjectDragStart = (e: React.DragEvent, projectId: string) => {
+    setDraggedProjectId(projectId);
+    e.dataTransfer.setData("text/plain", projectId);
+    e.dataTransfer.effectAllowed = "move";
+  };
+  const handleSpaceDragOver = (e: React.DragEvent, spaceId: string) => {
+    if (!draggedProjectId) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    setDropTargetSpaceId(spaceId);
+  };
+  const handleSpaceDragLeave = () => setDropTargetSpaceId(null);
+  const handleSpaceDrop = (e: React.DragEvent, spaceId: string) => {
+    e.preventDefault();
+    setDropTargetSpaceId(null);
+    if (!draggedProjectId) return;
+    const proj = projects.find((p) => p.id === draggedProjectId);
+    if (proj && proj.spaceId !== spaceId) {
+      moveProject(draggedProjectId, spaceId);
+      const targetSpace = spaces.find((s) => s.id === spaceId);
+      toast({ title: "Projet déplacé", description: `« ${proj.name} » → ${targetSpace?.icon ?? ""} ${targetSpace?.name ?? ""}` });
+    }
+    setDraggedProjectId(null);
+  };
+  const handleProjectDragEnd = () => { setDraggedProjectId(null); setDropTargetSpaceId(null); };
 
   const archiveCount = (archivedSpaces?.length ?? 0) + (archivedProjects?.length ?? 0);
 
@@ -672,7 +703,12 @@ export default function SidebarNM() {
               const spaceProjects = projects.filter((p) => p.spaceId === space.id);
 
               return (
-                <div key={space.id}>
+                <div
+                  key={space.id}
+                  onDragOver={(e) => handleSpaceDragOver(e, space.id)}
+                  onDragLeave={handleSpaceDragLeave}
+                  onDrop={(e) => handleSpaceDrop(e, space.id)}
+                >
                   <button
                     onClick={() => {
                       goSpace(space.id);
@@ -685,9 +721,9 @@ export default function SidebarNM() {
                       width: "100%",
                       padding: "5px 10px",
                       borderRadius: 7,
-                      border: "none",
+                      border: dropTargetSpaceId === space.id ? "2px dashed #7A4518" : "none",
                       cursor: "pointer",
-                      background: BG,
+                      background: dropTargetSpaceId === space.id ? "rgba(122,69,24,0.08)" : BG,
                       boxShadow: isActive ? insetSm : "none",
                       color: isActive ? C.green : C.text,
                       fontFamily: "'DM Sans', sans-serif",
@@ -712,6 +748,9 @@ export default function SidebarNM() {
                         return (
                           <button
                             key={proj.id}
+                            draggable
+                            onDragStart={(e) => handleProjectDragStart(e, proj.id)}
+                            onDragEnd={handleProjectDragEnd}
                             onClick={() => goProject(proj.id)}
                             style={{
                               display: "flex",
@@ -721,8 +760,9 @@ export default function SidebarNM() {
                               padding: "5px 8px",
                               borderRadius: 8,
                               border: "none",
-                              cursor: "pointer",
+                              cursor: draggedProjectId === proj.id ? "grabbing" : "grab",
                               background: BG,
+                              opacity: draggedProjectId === proj.id ? 0.5 : 1,
                               boxShadow: isProjActive ? insetSm : "none",
                               color: isProjActive ? C.orange : C.muted,
                               fontFamily: "'DM Sans', sans-serif",

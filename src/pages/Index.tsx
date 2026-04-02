@@ -13,6 +13,7 @@ import KanbanBoard from "@/components/KanbanBoard";
 import KanbanBoardNM from "@/components/KanbanBoardNM";
 import ListView from "@/components/ListView";
 import CalendarView from "@/components/CalendarView";
+import CalendarViewNM from "@/components/CalendarViewNM";
 import WorkloadView from "@/components/WorkloadView";
 import MindMapView from "@/components/MindMapView";
 import TaskDetailPanel from "@/components/TaskDetailPanel";
@@ -524,7 +525,7 @@ export default function Index() {
           )}
           {selectedView === "kanban" && (designMode === "neumorphic" ? <KanbanBoardNM /> : <KanbanBoard />)}
           {selectedView === "list" && <ListView />}
-          {selectedView === "calendar" && <CalendarView />}
+          {selectedView === "calendar" && (designMode === "neumorphic" ? <CalendarViewNM /> : <CalendarView />)}
           {selectedView === "workload" && <WorkloadView />}
           {selectedView === "mindmap" && <MindMapView />}
           {selectedView === "gantt" && <GanttView />}

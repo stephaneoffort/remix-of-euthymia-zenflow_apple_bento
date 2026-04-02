@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useApp } from "@/context/AppContext";
 import { useCalendarSync, type CalendarEvent } from "@/hooks/useCalendarSync";
 import { useTaskMeetings } from "@/hooks/useTaskMeetings";
@@ -84,6 +84,14 @@ export default function CalendarViewNM() {
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [eventDialogOpen, setEventDialogOpen] = useState(false);
   const [eventDialogDate, setEventDialogDate] = useState<string | undefined>();
+  const [hourHeight, setHourHeight] = useState(64);
+
+  const handleWheel = useCallback((e: React.WheelEvent) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      setHourHeight(prev => Math.min(200, Math.max(32, prev - e.deltaY * 0.3)));
+    }
+  }, []);
 
   const filteredTasks = getFilteredTasks();
   const tasks = useMemo(() => {
@@ -255,6 +263,16 @@ export default function CalendarViewNM() {
             ))}
           </div>
 
+          {mode !== "month" && (
+            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <NmBtn onClick={() => setHourHeight(prev => Math.min(200, prev + 16))}>+</NmBtn>
+              <span style={{ fontSize: 9, color: C.muted, fontWeight: 600, minWidth: 28, textAlign: "center" }}>
+                {Math.round((hourHeight / 64) * 100)}%
+              </span>
+              <NmBtn onClick={() => setHourHeight(prev => Math.max(32, prev - 16))}>−</NmBtn>
+            </div>
+          )}
+
           <NmBtn accent onClick={() => { setEventDialogDate(toDateStr(selectedDay)); setEventDialogOpen(true); }}>
             + Événement
           </NmBtn>
@@ -396,9 +414,9 @@ export default function CalendarViewNM() {
           </div>
 
           {/* Hour rows */}
-          <div style={{ flex: 1, overflowY: "auto" }}>
+          <div style={{ flex: 1, overflowY: "auto" }} onWheel={handleWheel}>
             {HOURS.map(h => (
-              <div key={h} style={{ display: "grid", gridTemplateColumns: "50px repeat(7, 1fr)", borderBottom: `1px solid ${C.border}`, minHeight: 52 }}>
+              <div key={h} style={{ display: "grid", gridTemplateColumns: "50px repeat(7, 1fr)", borderBottom: `1px solid ${C.border}`, minHeight: hourHeight * 0.8, transition: "min-height .1s ease" }}>
                 <div style={{ padding: "4px 8px", fontSize: 10, color: C.muted, fontWeight: 600, textAlign: "right" }}>
                   {h}h
                 </div>
@@ -431,8 +449,9 @@ export default function CalendarViewNM() {
           <div style={{ width: 56, flexShrink: 0, borderRight: `1px solid ${C.border}` }}>
             {HOURS.map(h => (
               <div key={h} style={{
-                height: 64, padding: "4px 8px", fontSize: 10, color: C.muted,
+                height: hourHeight, padding: "4px 8px", fontSize: 10, color: C.muted,
                 fontWeight: 600, textAlign: "right", borderBottom: `1px solid ${C.border}`,
+                transition: "height .1s ease",
               }}>
                 {h}h
               </div>
@@ -440,7 +459,7 @@ export default function CalendarViewNM() {
           </div>
 
           {/* Events column */}
-          <div style={{ flex: 1, position: "relative", overflowY: "auto" }}>
+          <div style={{ flex: 1, position: "relative", overflowY: "auto" }} onWheel={handleWheel}>
             {/* Now line */}
             {isToday(currentDate) && (() => {
               const now = new Date();
@@ -470,7 +489,7 @@ export default function CalendarViewNM() {
                 try { return new Date(e.start_time).getHours() === h; } catch { return false; }
               });
               return (
-                <div key={h} style={{ height: 64, padding: "4px 12px", borderBottom: `1px solid ${C.border}` }}>
+                <div key={h} style={{ height: hourHeight, padding: "4px 12px", borderBottom: `1px solid ${C.border}`, transition: "height .1s ease" }}>
                   {hourEvents.map(ev => (
                     <div key={ev.id} style={{
                       background: "rgba(107,143,106,0.12)", borderRadius: 8, borderLeft: `3px solid ${C.green}`,

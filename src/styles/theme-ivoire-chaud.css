@@ -1597,7 +1597,29 @@ select:focus {
   background: #EDE6DA !important;
 }
 
-.nm-task-detail input,
+/* ─── Task Detail Ivoire — éléments internes ─── */
+
+/* Titre principal */
+.nm-task-detail h1,
+.nm-task-detail [class*="text-xl"],
+.nm-task-detail [class*="text-2xl"] {
+  font-family: 'Cormorant Garamond', serif !important;
+  font-weight: 300 !important;
+  color: #1A1208 !important;
+}
+
+/* Selects */
+.nm-task-detail select {
+  background: #EDE6DA !important;
+  box-shadow: inset 2px 2px 6px rgba(140,118,88,0.4), inset -2px -2px 6px rgba(255,250,242,0.85) !important;
+  border: none !important;
+  border-radius: 10px !important;
+  color: #1A1208 !important;
+  padding: 8px 12px !important;
+}
+
+/* Inputs et textareas */
+.nm-task-detail input:not([type="checkbox"]),
 .nm-task-detail textarea {
   background: #EDE6DA !important;
   box-shadow: inset 2px 2px 6px rgba(140,118,88,0.4), inset -2px -2px 6px rgba(255,250,242,0.85) !important;
@@ -1606,14 +1628,57 @@ select:focus {
   color: #1A1208 !important;
 }
 
-.nm-task-detail button:not(.nm-btn-primary) {
+/* Labels sections */
+.nm-task-detail label,
+.nm-task-detail [class*="uppercase"] {
+  color: #1A1208 !important;
+  font-weight: 700 !important;
+  letter-spacing: 1.5px !important;
+}
+
+/* Séparateurs */
+.nm-task-detail [class*="border-b"],
+.nm-task-detail [class*="border-t"] {
+  border-color: rgba(140,118,88,0.15) !important;
+}
+
+/* Boutons raised */
+.nm-task-detail button {
   background: #EDE6DA !important;
   box-shadow: 3px 3px 8px rgba(140,118,88,0.5), -3px -3px 8px rgba(255,250,242,0.9) !important;
   border: none !important;
   border-radius: 8px !important;
   color: #1A1208 !important;
+  font-family: 'DM Sans', sans-serif !important;
 }
 
-.nm-task-detail .text-foreground { color: #1A1208 !important; }
+/* Bouton Enregistrer — vert sauge */
+.nm-task-detail button[type="submit"],
+.nm-task-detail .nm-btn-save {
+  background: #2A5828 !important;
+  color: #F0FAF0 !important;
+  box-shadow: 4px 4px 10px rgba(20,50,20,0.45), -2px -2px 6px rgba(200,240,200,0.15) !important;
+  font-weight: 700 !important;
+}
+
+/* Badges priorité/statut */
+.nm-task-detail [class*="bg-destructive"] { background: #7A1E0E !important; }
+.nm-task-detail [class*="bg-primary"] { background: #7A4518 !important; }
+
+/* Zones de contenu (Google Drive, Zoom etc.) */
+.nm-task-detail [class*="rounded"] {
+  border-color: rgba(140,118,88,0.15) !important;
+}
+
+/* Textes */
+.nm-task-detail * {
+  color: inherit;
+}
 .nm-task-detail .text-muted-foreground { color: #5A5040 !important; }
+.nm-task-detail .text-foreground { color: #1A1208 !important; }
 .nm-task-detail .border-border { border-color: rgba(140,118,88,0.15) !important; }
+
+/* Scrollbar */
+.nm-task-detail ::-webkit-scrollbar { width: 4px; }
+.nm-task-detail ::-webkit-scrollbar-track { background: #EDE6DA; }
+.nm-task-detail ::-webkit-scrollbar-thumb { background: rgba(140,118,88,0.4); border-radius: 2px; }

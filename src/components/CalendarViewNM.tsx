@@ -81,6 +81,7 @@ export default function CalendarViewNM() {
   const [selectedDay, setSelectedDay] = useState(new Date());
   const [mode, setMode] = useState<CalMode>("month");
   const [addingForDate, setAddingForDate] = useState<string | null>(null);
+  const [addingForHour, setAddingForHour] = useState<string | null>(null); // "date|hour"
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [eventDialogOpen, setEventDialogOpen] = useState(false);
   const [eventDialogDate, setEventDialogDate] = useState<string | undefined>();

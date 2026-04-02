@@ -9,6 +9,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { generateGoogleCalendarUrl, generateOutlookCalendarUrl, generateYahooCalendarUrl } from '@/lib/calendarLinks';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
+import { useThemeMode } from '@/context/ThemeContext';
 import MentionCommentInput from '@/components/MentionCommentInput';
 import TaskChecklist from '@/components/TaskChecklist';
 import RichTextEditor, { RichTextDisplay } from '@/components/RichTextEditor';
@@ -152,6 +153,7 @@ export default function TaskDetailPanel() {
   const { selectedTaskId, setSelectedTaskId, setSelectedProjectId, getTaskById, updateTask, deleteTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks, teamMembers, allStatuses, getStatusLabel, addAttachment, deleteAttachment, projects, spaces, getListsForProject, convertTaskToProject } = useApp();
   const { isActive } = useIntegrations();
   const { teamMemberId } = useAuth();
+  const { designMode } = useThemeMode();
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [addingSubtaskFor, setAddingSubtaskFor] = useState<string | null>(null);
   const [newComment, setNewComment] = useState('');

@@ -488,7 +488,7 @@ export default function DashboardViewNM() {
         {/* DONUT */}
         <Tile
           style={{
-            gridColumn: 2,
+            gridColumn: 3,
             gridRow: 2,
             padding: 12,
             display: "flex",

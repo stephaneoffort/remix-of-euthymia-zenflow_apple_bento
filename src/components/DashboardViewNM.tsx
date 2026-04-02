@@ -871,7 +871,7 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
   return (
     <>
     <div style={{
-      ...(isMobileProp ? {} : { gridColumn: "1 / 4", gridRow: 4 }),
+      ...(isMobileProp ? {} : { gridColumn: "1 / 5", gridRow: 4 }),
       display: "grid",
       gridTemplateColumns: `repeat(${cols}, minmax(0,1fr))`,
       gap: 10,

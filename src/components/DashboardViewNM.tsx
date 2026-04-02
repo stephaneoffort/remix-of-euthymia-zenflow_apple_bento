@@ -300,7 +300,7 @@ export default function DashboardViewNM() {
       style={{ fontFamily: "'DM Sans', sans-serif", background: BG, padding: "16px 20px", minHeight: "100%", height: "100%", width: "100%", boxSizing: "border-box" as const }}
     >
       {/* ── Grid ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(0,7fr) minmax(0,3fr) minmax(0,2fr)", gap: 10 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0,1fr))", gap: 10 }}>
         {/* HERO */}
         <Tile style={{ padding: "18px 20px" }}>
           <Lbl>{today}</Lbl>

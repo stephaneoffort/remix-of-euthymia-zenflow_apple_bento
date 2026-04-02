@@ -1125,6 +1125,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     addProject,
     duplicateSpace,
     duplicateProject,
+    duplicateTask,
     archiveSpace,
     archiveProject,
     renameSpace,

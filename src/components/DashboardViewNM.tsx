@@ -539,7 +539,7 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* ÉQUIPE inset */}
-        <Tile nm style={{ gridColumn: 3, gridRow: 2, padding: "11px 12px" }}>
+        <Tile nm style={{ gridColumn: 4, gridRow: 2, padding: "11px 12px" }}>
           <Lbl>Équipe</Lbl>
           <div style={{ marginTop: 9, display: "flex", flexDirection: "column", gap: 9 }}>
             {teamMembers.length === 0 ? (

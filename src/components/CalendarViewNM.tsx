@@ -484,7 +484,7 @@ export default function CalendarViewNM() {
                         transition: "background .35s ease",
                       }}
                       className="nm-hour-cell"
-                    >
+                      data-dropped={droppedHour === hourKey ? "true" : undefined}
                       {hourEvents.map(ev => renderEventPill(ev))}
                       {hourTasks.map(t => renderTaskPill(t))}
                       {addingForHour === hourKey ? (

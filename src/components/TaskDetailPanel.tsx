@@ -310,6 +310,14 @@ export default function TaskDetailPanel() {
           ))}
         </div>
         <div className="flex items-center gap-1 shrink-0 ml-2">
+          {/* Share */}
+          <button
+            onClick={() => setShareOpen(true)}
+            className="p-1.5 hover:bg-primary/10 text-muted-foreground hover:text-primary rounded-md transition-colors"
+            title="Partager la tâche"
+          >
+            <Share2 className="w-4 h-4" />
+          </button>
           {/* Convert to project */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

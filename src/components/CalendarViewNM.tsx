@@ -263,6 +263,16 @@ export default function CalendarViewNM() {
             ))}
           </div>
 
+          {mode !== "month" && (
+            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <NmBtn onClick={() => setHourHeight(prev => Math.min(200, prev + 16))}>+</NmBtn>
+              <span style={{ fontSize: 9, color: C.muted, fontWeight: 600, minWidth: 28, textAlign: "center" }}>
+                {Math.round((hourHeight / 64) * 100)}%
+              </span>
+              <NmBtn onClick={() => setHourHeight(prev => Math.max(32, prev - 16))}>−</NmBtn>
+            </div>
+          )}
+
           <NmBtn accent onClick={() => { setEventDialogDate(toDateStr(selectedDay)); setEventDialogOpen(true); }}>
             + Événement
           </NmBtn>

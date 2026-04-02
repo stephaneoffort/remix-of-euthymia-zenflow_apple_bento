@@ -574,6 +574,7 @@ export default function CalendarViewNM() {
                     background: droppedHour === hourKey ? "rgba(107,143,106,0.18)" : dragOverHour === hourKey ? "rgba(184,116,64,0.08)" : "transparent",
                   }}
                   className="nm-hour-cell"
+                  data-dropped={droppedHour === hourKey ? "true" : undefined}
                 >
                   {hourEvents.map(ev => (
                     <div key={ev.id} style={{

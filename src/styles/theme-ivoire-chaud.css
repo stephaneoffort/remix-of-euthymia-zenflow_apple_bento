@@ -581,12 +581,12 @@
   sans écraser les styles inline des nouveaux composants.
 */
 
-/* 1. Fond de page unifié */
+/* 1. Fond de page unifié — utilise les vars pour supporter dark/mixed */
 html,
 body,
 #root {
-  background-color: #ede6da !important;
-  color: #1a1208;
+  background-color: var(--nm-bg, #ede6da) !important;
+  color: var(--nm-text, #1a1208);
   font-family: "DM Sans", system-ui, sans-serif;
 }
 
@@ -1590,14 +1590,12 @@ select:focus {
   opacity: 1;
 }
 
-/* ─── Task Detail Ivoire ─── */
+/* ─── Task Detail Ivoire — utilise CSS vars pour tous modes ─── */
 .nm-task-detail .bg-card,
 .nm-task-detail .bg-background,
 .nm-task-detail .bg-muted {
-  background: #EDE6DA !important;
+  background: var(--nm-bg) !important;
 }
-
-/* ─── Task Detail Ivoire — éléments internes ─── */
 
 /* Titre principal */
 .nm-task-detail h1,
@@ -1605,33 +1603,33 @@ select:focus {
 .nm-task-detail [class*="text-2xl"] {
   font-family: 'Cormorant Garamond', serif !important;
   font-weight: 300 !important;
-  color: #1A1208 !important;
+  color: var(--nm-text) !important;
 }
 
 /* Selects */
 .nm-task-detail select {
-  background: #EDE6DA !important;
-  box-shadow: inset 2px 2px 6px rgba(140,118,88,0.4), inset -2px -2px 6px rgba(255,250,242,0.85) !important;
+  background: var(--nm-bg) !important;
+  box-shadow: var(--nm-dn-sm) !important;
   border: none !important;
   border-radius: 10px !important;
-  color: #1A1208 !important;
+  color: var(--nm-text) !important;
   padding: 8px 12px !important;
 }
 
 /* Inputs et textareas */
 .nm-task-detail input:not([type="checkbox"]),
 .nm-task-detail textarea {
-  background: #EDE6DA !important;
-  box-shadow: inset 2px 2px 6px rgba(140,118,88,0.4), inset -2px -2px 6px rgba(255,250,242,0.85) !important;
+  background: var(--nm-bg) !important;
+  box-shadow: var(--nm-dn-sm) !important;
   border: none !important;
   border-radius: 10px !important;
-  color: #1A1208 !important;
+  color: var(--nm-text) !important;
 }
 
 /* Labels sections */
 .nm-task-detail label,
 .nm-task-detail [class*="uppercase"] {
-  color: #1A1208 !important;
+  color: var(--nm-text) !important;
   font-weight: 700 !important;
   letter-spacing: 1.5px !important;
 }
@@ -1639,201 +1637,183 @@ select:focus {
 /* Séparateurs */
 .nm-task-detail [class*="border-b"],
 .nm-task-detail [class*="border-t"] {
-  border-color: rgba(140,118,88,0.15) !important;
+  border-color: var(--nm-border) !important;
 }
 
 /* Boutons raised */
 .nm-task-detail button {
-  background: #EDE6DA !important;
-  box-shadow: 3px 3px 8px rgba(140,118,88,0.5), -3px -3px 8px rgba(255,250,242,0.9) !important;
+  background: var(--nm-bg) !important;
+  box-shadow: var(--nm-up-sm) !important;
   border: none !important;
   border-radius: 8px !important;
-  color: #1A1208 !important;
+  color: var(--nm-text) !important;
   font-family: 'DM Sans', sans-serif !important;
 }
 
 /* Bouton Enregistrer — vert sauge */
 .nm-task-detail button[type="submit"],
 .nm-task-detail .nm-btn-save {
-  background: #2A5828 !important;
-  color: #F0FAF0 !important;
+  background: var(--nm-green) !important;
+  color: var(--nm-on-green) !important;
   box-shadow: 4px 4px 10px rgba(20,50,20,0.45), -2px -2px 6px rgba(200,240,200,0.15) !important;
   font-weight: 700 !important;
 }
 
 /* Badges priorité/statut */
-.nm-task-detail [class*="bg-destructive"] { background: #7A1E0E !important; }
-.nm-task-detail [class*="bg-primary"] { background: #7A4518 !important; }
+.nm-task-detail [class*="bg-destructive"] { background: var(--nm-red) !important; }
+.nm-task-detail [class*="bg-primary"] { background: var(--nm-accent) !important; }
 
 /* Zones de contenu (Google Drive, Zoom etc.) */
 .nm-task-detail [class*="rounded"] {
-  border-color: rgba(140,118,88,0.15) !important;
+  border-color: var(--nm-border) !important;
 }
 
 /* Textes */
 .nm-task-detail * {
   color: inherit;
 }
-.nm-task-detail .text-muted-foreground { color: #5A5040 !important; }
-.nm-task-detail .text-foreground { color: #1A1208 !important; }
-.nm-task-detail .border-border { border-color: rgba(140,118,88,0.15) !important; }
+.nm-task-detail .text-muted-foreground { color: var(--nm-muted) !important; }
+.nm-task-detail .text-foreground { color: var(--nm-text) !important; }
+.nm-task-detail .border-border { border-color: var(--nm-border) !important; }
 
 /* Scrollbar */
 .nm-task-detail ::-webkit-scrollbar { width: 4px; }
-.nm-task-detail ::-webkit-scrollbar-track { background: #EDE6DA; }
-.nm-task-detail ::-webkit-scrollbar-thumb { background: rgba(140,118,88,0.4); border-radius: 2px; }
-
-/* ─── Task Detail — corrections contraste ─── */
+.nm-task-detail ::-webkit-scrollbar-track { background: var(--nm-bg); }
+.nm-task-detail ::-webkit-scrollbar-thumb { background: var(--nm-border); border-radius: 2px; }
 
 /* Selects — texte lisible */
 .nm-task-detail select,
 .nm-task-detail select option {
-  color: #1A1208 !important;
+  color: var(--nm-text) !important;
   font-weight: 500 !important;
-}
-
-/* Overrides boutons qui héritent de couleurs sombres */
-.nm-task-detail button {
-  color: #1A1208 !important;
 }
 
 /* Boutons avec fond coloré (IA, Envoyer) — forcer texte lisible */
 .nm-task-detail button[class*="bg-primary"],
 .nm-task-detail button[class*="primary"],
 .nm-task-detail button[style*="background"] {
-  color: #FFF0DC !important;
+  color: var(--nm-on-accent) !important;
 }
 
-/* Barre d'outils éditeur — fond neutre + icônes lisibles */
+/* Barre d'outils éditeur */
 .nm-task-detail [class*="toolbar"] button,
 .nm-task-detail [class*="editor"] button,
 .nm-task-detail [class*="ProseMirror"] ~ div button {
-  background: #EDE6DA !important;
-  box-shadow: 2px 2px 4px rgba(140,118,88,0.4), -2px -2px 4px rgba(255,250,242,0.85) !important;
-  color: #1A1208 !important;
+  background: var(--nm-bg) !important;
+  box-shadow: var(--nm-up-xs) !important;
+  color: var(--nm-text) !important;
 }
 
 /* Boutons Résumé IA, Sous-tâches IA, Ajouter à l'agenda */
 .nm-task-detail button[class*="outline"],
 .nm-task-detail button[class*="secondary"] {
-  background: #EDE6DA !important;
-  box-shadow: 3px 3px 8px rgba(140,118,88,0.5), -3px -3px 8px rgba(255,250,242,0.9) !important;
-  color: #1A1208 !important;
+  background: var(--nm-bg) !important;
+  box-shadow: var(--nm-up-sm) !important;
+  color: var(--nm-text) !important;
   border: none !important;
 }
 
 /* Bouton Envoyer — vert sauge */
 .nm-task-detail button[class*="default"]:last-of-type,
 .nm-task-detail .nm-btn-send {
-  background: #2A5828 !important;
-  color: #F0FAF0 !important;
+  background: var(--nm-green) !important;
+  color: var(--nm-on-green) !important;
   box-shadow: 4px 4px 10px rgba(20,50,20,0.45) !important;
 }
 
 /* Checkboxes — visibles */
 .nm-task-detail input[type="checkbox"] {
   box-shadow: none !important;
-  accent-color: #4A7A9A;
+  accent-color: var(--nm-blue);
 }
 
 /* Placeholder texte */
 .nm-task-detail ::placeholder {
-  color: #8A7060 !important;
+  color: var(--nm-faint) !important;
   opacity: 1 !important;
 }
 
-/* Bouton supprimer — icône claire sur fond destructive */
+/* Bouton supprimer */
 .nm-task-detail button[class*="destructive"],
 .nm-task-detail button:hover[class*="destructive"] {
-  color: #FFF0DC !important;
+  color: var(--nm-on-red) !important;
 }
 .nm-task-detail button[class*="hover:text-destructive"]:hover,
 .nm-task-detail .hover\:text-destructive:hover {
-  color: #D4402A !important;
+  color: var(--nm-red) !important;
 }
 .nm-task-detail button[class*="hover:bg-destructive"]:hover {
-  background: #7A1E0E !important;
-  color: #FFF0DC !important;
+  background: var(--nm-red) !important;
+  color: var(--nm-on-red) !important;
 }
 
 /* Rappels — bouton Ajouter */
 .nm-task-detail button[data-nm="reminder"] {
-  color: #1A1208 !important;
-  background: #EDE6DA !important;
-  box-shadow: 2px 2px 5px rgba(140,118,88,0.5), -2px -2px 5px rgba(255,250,242,0.9) !important;
+  color: var(--nm-text) !important;
+  background: var(--nm-bg) !important;
+  box-shadow: var(--nm-up-xs) !important;
 }
 .nm-task-detail button[data-nm="reminder"]:hover {
-  box-shadow: 3px 3px 8px rgba(140,118,88,0.6), -3px -3px 8px rgba(255,250,242,0.95) !important;
+  box-shadow: var(--nm-up-sm) !important;
 }
 
-/* Tous les boutons — fond ivoire par défaut */
-.nm-task-detail button {
-  background: #EDE6DA !important;
-  box-shadow: 3px 3px 8px rgba(140,118,88,0.5), -3px -3px 8px rgba(255,250,242,0.9) !important;
-  border: none !important;
-  color: #1A1208 !important;
-  font-family: 'DM Sans', sans-serif !important;
-}
-
-/* Rappels — selects visibles */
-.nm-task-detail select {
-  color: #1A1208 !important;
-}
-
-/* Bouton Envoyer — ciblage précis par texte */
+/* Bouton Envoyer — ciblage précis */
 .nm-task-detail button[data-action="send"],
 .nm-task-detail [class*="comment"] button:last-of-type {
-  background: #2A5828 !important;
-  color: #F0FAF0 !important;
+  background: var(--nm-green) !important;
+  color: var(--nm-on-green) !important;
   box-shadow: 4px 4px 10px rgba(20,50,20,0.45) !important;
 }
 
-/* Titres sections intégrations (Gmail, Drive, etc.) */
+/* Titres sections intégrations */
 .nm-task-detail .text-foreground,
 .nm-task-detail span.text-foreground,
 .nm-task-detail [class*="font-medium"].text-foreground {
-  color: #1A1208 !important;
+  color: var(--nm-text) !important;
 }
 
 /* Section toggle buttons (Gmail, Drive, etc.) — flat style */
 .nm-task-detail button.w-full {
   background: transparent !important;
   box-shadow: none !important;
-  color: #5A5040 !important;
+  color: var(--nm-muted) !important;
 }
 .nm-task-detail button.w-full span {
-  color: #1A1208 !important;
+  color: var(--nm-text) !important;
 }
 .nm-task-detail button.w-full:hover {
   background: rgba(140,118,88,0.08) !important;
 }
 
-/* Rappels — selects natifs forcés */
+/* Rappels — selects natifs */
 .nm-task-detail select,
 .nm-task-detail select option,
 .nm-task-detail [class*="Select"] *,
 .nm-task-detail [class*="select"] * {
-  color: #1A1208 !important;
-  background-color: #EDE6DA !important;
+  color: var(--nm-text) !important;
+  background-color: var(--nm-bg) !important;
 }
 
 /* Boutons IA — ciblage précis */
 .nm-task-detail button[data-nm="ia"] {
-  background: #EDE6DA !important;
-  color: #7A4518 !important;
-  box-shadow: 3px 3px 8px rgba(140,118,88,0.5), -3px -3px 8px rgba(255,250,242,0.9) !important;
+  background: var(--nm-bg) !important;
+  color: var(--nm-accent) !important;
+  box-shadow: var(--nm-up-sm) !important;
 }
-
 .nm-task-detail button[data-nm="ia"]:hover {
-  box-shadow: 4px 4px 10px rgba(140,118,88,0.6), -4px -4px 10px rgba(255,250,242,0.95) !important;
+  box-shadow: var(--nm-up) !important;
 }
 
 /* ─── TEXTES ILLISIBLES — CORRECTIFS GLOBAUX ─────────── */
 
-/* Forcer opacity pleine sur text-muted-foreground/40 en Ivoire */
+/* Forcer opacity pleine sur text-muted-foreground/40 */
 [data-palette="ivoireChaud"].light .text-muted-foreground\/40,
 [data-palette="ivoireChaud"].mixed .text-muted-foreground\/40 {
   color: hsl(28 12% 50%) !important;
+  opacity: 1 !important;
+}
+[data-palette="ivoireChaud"].dark .text-muted-foreground\/40 {
+  color: hsl(34 8% 58%) !important;
   opacity: 1 !important;
 }
 
@@ -1843,10 +1823,15 @@ select:focus {
   opacity: 0.75 !important;
   color: hsl(28 12% 30%) !important;
 }
+[data-palette="ivoireChaud"].dark .truncate.opacity-50 {
+  opacity: 0.75 !important;
+  color: hsl(34 12% 75%) !important;
+}
 
 /* Calendrier — icônes flèches span opacity-50 */
 [data-palette="ivoireChaud"].light .opacity-50:not(.truncate),
-[data-palette="ivoireChaud"].mixed .opacity-50:not(.truncate) {
+[data-palette="ivoireChaud"].mixed .opacity-50:not(.truncate),
+[data-palette="ivoireChaud"].dark .opacity-50:not(.truncate) {
   opacity: 0.7 !important;
 }
 
@@ -1855,11 +1840,17 @@ select:focus {
 [data-palette="ivoireChaud"].mixed .text-muted-foreground {
   color: hsl(28 12% 34%) !important;
 }
+[data-palette="ivoireChaud"].dark .text-muted-foreground {
+  color: hsl(34 8% 68%) !important;
+}
 
-/* Task detail — textes vides intégrations (Aucun fichier, etc.) */
+/* Task detail — textes vides intégrations */
 [data-palette="ivoireChaud"].light .text-center.text-muted-foreground,
 [data-palette="ivoireChaud"].mixed .text-center.text-muted-foreground {
   color: hsl(28 14% 40%) !important;
+}
+[data-palette="ivoireChaud"].dark .text-center.text-muted-foreground {
+  color: hsl(34 10% 62%) !important;
 }
 
 /* Kanban — badge "Basse" priorité lisible */
@@ -1867,19 +1858,27 @@ select:focus {
 [data-palette="ivoireChaud"].mixed .bg-secondary.text-secondary-foreground {
   color: hsl(28 18% 20%) !important;
 }
+[data-palette="ivoireChaud"].dark .bg-secondary.text-secondary-foreground {
+  color: hsl(34 14% 80%) !important;
+}
 
 /* Forcer foreground/70 à rester lisible */
 [data-palette="ivoireChaud"].light .text-foreground\/70,
 [data-palette="ivoireChaud"].mixed .text-foreground\/70 {
   color: hsl(28 14% 28%) !important;
 }
+[data-palette="ivoireChaud"].dark .text-foreground\/70 {
+  color: hsl(36 18% 78%) !important;
+}
 
 /* Opacity-60 et opacity-70 — relever pour lisibilité */
 [data-palette="ivoireChaud"].light .opacity-60,
-[data-palette="ivoireChaud"].mixed .opacity-60 {
+[data-palette="ivoireChaud"].mixed .opacity-60,
+[data-palette="ivoireChaud"].dark .opacity-60 {
   opacity: 0.8 !important;
 }
 [data-palette="ivoireChaud"].light .opacity-70,
-[data-palette="ivoireChaud"].mixed .opacity-70 {
+[data-palette="ivoireChaud"].mixed .opacity-70,
+[data-palette="ivoireChaud"].dark .opacity-70 {
   opacity: 0.85 !important;
 }

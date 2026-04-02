@@ -527,7 +527,7 @@ export default function Index() {
           {selectedView === "kanban" && (designMode === "neumorphic" ? <KanbanBoardNM /> : <KanbanBoard />)}
           {selectedView === "list" && <ListView />}
           {selectedView === "calendar" && (designMode === "neumorphic" ? <CalendarViewNM /> : <CalendarView />)}
-          {selectedView === "workload" && <WorkloadView />}
+          {selectedView === "workload" && (designMode === "neumorphic" ? <WorkloadViewNM /> : <WorkloadView />)}
           {selectedView === "mindmap" && <MindMapView />}
           {selectedView === "gantt" && <GanttView />}
           {selectedView === "timeline" && <TimelineView />}

@@ -72,7 +72,7 @@ function TaskCard({ task, allTasks, onOpen, getMemberById, getProjectName }: {
 }) {
   const col = COLUMNS.find(c => c.key === task.status);
   const project = task.listId ? getProjectName(task.listId) : null;
-  const assignee = task.assigneeIds?.[0] ? getMemberById(task.assigneeIds[0]) : null;
+  const assignees = (task.assigneeIds ?? []).map((id: string) => getMemberById(id)).filter(Boolean);
   const daysLeft = task.dueDate ? differenceInDays(parseISO(task.dueDate), new Date()) : null;
   const isOverdue = daysLeft !== null && daysLeft < 0;
   const isDone = task.status === "done";
@@ -161,7 +161,15 @@ function TaskCard({ task, allTasks, onOpen, getMemberById, getProjectName }: {
                     : `${daysLeft}j`}
             </span>
           )}
-          {assignee && <Avatar name={assignee.name ?? assignee.email ?? "?"} />}
+          {assignees.length > 0 && (
+            <div style={{ display: "flex", alignItems: "center" }}>
+              {assignees.map((a: any, i: number) => (
+                <div key={a.id ?? i} title={a.name ?? a.email} style={{ marginLeft: i > 0 ? -6 : 0, zIndex: assignees.length - i }}>
+                  <Avatar name={a.name ?? a.email ?? "?"} color={a.avatar_color ?? a.avatarColor} />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

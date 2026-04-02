@@ -87,6 +87,7 @@ export default function CalendarViewNM() {
   const [eventDialogDate, setEventDialogDate] = useState<string | undefined>();
   const [hourHeight, setHourHeight] = useState(64);
   const [dragOverHour, setDragOverHour] = useState<string | null>(null);
+  const [droppedHour, setDroppedHour] = useState<string | null>(null);
 
   const handleWheel = useCallback((e: React.WheelEvent) => {
     if (e.ctrlKey || e.metaKey) {
@@ -100,23 +101,31 @@ export default function CalendarViewNM() {
     e.dataTransfer.effectAllowed = "move";
   }, []);
 
+  const flashDrop = useCallback((key: string) => {
+    setDroppedHour(key);
+    setTimeout(() => setDroppedHour(null), 500);
+  }, []);
+
   const handleDropOnHour = useCallback((e: React.DragEvent, dateStr: string, hour: number) => {
     e.preventDefault();
     setDragOverHour(null);
     const taskId = e.dataTransfer.getData("text/plain");
     if (!taskId) return;
+    const hourKey = `${dateStr}|${hour}`;
+    flashDrop(hourKey);
     const newDue = new Date(`${dateStr}T${String(hour).padStart(2, "0")}:00:00`).toISOString();
     updateTask(taskId, { dueDate: newDue });
-  }, [updateTask]);
+  }, [updateTask, flashDrop]);
 
   const handleDropOnDay = useCallback((e: React.DragEvent, dateStr: string) => {
     e.preventDefault();
     setDragOverHour(null);
     const taskId = e.dataTransfer.getData("text/plain");
     if (!taskId) return;
+    flashDrop(`month-${dateStr}`);
     const newDue = new Date(dateStr + "T00:00:00").toISOString();
     updateTask(taskId, { dueDate: newDue });
-  }, [updateTask]);
+  }, [updateTask, flashDrop]);
 
   const filteredTasks = getFilteredTasks();
   const tasks = useMemo(() => {
@@ -347,8 +356,8 @@ export default function CalendarViewNM() {
                       style={{
                         padding: "6px 8px", minHeight: 90, cursor: "pointer",
                         borderRight: di < 6 ? `1px solid ${C.border}` : "none",
-                        background: dragOverHour === `month-${dateStr}` ? "rgba(184,116,64,0.08)" : today_ ? "rgba(107,143,106,0.06)" : selected ? "rgba(184,116,64,0.04)" : "transparent",
-                        transition: "background .15s ease",
+                        background: droppedHour === `month-${dateStr}` ? "rgba(107,143,106,0.18)" : dragOverHour === `month-${dateStr}` ? "rgba(184,116,64,0.08)" : today_ ? "rgba(107,143,106,0.06)" : selected ? "rgba(184,116,64,0.04)" : "transparent",
+                        transition: "background .35s ease",
                       }}
                     >
                       {/* Day number */}
@@ -471,10 +480,11 @@ export default function CalendarViewNM() {
                       onDrop={e => handleDropOnHour(e, toDateStr(day), h)}
                       style={{
                         padding: "2px 4px", borderLeft: `1px solid ${C.border}`, position: "relative",
-                        background: dragOverHour === hourKey ? "rgba(184,116,64,0.08)" : "transparent",
-                        transition: "background .12s ease",
+                        background: droppedHour === hourKey ? "rgba(107,143,106,0.18)" : dragOverHour === hourKey ? "rgba(184,116,64,0.08)" : "transparent",
+                        transition: "background .35s ease",
                       }}
                       className="nm-hour-cell"
+                      data-dropped={droppedHour === hourKey ? "true" : undefined}
                     >
                       {hourEvents.map(ev => renderEventPill(ev))}
                       {hourTasks.map(t => renderTaskPill(t))}
@@ -561,10 +571,11 @@ export default function CalendarViewNM() {
                   onDrop={e => handleDropOnHour(e, dayDateStr, h)}
                   style={{
                     height: hourHeight, padding: "4px 12px", borderBottom: `1px solid ${C.border}`,
-                    transition: "height .1s ease, background .12s ease", position: "relative",
-                    background: dragOverHour === hourKey ? "rgba(184,116,64,0.08)" : "transparent",
+                    transition: "height .1s ease, background .35s ease", position: "relative",
+                    background: droppedHour === hourKey ? "rgba(107,143,106,0.18)" : dragOverHour === hourKey ? "rgba(184,116,64,0.08)" : "transparent",
                   }}
                   className="nm-hour-cell"
+                  data-dropped={droppedHour === hourKey ? "true" : undefined}
                 >
                   {hourEvents.map(ev => (
                     <div key={ev.id} style={{

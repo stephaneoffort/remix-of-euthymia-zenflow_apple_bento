@@ -77,7 +77,7 @@ function TaskCard({ task, allTasks, onOpen, getMemberById, getProjectName }: {
   const isOverdue = daysLeft !== null && daysLeft < 0;
   const isDone = task.status === "done";
 
-  const subtasks = allTasks.filter((t: any) => t.parentTaskId === task.id);
+  const subtasks = (allTasks ?? []).filter((t: any) => t.parentTaskId === task.id);
   const subtaskDone = subtasks.filter((s: any) => s.status === "done").length;
   const hasSubtasks = subtasks.length > 0;
   const progress = hasSubtasks ? Math.round((subtaskDone / subtasks.length) * 100) : 0;

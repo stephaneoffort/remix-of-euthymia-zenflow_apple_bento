@@ -1733,7 +1733,7 @@ select:focus {
 /* Checkboxes — visibles */
 .nm-task-detail input[type="checkbox"] {
   box-shadow: none !important;
-  accent-color: #7A4518;
+  accent-color: #4A7A9A;
 }
 
 /* Placeholder texte */

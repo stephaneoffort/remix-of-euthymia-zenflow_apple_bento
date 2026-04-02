@@ -581,12 +581,12 @@
   sans écraser les styles inline des nouveaux composants.
 */
 
-/* 1. Fond de page unifié */
+/* 1. Fond de page unifié — utilise les vars pour supporter dark/mixed */
 html,
 body,
 #root {
-  background-color: #ede6da !important;
-  color: #1a1208;
+  background-color: var(--nm-bg, #ede6da) !important;
+  color: var(--nm-text, #1a1208);
   font-family: "DM Sans", system-ui, sans-serif;
 }
 

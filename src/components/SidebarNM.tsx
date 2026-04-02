@@ -579,7 +579,7 @@ export default function SidebarNM() {
         )}
 
         {/* ── NAVIGATION ── */}
-        <div style={{ padding: "0 16px 10px" }}>
+        <div style={{ padding: "0 16px 10px", display: "flex", flexDirection: "column", gap: 6 }}>
           <Lbl>Navigation</Lbl>
 
           <NavBtn active={selectedView === "dashboard" && !selectedSpaceId && !selectedProjectId} onClick={goDashboard}>

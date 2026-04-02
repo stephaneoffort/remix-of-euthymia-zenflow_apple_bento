@@ -544,6 +544,7 @@ export default function KanbanBoardNM() {
                     >
                       <TaskCard
                         task={task}
+                        allTasks={tasks}
                         onOpen={setSelectedTaskId}
                         getMemberById={getMemberById}
                         getProjectName={getProjectName}

@@ -479,7 +479,7 @@ export default function CalendarViewNM() {
                 try { return new Date(e.start_time).getHours() === h; } catch { return false; }
               });
               return (
-                <div key={h} style={{ height: 64, padding: "4px 12px", borderBottom: `1px solid ${C.border}` }}>
+                <div key={h} style={{ height: hourHeight, padding: "4px 12px", borderBottom: `1px solid ${C.border}`, transition: "height .1s ease" }}>
                   {hourEvents.map(ev => (
                     <div key={ev.id} style={{
                       background: "rgba(107,143,106,0.12)", borderRadius: 8, borderLeft: `3px solid ${C.green}`,

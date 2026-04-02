@@ -54,6 +54,7 @@ export default function WorkloadViewNM() {
   const { tasks, teamMembers, setSelectedTaskId } = useApp();
   const [period, setPeriod] = useState<"week" | "month" | "quarter">("month");
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
+  const [expandedMembers, setExpandedMembers] = useState<Set<string>>(new Set());
 
   /* ── Stats globales ── */
   const stats = useMemo(() => {

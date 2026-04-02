@@ -652,7 +652,7 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* ACTIVITÉ inset */}
-        <Tile nm style={{ gridColumn: 3, gridRow: 3, padding: "11px 12px" }}>
+        <Tile nm style={{ gridColumn: 4, gridRow: 3, padding: "11px 12px" }}>
           <Lbl>Activité · 7j</Lbl>
           {(() => {
             const all = tasks ?? [];

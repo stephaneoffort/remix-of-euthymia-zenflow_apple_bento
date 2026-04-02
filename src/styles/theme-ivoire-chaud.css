@@ -1890,3 +1890,8 @@ select:focus {
 [data-palette="ivoireChaud"].dark .opacity-70 {
   opacity: 0.85 !important;
 }
+
+/* Calendar NM: show "+ tâche" on hover */
+.nm-hour-cell:hover .nm-add-task-btn {
+  opacity: 1 !important;
+}

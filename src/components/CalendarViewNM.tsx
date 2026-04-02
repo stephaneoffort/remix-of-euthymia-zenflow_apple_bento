@@ -81,6 +81,7 @@ export default function CalendarViewNM() {
   const [selectedDay, setSelectedDay] = useState(new Date());
   const [mode, setMode] = useState<CalMode>("month");
   const [addingForDate, setAddingForDate] = useState<string | null>(null);
+  const [addingForHour, setAddingForHour] = useState<string | null>(null); // "date|hour"
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [eventDialogOpen, setEventDialogOpen] = useState(false);
   const [eventDialogDate, setEventDialogDate] = useState<string | undefined>();
@@ -161,18 +162,22 @@ export default function CalendarViewNM() {
   const eventsForDay = (day: Date) => eventsByDate.get(toDateStr(day)) || [];
 
   /* ── Add task ── */
-  const handleAddTask = (dateStr: string) => {
+  const handleAddTask = (dateStr: string, hour?: number) => {
     if (!newTaskTitle.trim()) return;
     const lists = selectedProjectId ? getListsForProject(selectedProjectId) : [];
     const listId = lists[0]?.id || "l1";
+    const dueDate = hour != null
+      ? new Date(`${dateStr}T${String(hour).padStart(2, "0")}:00:00`).toISOString()
+      : new Date(dateStr + "T00:00:00").toISOString();
     addTask({
       title: newTaskTitle.trim(), description: "", status: "todo", priority: "normal",
-      dueDate: new Date(dateStr + "T00:00:00").toISOString(), startDate: null,
+      dueDate, startDate: null,
       assigneeIds: [], tags: [], parentTaskId: null, listId,
       comments: [], attachments: [], timeEstimate: null, timeLogged: null, aiSummary: null,
     });
     setNewTaskTitle("");
     setAddingForDate(null);
+    setAddingForHour(null);
   };
 
   const handleSaveEvent = async (data: any) => {
@@ -429,10 +434,32 @@ export default function CalendarViewNM() {
                     if (!e.start_time) return false;
                     try { return new Date(e.start_time).getHours() === h; } catch { return false; }
                   });
+                  const hourKey = `${toDateStr(day)}|${h}`;
                   return (
-                    <div key={di} style={{ padding: "2px 4px", borderLeft: `1px solid ${C.border}` }}>
+                    <div key={di} style={{ padding: "2px 4px", borderLeft: `1px solid ${C.border}`, position: "relative" }}
+                      className="nm-hour-cell"
+                    >
                       {hourEvents.map(ev => renderEventPill(ev))}
                       {hourTasks.map(t => renderTaskPill(t))}
+                      {addingForHour === hourKey ? (
+                        <div onClick={e => e.stopPropagation()}>
+                          <input
+                            autoFocus
+                            value={newTaskTitle}
+                            onChange={e => setNewTaskTitle(e.target.value)}
+                            onKeyDown={e => { if (e.key === "Enter") handleAddTask(toDateStr(day), h); if (e.key === "Escape") { setAddingForHour(null); setNewTaskTitle(""); } }}
+                            onBlur={() => { if (newTaskTitle.trim()) handleAddTask(toDateStr(day), h); else { setAddingForHour(null); setNewTaskTitle(""); } }}
+                            placeholder="Tâche…"
+                            style={{ width: "100%", border: "none", background: BG, boxShadow: insetSm, borderRadius: 5, padding: "2px 5px", fontSize: 8, color: C.text, fontFamily: "'DM Sans', sans-serif", outline: "none" }}
+                          />
+                        </div>
+                      ) : (
+                        <span
+                          className="nm-add-task-btn"
+                          onClick={e => { e.stopPropagation(); setAddingForHour(hourKey); setNewTaskTitle(""); }}
+                          style={{ position: "absolute", bottom: 1, right: 3, fontSize: 8, color: C.orange, cursor: "pointer", fontWeight: 700, opacity: 0, transition: "opacity .15s", fontFamily: "'DM Sans', sans-serif" }}
+                        >+ tâche</span>
+                      )}
                     </div>
                   );
                 })}
@@ -488,8 +515,12 @@ export default function CalendarViewNM() {
                 if (!e.start_time) return false;
                 try { return new Date(e.start_time).getHours() === h; } catch { return false; }
               });
+              const dayDateStr = toDateStr(currentDate);
+              const hourKey = `${dayDateStr}|${h}`;
               return (
-                <div key={h} style={{ height: hourHeight, padding: "4px 12px", borderBottom: `1px solid ${C.border}`, transition: "height .1s ease" }}>
+                <div key={h} style={{ height: hourHeight, padding: "4px 12px", borderBottom: `1px solid ${C.border}`, transition: "height .1s ease", position: "relative" }}
+                  className="nm-hour-cell"
+                >
                   {hourEvents.map(ev => (
                     <div key={ev.id} style={{
                       background: "rgba(107,143,106,0.12)", borderRadius: 8, borderLeft: `3px solid ${C.green}`,
@@ -517,6 +548,25 @@ export default function CalendarViewNM() {
                       </div>
                     );
                   })}
+                  {addingForHour === hourKey ? (
+                    <div onClick={e => e.stopPropagation()}>
+                      <input
+                        autoFocus
+                        value={newTaskTitle}
+                        onChange={e => setNewTaskTitle(e.target.value)}
+                        onKeyDown={e => { if (e.key === "Enter") handleAddTask(dayDateStr, h); if (e.key === "Escape") { setAddingForHour(null); setNewTaskTitle(""); } }}
+                        onBlur={() => { if (newTaskTitle.trim()) handleAddTask(dayDateStr, h); else { setAddingForHour(null); setNewTaskTitle(""); } }}
+                        placeholder="Tâche…"
+                        style={{ width: "100%", border: "none", background: BG, boxShadow: insetSm, borderRadius: 6, padding: "3px 7px", fontSize: 9, color: C.text, fontFamily: "'DM Sans', sans-serif", outline: "none" }}
+                      />
+                    </div>
+                  ) : (
+                    <span
+                      className="nm-add-task-btn"
+                      onClick={e => { e.stopPropagation(); setAddingForHour(hourKey); setNewTaskTitle(""); }}
+                      style={{ position: "absolute", bottom: 2, right: 6, fontSize: 9, color: C.orange, cursor: "pointer", fontWeight: 700, opacity: 0, transition: "opacity .15s", fontFamily: "'DM Sans', sans-serif" }}
+                    >+ tâche</span>
+                  )}
                 </div>
               );
             })}

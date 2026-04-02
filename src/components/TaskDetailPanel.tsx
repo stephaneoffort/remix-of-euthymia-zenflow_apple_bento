@@ -173,16 +173,22 @@ export default function TaskDetailPanel() {
   const [newLinkName, setNewLinkName] = useState('');
   const [uploading, setUploading] = useState(false);
   const [descriptionDraft, setDescriptionDraft] = useState('');
+  const [titleDraft, setTitleDraft] = useState('');
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const titleDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const task = selectedTaskId ? getTaskById(selectedTaskId) : null;
 
   useEffect(() => {
     setDescriptionDraft(task?.description ?? '');
-  }, [task?.id, task?.description]);
+    setTitleDraft(task?.title ?? '');
+  }, [task?.id, task?.description, task?.title]);
 
   useEffect(() => {
-    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      if (titleDebounceRef.current) clearTimeout(titleDebounceRef.current);
+    };
   }, []);
 
   const debouncedSaveDescription = useCallback((html: string, taskId: string) => {
@@ -382,8 +388,19 @@ export default function TaskDetailPanel() {
           <div className="space-y-4 sm:space-y-6">
             {/* Title */}
             <input
-              value={task.title}
-              onChange={e => updateTask(task.id, { title: e.target.value })}
+              value={titleDraft}
+              onChange={e => {
+                const val = e.target.value;
+                setTitleDraft(val);
+                if (titleDebounceRef.current) clearTimeout(titleDebounceRef.current);
+                titleDebounceRef.current = setTimeout(() => {
+                  updateTask(task.id, { title: val });
+                }, 800);
+              }}
+              onBlur={() => {
+                if (titleDebounceRef.current) clearTimeout(titleDebounceRef.current);
+                if (titleDraft !== task.title) updateTask(task.id, { title: titleDraft });
+              }}
               className={`font-bold text-foreground bg-transparent w-full outline-none border-none ${expanded ? 'text-xl sm:text-2xl' : 'text-base sm:text-lg'}`}
             />
 

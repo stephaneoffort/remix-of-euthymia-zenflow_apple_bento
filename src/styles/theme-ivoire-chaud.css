@@ -1741,3 +1741,17 @@ select:focus {
   color: #8A7060 !important;
   opacity: 1 !important;
 }
+
+/* Bouton supprimer — icône claire sur fond destructive */
+.nm-task-detail button[class*="destructive"],
+.nm-task-detail button:hover[class*="destructive"] {
+  color: #FFF0DC !important;
+}
+.nm-task-detail button[class*="hover:text-destructive"]:hover,
+.nm-task-detail .hover\:text-destructive:hover {
+  color: #D4402A !important;
+}
+.nm-task-detail button[class*="hover:bg-destructive"]:hover {
+  background: #7A1E0E !important;
+  color: #FFF0DC !important;
+}

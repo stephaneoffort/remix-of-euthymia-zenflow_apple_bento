@@ -341,10 +341,13 @@ export default function CalendarViewNM() {
                     <div
                       key={di}
                       onClick={() => setSelectedDay(day.date)}
+                      onDragOver={e => { e.preventDefault(); setDragOverHour(`month-${dateStr}`); }}
+                      onDragLeave={() => setDragOverHour(null)}
+                      onDrop={e => handleDropOnDay(e, dateStr)}
                       style={{
                         padding: "6px 8px", minHeight: 90, cursor: "pointer",
                         borderRight: di < 6 ? `1px solid ${C.border}` : "none",
-                        background: today_ ? "rgba(107,143,106,0.06)" : selected ? "rgba(184,116,64,0.04)" : "transparent",
+                        background: dragOverHour === `month-${dateStr}` ? "rgba(184,116,64,0.08)" : today_ ? "rgba(107,143,106,0.06)" : selected ? "rgba(184,116,64,0.04)" : "transparent",
                         transition: "background .15s ease",
                       }}
                     >

@@ -158,7 +158,7 @@ const STATUS_LINE_COLORS: Record<string, string> = {
 };
 
 export default function TaskDetailPanel() {
-  const { selectedTaskId, setSelectedTaskId, setSelectedProjectId, getTaskById, updateTask, deleteTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks, teamMembers, allStatuses, getStatusLabel, addAttachment, deleteAttachment, projects, spaces, getListsForProject, convertTaskToProject } = useApp();
+  const { selectedTaskId, setSelectedTaskId, setSelectedProjectId, getTaskById, updateTask, deleteTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks, teamMembers, allStatuses, getStatusLabel, addAttachment, deleteAttachment, projects, spaces, getListsForProject, convertTaskToProject, duplicateTask } = useApp();
   const { isActive } = useIntegrations();
   const { teamMemberId } = useAuth();
   const { designMode } = useThemeMode();

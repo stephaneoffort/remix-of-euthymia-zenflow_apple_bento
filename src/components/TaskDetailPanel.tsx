@@ -917,6 +917,7 @@ function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {
   const [addingFor, setAddingFor] = useState<string | null>(null);
   const [newTitle, setNewTitle] = useState('');
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(subtasks.map(s => s.id)));
+  const [shareTaskId, setShareTaskId] = useState<string | null>(null);
 
   const parentTask = getTaskById(taskId);
 
@@ -985,6 +986,13 @@ function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {
                   {st.title}
                 </span>
                 <button
+                  onClick={e => { e.stopPropagation(); setShareTaskId(st.id); }}
+                  className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-muted rounded shrink-0"
+                  title="Partager"
+                >
+                  <Share2 className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+                <button
                   onClick={e => { e.stopPropagation(); setAddingFor(st.id); }}
                   className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-muted rounded shrink-0"
                 >
@@ -1045,6 +1053,14 @@ function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {
 
             {isExpanded && hasChildren && (
               <SubtaskTree taskId={st.id} depth={depth + 1} />
+            )}
+
+            {shareTaskId === st.id && (
+              <ShareTaskDialog
+                open={true}
+                onOpenChange={(open) => { if (!open) setShareTaskId(null); }}
+                taskId={st.id}
+              />
             )}
           </div>
         );

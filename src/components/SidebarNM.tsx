@@ -810,53 +810,63 @@ export default function SidebarNM() {
             <Lbl>Palette</Lbl>
             <div
               style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: 6,
                 padding: 8,
                 borderRadius: 10,
                 background: BG,
                 boxShadow: inset,
-                maxHeight: 120,
+                maxHeight: 200,
                 overflowY: "auto",
               }}
             >
-              {(Object.entries(PALETTE_META) as [ThemePalette, (typeof PALETTE_META)[ThemePalette]][]).map(
-                ([key, meta]) => {
-                  const active = palette === key;
-                  return (
-                    <button
-                      key={key}
-                      title={meta.label}
-                      onClick={() => setPalette(key)}
-                      style={{
-                        display: "flex",
-                        gap: 2,
-                        padding: 3,
-                        borderRadius: 8,
-                        border: active ? `2px solid ${C.orange}` : "2px solid transparent",
-                        background: BG,
-                        boxShadow: active ? raised : raisedSm,
-                        cursor: "pointer",
-                        transition: "box-shadow 0.18s, border-color 0.18s",
-                      }}
-                    >
-                      {meta.colors.slice(0, 2).map((c, i) => (
-                        <span
-                          key={i}
+              {([
+                { label: "Classiques", keys: ["clubroom", "neutrals", "sapphire", "cinematic", "teal", "ivoireChaud"] as ThemePalette[] },
+                { label: "Bento", keys: ["bento2026", "bentoOcean", "bentoRose", "bentoAmber"] as ThemePalette[] },
+                { label: "Liquid Glass", keys: ["liquidGlass", "liquidGlassOcean", "liquidGlassAurora", "liquidGlassRose", "liquidGlassAmber", "liquidGlassViolet", "liquidGlassCoral", "liquidGlassSlate", "liquidGlassMidnight"] as ThemePalette[] },
+                { label: "Soft UI", keys: ["nmCloud", "nmMidnight", "nmSand", "nmForest", "nmLavender", "nmDeepForest"] as ThemePalette[] },
+              ]).map((group) => (
+                <div key={group.label} style={{ marginBottom: 6 }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: C.text, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3, paddingLeft: 2, opacity: 0.55 }}>
+                    {group.label}
+                  </div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 2 }}>
+                    {group.keys.map((key) => {
+                      const meta = PALETTE_META[key];
+                      const active = palette === key;
+                      return (
+                        <button
+                          key={key}
+                          title={meta.label}
+                          onClick={() => setPalette(key)}
                           style={{
-                            width: 10,
-                            height: 10,
-                            borderRadius: "50%",
-                            background: c,
-                            display: "block",
+                            display: "flex",
+                            gap: 2,
+                            padding: 3,
+                            borderRadius: 8,
+                            border: active ? `2px solid ${C.orange}` : "2px solid transparent",
+                            background: BG,
+                            boxShadow: active ? raised : raisedSm,
+                            cursor: "pointer",
+                            transition: "box-shadow 0.18s, border-color 0.18s",
                           }}
-                        />
-                      ))}
-                    </button>
-                  );
-                }
-              )}
+                        >
+                          {meta.colors.slice(0, 2).map((c, i) => (
+                            <span
+                              key={i}
+                              style={{
+                                width: 10,
+                                height: 10,
+                                borderRadius: "50%",
+                                background: c,
+                                display: "block",
+                              }}
+                            />
+                          ))}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 

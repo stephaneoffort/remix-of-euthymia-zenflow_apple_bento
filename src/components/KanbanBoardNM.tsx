@@ -65,8 +65,8 @@ const Avatar = ({ name, color }: { name: string; color?: string }) => {
 };
 
 /* ─── Task Card ─── */
-function TaskCard({ task, onOpen, getMemberById, getProjectName }: {
-  task: any; onOpen: (id: string) => void;
+function TaskCard({ task, allTasks, onOpen, getMemberById, getProjectName }: {
+  task: any; allTasks: any[]; onOpen: (id: string) => void;
   getMemberById: (id: string) => any;
   getProjectName: (listId: string) => any;
 }) {
@@ -77,10 +77,10 @@ function TaskCard({ task, onOpen, getMemberById, getProjectName }: {
   const isOverdue = daysLeft !== null && daysLeft < 0;
   const isDone = task.status === "done";
 
-  const subtasks = task.subtasks ?? [];
+  const subtasks = allTasks.filter((t: any) => t.parentTaskId === task.id);
   const subtaskDone = subtasks.filter((s: any) => s.status === "done").length;
-  const hasProgress = subtasks.length > 0;
-  const progress = hasProgress ? Math.round((subtaskDone / subtasks.length) * 100) : 0;
+  const hasSubtasks = subtasks.length > 0;
+  const progress = hasSubtasks ? Math.round((subtaskDone / subtasks.length) * 100) : 0;
 
   return (
     <div
@@ -122,11 +122,20 @@ function TaskCard({ task, onOpen, getMemberById, getProjectName }: {
         {task.title}
       </div>
 
-      {/* Progress bar subtasks */}
-      {hasProgress && (
+      {/* Subtasks indicator + progress */}
+      {hasSubtasks && (
         <div style={{ marginBottom: 8 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 4 }}>
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+              <rect x="1" y="1" width="14" height="14" rx="3" stroke={C.light} strokeWidth="1.3" fill="none" />
+              <path d="M4.5 8.5L7 11L11.5 5.5" stroke={subtaskDone === subtasks.length ? C.green : C.orange} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span style={{ fontSize: 10, fontWeight: 600, color: subtaskDone === subtasks.length ? C.green : C.muted, fontFamily: "'DM Sans', sans-serif" }}>
+              {subtaskDone}/{subtasks.length}
+            </span>
+          </div>
           <div style={{ height: 3, borderRadius: 2, background: BG, boxShadow: inset }}>
-            <div style={{ height: 3, borderRadius: 2, background: C.green, width: `${progress}%`, transition: "width .3s" }} />
+            <div style={{ height: 3, borderRadius: 2, background: subtaskDone === subtasks.length ? C.green : C.orange, width: `${progress}%`, transition: "width .3s" }} />
           </div>
         </div>
       )}
@@ -165,7 +174,7 @@ export default function KanbanBoardNM() {
     getFilteredTasks, moveTask, setSelectedTaskId,
     getMemberById, addTask, lists, projects,
     allStatuses, getStatusLabel, selectedProjectId,
-    getListsForProject, quickFilter,
+    getListsForProject, quickFilter, tasks,
   } = useApp();
   const { teamMemberId } = useAuth();
   const isMobile = useIsMobile();
@@ -400,6 +409,7 @@ export default function KanbanBoardNM() {
                   <TaskCard
                     key={task.id}
                     task={task}
+                    allTasks={tasks}
                     onOpen={setSelectedTaskId}
                     getMemberById={getMemberById}
                     getProjectName={getProjectName}
@@ -534,6 +544,7 @@ export default function KanbanBoardNM() {
                     >
                       <TaskCard
                         task={task}
+                        allTasks={tasks}
                         onOpen={setSelectedTaskId}
                         getMemberById={getMemberById}
                         getProjectName={getProjectName}

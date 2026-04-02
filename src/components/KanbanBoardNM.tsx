@@ -476,10 +476,14 @@ export default function KanbanBoardNM() {
                         onClick={() => toggleCollapse(col.key)}
                         title="Réduire la colonne"
                         style={{
-                          background: "none", border: "none", cursor: "pointer", padding: 0,
+                          background: BG, border: "none", cursor: "pointer", padding: 0,
                           display: "flex", alignItems: "center", justifyContent: "center",
-                          width: 16, height: 16, color: C.light, fontSize: 10,
+                          width: 24, height: 24, borderRadius: 7,
+                          boxShadow: raisedSm, color: C.muted, fontSize: 13, fontWeight: 700,
+                          transition: "box-shadow .15s",
                         }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = inset; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = raisedSm; }}
                       >
                         ‹
                       </button>

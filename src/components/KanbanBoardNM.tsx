@@ -288,9 +288,41 @@ export default function KanbanBoardNM() {
         </span>
       </div>
 
+      {/* ── Collapsed chips ── */}
+      {columns.some(c => collapsedColumns.has(c.key)) && (
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+          {columns.filter(c => collapsedColumns.has(c.key)).map(col => {
+            const count = filtered.filter(t => t.status === col.key).length;
+            return (
+              <button
+                key={col.key}
+                onClick={() => toggleCollapse(col.key)}
+                onDragOver={e => handleDragOver(e, col.key)}
+                onDrop={e => handleDrop(e, col.key)}
+                style={{
+                  display: "flex", alignItems: "center", gap: 5,
+                  background: BG, boxShadow: raisedSm, border: "none",
+                  borderRadius: 8, padding: "4px 10px", cursor: "pointer",
+                  fontSize: 11, fontWeight: 600, color: C.text,
+                  fontFamily: "'DM Sans', sans-serif",
+                }}
+              >
+                <div style={{ width: 6, height: 6, borderRadius: "50%", background: col.color }} />
+                {col.label}
+                <span style={{ color: C.light, fontWeight: 500 }}>{count}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       {/* ── Colonnes ── */}
-      <div style={{ display: "grid", gridTemplateColumns: `repeat(${columns.length}, minmax(0,1fr))`, gap: 10, flex: 1, overflow: "auto" }}>
-        {columns.map(col => {
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: `repeat(${columns.filter(c => !collapsedColumns.has(c.key)).length}, minmax(0,1fr))`,
+        gap: 10, flex: 1, overflow: "auto",
+      }}>
+        {columns.filter(c => !collapsedColumns.has(c.key)).map(col => {
           const colTasks = filtered.filter(t => t.status === col.key);
           const isDropping = dropTarget === col.key;
 
@@ -310,6 +342,17 @@ export default function KanbanBoardNM() {
               {/* Header colonne */}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 4px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <button
+                    onClick={() => toggleCollapse(col.key)}
+                    title="Réduire la colonne"
+                    style={{
+                      background: "none", border: "none", cursor: "pointer", padding: 0,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      width: 16, height: 16, color: C.light, fontSize: 10,
+                    }}
+                  >
+                    ‹
+                  </button>
                   <div style={{ width: 8, height: 8, borderRadius: "50%", background: col.color, flexShrink: 0 }} />
                   <span style={{ fontSize: 13, fontWeight: 700, color: C.text, textTransform: "uppercase", letterSpacing: "0.04em" }}>
                     {col.label}

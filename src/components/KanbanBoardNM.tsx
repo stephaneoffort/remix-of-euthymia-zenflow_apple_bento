@@ -176,6 +176,7 @@ export default function KanbanBoardNM() {
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
   const [dropTarget, setDropTarget] = useState<string | null>(null);
   const [collapsedColumns, setCollapsedColumns] = useState<Set<string>>(new Set());
+  const [mobileActiveStatus, setMobileActiveStatus] = useState<string>(allStatuses[0] || "todo");
 
   const toggleCollapse = (key: string) => {
     setCollapsedColumns(prev => {

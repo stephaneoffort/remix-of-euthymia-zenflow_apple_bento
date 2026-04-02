@@ -1910,24 +1910,41 @@ select:focus {
   font-family: 'DM Sans', sans-serif;
 }
 
-/* Tous les fonds */
+/* Force ALL backgrounds to ivoire */
+.nm-chat,
+.nm-chat div,
+.nm-chat header,
+.nm-chat aside,
+.nm-chat section,
+.nm-chat nav,
 .nm-chat .bg-background,
 .nm-chat .bg-card,
 .nm-chat .bg-muted,
-.nm-chat [class*="bg-sidebar"] {
-  background: #EDE6DA !important;
+.nm-chat [class*="bg-sidebar"],
+.nm-chat [class*="bg-card"],
+.nm-chat [class*="backdrop-blur"] {
+  background-color: #EDE6DA !important;
+}
+
+/* Glass header override */
+.nm-chat .backdrop-blur-2xl,
+.nm-chat [class*="backdrop-blur"] {
+  background: rgba(237,230,218,0.92) !important;
+  backdrop-filter: blur(12px) !important;
 }
 
 /* Textes */
-.nm-chat .text-foreground { color: #1A1208 !important; }
+.nm-chat .text-foreground,
+.nm-chat h2,
+.nm-chat h3,
+.nm-chat p,
+.nm-chat span {
+  color: #1A1208 !important;
+}
 .nm-chat .text-muted-foreground { color: #5A5040 !important; }
 
 /* Bordures */
-.nm-chat .border-border,
-.nm-chat .border-l,
-.nm-chat .border-r,
-.nm-chat .border-b,
-.nm-chat .border-t {
+.nm-chat [class*="border"] {
   border-color: rgba(140,118,88,0.15) !important;
 }
 
@@ -1945,11 +1962,11 @@ select:focus {
   border-radius: 8px !important;
 }
 
-/* Messages — bulles reçues */
+/* Messages — bulles */
 .nm-chat [class*="message"] > div,
 .nm-chat [class*="bubble"] {
   background: #EDE6DA !important;
-  box-shadow: 3px 3px 8px rgba(140,118,88,0.45), -3px -3px 8px rgba(255,250,242,0.85) !important;
+  box-shadow: 3px 3px 8px rgba(140,118,88,0.35), -3px -3px 8px rgba(255,250,242,0.85) !important;
   border-radius: 10px !important;
   border: none !important;
 }
@@ -1957,12 +1974,22 @@ select:focus {
 /* Zone de saisie */
 .nm-chat textarea,
 .nm-chat input[type="text"],
-.nm-chat [class*="input"] {
+.nm-chat [class*="ProseMirror"],
+.nm-chat .tiptap {
   background: #EDE6DA !important;
   box-shadow: inset 3px 3px 8px rgba(140,118,88,0.42), inset -3px -3px 8px rgba(255,250,242,0.85) !important;
   border: none !important;
   border-radius: 14px !important;
   color: #1A1208 !important;
+}
+
+/* Barre de formatage (B, I, <>) */
+.nm-chat button {
+  background: #EDE6DA !important;
+  box-shadow: 2px 2px 5px rgba(140,118,88,0.35), -2px -2px 5px rgba(255,250,242,0.85) !important;
+  border: none !important;
+  color: #5A5040 !important;
+  border-radius: 8px !important;
 }
 
 /* Bouton Envoyer */
@@ -1971,17 +1998,7 @@ select:focus {
   background: #2A5828 !important;
   color: #F0FAF0 !important;
   box-shadow: 3px 3px 8px rgba(20,50,20,0.45), -2px -2px 5px rgba(200,240,200,0.15) !important;
-  border: none !important;
   border-radius: 9px !important;
-}
-
-/* Boutons toolbar */
-.nm-chat button {
-  background: #EDE6DA !important;
-  box-shadow: 2px 2px 5px rgba(140,118,88,0.45), -2px -2px 5px rgba(255,250,242,0.85) !important;
-  border: none !important;
-  color: #1A1208 !important;
-  border-radius: 8px !important;
 }
 
 /* Avatars */
@@ -1990,14 +2007,26 @@ select:focus {
 }
 
 /* Panel membres */
-.nm-chat [class*="members"] {
+.nm-chat [class*="members"],
+.nm-chat [class*="Members"] {
   background: #EDE6DA !important;
   border-color: rgba(140,118,88,0.15) !important;
 }
 
+/* Membres items – ombre douce */
+.nm-chat [class*="members"] > div,
+.nm-chat [class*="Members"] > div {
+  background: #EDE6DA !important;
+}
+
 /* Badges non lus */
 .nm-chat .bg-destructive { background: #7A1E0E !important; }
-.nm-chat .bg-primary { background: #7A4518 !important; }
+.nm-chat .bg-primary:not(button) { background: #7A4518 !important; }
+
+/* Status dots — preserve colors */
+.nm-chat .bg-green-500,
+.nm-chat .bg-emerald-500 { background-color: #2A5828 !important; }
+.nm-chat .bg-gray-400 { background-color: #8C7658 !important; }
 
 /* Scrollbar */
 .nm-chat ::-webkit-scrollbar { width: 4px; }
@@ -2017,4 +2046,24 @@ select:focus {
   box-shadow: 2px 2px 5px rgba(140,118,88,0.4), -2px -2px 5px rgba(255,250,242,0.85) !important;
   border-radius: 100px !important;
   color: #5A5040 !important;
+}
+
+/* Links in messages */
+.nm-chat a {
+  color: #2A5828 !important;
+}
+
+/* Thread, Search, Pinned panels */
+.nm-chat [class*="thread"],
+.nm-chat [class*="Thread"],
+.nm-chat [class*="search"],
+.nm-chat [class*="Search"],
+.nm-chat [class*="pinned"],
+.nm-chat [class*="Pinned"] {
+  background: #EDE6DA !important;
+}
+
+/* Shadow for main content areas */
+.nm-chat > div > div {
+  box-shadow: none !important;
 }

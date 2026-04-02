@@ -209,7 +209,7 @@ export default function WorkloadViewNM() {
 
       {/* ── Tâches par membre ── */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 14, marginBottom: 20 }}>
-        {workload.map(m => {
+        {workload.filter(m => !selectedMemberId || m.id === selectedMemberId).map(m => {
           const initials = m.name.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
           return (
             <div key={m.id} style={{

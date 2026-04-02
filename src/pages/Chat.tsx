@@ -65,7 +65,7 @@ export default function Chat() {
   };
 
   return (
-    <div className="flex h-[100dvh] relative overflow-hidden">
+    <div className={`flex h-[100dvh] relative overflow-hidden ${designMode === "neumorphic" ? "nm-chat" : ""}`}>
       {/* ── Mesh gradient background ── */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute inset-0 bg-background" />

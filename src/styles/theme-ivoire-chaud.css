@@ -1902,7 +1902,6 @@ select:focus {
   50%  { box-shadow: 0 0 12px 2px rgba(107,143,106,0.25); transform: scale(1); }
   100% { box-shadow: none; transform: scale(1); }
 }
-}
 
 /* ─── Chat Ivoire ─── */
 

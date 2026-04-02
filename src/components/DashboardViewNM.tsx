@@ -420,7 +420,7 @@ export default function DashboardViewNM() {
         </Tile>
 
         {/* URGENTES */}
-        <Tile style={{ gridColumn: 1, gridRow: 2 }}>
+        <Tile style={{ gridColumn: "1 / 3", gridRow: 2 }}>
           <div
             style={{
               display: "flex",

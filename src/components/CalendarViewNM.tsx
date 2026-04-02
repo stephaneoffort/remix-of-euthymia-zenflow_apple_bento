@@ -356,8 +356,8 @@ export default function CalendarViewNM() {
                       style={{
                         padding: "6px 8px", minHeight: 90, cursor: "pointer",
                         borderRight: di < 6 ? `1px solid ${C.border}` : "none",
-                        background: dragOverHour === `month-${dateStr}` ? "rgba(184,116,64,0.08)" : today_ ? "rgba(107,143,106,0.06)" : selected ? "rgba(184,116,64,0.04)" : "transparent",
-                        transition: "background .15s ease",
+                        background: droppedHour === `month-${dateStr}` ? "rgba(107,143,106,0.18)" : dragOverHour === `month-${dateStr}` ? "rgba(184,116,64,0.08)" : today_ ? "rgba(107,143,106,0.06)" : selected ? "rgba(184,116,64,0.04)" : "transparent",
+                        transition: "background .35s ease",
                       }}
                     >
                       {/* Day number */}

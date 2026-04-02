@@ -434,10 +434,32 @@ export default function CalendarViewNM() {
                     if (!e.start_time) return false;
                     try { return new Date(e.start_time).getHours() === h; } catch { return false; }
                   });
+                  const hourKey = `${toDateStr(day)}|${h}`;
                   return (
-                    <div key={di} style={{ padding: "2px 4px", borderLeft: `1px solid ${C.border}` }}>
+                    <div key={di} style={{ padding: "2px 4px", borderLeft: `1px solid ${C.border}`, position: "relative" }}
+                      className="nm-hour-cell"
+                    >
                       {hourEvents.map(ev => renderEventPill(ev))}
                       {hourTasks.map(t => renderTaskPill(t))}
+                      {addingForHour === hourKey ? (
+                        <div onClick={e => e.stopPropagation()}>
+                          <input
+                            autoFocus
+                            value={newTaskTitle}
+                            onChange={e => setNewTaskTitle(e.target.value)}
+                            onKeyDown={e => { if (e.key === "Enter") handleAddTask(toDateStr(day), h); if (e.key === "Escape") { setAddingForHour(null); setNewTaskTitle(""); } }}
+                            onBlur={() => { if (newTaskTitle.trim()) handleAddTask(toDateStr(day), h); else { setAddingForHour(null); setNewTaskTitle(""); } }}
+                            placeholder="Tâche…"
+                            style={{ width: "100%", border: "none", background: BG, boxShadow: insetSm, borderRadius: 5, padding: "2px 5px", fontSize: 8, color: C.text, fontFamily: "'DM Sans', sans-serif", outline: "none" }}
+                          />
+                        </div>
+                      ) : (
+                        <span
+                          className="nm-add-task-btn"
+                          onClick={e => { e.stopPropagation(); setAddingForHour(hourKey); setNewTaskTitle(""); }}
+                          style={{ position: "absolute", bottom: 1, right: 3, fontSize: 8, color: C.orange, cursor: "pointer", fontWeight: 700, opacity: 0, transition: "opacity .15s", fontFamily: "'DM Sans', sans-serif" }}
+                        >+ tâche</span>
+                      )}
                     </div>
                   );
                 })}

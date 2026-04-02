@@ -181,10 +181,14 @@ export default function TaskDetailPanel() {
 
   useEffect(() => {
     setDescriptionDraft(task?.description ?? '');
-  }, [task?.id, task?.description]);
+    setTitleDraft(task?.title ?? '');
+  }, [task?.id, task?.description, task?.title]);
 
   useEffect(() => {
-    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      if (titleDebounceRef.current) clearTimeout(titleDebounceRef.current);
+    };
   }, []);
 
   const debouncedSaveDescription = useCallback((html: string, taskId: string) => {

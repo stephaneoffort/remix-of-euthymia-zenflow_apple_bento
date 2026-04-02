@@ -277,7 +277,14 @@ export default function TaskDetailPanel() {
   return (
     <div className={`flex flex-col h-full border-l border-border shadow-xl task-detail-panel ${
       expanded ? 'fixed inset-0 z-[60]' : ''
-    }`}>
+    }`}
+    style={designMode === "neumorphic" ? {
+      background: "#EDE6DA",
+      borderLeft: "1px solid rgba(140,118,88,0.2)",
+      boxShadow: "-8px 0 30px rgba(140,118,88,0.3)",
+      fontFamily: "'DM Sans', sans-serif",
+    } : {}}
+    >
       {/* Header */}
       <div className="flex items-center justify-between px-3 sm:px-5 py-3 sm:py-4 border-b border-border">
         <div className="flex items-center gap-1.5 text-xs text-foreground/60 min-w-0 overflow-x-auto">

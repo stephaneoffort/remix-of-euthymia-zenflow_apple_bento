@@ -9,6 +9,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { generateGoogleCalendarUrl, generateOutlookCalendarUrl, generateYahooCalendarUrl } from '@/lib/calendarLinks';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
+import { useThemeMode } from '@/context/ThemeContext';
 import MentionCommentInput from '@/components/MentionCommentInput';
 import TaskChecklist from '@/components/TaskChecklist';
 import RichTextEditor, { RichTextDisplay } from '@/components/RichTextEditor';

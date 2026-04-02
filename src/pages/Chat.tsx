@@ -14,11 +14,13 @@ import MobileBottomNav from '@/components/MobileBottomNav';
 import { useApp } from '@/context/AppContext';
 import { usePresence } from '@/hooks/usePresence';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useThemeMode } from '@/context/ThemeContext';
 
 export default function Chat() {
   const chat = useDiscordChat();
   const { teamMembers } = useApp();
   const { onlineMembers } = usePresence();
+  const { designMode } = useThemeMode();
   const [showMembers, setShowMembers] = useState(true);
   const [showChannels, setShowChannels] = useState(true);
   const [showSearch, setShowSearch] = useState(false);

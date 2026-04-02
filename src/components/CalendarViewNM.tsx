@@ -162,18 +162,22 @@ export default function CalendarViewNM() {
   const eventsForDay = (day: Date) => eventsByDate.get(toDateStr(day)) || [];
 
   /* ── Add task ── */
-  const handleAddTask = (dateStr: string) => {
+  const handleAddTask = (dateStr: string, hour?: number) => {
     if (!newTaskTitle.trim()) return;
     const lists = selectedProjectId ? getListsForProject(selectedProjectId) : [];
     const listId = lists[0]?.id || "l1";
+    const dueDate = hour != null
+      ? new Date(`${dateStr}T${String(hour).padStart(2, "0")}:00:00`).toISOString()
+      : new Date(dateStr + "T00:00:00").toISOString();
     addTask({
       title: newTaskTitle.trim(), description: "", status: "todo", priority: "normal",
-      dueDate: new Date(dateStr + "T00:00:00").toISOString(), startDate: null,
+      dueDate, startDate: null,
       assigneeIds: [], tags: [], parentTaskId: null, listId,
       comments: [], attachments: [], timeEstimate: null, timeLogged: null, aiSummary: null,
     });
     setNewTaskTitle("");
     setAddingForDate(null);
+    setAddingForHour(null);
   };
 
   const handleSaveEvent = async (data: any) => {

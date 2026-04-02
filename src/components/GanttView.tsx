@@ -3,6 +3,7 @@ import { useApp } from "@/context/AppContext";
 import { Task, TaskDependency } from "@/types";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useThemeMode } from "@/context/ThemeContext";
 import {
   ChevronLeft,
   ChevronRight,

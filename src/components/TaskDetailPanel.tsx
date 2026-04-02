@@ -4,7 +4,7 @@ import { ToastAction } from '@/components/ui/toast';
 import { useApp } from '@/context/AppContext';
 import { Status, Priority, PRIORITY_LABELS, RECURRENCE_LABELS, Recurrence } from '@/types';
 import { PriorityBadge, StatusBadge, AvatarGroup, SubtaskProgress, StatusCircle } from '@/components/TaskBadges';
-import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Clock, Paperclip, ChevronDown, Maximize2, Minimize2, CalendarPlus, Link, Upload, Trash2, ExternalLink, FileText, Send, CalendarIcon, Repeat, FolderInput, PackagePlus, GitBranchPlus, Bell, Share2 } from 'lucide-react';
+import { X, ChevronRight, Plus, CheckCircle, Circle, MessageSquare, Sparkles, Clock, Paperclip, ChevronDown, Maximize2, Minimize2, CalendarPlus, Link, Upload, Trash2, ExternalLink, FileText, Send, CalendarIcon, Repeat, FolderInput, PackagePlus, GitBranchPlus, Bell, Share2, Copy } from 'lucide-react';
 import ShareTaskDialog from '@/components/ShareTaskDialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { generateGoogleCalendarUrl, generateOutlookCalendarUrl, generateYahooCalendarUrl } from '@/lib/calendarLinks';
@@ -158,7 +158,7 @@ const STATUS_LINE_COLORS: Record<string, string> = {
 };
 
 export default function TaskDetailPanel() {
-  const { selectedTaskId, setSelectedTaskId, setSelectedProjectId, getTaskById, updateTask, deleteTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks, teamMembers, allStatuses, getStatusLabel, addAttachment, deleteAttachment, projects, spaces, getListsForProject, convertTaskToProject } = useApp();
+  const { selectedTaskId, setSelectedTaskId, setSelectedProjectId, getTaskById, updateTask, deleteTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks, teamMembers, allStatuses, getStatusLabel, addAttachment, deleteAttachment, projects, spaces, getListsForProject, convertTaskToProject, duplicateTask } = useApp();
   const { isActive } = useIntegrations();
   const { teamMemberId } = useAuth();
   const { designMode } = useThemeMode();
@@ -344,6 +344,14 @@ export default function TaskDetailPanel() {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
+          {/* Duplicate task */}
+          <button
+            onClick={() => duplicateTask(task.id)}
+            className="p-1.5 hover:bg-primary/10 text-muted-foreground hover:text-primary rounded-md transition-colors"
+            title="Dupliquer la tâche"
+          >
+            <Copy className="w-4 h-4" />
+          </button>
           <button
             onClick={() => {
               if (window.confirm('Supprimer cette tâche et ses sous-tâches ?')) {

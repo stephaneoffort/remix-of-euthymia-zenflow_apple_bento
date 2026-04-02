@@ -55,6 +55,7 @@ interface AppContextType extends AppState {
   addProject: (name: string, spaceId: string, color: string, memberIds?: string[]) => void;
   duplicateSpace: (spaceId: string) => void;
   duplicateProject: (projectId: string) => void;
+  duplicateTask: (taskId: string) => void;
   archiveSpace: (spaceId: string) => void;
   archiveProject: (projectId: string) => void;
   renameSpace: (id: string, name: string) => void;
@@ -607,6 +608,66 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     duplicateProjectMutation.mutate(projectId);
   }, [duplicateProjectMutation]);
 
+  // Duplicate task mutation (recursive: duplicates subtasks too)
+  const duplicateTaskMutation = useMutation({
+    mutationFn: async (taskId: string) => {
+      const duplicateRecursive = async (srcId: string, parentId: string | null, listId: string): Promise<string> => {
+        const src = tasks.find(t => t.id === srcId);
+        if (!src) throw new Error('Task not found');
+        const payload: any = {
+          title: `${src.title} (copie)`,
+          description: src.description,
+          status: src.status,
+          priority: src.priority,
+          due_date: src.dueDate,
+          start_date: src.startDate,
+          parent_task_id: parentId,
+          list_id: listId,
+          tags: src.tags,
+          time_estimate: src.timeEstimate,
+          time_logged: null,
+          ai_summary: null,
+          recurrence: src.recurrence || null,
+          recurrence_end_date: src.recurrenceEndDate || null,
+          sort_order: tasks.length,
+        };
+        const { data, error } = await supabase.from('tasks').insert(payload).select().single();
+        if (error) throw error;
+
+        // Copy assignees
+        if (src.assigneeIds.length > 0) {
+          await supabase.from('task_assignees').insert(
+            src.assigneeIds.map(mid => ({ task_id: data.id, member_id: mid }))
+          );
+        }
+
+        // Recursively duplicate subtasks
+        const children = tasks.filter(t => t.parentTaskId === srcId);
+        for (const child of children) {
+          await duplicateRecursive(child.id, data.id, listId);
+        }
+
+        return data.id;
+      };
+
+      const src = tasks.find(t => t.id === taskId);
+      if (!src) throw new Error('Task not found');
+      return duplicateRecursive(taskId, src.parentTaskId, src.listId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      toast.success('Tâche dupliquée (avec sous-tâches)');
+    },
+    onError: (error) => {
+      console.error('Failed to duplicate task:', error);
+      toast.error('Erreur lors de la duplication');
+    },
+  });
+
+  const duplicateTask = useCallback((taskId: string) => {
+    duplicateTaskMutation.mutate(taskId);
+  }, [duplicateTaskMutation]);
+
   // Archive space mutation
   const archiveSpaceMutation = useMutation({
     mutationFn: async (spaceId: string) => {
@@ -1064,6 +1125,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     addProject,
     duplicateSpace,
     duplicateProject,
+    duplicateTask,
     archiveSpace,
     archiveProject,
     renameSpace,
@@ -1087,7 +1149,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     isSpaceManager: isSpaceManagerFn,
     getSpaceManagers: getSpaceManagersFn,
     refreshSpaceAccess,
-  }), [accessibleSpaces, archivedSpaces, archivedProjects, accessibleProjects, lists, accessibleTasks, teamMembers, customStatuses, allStatuses, spaceMembers, spaceManagers, selectedProjectId, selectedSpaceId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, setSelectedProjectId, setSelectedSpaceId, addTask, updateTask, deleteTask, addAttachment, deleteAttachment, moveTask, addSpace, addProject, duplicateSpace, duplicateProject, archiveSpace, archiveProject, renameSpace, renameProject, moveProject, deleteSpace, deleteProject, convertTaskToProject, reorderSpaces, reorderProjects, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb, getStatusLabel, canAccessSpace, isSpaceManagerFn, getSpaceManagersFn, refreshSpaceAccess]);
+  }), [accessibleSpaces, archivedSpaces, archivedProjects, accessibleProjects, lists, accessibleTasks, teamMembers, customStatuses, allStatuses, spaceMembers, spaceManagers, selectedProjectId, selectedSpaceId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, setSelectedProjectId, setSelectedSpaceId, addTask, updateTask, deleteTask, addAttachment, deleteAttachment, moveTask, addSpace, addProject, duplicateSpace, duplicateProject, duplicateTask, archiveSpace, archiveProject, renameSpace, renameProject, moveProject, deleteSpace, deleteProject, convertTaskToProject, reorderSpaces, reorderProjects, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb, getStatusLabel, canAccessSpace, isSpaceManagerFn, getSpaceManagersFn, refreshSpaceAccess]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

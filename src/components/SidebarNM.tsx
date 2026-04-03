@@ -438,7 +438,7 @@ export default function SidebarNM() {
             background: BG,
             boxShadow: raisedSm,
             cursor: "pointer",
-            color: C.muted,
+            color: NC.muted,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -480,7 +480,7 @@ export default function SidebarNM() {
             border: "none",
             background: BG,
             boxShadow: selectedView === "dashboard" && !selectedSpaceId && !selectedProjectId ? insetSm : raisedSm,
-            color: selectedView === "dashboard" && !selectedSpaceId && !selectedProjectId ? C.orange : C.muted,
+            color: selectedView === "dashboard" && !selectedSpaceId && !selectedProjectId ? NC.orange : NC.muted,
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
@@ -510,7 +510,7 @@ export default function SidebarNM() {
                 justifyContent: "center",
               }}
             >
-              <div style={{ width: 10, height: 10, borderRadius: "50%", background: (space as any).color ?? C.orange }} />
+              <div style={{ width: 10, height: 10, borderRadius: "50%", background: (space as any).color ?? NC.orange }} />
             </button>
           ))}
         </div>
@@ -527,7 +527,7 @@ export default function SidebarNM() {
             background: BG,
             boxShadow: raisedSm,
             cursor: "pointer",
-            color: C.muted,
+            color: NC.muted,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -568,7 +568,7 @@ export default function SidebarNM() {
           display: "flex",
           flexDirection: "column",
           fontFamily: "'DM Sans', sans-serif",
-          color: C.text,
+          color: NC.text,
           borderRight: "1px solid rgba(140,118,88,0.25)",
           boxShadow: "6px 0 24px rgba(140,118,88,0.5)",
           overflow: "hidden",
@@ -621,8 +621,8 @@ export default function SidebarNM() {
               />
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 15, fontWeight: 800, color: C.text, letterSpacing: 0.5 }}>Euthymia</div>
-              <div style={{ fontSize: 9, color: C.muted, letterSpacing: 0.5 }}>Gestion de projets</div>
+              <div style={{ fontSize: 15, fontWeight: 800, color: NC.text, letterSpacing: 0.5 }}>Euthymia</div>
+              <div style={{ fontSize: 9, color: NC.muted, letterSpacing: 0.5 }}>Gestion de projets</div>
             </div>
             {/* Collapse button on desktop / Close on mobile */}
             <button
@@ -637,7 +637,7 @@ export default function SidebarNM() {
                 boxShadow: raisedSm,
                 cursor: "pointer",
                 fontSize: 16,
-                color: C.muted,
+                color: NC.muted,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -677,13 +677,13 @@ export default function SidebarNM() {
                       background: BG,
                       boxShadow: raisedSm,
                       fontWeight: 600,
-                      color: C.text,
+                      color: NC.text,
                       cursor: "pointer",
                     }}
                     onClick={() => goSpace(selSpace.id)}
                   >
-                    <div style={{ width: 7, height: 7, borderRadius: "50%", background: (selSpace as any).color ?? C.orange, flexShrink: 0 }} />
-                    <span style={{ fontSize: 8, color: C.light }}>Espace</span>
+                    <div style={{ width: 7, height: 7, borderRadius: "50%", background: (selSpace as any).color ?? NC.orange, flexShrink: 0 }} />
+                    <span style={{ fontSize: 8, color: NC.light }}>Espace</span>
                     {selSpace.name}
                   </span>
                   {selProject && (
@@ -699,7 +699,7 @@ export default function SidebarNM() {
                           background: BG,
                           boxShadow: raisedSm,
                           fontWeight: 600,
-                          color: C.orange,
+                          color: NC.orange,
                           cursor: "pointer",
                         }}
                         onClick={() => goProject(selProject.id)}
@@ -713,7 +713,7 @@ export default function SidebarNM() {
                             display: "inline-block",
                           }}
                         />
-                        <span style={{ fontSize: 8, color: C.light }}>Projet</span>
+                        <span style={{ fontSize: 8, color: NC.light }}>Projet</span>
                         {selProject.name}
                       </span>
                       <Arrow />
@@ -727,10 +727,10 @@ export default function SidebarNM() {
                           background: BG,
                           boxShadow: insetSm,
                           fontWeight: 500,
-                          color: C.muted,
+                          color: NC.muted,
                         }}
                       >
-                        <span style={{ fontSize: 8, color: C.light }}>Vue</span>
+                        <span style={{ fontSize: 8, color: NC.light }}>Vue</span>
                         <span style={{ fontWeight: 600 }}>
                           {viewLabel[selectedView] ?? selectedView}
                         </span>
@@ -883,7 +883,7 @@ export default function SidebarNM() {
                     cursor: "pointer",
                     fontSize: 13,
                     fontWeight: 700,
-                    color: C.orange,
+                    color: NC.orange,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -902,16 +902,16 @@ export default function SidebarNM() {
             <div style={{ marginTop: 10 }}>
               <NavBtn>
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <rect x="1" y="3" width="12" height="9" rx="1.5" stroke={C.light} strokeWidth="1.2" />
-                  <path d="M1 3L3 1H11L13 3" stroke={C.light} strokeWidth="1.2" />
-                  <line x1="5.5" y1="7" x2="8.5" y2="7" stroke={C.light} strokeWidth="1.2" strokeLinecap="round" />
+                  <rect x="1" y="3" width="12" height="9" rx="1.5" stroke={NC.light} strokeWidth="1.2" />
+                  <path d="M1 3L3 1H11L13 3" stroke={NC.light} strokeWidth="1.2" />
+                  <line x1="5.5" y1="7" x2="8.5" y2="7" stroke={NC.light} strokeWidth="1.2" strokeLinecap="round" />
                 </svg>
                 Archives
                 <span
                   style={{
                     marginLeft: "auto",
                     fontSize: 10,
-                    color: C.light,
+                    color: NC.light,
                     background: BG,
                     boxShadow: insetSm,
                     borderRadius: 6,
@@ -976,10 +976,10 @@ export default function SidebarNM() {
                           }} />
                         </div>
                         <div style={{ minWidth: 0, flex: 1 }}>
-                          <div style={{ fontSize: 11, fontWeight: 600, color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          <div style={{ fontSize: 11, fontWeight: 600, color: NC.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                             {tm.name}
                           </div>
-                          <div style={{ fontSize: 9, color: C.muted }}>{tm.role}</div>
+                          <div style={{ fontSize: 9, color: NC.muted }}>{tm.role}</div>
                         </div>
                       </div>
                     );
@@ -994,7 +994,7 @@ export default function SidebarNM() {
         <div
           style={{
             padding: "12px 16px 16px",
-            borderTop: `1px solid ${C.border}`,
+            borderTop: `1px solid ${NC.border}`,
             display: "flex",
             flexDirection: "column",
             gap: 10,
@@ -1032,7 +1032,7 @@ export default function SidebarNM() {
                         border: "none",
                         borderRadius: 6,
                         boxShadow: theme === value ? raised : "none",
-                        color: theme === value ? C.orange : C.text,
+                        color: theme === value ? NC.orange : NC.text,
                         fontFamily: "'DM Sans', sans-serif",
                         fontSize: 9,
                         fontWeight: theme === value ? 700 : 500,
@@ -1063,7 +1063,7 @@ export default function SidebarNM() {
                     { label: "Soft UI", keys: ["nmCloud", "nmMidnight", "nmSand", "nmForest", "nmLavender", "nmDeepForest"] as ThemePalette[] },
                   ]).map((group) => (
                     <div key={group.label} style={{ marginBottom: 6 }}>
-                      <div style={{ fontSize: 10, fontWeight: 700, color: C.text, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3, paddingLeft: 2, opacity: 0.55 }}>
+                      <div style={{ fontSize: 10, fontWeight: 700, color: NC.text, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3, paddingLeft: 2, opacity: 0.55 }}>
                         {group.label}
                       </div>
                       <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 2 }}>
@@ -1080,7 +1080,7 @@ export default function SidebarNM() {
                                 gap: 2,
                                 padding: 3,
                                 borderRadius: 8,
-                                border: active ? `2px solid ${C.orange}` : "2px solid transparent",
+                                border: active ? `2px solid ${NC.orange}` : "2px solid transparent",
                                 background: BG,
                                 boxShadow: active ? raised : raisedSm,
                                 cursor: "pointer",
@@ -1122,7 +1122,7 @@ export default function SidebarNM() {
                         border: "none",
                         borderRadius: 6,
                         boxShadow: designMode === value ? raised : "none",
-                        color: designMode === value ? C.orange : C.text,
+                        color: designMode === value ? NC.orange : NC.text,
                         fontFamily: "'DM Sans', sans-serif",
                         fontSize: 9,
                         fontWeight: designMode === value ? 700 : 500,
@@ -1164,7 +1164,7 @@ export default function SidebarNM() {
                         border: "none",
                         borderRadius: 6,
                         boxShadow: theme === value ? raised : "none",
-                        color: theme === value ? C.orange : C.text,
+                        color: theme === value ? NC.orange : NC.text,
                         fontFamily: "'DM Sans', sans-serif",
                         fontSize: 9,
                         fontWeight: theme === value ? 700 : 500,
@@ -1198,7 +1198,7 @@ export default function SidebarNM() {
                     { label: "Soft UI", keys: ["nmCloud", "nmMidnight", "nmSand", "nmForest", "nmLavender", "nmDeepForest"] as ThemePalette[] },
                   ]).map((group) => (
                     <div key={group.label} style={{ marginBottom: 6 }}>
-                      <div style={{ fontSize: 10, fontWeight: 700, color: C.text, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3, paddingLeft: 2, opacity: 0.55 }}>
+                      <div style={{ fontSize: 10, fontWeight: 700, color: NC.text, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3, paddingLeft: 2, opacity: 0.55 }}>
                         {group.label}
                       </div>
                       <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 2 }}>
@@ -1215,7 +1215,7 @@ export default function SidebarNM() {
                                 gap: 2,
                                 padding: 3,
                                 borderRadius: 8,
-                                border: active ? `2px solid ${C.orange}` : "2px solid transparent",
+                                border: active ? `2px solid ${NC.orange}` : "2px solid transparent",
                                 background: BG,
                                 boxShadow: active ? raised : raisedSm,
                                 cursor: "pointer",
@@ -1259,7 +1259,7 @@ export default function SidebarNM() {
                         border: "none",
                         borderRadius: 6,
                         boxShadow: designMode === value ? raised : "none",
-                        color: designMode === value ? C.orange : C.text,
+                        color: designMode === value ? NC.orange : NC.text,
                         fontFamily: "'DM Sans', sans-serif",
                         fontSize: 9,
                         fontWeight: designMode === value ? 700 : 500,
@@ -1324,7 +1324,7 @@ export default function SidebarNM() {
                   style={{
                     fontSize: 12,
                     fontWeight: 700,
-                    color: C.text,
+                    color: NC.text,
                     overflow: "hidden",
                     textOverflow: "ellipsis",
                     whiteSpace: "nowrap",
@@ -1332,7 +1332,7 @@ export default function SidebarNM() {
                 >
                   {member.name}
                 </div>
-                <div style={{ fontSize: 10, color: C.muted }}>{member.role}</div>
+                <div style={{ fontSize: 10, color: NC.muted }}>{member.role}</div>
               </div>
             </div>
           )}
@@ -1342,7 +1342,7 @@ export default function SidebarNM() {
             {[
               {
                 label: "Réglages",
-                color: C.text,
+                color: NC.text,
                 icon: (
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                     <circle cx="7" cy="7" r="2.5" stroke="currentColor" strokeWidth="1.2" />
@@ -1353,7 +1353,7 @@ export default function SidebarNM() {
               },
               {
                 label: "App",
-                color: C.text,
+                color: NC.text,
                 icon: (
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                     <rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" strokeWidth="1.2" />
@@ -1466,19 +1466,19 @@ export default function SidebarNM() {
                     cursor: "pointer",
                     background: dropTargetSpaceId === space.id ? "rgba(122,69,24,0.08)" : BG,
                     boxShadow: isActive ? insetSm : "none",
-                    color: isActive ? C.green : C.text,
+                    color: isActive ? NC.green : NC.text,
                     fontFamily: "'DM Sans', sans-serif",
                     fontSize: 10,
                     fontWeight: isActive ? 700 : 500,
                     transition: "all 0.2s ease",
                   }}
                 >
-                  <div style={{ width: 7, height: 7, borderRadius: "50%", background: (space as any).color ?? C.orange, flexShrink: 0 }} />
-                  <span style={{ fontSize: 10, color: isActive ? C.green : C.text, fontWeight: isActive ? 700 : 500, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <div style={{ width: 7, height: 7, borderRadius: "50%", background: (space as any).color ?? NC.orange, flexShrink: 0 }} />
+                  <span style={{ fontSize: 10, color: isActive ? NC.green : NC.text, fontWeight: isActive ? 700 : 500, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {space.name}
                   </span>
                   {spaceProjects.length > 0 && (
-                    <span style={{ fontSize: 8, color: C.muted }}>{isOpen ? "▴" : "▾"}</span>
+                    <span style={{ fontSize: 8, color: NC.muted }}>{isOpen ? "▴" : "▾"}</span>
                   )}
                 </button>
 
@@ -1508,7 +1508,7 @@ export default function SidebarNM() {
                             background: dropTargetProjectId === proj.id ? "rgba(122,69,24,0.08)" : BG,
                             opacity: draggedProjectId === proj.id ? 0.5 : 1,
                             boxShadow: isProjActive ? insetSm : "none",
-                            color: isProjActive ? C.orange : C.muted,
+                            color: isProjActive ? NC.orange : NC.muted,
                             fontFamily: "'DM Sans', sans-serif",
                             fontSize: 12,
                             fontWeight: isProjActive ? 600 : 400,

@@ -24,12 +24,7 @@ import { Switch } from '@/components/ui/switch';
 import TaskReminders from '@/components/TaskReminders';
 import TaskReminderInline from '@/components/TaskReminderInline';
 import DriveAttachments from '@/components/drive/DriveAttachments';
-import CanvaAttachments from '@/components/canva/CanvaAttachments';
-import ZoomMeetings from '@/components/zoom/ZoomMeetings';
-import BrevoContacts from '@/components/brevo/BrevoContacts';
-import BrevoNewsletterLinks from '@/components/brevo/BrevoNewsletterLinks';
-import GmailCompose from '@/components/gmail/GmailCompose';
-import GmailInbox from '@/components/gmail/GmailInbox';
+import IntegrationTiles from '@/components/IntegrationTiles';
 import { useIntegrations, INTEGRATION_CONFIG } from '@/hooks/useIntegrations';
 import GoogleCalendarPicker from '@/components/GoogleCalendarPicker';
 // Format date for display

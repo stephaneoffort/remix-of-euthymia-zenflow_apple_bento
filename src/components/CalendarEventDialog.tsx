@@ -6,11 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Loader2, Video, Copy, ExternalLink } from 'lucide-react';
-import DriveAttachments from '@/components/drive/DriveAttachments';
-import CanvaAttachments from '@/components/canva/CanvaAttachments';
-import ZoomMeetings from '@/components/zoom/ZoomMeetings';
-import BrevoContacts from '@/components/brevo/BrevoContacts';
-import BrevoNewsletterLinks from '@/components/brevo/BrevoNewsletterLinks';
+import IntegrationTiles from '@/components/IntegrationTiles';
 import GoogleCalendarPicker from '@/components/GoogleCalendarPicker';
 import type { CalendarEvent } from '@/hooks/useCalendarSync';
 import { supabase } from '@/integrations/supabase/client';
@@ -303,13 +299,7 @@ export default function CalendarEventDialog({ open, onClose, onSave, onDelete, e
           )}
 
           {event && (
-            <>
-              <DriveAttachments entityType="event" entityId={event.id} compact />
-              <CanvaAttachments entityType="event" entityId={event.id} compact defaultTitle={event.title} />
-              <ZoomMeetings entityType="event" entityId={event.id} compact defaultTitle={event.title} />
-              
-              <BrevoNewsletterLinks entityType="event" entityId={event.id} compact />
-            </>
+            <IntegrationTiles entityType="event" entityId={event.id} taskTitle={event.title} />
           )}
           <div className="flex items-center justify-between pt-2">
             {event && onDelete ? (

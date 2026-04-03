@@ -1197,7 +1197,7 @@ export default function SidebarNM() {
                               }}
                             >
                               {meta.colors.slice(0, 2).map((c, i) => (
-                                <span key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: c, display: "block" }} />
+                                <span key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: c, display: "block", border: "1px solid rgba(0,0,0,0.15)" }} />
                               ))}
                             </button>
                           );

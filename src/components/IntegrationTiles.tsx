@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useIntegrations, INTEGRATION_CONFIG } from '@/hooks/useIntegrations';
+import React, { useState, useEffect } from 'react';
+import { useIntegrations, INTEGRATION_CONFIG, type IntegrationKey } from '@/hooks/useIntegrations';
 import { useGoogleDrive } from '@/hooks/useGoogleDrive';
 import { useCanva } from '@/hooks/useCanva';
 import { useZoom } from '@/hooks/useZoom';

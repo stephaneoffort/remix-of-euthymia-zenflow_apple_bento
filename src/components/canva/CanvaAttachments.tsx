@@ -103,12 +103,7 @@ export default function CanvaAttachments({ entityType, entityId, compact, defaul
         </div>
       ) : attachments.length === 0 ? (
         canva.isConnected ? (
-          <button
-            onClick={() => setPickerOpen(true)}
-            className="w-full py-3 border border-dashed border-border rounded-lg text-xs text-muted-foreground hover:border-primary/50 hover:text-primary transition-colors"
-          >
-            + Joindre un design Canva
-          </button>
+          <p className="text-xs text-muted-foreground italic">Aucun design attaché</p>
         ) : null
       ) : (
         <div className="space-y-1.5">

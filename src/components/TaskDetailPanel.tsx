@@ -22,6 +22,7 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Switch } from '@/components/ui/switch';
 import TaskReminders from '@/components/TaskReminders';
+import TaskReminderInline from '@/components/TaskReminderInline';
 import DriveAttachments from '@/components/drive/DriveAttachments';
 import CanvaAttachments from '@/components/canva/CanvaAttachments';
 import ZoomMeetings from '@/components/zoom/ZoomMeetings';
@@ -302,19 +303,7 @@ export default function TaskDetailPanel() {
     >
       {/* Header */}
       <div className="flex items-center justify-between px-3 sm:px-5 py-3 sm:py-4 border-b border-border">
-        <div className="flex items-center gap-1.5 text-xs text-foreground/60 min-w-0 overflow-x-auto">
-          {breadcrumb.map((t, i) => (
-            <React.Fragment key={t.id}>
-              {i > 0 && <ChevronRight className="w-3 h-3 shrink-0" />}
-              <button
-                onClick={() => setSelectedTaskId(t.id)}
-                className={`truncate hover:text-foreground transition-colors whitespace-nowrap ${t.id === task.id ? 'text-foreground font-medium' : ''}`}
-              >
-                {t.title}
-              </button>
-            </React.Fragment>
-          ))}
-        </div>
+        <div className="flex items-center gap-1.5 text-xs text-foreground/60 min-w-0 overflow-x-auto" />
         <div className="flex items-center gap-1 shrink-0 ml-2">
           {/* Share */}
           <button
@@ -386,6 +375,46 @@ export default function TaskDetailPanel() {
 
           {/* === Column 1: Main info === */}
           <div className="space-y-4 sm:space-y-6">
+            {/* Breadcrumb: Space > Project > parent tasks > current task */}
+            {(() => {
+              const currentList = projects.flatMap(p => getListsForProject(p.id).map(l => ({ ...l, project: p }))).find(l => l.id === task.listId);
+              const project = currentList?.project;
+              const space = project ? spaces.find(s => s.id === project.spaceId) : undefined;
+              const parentTrail = breadcrumb.filter(t => t.id !== task.id);
+              return (
+                <div className="flex items-center gap-1 text-[11px] text-muted-foreground min-w-0 overflow-x-auto flex-wrap">
+                  {space && (
+                    <>
+                      <span className="whitespace-nowrap">{space.icon} {space.name}</span>
+                      <ChevronRight className="w-3 h-3 shrink-0" />
+                    </>
+                  )}
+                  {project && (
+                    <>
+                      <button
+                        onClick={() => setSelectedProjectId(project.id)}
+                        className="whitespace-nowrap hover:text-foreground transition-colors"
+                      >
+                        {project.name}
+                      </button>
+                      {parentTrail.length > 0 && <ChevronRight className="w-3 h-3 shrink-0" />}
+                    </>
+                  )}
+                  {parentTrail.map((t, i) => (
+                    <React.Fragment key={t.id}>
+                      {i > 0 && <ChevronRight className="w-3 h-3 shrink-0" />}
+                      <button
+                        onClick={() => setSelectedTaskId(t.id)}
+                        className="whitespace-nowrap hover:text-foreground transition-colors truncate max-w-[120px]"
+                      >
+                        {t.title}
+                      </button>
+                    </React.Fragment>
+                  ))}
+                </div>
+              );
+            })()}
+
             {/* Title */}
             <input
               value={titleDraft}
@@ -432,6 +461,7 @@ export default function TaskDetailPanel() {
                   value={task.startDate}
                   onChange={(val) => updateTask(task.id, { startDate: val })}
                 />
+                <TaskReminderInline taskId={task.id} reminderType="before_start" hasDate={!!task.startDate} />
               </div>
               <div>
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">Échéance</label>
@@ -439,6 +469,7 @@ export default function TaskDetailPanel() {
                   value={task.dueDate}
                   onChange={(val) => updateTask(task.id, { dueDate: val })}
                 />
+                <TaskReminderInline taskId={task.id} reminderType="before_end" hasDate={!!task.dueDate} />
               </div>
               <div>
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">Agenda cible</label>
@@ -478,82 +509,6 @@ export default function TaskDetailPanel() {
                 )}
               </div>
 
-              {/* Move to project */}
-              <div className="col-span-2">
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1 block">
-                  <FolderInput className="w-3 h-3" /> Projet
-                </label>
-                {(() => {
-                  // Find current project from task's listId
-                  const currentList = projects.flatMap(p => getListsForProject(p.id).map(l => ({ ...l, project: p }))).find(l => l.id === task.listId);
-                  const currentProjectId = currentList?.project?.id || '';
-                  return (
-                    <select
-                      value={currentProjectId}
-                       onChange={e => {
-                        const targetProjectId = e.target.value;
-                        if (targetProjectId === currentProjectId) return;
-                        const targetLists = getListsForProject(targetProjectId);
-                        if (targetLists.length === 0) return;
-                        const targetProject = projects.find(p => p.id === targetProjectId);
-                        const prevListId = task.listId;
-                        const prevParentTaskId = task.parentTaskId;
-                        updateTask(task.id, { listId: targetLists[0].id, parentTaskId: null });
-                        setSelectedProjectId(targetProjectId);
-                        toast({
-                          title: 'Tâche déplacée',
-                          description: `« ${task.title} » → ${targetProject?.name || 'projet'}`,
-                          action: <ToastAction altText="Annuler" onClick={() => { updateTask(task.id, { listId: prevListId, parentTaskId: prevParentTaskId }); }}>Annuler</ToastAction>,
-                        });
-                      }}
-                      className="w-full text-sm text-foreground bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
-                    >
-                      {projects.map(p => {
-                        const space = spaces.find(s => s.id === p.spaceId);
-                        return (
-                          <option key={p.id} value={p.id}>
-                            {space ? `${space.name} › ` : ''}{p.name}
-                          </option>
-                        );
-                      })}
-                    </select>
-                  );
-                })()}
-              </div>
-
-              {/* Make subtask of another task */}
-              <div className="col-span-2">
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1 block">
-                  <GitBranchPlus className="w-3 h-3" /> Tâche parente
-                </label>
-                <select
-                  value={task.parentTaskId || ''}
-                  onChange={e => {
-                    const parentId = e.target.value || null;
-                    if (parentId === task.parentTaskId) return;
-                    if (parentId === task.id) return;
-                    const parentTask = parentId ? tasks.find(t => t.id === parentId) : null;
-                    const prevParentId = task.parentTaskId;
-                    const prevListId = task.listId;
-                    updateTask(task.id, { parentTaskId: parentId, ...(parentTask ? { listId: parentTask.listId } : {}) });
-                    toast({
-                      title: parentId ? 'Sous-tâche définie' : 'Tâche détachée',
-                      description: parentId
-                        ? `« ${task.title} » est maintenant sous-tâche de « ${parentTask?.title} »`
-                        : `« ${task.title} » est maintenant une tâche indépendante`,
-                      action: <ToastAction altText="Annuler" onClick={() => { updateTask(task.id, { parentTaskId: prevParentId, listId: prevListId }); }}>Annuler</ToastAction>,
-                    });
-                  }}
-                  className="w-full text-sm text-foreground bg-muted/50 border border-border rounded-md px-2 sm:px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
-                >
-                  <option value="">— Aucune (tâche indépendante)</option>
-                  {tasks
-                    .filter(t => t.id !== task.id && t.parentTaskId !== task.id)
-                    .map(t => (
-                      <option key={t.id} value={t.id}>{t.title}</option>
-                    ))}
-                </select>
-              </div>
             </div>
 
             {/* Assignees */}
@@ -626,17 +581,6 @@ export default function TaskDetailPanel() {
               </div>
             </div>
 
-            {/* Rappels */}
-            <div>
-              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1 block">
-                <Bell className="w-3 h-3" /> Rappels
-              </label>
-              <TaskReminders
-                taskId={task.id}
-                hasStartDate={!!task.startDate}
-                hasDueDate={!!task.dueDate}
-              />
-            </div>
 
             {/* Attachments & Links */}
             <div>

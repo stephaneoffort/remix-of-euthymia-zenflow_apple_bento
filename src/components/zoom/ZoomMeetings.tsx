@@ -90,12 +90,7 @@ export default function ZoomMeetings({ entityType, entityId, compact, defaultTit
         <Skeleton className="h-10 w-full rounded-md" />
       ) : meetings.length === 0 ? (
         zoom.isConnected ? (
-          <button
-            onClick={() => setCreatorOpen(true)}
-            className="w-full py-3 border border-dashed border-border rounded-lg text-xs text-muted-foreground hover:border-primary/50 hover:text-primary transition-colors"
-          >
-            + Créer une réunion Zoom
-          </button>
+          <p className="text-xs text-muted-foreground italic">Aucune réunion</p>
         ) : null
       ) : (
         <div className="space-y-1.5">

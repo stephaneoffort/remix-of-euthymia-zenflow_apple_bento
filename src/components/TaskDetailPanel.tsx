@@ -384,7 +384,7 @@ export default function TaskDetailPanel() {
               const space = project ? spaces.find(s => s.id === project.spaceId) : undefined;
               const parentTrail = breadcrumb.filter(t => t.id !== task.id);
               return (
-                <div className="flex items-center gap-1 text-[11px] text-muted-foreground min-w-0 overflow-x-auto flex-wrap">
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground min-w-0 overflow-x-auto flex-wrap">
                   {space && (
                     <>
                       <span className="whitespace-nowrap">{space.icon} {space.name}</span>

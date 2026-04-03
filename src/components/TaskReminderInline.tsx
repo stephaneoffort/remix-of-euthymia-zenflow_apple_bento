@@ -77,33 +77,33 @@ export default function TaskReminderInline({ taskId, reminderType, hasDate }: Pr
   };
 
   return (
-    <div className="mt-1.5 space-y-1.5">
+    <div className="mt-2 space-y-2">
       {reminders.length > 0 && (
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1.5">
           {reminders.map(r => (
-            <span key={r.id} className="inline-flex items-center gap-0.5 text-[10px] px-2 py-0.5 rounded-full bg-primary/10 border border-primary/30 text-primary font-medium">
-              <Bell className="w-2.5 h-2.5" />
-              {formatOffset(r.offset_key)}
+            <span key={r.id} className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary font-medium">
+              <Bell className="w-3 h-3" />
+              {formatOffset(r.offset_key)} avant
               <button onClick={() => removeReminder(r.id)} className="ml-0.5 hover:text-destructive">
-                <X className="w-2.5 h-2.5" />
+                <X className="w-3 h-3" />
               </button>
             </span>
           ))}
         </div>
       )}
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1.5">
         <input
           type="number"
           min={1}
           max={999}
           value={amount}
           onChange={e => setAmount(Math.max(1, parseInt(e.target.value) || 1))}
-          className="w-12 text-[10px] px-1.5 py-0.5 rounded border border-border bg-background text-foreground"
+          className="w-14 text-xs px-2 py-1 rounded border border-border bg-background text-foreground"
         />
         <select
           value={unit}
           onChange={e => setUnit(e.target.value)}
-          className="text-[10px] px-1.5 py-0.5 rounded border border-border bg-background text-foreground"
+          className="text-xs px-2 py-1 rounded border border-border bg-background text-foreground"
         >
           {UNIT_OPTIONS.map(u => (
             <option key={u.value} value={u.value}>{u.label}</option>
@@ -112,9 +112,9 @@ export default function TaskReminderInline({ taskId, reminderType, hasDate }: Pr
         <button
           data-nm="reminder"
           onClick={addReminder}
-          className="inline-flex items-center gap-0.5 text-[10px] px-2 py-0.5 rounded-full border border-border text-muted-foreground hover:text-primary hover:border-primary/20 transition-colors"
+          className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full border border-border text-muted-foreground hover:text-primary hover:border-primary/20 transition-colors"
         >
-          <Plus className="w-2.5 h-2.5" /> Rappel
+          <Plus className="w-3 h-3" /> Rappel
         </button>
       </div>
     </div>

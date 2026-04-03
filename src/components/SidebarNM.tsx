@@ -754,7 +754,7 @@ export default function SidebarNM() {
           {isMobile ? (
             <>
               {/* Dashboard always visible on mobile */}
-              <NavBtn active={selectedView === "dashboard" && !selectedSpaceId && !selectedProjectId} onClick={goDashboard}>
+              <NavBtn activeColor={NC.orange} textColor={NC.text} active={selectedView === "dashboard" && !selectedSpaceId && !selectedProjectId} onClick={goDashboard}>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                   <rect x="1" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
                   <rect x="9" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
@@ -813,7 +813,7 @@ export default function SidebarNM() {
           ) : (
             <>
               <Lbl>Navigation</Lbl>
-              <NavBtn active={selectedView === "dashboard" && !selectedSpaceId && !selectedProjectId} onClick={goDashboard}>
+              <NavBtn activeColor={NC.orange} textColor={NC.text} active={selectedView === "dashboard" && !selectedSpaceId && !selectedProjectId} onClick={goDashboard}>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                   <rect x="1" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
                   <rect x="9" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
@@ -906,7 +906,7 @@ export default function SidebarNM() {
           {/* Archives */}
           {archiveCount > 0 && (
             <div style={{ marginTop: 10 }}>
-              <NavBtn>
+              <NavBtn activeColor={NC.orange} textColor={NC.text}>
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                   <rect x="1" y="3" width="12" height="9" rx="1.5" stroke={NC.light} strokeWidth="1.2" />
                   <path d="M1 3L3 1H11L13 3" stroke={NC.light} strokeWidth="1.2" />

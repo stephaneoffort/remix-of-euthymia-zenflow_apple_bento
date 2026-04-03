@@ -90,7 +90,7 @@ export const PALETTE_META: Record<ThemePalette, { label: string; description: st
   liquidGlass: {
     label: "Liquid Glass",
     description: "Apple iOS 26 — Verre translucide + fond vivant",
-    colors: ["#6366f1", "#e8f4ff", "#f0e8ff", "#ffffff"],
+    colors: ["#6366f1", "#a78bfa", "#e8f4ff", "#ffffff"],
   },
   liquidGlassOcean: {
     label: "Liquid Glass Ocean",

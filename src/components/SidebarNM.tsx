@@ -146,7 +146,7 @@ function NavBtn({
         cursor: "pointer",
         background: BG,
         boxShadow: active ? inset : raisedSm,
-        color: active ? C.orange : C.text,
+        color: active ? ac : tc,
         fontFamily: "'DM Sans', sans-serif",
         fontSize: 13,
         fontWeight: active ? 700 : 500,

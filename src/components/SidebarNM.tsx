@@ -57,6 +57,41 @@ function Lbl({ children }: { children: React.ReactNode }) {
   );
 }
 
+/* ─── Collapsible section for mobile ─── */
+function CollapsibleSection({
+  title,
+  defaultOpen = false,
+  children,
+}: {
+  title: string;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div>
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "100%",
+          padding: 0,
+          border: "none",
+          background: "transparent",
+          cursor: "pointer",
+          marginBottom: open ? 6 : 0,
+        }}
+      >
+        <Lbl>{title}</Lbl>
+        <span style={{ fontSize: 10, color: C.light, transition: "transform 0.2s", transform: open ? "rotate(180deg)" : "rotate(0deg)" }}>▾</span>
+      </button>
+      {open && children}
+    </div>
+  );
+}
+
 function NavBtn({
   active,
   children,

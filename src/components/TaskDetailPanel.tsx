@@ -795,20 +795,6 @@ export default function TaskDetailPanel() {
                 </label>
               </div>
 
-              {subtasks.length > 0 && (
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all duration-300"
-                      style={{
-                        width: `${Math.round((doneSubtasks.length / subtasks.length) * 100)}%`,
-                        backgroundColor: doneSubtasks.length === subtasks.length ? '#2A5828' : '#5A8A58',
-                      }}
-                    />
-                  </div>
-                  <span className="text-xs text-foreground/60 tabular-nums">{Math.round((doneSubtasks.length / subtasks.length) * 100)}%</span>
-                </div>
-              )}
 
               {allSubtasksDone && task.status !== 'done' && (
                 <div className="bg-status-done/10 border border-status-done/30 rounded-lg p-2.5 mb-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">

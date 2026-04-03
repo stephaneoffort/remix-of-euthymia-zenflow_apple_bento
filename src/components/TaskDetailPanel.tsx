@@ -693,15 +693,7 @@ export default function TaskDetailPanel() {
             </div>
 
             {/* Integrations */}
-            <DriveAttachments entityType="task" entityId={task.id} compact />
-            <CanvaAttachments entityType="task" entityId={task.id} compact defaultTitle={task.title} />
-            <ZoomMeetings entityType="task" entityId={task.id} compact defaultTitle={task.title} />
-            
-            <BrevoNewsletterLinks entityType="task" entityId={task.id} compact />
-            <GmailCompose entityType="task" entityId={task.id} defaultSubject={task.title} compact />
-            
-
-            {/* Per-integration guiding messages */}
+            <IntegrationTiles entityType="task" entityId={task.id} taskTitle={task.title} />
             {!isActive('google_drive') && !isActive('canva') && !isActive('zoom') && !isActive('brevo') && !isActive('gmail') && (
               <a
                 href="/settings"

@@ -461,6 +461,7 @@ export default function TaskDetailPanel() {
                   value={task.startDate}
                   onChange={(val) => updateTask(task.id, { startDate: val })}
                 />
+                <TaskReminderInline taskId={task.id} reminderType="before_start" hasDate={!!task.startDate} />
               </div>
               <div>
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">Échéance</label>
@@ -468,6 +469,7 @@ export default function TaskDetailPanel() {
                   value={task.dueDate}
                   onChange={(val) => updateTask(task.id, { dueDate: val })}
                 />
+                <TaskReminderInline taskId={task.id} reminderType="before_end" hasDate={!!task.dueDate} />
               </div>
               <div>
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">Agenda cible</label>

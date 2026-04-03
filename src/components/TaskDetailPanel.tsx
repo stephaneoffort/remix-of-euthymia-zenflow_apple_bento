@@ -119,6 +119,8 @@ function DateTimeField({ value, onChange }: { value: string | null | undefined; 
               mode="single"
               selected={isValid ? dateObj : undefined}
               onSelect={handleDateSelect}
+              locale={fr}
+              weekStartsOn={1}
               initialFocus
               className="p-3 pointer-events-auto"
             />

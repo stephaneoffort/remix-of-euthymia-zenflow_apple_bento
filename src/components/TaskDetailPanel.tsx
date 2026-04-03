@@ -375,6 +375,46 @@ export default function TaskDetailPanel() {
 
           {/* === Column 1: Main info === */}
           <div className="space-y-4 sm:space-y-6">
+            {/* Breadcrumb: Space > Project > parent tasks > current task */}
+            {(() => {
+              const currentList = projects.flatMap(p => getListsForProject(p.id).map(l => ({ ...l, project: p }))).find(l => l.id === task.listId);
+              const project = currentList?.project;
+              const space = project ? spaces.find(s => s.id === project.spaceId) : undefined;
+              const parentTrail = breadcrumb.filter(t => t.id !== task.id);
+              return (
+                <div className="flex items-center gap-1 text-[11px] text-muted-foreground min-w-0 overflow-x-auto flex-wrap">
+                  {space && (
+                    <>
+                      <span className="whitespace-nowrap">{space.icon} {space.name}</span>
+                      <ChevronRight className="w-3 h-3 shrink-0" />
+                    </>
+                  )}
+                  {project && (
+                    <>
+                      <button
+                        onClick={() => setSelectedProjectId(project.id)}
+                        className="whitespace-nowrap hover:text-foreground transition-colors"
+                      >
+                        {project.name}
+                      </button>
+                      {parentTrail.length > 0 && <ChevronRight className="w-3 h-3 shrink-0" />}
+                    </>
+                  )}
+                  {parentTrail.map((t, i) => (
+                    <React.Fragment key={t.id}>
+                      {i > 0 && <ChevronRight className="w-3 h-3 shrink-0" />}
+                      <button
+                        onClick={() => setSelectedTaskId(t.id)}
+                        className="whitespace-nowrap hover:text-foreground transition-colors truncate max-w-[120px]"
+                      >
+                        {t.title}
+                      </button>
+                    </React.Fragment>
+                  ))}
+                </div>
+              );
+            })()}
+
             {/* Title */}
             <input
               value={titleDraft}

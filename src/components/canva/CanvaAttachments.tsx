@@ -104,7 +104,6 @@ export default function CanvaAttachments({ entityType, entityId, compact, defaul
       ) : attachments.length === 0 ? (
         canva.isConnected ? (
           <p className="text-xs text-muted-foreground italic">Aucun design attaché</p>
-          </button>
         ) : null
       ) : (
         <div className="space-y-1.5">

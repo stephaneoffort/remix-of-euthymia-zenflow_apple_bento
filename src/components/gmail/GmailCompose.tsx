@@ -60,7 +60,7 @@ export default function GmailCompose({ entityType, entityId, defaultSubject, com
         className={`flex items-center justify-between w-full ${compact ? 'text-xs' : 'text-sm'}`}
       >
         <span className="font-medium text-foreground flex items-center gap-1.5">
-          <img src={INTEGRATION_CONFIG.gmail.icon} alt="Gmail" className="w-5 h-5" />
+          <img src={INTEGRATION_CONFIG.brevo.icon} alt="Brevo" className="w-5 h-5" />
           Envoyer un email
         </span>
         {open ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}

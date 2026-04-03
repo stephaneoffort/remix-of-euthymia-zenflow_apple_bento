@@ -22,6 +22,7 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Switch } from '@/components/ui/switch';
 import TaskReminders from '@/components/TaskReminders';
+import TaskReminderInline from '@/components/TaskReminderInline';
 import DriveAttachments from '@/components/drive/DriveAttachments';
 import CanvaAttachments from '@/components/canva/CanvaAttachments';
 import ZoomMeetings from '@/components/zoom/ZoomMeetings';

@@ -121,11 +121,17 @@ function NavBtn({
   active,
   children,
   onClick,
+  activeColor,
+  textColor,
 }: {
   active?: boolean;
   children: React.ReactNode;
   onClick?: () => void;
+  activeColor?: string;
+  textColor?: string;
 }) {
+  const ac = activeColor || C.orange;
+  const tc = textColor || C.text;
   return (
     <button
       onClick={onClick}

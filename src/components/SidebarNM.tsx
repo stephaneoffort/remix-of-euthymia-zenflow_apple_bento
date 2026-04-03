@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
 import { useChatNotifications } from "@/hooks/useChatNotifications";
+import { usePresence } from "@/hooks/usePresence";
 import logoEuthymia from "@/assets/logo-euthymia.png";
 
 /* ─── Tokens ─── */

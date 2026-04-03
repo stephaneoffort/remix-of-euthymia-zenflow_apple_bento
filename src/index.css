@@ -2,6 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Custom cursor: adapts to light/dark mode ─── */
+:root {
+  --cursor-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Cpath d='M3 1L3 17L7.5 12.5L11 19L13.5 18L10 11.5L16 11.5L3 1Z' fill='%23111111' stroke='%23ffffff' stroke-width='1.2'/%3E%3C/svg%3E") 0 0, default;
+  --cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Cpath d='M8 1v9.5H4.5L11 21l6.5-10.5H14V1H8z' fill='%23111111' stroke='%23ffffff' stroke-width='1.2'/%3E%3C/svg%3E") 11 0, pointer;
+}
+.dark, .mixed {
+  --cursor-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Cpath d='M3 1L3 17L7.5 12.5L11 19L13.5 18L10 11.5L16 11.5L3 1Z' fill='%23f0f0f0' stroke='%23222222' stroke-width='1.2'/%3E%3C/svg%3E") 0 0, default;
+  --cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Cpath d='M8 1v9.5H4.5L11 21l6.5-10.5H14V1H8z' fill='%23f0f0f0' stroke='%23222222' stroke-width='1.2'/%3E%3C/svg%3E") 11 0, pointer;
+}
+
+html, body {
+  cursor: var(--cursor-default);
+}
+a, button, [role="button"], label, select, summary,
+[type="button"], [type="submit"], [type="reset"],
+.cursor-pointer, [data-state] {
+  cursor: var(--cursor-pointer);
+}
+
 /* ─── Smooth palette/theme transition ─── */
 .palette-transitioning,
 .palette-transitioning *,

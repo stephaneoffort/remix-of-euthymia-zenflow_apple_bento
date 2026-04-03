@@ -719,189 +719,157 @@ export default function SidebarNM() {
 
         {/* ── NAVIGATION ── */}
         <div style={{ padding: "0 16px 10px", display: "flex", flexDirection: "column", gap: 6 }}>
-          <Lbl>Navigation</Lbl>
-
-          <NavBtn active={selectedView === "dashboard" && !selectedSpaceId && !selectedProjectId} onClick={goDashboard}>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <rect x="1" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
-              <rect x="9" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
-              <rect x="1" y="9" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
-              <rect x="9" y="9" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
-            </svg>
-            Dashboard
-          </NavBtn>
-
-          {[
-            { label: "Toutes les tâches", filter: "all" as const },
-            { label: "Urgentes", filter: "urgent" as const },
-            { label: "Aujourd'hui", filter: "today" as const },
-            { label: "En retard", filter: "overdue" as const },
-          ].map(({ label, filter }) => (
-            <NavBtn
-              key={filter}
-              onClick={() => {
-                setQuickFilter(filter);
-                setSelectedSpaceId(null);
-                setSelectedProjectId(null);
-                closeMobile();
-              }}
-            >
-              {label}
-            </NavBtn>
-          ))}
-
-          <NavBtn
-            active={false}
-            onClick={() => { navigate("/chat"); if (isMobile) setSidebarCollapsed(true); }}
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v7A1.5 1.5 0 0112.5 12H5l-3 2.5V3.5z" stroke="currentColor" strokeWidth="1.3" fill="none"/>
-            </svg>
-            Chat d'équipe
-            {totalUnread > 0 && (
-              <span style={{
-                marginLeft: "auto",
-                fontSize: 10,
-                fontWeight: 700,
-                background: "#7A4518",
-                color: "#FFF",
-                borderRadius: 99,
-                padding: "1px 6px",
-                minWidth: 18,
-                textAlign: "center" as const,
-              }}>
-                {totalUnread}
-              </span>
-            )}
-          </NavBtn>
+          {isMobile ? (
+            <>
+              {/* Dashboard always visible on mobile */}
+              <NavBtn active={selectedView === "dashboard" && !selectedSpaceId && !selectedProjectId} onClick={goDashboard}>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <rect x="1" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+                  <rect x="9" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+                  <rect x="1" y="9" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+                  <rect x="9" y="9" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+                </svg>
+                Dashboard
+              </NavBtn>
+              <CollapsibleSection title="Navigation">
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  {[
+                    { label: "Toutes les tâches", filter: "all" as const },
+                    { label: "Urgentes", filter: "urgent" as const },
+                    { label: "Aujourd'hui", filter: "today" as const },
+                    { label: "En retard", filter: "overdue" as const },
+                  ].map(({ label, filter }) => (
+                    <NavBtn
+                      key={filter}
+                      onClick={() => {
+                        setQuickFilter(filter);
+                        setSelectedSpaceId(null);
+                        setSelectedProjectId(null);
+                        closeMobile();
+                      }}
+                    >
+                      {label}
+                    </NavBtn>
+                  ))}
+                  <NavBtn
+                    active={false}
+                    onClick={() => { navigate("/chat"); if (isMobile) setSidebarCollapsed(true); }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v7A1.5 1.5 0 0112.5 12H5l-3 2.5V3.5z" stroke="currentColor" strokeWidth="1.3" fill="none"/>
+                    </svg>
+                    Chat d'équipe
+                    {totalUnread > 0 && (
+                      <span style={{
+                        marginLeft: "auto",
+                        fontSize: 10,
+                        fontWeight: 700,
+                        background: "#7A4518",
+                        color: "#FFF",
+                        borderRadius: 99,
+                        padding: "1px 6px",
+                        minWidth: 18,
+                        textAlign: "center" as const,
+                      }}>
+                        {totalUnread}
+                      </span>
+                    )}
+                  </NavBtn>
+                </div>
+              </CollapsibleSection>
+            </>
+          ) : (
+            <>
+              <Lbl>Navigation</Lbl>
+              <NavBtn active={selectedView === "dashboard" && !selectedSpaceId && !selectedProjectId} onClick={goDashboard}>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <rect x="1" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+                  <rect x="9" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+                  <rect x="1" y="9" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+                  <rect x="9" y="9" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+                </svg>
+                Dashboard
+              </NavBtn>
+              {[
+                { label: "Toutes les tâches", filter: "all" as const },
+                { label: "Urgentes", filter: "urgent" as const },
+                { label: "Aujourd'hui", filter: "today" as const },
+                { label: "En retard", filter: "overdue" as const },
+              ].map(({ label, filter }) => (
+                <NavBtn
+                  key={filter}
+                  onClick={() => {
+                    setQuickFilter(filter);
+                    setSelectedSpaceId(null);
+                    setSelectedProjectId(null);
+                    closeMobile();
+                  }}
+                >
+                  {label}
+                </NavBtn>
+              ))}
+              <NavBtn
+                active={false}
+                onClick={() => { navigate("/chat"); if (isMobile) setSidebarCollapsed(true); }}
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v7A1.5 1.5 0 0112.5 12H5l-3 2.5V3.5z" stroke="currentColor" strokeWidth="1.3" fill="none"/>
+                </svg>
+                Chat d'équipe
+                {totalUnread > 0 && (
+                  <span style={{
+                    marginLeft: "auto",
+                    fontSize: 10,
+                    fontWeight: 700,
+                    background: "#7A4518",
+                    color: "#FFF",
+                    borderRadius: 99,
+                    padding: "1px 6px",
+                    minWidth: 18,
+                    textAlign: "center" as const,
+                  }}>
+                    {totalUnread}
+                  </span>
+                )}
+              </NavBtn>
+            </>
+          )}
         </div>
 
         {/* ── ESPACES ── */}
         <div style={{ flex: 1, overflowY: "auto", padding: "0 16px 10px" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <Lbl>Espaces</Lbl>
-            <button
-              style={{
-                width: 20,
-                height: 20,
-                borderRadius: 6,
-                border: "none",
-                background: BG,
-                boxShadow: raisedSm,
-                cursor: "pointer",
-                fontSize: 13,
-                fontWeight: 700,
-                color: C.orange,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                lineHeight: 1,
-              }}
-            >
-              +
-            </button>
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            {spaces.map((space) => {
-              const isOpen = openSpaces.has(space.id);
-              const isActive = selectedSpaceId === space.id;
-              const spaceProjects = projects.filter((p) => p.spaceId === space.id);
-
-              return (
-                <div
-                  key={space.id}
-                  onDragOver={(e) => handleSpaceDragOver(e, space.id)}
-                  onDragLeave={handleSpaceDragLeave}
-                  onDrop={(e) => handleSpaceDrop(e, space.id)}
+          {isMobile ? (
+            <CollapsibleSection title="Espaces">
+              {spacesContent()}
+            </CollapsibleSection>
+          ) : (
+            <>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <Lbl>Espaces</Lbl>
+                <button
+                  style={{
+                    width: 20,
+                    height: 20,
+                    borderRadius: 6,
+                    border: "none",
+                    background: BG,
+                    boxShadow: raisedSm,
+                    cursor: "pointer",
+                    fontSize: 13,
+                    fontWeight: 700,
+                    color: C.orange,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    lineHeight: 1,
+                  }}
                 >
-                  <button
-                    onClick={() => {
-                      goSpace(space.id);
-                      toggleSpace(space.id);
-                    }}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 7,
-                      width: "100%",
-                      padding: "5px 10px",
-                      borderRadius: 7,
-                      border: dropTargetSpaceId === space.id ? "2px dashed #7A4518" : "none",
-                      cursor: "pointer",
-                      background: dropTargetSpaceId === space.id ? "rgba(122,69,24,0.08)" : BG,
-                      boxShadow: isActive ? insetSm : "none",
-                      color: isActive ? C.green : C.text,
-                      fontFamily: "'DM Sans', sans-serif",
-                      fontSize: 10,
-                      fontWeight: isActive ? 700 : 500,
-                      transition: "all 0.2s ease",
-                    }}
-                  >
-                    <div style={{ width: 7, height: 7, borderRadius: "50%", background: (space as any).color ?? C.orange, flexShrink: 0 }} />
-                    <span style={{ fontSize: 10, color: isActive ? C.green : C.text, fontWeight: isActive ? 700 : 500, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {space.name}
-                    </span>
-                    {spaceProjects.length > 0 && (
-                      <span style={{ fontSize: 8, color: C.muted }}>{isOpen ? "▴" : "▾"}</span>
-                    )}
-                  </button>
-
-                  {isOpen && spaceProjects.length > 0 && (
-                    <div style={{ marginLeft: 18, marginTop: 3, display: "flex", flexDirection: "column", gap: 2 }}>
-                      {spaceProjects.map((proj) => {
-                        const isProjActive = selectedProjectId === proj.id;
-                        return (
-                          <button
-                            key={proj.id}
-                            draggable
-                            onDragStart={(e) => handleProjectDragStart(e, proj.id)}
-                            onDragEnd={handleProjectDragEnd}
-                            onDragOver={(e) => handleProjectDropOver(e, proj.id)}
-                            onDragLeave={handleProjectDropLeave}
-                            onDrop={(e) => handleProjectDrop(e, proj.id)}
-                            onClick={() => goProject(proj.id)}
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 6,
-                              width: "100%",
-                              padding: "5px 8px",
-                              borderRadius: 8,
-                              border: dropTargetProjectId === proj.id ? "2px dashed #7A4518" : "none",
-                              cursor: draggedProjectId === proj.id ? "grabbing" : "grab",
-                              background: dropTargetProjectId === proj.id ? "rgba(122,69,24,0.08)" : BG,
-                              opacity: draggedProjectId === proj.id ? 0.5 : 1,
-                              boxShadow: isProjActive ? insetSm : "none",
-                              color: isProjActive ? C.orange : C.muted,
-                              fontFamily: "'DM Sans', sans-serif",
-                              fontSize: 12,
-                              fontWeight: isProjActive ? 600 : 400,
-                              transition: "all 0.15s ease",
-                            }}
-                          >
-                            <span
-                              style={{
-                                width: 8,
-                                height: 8,
-                                borderRadius: 3,
-                                background: proj.color,
-                                display: "inline-block",
-                                flexShrink: 0,
-                              }}
-                            />
-                            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                              {proj.name}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+                  +
+                </button>
+              </div>
+              {spacesContent()}
+            </>
+          )}
 
           {/* Archives */}
           {archiveCount > 0 && (
@@ -929,6 +897,71 @@ export default function SidebarNM() {
               </NavBtn>
             </div>
           )}
+
+          {/* ── MEMBRES (mobile only) ── */}
+          {isMobile && (
+            <div style={{ marginTop: 10 }}>
+              <CollapsibleSection title="Équipe">
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  {teamMembers.map((tm) => {
+                    const online = isOnline(tm.id);
+                    const tmInitials = tm.name?.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase() ?? "?";
+                    return (
+                      <div
+                        key={tm.id}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                          padding: "5px 10px",
+                          borderRadius: 8,
+                          background: BG,
+                          boxShadow: raisedSm,
+                        }}
+                      >
+                        <div style={{ position: "relative", flexShrink: 0 }}>
+                          {tm.avatarUrl ? (
+                            <img src={tm.avatarUrl} alt={tm.name} style={{ width: 26, height: 26, borderRadius: "50%", objectFit: "cover" }} />
+                          ) : (
+                            <div style={{
+                              width: 26,
+                              height: 26,
+                              borderRadius: "50%",
+                              background: tm.avatarColor,
+                              color: "white",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: 9,
+                              fontWeight: 700,
+                            }}>
+                              {tmInitials}
+                            </div>
+                          )}
+                          <div style={{
+                            position: "absolute",
+                            bottom: -1,
+                            right: -1,
+                            width: 9,
+                            height: 9,
+                            borderRadius: "50%",
+                            background: online ? "#22c55e" : "#9ca3af",
+                            border: `2px solid ${BG}`,
+                          }} />
+                        </div>
+                        <div style={{ minWidth: 0, flex: 1 }}>
+                          <div style={{ fontSize: 11, fontWeight: 600, color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            {tm.name}
+                          </div>
+                          <div style={{ fontSize: 9, color: C.muted }}>{tm.role}</div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CollapsibleSection>
+            </div>
+          )}
         </div>
 
         {/* ── BAS ── */}
@@ -941,155 +974,283 @@ export default function SidebarNM() {
             gap: 10,
             flexShrink: 0,
             overflowY: "auto",
-            maxHeight: "45vh",
+            maxHeight: isMobile ? "40vh" : "45vh",
           }}
         >
-          {/* Thème clair/sombre */}
-          <div>
-            <div
-              style={{
-                display: "flex",
-                gap: 4,
-                padding: 3,
-                borderRadius: 8,
-                background: BG,
-                boxShadow: inset,
-              }}
-            >
-              {[
-                { value: "light", label: "☀ Clair" },
-                { value: "dark", label: "☽ Sombre" },
-                { value: "mixed", label: "⊙ Mixte" },
-              ].map(({ value, label }) => (
-                <button
-                  key={value}
-                  onClick={() => setTheme(value as "light" | "dark" | "mixed")}
+          {/* Apparence section - collapsible on mobile, always visible on desktop */}
+          {isMobile ? (
+            <CollapsibleSection title="Apparence">
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {/* Thème clair/sombre */}
+                <div
                   style={{
-                    flex: 1,
-                    background: theme === value ? BG : "transparent",
-                    border: "none",
-                    borderRadius: 6,
-                    boxShadow: theme === value ? raised : "none",
-                    color: theme === value ? C.orange : C.text,
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontSize: 9,
-                    fontWeight: theme === value ? 700 : 500,
-                    padding: "4px 0",
-                    cursor: "pointer",
+                    display: "flex",
+                    gap: 4,
+                    padding: 3,
+                    borderRadius: 8,
+                    background: BG,
+                    boxShadow: inset,
                   }}
                 >
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* ── Palette picker ── */}
-          <div>
-            <Lbl>Palette</Lbl>
-            <div
-              style={{
-                padding: 8,
-                borderRadius: 10,
-                background: BG,
-                boxShadow: inset,
-                maxHeight: 200,
-                overflowY: "auto",
-              }}
-            >
-              {([
-                { label: "Classiques", keys: ["clubroom", "neutrals", "sapphire", "cinematic", "teal", "ivoireChaud"] as ThemePalette[] },
-                { label: "Bento", keys: ["bento2026", "bentoOcean", "bentoRose", "bentoAmber"] as ThemePalette[] },
-                { label: "Liquid Glass", keys: ["liquidGlass", "liquidGlassOcean", "liquidGlassAurora", "liquidGlassRose", "liquidGlassAmber", "liquidGlassViolet", "liquidGlassCoral", "liquidGlassSlate", "liquidGlassMidnight"] as ThemePalette[] },
-                { label: "Soft UI", keys: ["nmCloud", "nmMidnight", "nmSand", "nmForest", "nmLavender", "nmDeepForest"] as ThemePalette[] },
-              ]).map((group) => (
-                <div key={group.label} style={{ marginBottom: 6 }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: C.text, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3, paddingLeft: 2, opacity: 0.55 }}>
-                    {group.label}
-                  </div>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 2 }}>
-                    {group.keys.map((key) => {
-                      const meta = PALETTE_META[key];
-                      const active = palette === key;
-                      return (
-                        <button
-                          key={key}
-                          title={meta.label}
-                          onClick={() => setPalette(key)}
-                          style={{
-                            display: "flex",
-                            gap: 2,
-                            padding: 3,
-                            borderRadius: 8,
-                            border: active ? `2px solid ${C.orange}` : "2px solid transparent",
-                            background: BG,
-                            boxShadow: active ? raised : raisedSm,
-                            cursor: "pointer",
-                            transition: "box-shadow 0.18s, border-color 0.18s",
-                          }}
-                        >
-                          {meta.colors.slice(0, 2).map((c, i) => (
-                            <span
-                              key={i}
-                              style={{
-                                width: 10,
-                                height: 10,
-                                borderRadius: "50%",
-                                background: c,
-                                display: "block",
-                              }}
-                            />
-                          ))}
-                        </button>
-                      );
-                    })}
-                  </div>
+                  {[
+                    { value: "light", label: "☀ Clair" },
+                    { value: "dark", label: "☽ Sombre" },
+                    { value: "mixed", label: "⊙ Mixte" },
+                  ].map(({ value, label }) => (
+                    <button
+                      key={value}
+                      onClick={() => setTheme(value as "light" | "dark" | "mixed")}
+                      style={{
+                        flex: 1,
+                        background: theme === value ? BG : "transparent",
+                        border: "none",
+                        borderRadius: 6,
+                        boxShadow: theme === value ? raised : "none",
+                        color: theme === value ? C.orange : C.text,
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontSize: 9,
+                        fontWeight: theme === value ? 700 : 500,
+                        padding: "4px 0",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {label}
+                    </button>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
 
-          {/* Switch Classic / Ivoire */}
-          <div>
-            <div
-              style={{
-                display: "flex",
-                gap: 4,
-                padding: 3,
-                borderRadius: 8,
-                background: BG,
-                boxShadow: inset,
-              }}
-            >
-              {[
-                { value: "classic", label: "⊞ Classic" },
-                { value: "neumorphic", label: "✦ Ivoire" },
-              ].map(({ value, label }) => (
-                <button
-                  key={value}
-                  onClick={() => setDesignMode(value as "classic" | "neumorphic")}
+                {/* Palette picker */}
+                <div
                   style={{
-                    flex: 1,
-                    background: designMode === value ? BG : "transparent",
-                    border: "none",
-                    borderRadius: 6,
-                    boxShadow: designMode === value ? raised : "none",
-                    color: designMode === value ? C.orange : C.text,
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontSize: 9,
-                    fontWeight: designMode === value ? 700 : 500,
-                    padding: "4px 0",
-                    cursor: "pointer",
+                    padding: 8,
+                    borderRadius: 10,
+                    background: BG,
+                    boxShadow: inset,
+                    maxHeight: 160,
+                    overflowY: "auto",
                   }}
                 >
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
+                  {([
+                    { label: "Classiques", keys: ["clubroom", "neutrals", "sapphire", "cinematic", "teal", "ivoireChaud"] as ThemePalette[] },
+                    { label: "Bento", keys: ["bento2026", "bentoOcean", "bentoRose", "bentoAmber"] as ThemePalette[] },
+                    { label: "Liquid Glass", keys: ["liquidGlass", "liquidGlassOcean", "liquidGlassAurora", "liquidGlassRose", "liquidGlassAmber", "liquidGlassViolet", "liquidGlassCoral", "liquidGlassSlate", "liquidGlassMidnight"] as ThemePalette[] },
+                    { label: "Soft UI", keys: ["nmCloud", "nmMidnight", "nmSand", "nmForest", "nmLavender", "nmDeepForest"] as ThemePalette[] },
+                  ]).map((group) => (
+                    <div key={group.label} style={{ marginBottom: 6 }}>
+                      <div style={{ fontSize: 10, fontWeight: 700, color: C.text, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3, paddingLeft: 2, opacity: 0.55 }}>
+                        {group.label}
+                      </div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 2 }}>
+                        {group.keys.map((key) => {
+                          const meta = PALETTE_META[key];
+                          const active = palette === key;
+                          return (
+                            <button
+                              key={key}
+                              title={meta.label}
+                              onClick={() => setPalette(key)}
+                              style={{
+                                display: "flex",
+                                gap: 2,
+                                padding: 3,
+                                borderRadius: 8,
+                                border: active ? `2px solid ${C.orange}` : "2px solid transparent",
+                                background: BG,
+                                boxShadow: active ? raised : raisedSm,
+                                cursor: "pointer",
+                                transition: "box-shadow 0.18s, border-color 0.18s",
+                              }}
+                            >
+                              {meta.colors.slice(0, 2).map((c, i) => (
+                                <span key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: c, display: "block" }} />
+                              ))}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
 
-          {/* Profil */}
-          {member && (
+                {/* Switch Classic / Ivoire */}
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 4,
+                    padding: 3,
+                    borderRadius: 8,
+                    background: BG,
+                    boxShadow: inset,
+                  }}
+                >
+                  {[
+                    { value: "classic", label: "⊞ Classic" },
+                    { value: "neumorphic", label: "✦ Ivoire" },
+                  ].map(({ value, label }) => (
+                    <button
+                      key={value}
+                      onClick={() => setDesignMode(value as "classic" | "neumorphic")}
+                      style={{
+                        flex: 1,
+                        background: designMode === value ? BG : "transparent",
+                        border: "none",
+                        borderRadius: 6,
+                        boxShadow: designMode === value ? raised : "none",
+                        color: designMode === value ? C.orange : C.text,
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontSize: 9,
+                        fontWeight: designMode === value ? 700 : 500,
+                        padding: "4px 0",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </CollapsibleSection>
+          ) : (
+            <>
+              {/* Thème clair/sombre */}
+              <div>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 4,
+                    padding: 3,
+                    borderRadius: 8,
+                    background: BG,
+                    boxShadow: inset,
+                  }}
+                >
+                  {[
+                    { value: "light", label: "☀ Clair" },
+                    { value: "dark", label: "☽ Sombre" },
+                    { value: "mixed", label: "⊙ Mixte" },
+                  ].map(({ value, label }) => (
+                    <button
+                      key={value}
+                      onClick={() => setTheme(value as "light" | "dark" | "mixed")}
+                      style={{
+                        flex: 1,
+                        background: theme === value ? BG : "transparent",
+                        border: "none",
+                        borderRadius: 6,
+                        boxShadow: theme === value ? raised : "none",
+                        color: theme === value ? C.orange : C.text,
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontSize: 9,
+                        fontWeight: theme === value ? 700 : 500,
+                        padding: "4px 0",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Palette picker */}
+              <div>
+                <Lbl>Palette</Lbl>
+                <div
+                  style={{
+                    padding: 8,
+                    borderRadius: 10,
+                    background: BG,
+                    boxShadow: inset,
+                    maxHeight: 200,
+                    overflowY: "auto",
+                  }}
+                >
+                  {([
+                    { label: "Classiques", keys: ["clubroom", "neutrals", "sapphire", "cinematic", "teal", "ivoireChaud"] as ThemePalette[] },
+                    { label: "Bento", keys: ["bento2026", "bentoOcean", "bentoRose", "bentoAmber"] as ThemePalette[] },
+                    { label: "Liquid Glass", keys: ["liquidGlass", "liquidGlassOcean", "liquidGlassAurora", "liquidGlassRose", "liquidGlassAmber", "liquidGlassViolet", "liquidGlassCoral", "liquidGlassSlate", "liquidGlassMidnight"] as ThemePalette[] },
+                    { label: "Soft UI", keys: ["nmCloud", "nmMidnight", "nmSand", "nmForest", "nmLavender", "nmDeepForest"] as ThemePalette[] },
+                  ]).map((group) => (
+                    <div key={group.label} style={{ marginBottom: 6 }}>
+                      <div style={{ fontSize: 10, fontWeight: 700, color: C.text, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3, paddingLeft: 2, opacity: 0.55 }}>
+                        {group.label}
+                      </div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 2 }}>
+                        {group.keys.map((key) => {
+                          const meta = PALETTE_META[key];
+                          const active = palette === key;
+                          return (
+                            <button
+                              key={key}
+                              title={meta.label}
+                              onClick={() => setPalette(key)}
+                              style={{
+                                display: "flex",
+                                gap: 2,
+                                padding: 3,
+                                borderRadius: 8,
+                                border: active ? `2px solid ${C.orange}` : "2px solid transparent",
+                                background: BG,
+                                boxShadow: active ? raised : raisedSm,
+                                cursor: "pointer",
+                                transition: "box-shadow 0.18s, border-color 0.18s",
+                              }}
+                            >
+                              {meta.colors.slice(0, 2).map((c, i) => (
+                                <span key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: c, display: "block" }} />
+                              ))}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Switch Classic / Ivoire */}
+              <div>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 4,
+                    padding: 3,
+                    borderRadius: 8,
+                    background: BG,
+                    boxShadow: inset,
+                  }}
+                >
+                  {[
+                    { value: "classic", label: "⊞ Classic" },
+                    { value: "neumorphic", label: "✦ Ivoire" },
+                  ].map(({ value, label }) => (
+                    <button
+                      key={value}
+                      onClick={() => setDesignMode(value as "classic" | "neumorphic")}
+                      style={{
+                        flex: 1,
+                        background: designMode === value ? BG : "transparent",
+                        border: "none",
+                        borderRadius: 6,
+                        boxShadow: designMode === value ? raised : "none",
+                        color: designMode === value ? C.orange : C.text,
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontSize: 9,
+                        fontWeight: designMode === value ? 700 : 500,
+                        padding: "4px 0",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Profil - desktop only (members list replaces this on mobile) */}
+          {!isMobile && member && (
             <div
               style={{
                 display: "flex",
@@ -1150,7 +1311,7 @@ export default function SidebarNM() {
             </div>
           )}
 
-          {/* Actions */}
+          {/* Actions - always visible */}
           <div style={{ display: "flex", gap: 6 }}>
             {[
               {
@@ -1245,4 +1406,112 @@ export default function SidebarNM() {
       `}</style>
     </>
   );
+
+  /* ─── Spaces content extracted for reuse ─── */
+  function spacesContent() {
+    return (
+      <>
+        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          {spaces.map((space) => {
+            const isOpen = openSpaces.has(space.id);
+            const isActive = selectedSpaceId === space.id;
+            const spaceProjects = projects.filter((p) => p.spaceId === space.id);
+
+            return (
+              <div
+                key={space.id}
+                onDragOver={(e) => handleSpaceDragOver(e, space.id)}
+                onDragLeave={handleSpaceDragLeave}
+                onDrop={(e) => handleSpaceDrop(e, space.id)}
+              >
+                <button
+                  onClick={() => {
+                    goSpace(space.id);
+                    toggleSpace(space.id);
+                  }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 7,
+                    width: "100%",
+                    padding: "5px 10px",
+                    borderRadius: 7,
+                    border: dropTargetSpaceId === space.id ? "2px dashed #7A4518" : "none",
+                    cursor: "pointer",
+                    background: dropTargetSpaceId === space.id ? "rgba(122,69,24,0.08)" : BG,
+                    boxShadow: isActive ? insetSm : "none",
+                    color: isActive ? C.green : C.text,
+                    fontFamily: "'DM Sans', sans-serif",
+                    fontSize: 10,
+                    fontWeight: isActive ? 700 : 500,
+                    transition: "all 0.2s ease",
+                  }}
+                >
+                  <div style={{ width: 7, height: 7, borderRadius: "50%", background: (space as any).color ?? C.orange, flexShrink: 0 }} />
+                  <span style={{ fontSize: 10, color: isActive ? C.green : C.text, fontWeight: isActive ? 700 : 500, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {space.name}
+                  </span>
+                  {spaceProjects.length > 0 && (
+                    <span style={{ fontSize: 8, color: C.muted }}>{isOpen ? "▴" : "▾"}</span>
+                  )}
+                </button>
+
+                {isOpen && spaceProjects.length > 0 && (
+                  <div style={{ marginLeft: 18, marginTop: 3, display: "flex", flexDirection: "column", gap: 2 }}>
+                    {spaceProjects.map((proj) => {
+                      const isProjActive = selectedProjectId === proj.id;
+                      return (
+                        <button
+                          key={proj.id}
+                          draggable
+                          onDragStart={(e) => handleProjectDragStart(e, proj.id)}
+                          onDragEnd={handleProjectDragEnd}
+                          onDragOver={(e) => handleProjectDropOver(e, proj.id)}
+                          onDragLeave={handleProjectDropLeave}
+                          onDrop={(e) => handleProjectDrop(e, proj.id)}
+                          onClick={() => goProject(proj.id)}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 6,
+                            width: "100%",
+                            padding: "5px 8px",
+                            borderRadius: 8,
+                            border: dropTargetProjectId === proj.id ? "2px dashed #7A4518" : "none",
+                            cursor: draggedProjectId === proj.id ? "grabbing" : "grab",
+                            background: dropTargetProjectId === proj.id ? "rgba(122,69,24,0.08)" : BG,
+                            opacity: draggedProjectId === proj.id ? 0.5 : 1,
+                            boxShadow: isProjActive ? insetSm : "none",
+                            color: isProjActive ? C.orange : C.muted,
+                            fontFamily: "'DM Sans', sans-serif",
+                            fontSize: 12,
+                            fontWeight: isProjActive ? 600 : 400,
+                            transition: "all 0.15s ease",
+                          }}
+                        >
+                          <span
+                            style={{
+                              width: 8,
+                              height: 8,
+                              borderRadius: 3,
+                              background: proj.color,
+                              display: "inline-block",
+                              flexShrink: 0,
+                            }}
+                          />
+                          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            {proj.name}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </>
+    );
+  }
 }

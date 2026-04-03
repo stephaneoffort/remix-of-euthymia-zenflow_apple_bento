@@ -19,7 +19,7 @@ interface Props {
 
 interface TileConfig {
   key: string;
-  integration: string;
+  integration: IntegrationKey;
   label: string;
   icon: string;
 }

@@ -435,6 +435,22 @@ export default function TaskDetailPanel() {
               className={`font-bold text-foreground bg-transparent w-full outline-none border-none ${expanded ? 'text-xl sm:text-2xl' : 'text-base sm:text-lg'}`}
             />
 
+            {/* Progress bar */}
+            {subtasks.length > 0 && (
+              <div className="flex items-center gap-2">
+                <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-300"
+                    style={{
+                      width: `${Math.round((doneSubtasks.length / subtasks.length) * 100)}%`,
+                      backgroundColor: doneSubtasks.length === subtasks.length ? '#2A5828' : '#5A8A58',
+                    }}
+                  />
+                </div>
+                <span className="text-xs text-foreground/60 tabular-nums">{doneSubtasks.length}/{subtasks.length}</span>
+              </div>
+            )}
+
             {/* Meta fields */}
             <div className="grid grid-cols-2 gap-2 sm:gap-3">
               <div>

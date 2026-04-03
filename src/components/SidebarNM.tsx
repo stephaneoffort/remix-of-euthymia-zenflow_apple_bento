@@ -196,7 +196,7 @@ export default function SidebarNM() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const { totalUnread } = useChatNotifications();
-
+  const { isOnline } = usePresence();
   const [openSpaces, setOpenSpaces] = useState<Set<string>>(new Set());
   const [draggedProjectId, setDraggedProjectId] = useState<string | null>(null);
   const [dropTargetSpaceId, setDropTargetSpaceId] = useState<string | null>(null);

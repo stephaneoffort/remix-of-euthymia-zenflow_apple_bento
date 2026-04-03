@@ -25,6 +25,31 @@ const C = {
   green: "#2A5828",
   border: "rgba(140,118,88,0.12)",
 };
+
+/* ─── Dynamic NM palette tokens (read CSS vars at render) ─── */
+function useNMColors() {
+  const { palette } = useThemeMode();
+  const isNmPalette = palette.startsWith("nm");
+  if (!isNmPalette) return C;
+  const root = getComputedStyle(document.documentElement);
+  const h = root.getPropertyValue("--nm-accent-h").trim();
+  const s = root.getPropertyValue("--nm-accent-s").trim();
+  const l = root.getPropertyValue("--nm-accent-l").trim();
+  if (!h) return C;
+  const accent = `hsl(${h}, ${s}, ${l})`;
+  const fg = root.getPropertyValue("--foreground").trim();
+  const fgColor = fg ? `hsl(${fg})` : C.text;
+  const mutedFg = root.getPropertyValue("--muted-foreground").trim();
+  const mutedColor = mutedFg ? `hsl(${mutedFg})` : C.muted;
+  return {
+    text: fgColor,
+    muted: mutedColor,
+    light: mutedColor,
+    orange: accent,
+    green: C.green,
+    border: C.border,
+  };
+}
 const SPACE_DOT_PALETTE = [C.orange, C.green, "#4A6FA5", "#8B5E3C", "#6B4C8A", "#2A7A6E"];
 function spaceDotColor(icon: string): string {
   let h = 0;

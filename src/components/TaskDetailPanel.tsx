@@ -303,19 +303,7 @@ export default function TaskDetailPanel() {
     >
       {/* Header */}
       <div className="flex items-center justify-between px-3 sm:px-5 py-3 sm:py-4 border-b border-border">
-        <div className="flex items-center gap-1.5 text-xs text-foreground/60 min-w-0 overflow-x-auto">
-          {breadcrumb.map((t, i) => (
-            <React.Fragment key={t.id}>
-              {i > 0 && <ChevronRight className="w-3 h-3 shrink-0" />}
-              <button
-                onClick={() => setSelectedTaskId(t.id)}
-                className={`truncate hover:text-foreground transition-colors whitespace-nowrap ${t.id === task.id ? 'text-foreground font-medium' : ''}`}
-              >
-                {t.title}
-              </button>
-            </React.Fragment>
-          ))}
-        </div>
+        <div className="flex items-center gap-1.5 text-xs text-foreground/60 min-w-0 overflow-x-auto" />
         <div className="flex items-center gap-1 shrink-0 ml-2">
           {/* Share */}
           <button

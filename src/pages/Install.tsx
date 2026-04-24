@@ -70,7 +70,7 @@ export default function Install() {
       <div className="max-w-2xl mx-auto space-y-8">
         <div className="text-center space-y-3">
           <img src="/pwa-192x192.png" alt="Euthymia" className="w-20 h-20 mx-auto rounded-2xl" />
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Installer Euthymia</h1>
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground">Installer Euthymia</h1>
           <p className="text-muted-foreground max-w-md mx-auto">
             Installez l'application sur votre appareil pour y accéder rapidement. Les mises à jour sont automatiques.
           </p>

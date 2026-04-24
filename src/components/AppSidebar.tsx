@@ -670,7 +670,7 @@ export default function AppSidebar() {
           <div className="flex items-center gap-2.5">
             <img src={logoEuthymia} alt="Euthymia" className="w-8 h-8 rounded-full object-cover" />
             <div>
-              <h1 className="text-sidebar-fg-bright font-bold text-lg leading-tight">Euthymia</h1>
+              <h1 className="font-display text-sidebar-fg-bright font-bold text-lg leading-tight">Euthymia</h1>
               <p className="text-sidebar-fg text-xs">Gestion de projets</p>
             </div>
           </div>

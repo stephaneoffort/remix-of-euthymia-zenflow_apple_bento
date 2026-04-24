@@ -1555,6 +1555,10 @@ function NMAttachmentsDebugPanel({
   isMobile: boolean;
 }) {
   const [tab, setTab] = useState<"drive" | "canva">(showDrive ? "drive" : "canva");
+  const [view, setView] = useState<"cards" | "table">("table");
+  const [typeFilter, setTypeFilter] = useState<"all" | "project" | "task" | "subtask">("all");
+  const [projectFilter, setProjectFilter] = useState<string>("all");
+  const [search, setSearch] = useState("");
   const total = tab === "drive" ? driveTotal : canvaTotal;
   const byProject = tab === "drive" ? driveByProject : canvaByProject;
   const breakdown = tab === "drive" ? driveDebug : canvaDebug;

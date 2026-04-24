@@ -165,7 +165,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setTimeout(() => root.classList.remove("design-transitioning"), 600);
   };
   const [palette, setPaletteState] = useState<ThemePalette>(() => {
-    return (localStorage.getItem("euthymia-palette") as ThemePalette) || "sapphire";
+    const stored = localStorage.getItem("euthymia-palette");
+    // Migrate away from removed Liquid Glass palettes
+    if (stored && stored.startsWith("liquidGlass")) return "sapphire";
+    return (stored as ThemePalette) || "sapphire";
   });
   const [typeVariant, setTypeVariantState] = useState<TypeVariant>(() => {
     return (localStorage.getItem("euthymia-type") as TypeVariant) || "default";

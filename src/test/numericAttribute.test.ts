@@ -228,15 +228,16 @@ function findPrevTag(masked: string, from: number): { start: number; end: number
  * starting at `offset`. Skips over balanced sibling pairs `<X>...</X>`
  * and self-closing siblings `<X />`.
  *
- * Requires that `offset` sits immediately after a `>` (with optional
- * whitespace), otherwise the segment isn't actually inside JSX.
+ * If `validate` is true, also requires that `offset` sits immediately
+ * after a `>` (with optional whitespace) — i.e. the segment really is
+ * JSX text, not e.g. text inside a JS expression.
  */
-function findEnclosingOpenTag(masked: string, offset: number): { tag: string; start: number } | null {
-  // Validate the segment really is JSX text: char before (after skipping
-  // whitespace) must be `>`.
-  let probe = offset - 1;
-  while (probe >= 0 && /\s/.test(masked[probe])) probe--;
-  if (probe < 0 || masked[probe] !== ">") return null;
+function findEnclosingOpenTag(masked: string, offset: number, validate = false): { tag: string; start: number } | null {
+  if (validate) {
+    let probe = offset - 1;
+    while (probe >= 0 && /\s/.test(masked[probe])) probe--;
+    if (probe < 0 || masked[probe] !== ">") return null;
+  }
 
   let cur = offset;
   let pendingClosers = 0;

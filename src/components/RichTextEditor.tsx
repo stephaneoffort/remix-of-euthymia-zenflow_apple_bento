@@ -524,6 +524,31 @@ export default function RichTextEditor({
             <span className="relative inline-flex rounded-full h-2 w-2 bg-priority-urgent" />
           </span>
           <span className="font-medium shrink-0">Dictée en cours…</span>
+
+          {/* Visualiseur de niveau sonore — 5 barres réactives */}
+          <div
+            className="flex items-end gap-0.5 h-4 shrink-0"
+            aria-label={`Niveau sonore : ${Math.round(audioLevel * 100)}%`}
+            title={audioLevel < 0.05 ? 'Aucun son détecté — parlez plus fort' : 'Son détecté'}
+          >
+            {[0.15, 0.35, 0.55, 0.75, 0.9].map((threshold, i) => {
+              const active = audioLevel >= threshold;
+              const heights = ['h-1.5', 'h-2', 'h-2.5', 'h-3', 'h-4'];
+              return (
+                <span
+                  key={i}
+                  className={`w-1 rounded-sm transition-all duration-75 ${heights[i]} ${
+                    active ? 'bg-priority-urgent' : 'bg-priority-urgent/20'
+                  }`}
+                  style={{
+                    transform: active ? `scaleY(${0.6 + audioLevel * 0.6})` : 'scaleY(0.6)',
+                    transformOrigin: 'bottom',
+                  }}
+                />
+              );
+            })}
+          </div>
+
           {interimTranscript && (
             <span className="italic text-muted-foreground truncate">« {interimTranscript} »</span>
           )}

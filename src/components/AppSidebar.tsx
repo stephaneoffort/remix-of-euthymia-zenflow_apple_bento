@@ -768,18 +768,72 @@ export default function AppSidebar() {
                   )}
                 </button>
               ))}
+            </>
+          )}
+        </div>
 
+        {/* Messages section - collapsible */}
+        <div className="px-3 py-3 border-b border-sidebar-border-color">
+          <button
+            onClick={() => setMessagesExpanded((prev) => !prev)}
+            className="w-full flex items-center justify-between px-2 mb-2"
+          >
+            <p className="text-xs font-semibold text-sidebar-fg uppercase tracking-wider">Messages</p>
+            <div className="flex items-center gap-1.5">
+              {(chatUnreadCount + mentionsCount + emailUnreadCount) > 0 && !messagesExpanded && (
+                <span data-numeric className="font-numeric tabular-nums text-[10px] bg-primary text-primary-foreground rounded-full px-1.5 py-0.5">
+                  {chatUnreadCount + mentionsCount + emailUnreadCount}
+                </span>
+              )}
+              <ChevronDown
+                className={`w-3.5 h-3.5 text-sidebar-fg transition-transform ${messagesExpanded ? "" : "-rotate-90"}`}
+              />
+            </div>
+          </button>
+          {messagesExpanded && (
+            <>
+              <button
+                onClick={() => { navigate('/chat'); handleNavClick(); }}
+                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors text-sidebar-fg hover:bg-sidebar-hover"
+              >
+                <MessagesSquare className="w-4 h-4" />
+                Chat d'équipe
+                {chatUnreadCount > 0 && (
+                  <span data-numeric className="font-numeric tabular-nums ml-auto text-xs bg-primary text-primary-foreground rounded-full px-1.5 py-0.5">
+                    {chatUnreadCount}
+                  </span>
+                )}
+              </button>
               <button
                 onClick={() => { setMessagesHubOpen(true); handleNavClick(); }}
                 className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors text-sidebar-fg hover:bg-sidebar-hover"
               >
-                <MessageSquare className="w-4 h-4" />
-                Messages
-                {(chatUnreadCount + emailUnreadCount) > 0 && (
+                <AtSign className="w-4 h-4" />
+                Mes mentions
+                {mentionsCount > 0 && (
                   <span data-numeric className="font-numeric tabular-nums ml-auto text-xs bg-primary text-primary-foreground rounded-full px-1.5 py-0.5">
-                    {chatUnreadCount + emailUnreadCount}
+                    {mentionsCount}
                   </span>
                 )}
+              </button>
+              <button
+                onClick={() => { setMessagesHubOpen(true); handleNavClick(); }}
+                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors text-sidebar-fg hover:bg-sidebar-hover"
+              >
+                <Mail className="w-4 h-4" />
+                Email
+                {emailUnreadCount > 0 && (
+                  <span data-numeric className="font-numeric tabular-nums ml-auto text-xs bg-primary text-primary-foreground rounded-full px-1.5 py-0.5">
+                    {emailUnreadCount}
+                  </span>
+                )}
+              </button>
+              <button
+                onClick={() => { setMessagesHubOpen(true); handleNavClick(); }}
+                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-xs transition-colors text-sidebar-fg/70 hover:bg-sidebar-hover hover:text-sidebar-fg mt-1"
+              >
+                <MessageSquare className="w-3.5 h-3.5" />
+                Hub messages
               </button>
             </>
           )}

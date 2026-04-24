@@ -836,8 +836,14 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
     const aggregateByProject = (
       rows: Array<{ entity_id: string; entity_type: string }>,
       taskToProject: Record<string, string>
-    ): Record<string, number> => {
+    ): {
+      counts: Record<string, number>;
+      breakdown: ProjectAttachmentBreakdown;
+      orphans: AttachmentDebugRow[];
+    } => {
       const counts: Record<string, number> = {};
+      const breakdown: ProjectAttachmentBreakdown = {};
+      const orphans: AttachmentDebugRow[] = [];
       rows.forEach((r) => {
         let projectId: string | undefined;
         if (r.entity_type === "project") {
@@ -845,9 +851,14 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
         } else if (r.entity_type === "task" || r.entity_type === "subtask") {
           projectId = taskToProject[r.entity_id];
         }
-        if (projectId) counts[projectId] = (counts[projectId] || 0) + 1;
+        if (projectId) {
+          counts[projectId] = (counts[projectId] || 0) + 1;
+          (breakdown[projectId] ||= []).push({ entity_id: r.entity_id, entity_type: r.entity_type });
+        } else {
+          orphans.push({ entity_id: r.entity_id, entity_type: r.entity_type });
+        }
       });
-      return counts;
+      return { counts, breakdown, orphans };
     };
 
     const needTaskMap = isActive("google_drive") || isActive("canva");
@@ -864,7 +875,10 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
         .from("drive_attachments")
         .select("entity_id, entity_type")
         .eq("user_id", user.id);
-      setDriveByProject(aggregateByProject(rows ?? [], taskToProject));
+      const agg = aggregateByProject(rows ?? [], taskToProject);
+      setDriveByProject(agg.counts);
+      setDriveDebug(agg.breakdown);
+      setDriveOrphans(agg.orphans);
     }
 
     if (isActive("canva")) {
@@ -878,7 +892,10 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
         .from("canva_attachments")
         .select("entity_id, entity_type")
         .eq("user_id", user.id);
-      setCanvaByProject(aggregateByProject(rows ?? [], taskToProject));
+      const agg = aggregateByProject(rows ?? [], taskToProject);
+      setCanvaByProject(agg.counts);
+      setCanvaDebug(agg.breakdown);
+      setCanvaOrphans(agg.orphans);
     }
 
     if (isActive("brevo")) {

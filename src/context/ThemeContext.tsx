@@ -113,51 +113,6 @@ export const PALETTE_META: Record<ThemePalette, { label: string; description: st
     description: "Ambre chaud + Charbon — Chaleur minérale 2026",
     colors: ["#2e2a26", "#d4a04a", "#f5efe5", "#ede6da"],
   },
-  liquidGlass: {
-    label: "Liquid Glass",
-    description: "Apple iOS 26 — Verre translucide + fond vivant",
-    colors: ["#6366f1", "#a78bfa", "#e8f4ff", "#ffffff"],
-  },
-  liquidGlassOcean: {
-    label: "Liquid Glass Ocean",
-    description: "Bleu azur · reflets arctiques",
-    colors: ["#0284c7", "#38bdf8", "#e0f2fe", "#6366f1"],
-  },
-  liquidGlassAurora: {
-    label: "Liquid Glass Aurora",
-    description: "Vert boréal · émeraude nordique",
-    colors: ["#059669", "#34d399", "#d1fae5", "#6366f1"],
-  },
-  liquidGlassRose: {
-    label: "Liquid Glass Rose",
-    description: "Pétale nacré · quartz rose",
-    colors: ["#be185d", "#f472b6", "#ffe4e6", "#fb7185"],
-  },
-  liquidGlassAmber: {
-    label: "Liquid Glass Amber",
-    description: "Or liquide · miel solaire",
-    colors: ["#d97706", "#fbbf24", "#fef9c3", "#f97316"],
-  },
-  liquidGlassViolet: {
-    label: "Liquid Glass Violet",
-    description: "Améthyste · profondeur astrale",
-    colors: ["#7c3aed", "#a78bfa", "#ede9fe", "#8b5cf6"],
-  },
-  liquidGlassCoral: {
-    label: "Liquid Glass Coral",
-    description: "Corail de mer · coucher de soleil",
-    colors: ["#dc2626", "#fb7185", "#ffe4e6", "#f97316"],
-  },
-  liquidGlassSlate: {
-    label: "Liquid Glass Slate",
-    description: "Ardoise polie · brume minérale",
-    colors: ["#475569", "#94a3b8", "#f1f5f9", "#64748b"],
-  },
-  liquidGlassMidnight: {
-    label: "Liquid Glass Midnight",
-    description: "Nuit profonde · indigo sombre",
-    colors: ["#1e1b4b", "#818cf8", "#6366f1", "#0f172a"],
-  },
   nmCloud: {
     label: "Cloud",
     description: "Soft UI · Gris perle · Jour",

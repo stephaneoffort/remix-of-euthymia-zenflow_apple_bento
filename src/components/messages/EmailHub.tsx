@@ -337,7 +337,7 @@ interface NotionMailLayoutProps {
 function NotionMailLayout({
   accounts, selectedAccountId, setSelectedAccountId, account,
   messages, loadingMessages, selectedMessage, onSelectMessage,
-  onSync, syncing, onAddAccount, onCompose, onReply, onDelete, onCloseDetail,
+  onSync, syncing, onAddAccount, onCompose, onReply, onDelete, onMarkRead, onCloseDetail,
 }: NotionMailLayoutProps) {
   const [tab, setTab] = useState<FilterTab>('all');
   const [search, setSearch] = useState('');

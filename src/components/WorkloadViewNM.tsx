@@ -2,6 +2,14 @@ import { useMemo, useState } from "react";
 import { useApp } from "@/context/AppContext";
 import { format, parseISO, differenceInDays } from "date-fns";
 import { fr } from "date-fns/locale";
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RTooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, Legend,
+} from "recharts";
+
+const PRIORITY_FULL_LABELS: Record<string, string> = {
+  urgent: "Urgent", high: "Haute", normal: "Normale", low: "Basse",
+};
 
 /* ─── Tokens ─── */
 const BG = "#EDE6DA";
@@ -64,7 +72,7 @@ export default function WorkloadViewNM() {
     return { total, done, unassigned };
   }, [tasks]);
 
-  /* ── Charge par membre ── */
+  /* ── Charge par membre (avec time tracking) ── */
   const workload = useMemo(() => {
     return teamMembers.map(m => {
       const memberTasks = tasks.filter(t => t.assigneeIds?.includes(m.id));
@@ -76,13 +84,49 @@ export default function WorkloadViewNM() {
         normal: memberTasks.filter(t => t.priority === "normal").length,
         low:    memberTasks.filter(t => t.priority === "low").length,
       };
+      const byStatus = {
+        todo:        memberTasks.filter(t => t.status === "todo").length,
+        in_progress: memberTasks.filter(t => t.status === "in_progress").length,
+        in_review:   memberTasks.filter(t => t.status === "in_review").length,
+        done,
+        blocked:     memberTasks.filter(t => t.status === "blocked").length,
+      };
+      const timeEstimated = memberTasks.reduce((s, t) => s + (t.timeEstimate || 0), 0);
+      const timeLogged    = memberTasks.reduce((s, t) => s + (t.timeLogged    || 0), 0);
       const upcoming = memberTasks
         .filter(t => t.dueDate && t.status !== "done")
         .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime())
         .slice(0, 3);
-      return { ...m, memberTasks, done, completion, byPriority, upcoming, total: memberTasks.length };
+      return { ...m, memberTasks, done, completion, byPriority, byStatus, timeEstimated, timeLogged, upcoming, total: memberTasks.length };
     }).filter(m => m.total > 0).sort((a, b) => b.total - a.total);
   }, [tasks, teamMembers]);
+
+  /* ── Données graphiques ── */
+  const barData = useMemo(() => workload.map(d => ({
+    name: d.name.split(" ")[0],
+    "À faire":  d.byStatus.todo,
+    "En cours": d.byStatus.in_progress,
+    "En revue": d.byStatus.in_review,
+    "Terminé":  d.byStatus.done,
+    "Bloqué":   d.byStatus.blocked,
+  })), [workload]);
+
+  const priorityData = useMemo(() => {
+    const counts: Record<string, number> = {};
+    tasks.forEach(t => { counts[t.priority] = (counts[t.priority] || 0) + 1; });
+    return Object.entries(counts).map(([k, v]) => ({
+      name: PRIORITY_FULL_LABELS[k] || k,
+      value: v,
+      color: PRIORITY_COLORS[k] || C.muted,
+    }));
+  }, [tasks]);
+
+  const formatMinutes = (m: number): string => {
+    if (m < 60) return `${m}min`;
+    const h = Math.floor(m / 60);
+    const r = m % 60;
+    return r > 0 ? `${h}h${r}m` : `${h}h`;
+  };
 
   const daysLabel = (due: string) => {
     const diff = differenceInDays(parseISO(due), new Date());
@@ -151,6 +195,42 @@ export default function WorkloadViewNM() {
             <div style={{ fontSize: 10, color: C.muted, fontWeight: 600, marginTop: 2 }}>{label}</div>
           </div>
         ))}
+      </div>
+
+      {/* ── Graphiques (BarChart par membre + PieChart priorités) ── */}
+      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 14, marginBottom: 20 }}>
+        <div style={{ background: BG, borderRadius: 16, boxShadow: raised, padding: 16 }}>
+          <Lbl>Charge par membre (par statut)</Lbl>
+          <div style={{ height: 240, marginTop: 10 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={barData} barSize={18}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(140,118,88,0.15)" />
+                <XAxis dataKey="name" tick={{ fontSize: 11, fill: C.muted }} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: C.muted }} />
+                <RTooltip contentStyle={{ background: BG, border: "none", borderRadius: 10, boxShadow: raisedSm, fontSize: 11 }} />
+                <Bar dataKey="À faire"  stackId="a" fill={C.muted} />
+                <Bar dataKey="En cours" stackId="a" fill={C.orange} />
+                <Bar dataKey="En revue" stackId="a" fill={C.blue} />
+                <Bar dataKey="Terminé"  stackId="a" fill={C.green} />
+                <Bar dataKey="Bloqué"   stackId="a" fill={C.red} radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        <div style={{ background: BG, borderRadius: 16, boxShadow: raised, padding: 16 }}>
+          <Lbl>Répartition par priorité</Lbl>
+          <div style={{ height: 240, marginTop: 10 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie data={priorityData} cx="50%" cy="50%" innerRadius={45} outerRadius={75} paddingAngle={3} dataKey="value">
+                  {priorityData.map((e, i) => <Cell key={i} fill={e.color} />)}
+                </Pie>
+                <RTooltip contentStyle={{ background: BG, border: "none", borderRadius: 10, boxShadow: raisedSm, fontSize: 11 }} />
+                <Legend formatter={(v) => <span style={{ fontSize: 10, color: C.muted }}>{v}</span>} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       </div>
 
       {/* ── Charge par membre ── */}

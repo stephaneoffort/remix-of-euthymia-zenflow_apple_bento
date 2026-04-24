@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react"; // kanban-nm
+import { useState, useCallback, useEffect, useMemo } from "react"; // kanban-nm
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
@@ -16,14 +16,23 @@ const C = {
   orange: "#7A4518", red: "#7A1E0E", green: "#2A5828", blue: "#1E4878",
 };
 
-/* ─── Statuts ─── */
-const COLUMNS = [
-  { key: "todo",        label: "À faire",  color: "#5A5040" },
-  { key: "in_progress", label: "En cours", color: "#7A4518" },
-  { key: "in_review",   label: "En revue", color: "#2A4878" },
-  { key: "done",        label: "Terminé",  color: "#2A5828" },
-  { key: "blocked",     label: "Bloqué",   color: "#7A1E0E" },
-];
+/* ─── Statuts par défaut (couleurs visuelles) ─── */
+const STATUS_COLORS: Record<string, string> = {
+  todo: "#5A5040",
+  in_progress: "#7A4518",
+  in_review: "#2A4878",
+  done: "#2A5828",
+  blocked: "#7A1E0E",
+};
+/** Hash déterministe pour donner une couleur à un statut personnalisé inconnu. */
+function getColorForStatus(key: string): string {
+  if (STATUS_COLORS[key]) return STATUS_COLORS[key];
+  const palette = ["#5A5040", "#7A4518", "#2A4878", "#2A5828", "#7A1E0E", "#7A5828", "#3A5878", "#5A4878"];
+  let h = 0;
+  for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
+  return palette[h % palette.length];
+}
+const COLUMN_ORDER_KEY = "kanban-nm-column-order";
 
 /* ─── Priority badge ─── */
 const PriorityPill = ({ priority }: { priority: string }) => {
@@ -65,12 +74,12 @@ const Avatar = ({ name, color }: { name: string; color?: string }) => {
 };
 
 /* ─── Task Card ─── */
-function TaskCard({ task, allTasks, onOpen, getMemberById, getProjectName }: {
+function TaskCard({ task, allTasks, onOpen, getMemberById, getProjectName, statusColor }: {
   task: any; allTasks: any[]; onOpen: (id: string) => void;
   getMemberById: (id: string) => any;
   getProjectName: (listId: string) => any;
+  statusColor: string;
 }) {
-  const col = COLUMNS.find(c => c.key === task.status);
   const project = task.listId ? getProjectName(task.listId) : null;
   const assignees = (task.assigneeIds ?? []).map((id: string) => getMemberById(id)).filter(Boolean);
   const daysLeft = task.dueDate ? differenceInDays(parseISO(task.dueDate), new Date()) : null;
@@ -88,7 +97,7 @@ function TaskCard({ task, allTasks, onOpen, getMemberById, getProjectName }: {
       style={{
         background: BG, borderRadius: 12, boxShadow: raised,
         padding: 12, cursor: "pointer",
-        borderLeft: `3px solid ${col?.color ?? C.orange}`,
+        borderLeft: `3px solid ${statusColor}`,
         opacity: isDone ? 0.8 : 1,
         transition: "box-shadow .15s",
       }}
@@ -216,10 +225,39 @@ export default function KanbanBoardNM() {
     ? allTasks.filter(t => t.title.toLowerCase().includes(search.toLowerCase()))
     : allTasks;
 
-  /* ── Columns ── */
-  const columns = COLUMNS.filter(c => allStatuses.includes(c.key) || allTasks.some(t => t.status === c.key));
+  /* ── Columns dynamiques (statuts personnalisés inclus) ── */
+  // Ordre persisté (réorganisable par drag & drop)
+  const [columnOrder, setColumnOrder] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem(COLUMN_ORDER_KEY);
+      if (saved) {
+        const arr = JSON.parse(saved) as string[];
+        if (Array.isArray(arr)) return arr;
+      }
+    } catch { /* ignore */ }
+    return allStatuses;
+  });
 
-  /* ── Drag & Drop ── */
+  // Sync quand allStatuses change (ajout/suppression de statuts personnalisés)
+  useEffect(() => {
+    setColumnOrder(prev => {
+      const existing = new Set(allStatuses);
+      const kept = prev.filter(s => existing.has(s));
+      const newOnes = allStatuses.filter(s => !kept.includes(s));
+      const next = [...kept, ...newOnes];
+      try { localStorage.setItem(COLUMN_ORDER_KEY, JSON.stringify(next)); } catch { /* ignore */ }
+      return next;
+    });
+  }, [allStatuses]);
+
+  const columns = useMemo(
+    () => columnOrder
+      .filter(key => allStatuses.includes(key) || allTasks.some(t => t.status === key))
+      .map(key => ({ key, label: getStatusLabel(key), color: getColorForStatus(key) })),
+    [columnOrder, allStatuses, allTasks, getStatusLabel],
+  );
+
+  /* ── Drag & Drop tâches ── */
   const handleDragStart = (e: React.DragEvent, taskId: string) => {
     setDraggedTaskId(taskId);
     e.dataTransfer.setData("type", "task");
@@ -236,6 +274,37 @@ export default function KanbanBoardNM() {
     setDraggedTaskId(null);
     setDropTarget(null);
   };
+
+  /* ── Drag & Drop colonnes (réorganisation) ── */
+  const [draggedColumn, setDraggedColumn] = useState<string | null>(null);
+  const handleColumnDragStart = (e: React.DragEvent, status: string) => {
+    e.dataTransfer.setData("type", "column");
+    e.dataTransfer.setData("columnStatus", status);
+    e.dataTransfer.effectAllowed = "move";
+    setDraggedColumn(status);
+  };
+  const handleColumnDragOver = (e: React.DragEvent, targetStatus: string) => {
+    if (!draggedColumn || draggedColumn === targetStatus) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+  const handleColumnDrop = useCallback((e: React.DragEvent, targetStatus: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!draggedColumn || draggedColumn === targetStatus) return;
+    setColumnOrder(prev => {
+      const next = [...prev];
+      const fromIdx = next.indexOf(draggedColumn);
+      const toIdx = next.indexOf(targetStatus);
+      if (fromIdx === -1 || toIdx === -1) return prev;
+      next.splice(fromIdx, 1);
+      next.splice(toIdx, 0, draggedColumn);
+      try { localStorage.setItem(COLUMN_ORDER_KEY, JSON.stringify(next)); } catch { /* ignore */ }
+      return next;
+    });
+    setDraggedColumn(null);
+  }, [draggedColumn]);
+  const handleColumnDragEnd = () => setDraggedColumn(null);
 
   /* ── Add task ── */
   const handleAddTask = (status: string) => {
@@ -264,7 +333,7 @@ export default function KanbanBoardNM() {
   };
 
   const mobileColTasks = filtered.filter(t => t.status === mobileActiveStatus);
-  const mobileCol = COLUMNS.find(c => c.key === mobileActiveStatus);
+  const mobileCol = columns.find(c => c.key === mobileActiveStatus);
 
   return (
     <div style={{ fontFamily: "'DM Sans', sans-serif", background: BG, padding: isMobile ? "8px 8px" : "12px 16px", height: "100%", width: "100%", boxSizing: "border-box", display: "flex", flexDirection: "column", gap: 10 }}>
@@ -423,6 +492,7 @@ export default function KanbanBoardNM() {
                     onOpen={setSelectedTaskId}
                     getMemberById={getMemberById}
                     getProjectName={getProjectName}
+                    statusColor={getColorForStatus(task.status)}
                   />
                 ))}
 
@@ -489,11 +559,24 @@ export default function KanbanBoardNM() {
                     borderRadius: 14, padding: isDropping ? 4 : 0,
                   }}
                 >
-                  {/* Header */}
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 4px" }}>
+                  {/* Header (drag & drop pour réorganiser les colonnes) */}
+                  <div
+                    draggable
+                    onDragStart={e => handleColumnDragStart(e, col.key)}
+                    onDragOver={e => handleColumnDragOver(e, col.key)}
+                    onDrop={e => handleColumnDrop(e, col.key)}
+                    onDragEnd={handleColumnDragEnd}
+                    title="Glissez pour réorganiser les colonnes"
+                    style={{
+                      display: "flex", alignItems: "center", justifyContent: "space-between",
+                      padding: "6px 4px", cursor: "grab",
+                      opacity: draggedColumn === col.key ? 0.5 : 1,
+                      transition: "opacity .15s",
+                    }}
+                  >
                     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                       <button
-                        onClick={() => toggleCollapse(col.key)}
+                        onClick={(e) => { e.stopPropagation(); toggleCollapse(col.key); }}
                         title="Réduire la colonne"
                         style={{
                           background: BG, border: "none", cursor: "pointer", padding: 0,
@@ -525,7 +608,7 @@ export default function KanbanBoardNM() {
                     </div>
                     {col.key !== "done" && col.key !== "blocked" && (
                       <button
-                        onClick={() => setNewTaskStatus(col.key)}
+                        onClick={(e) => { e.stopPropagation(); setNewTaskStatus(col.key); }}
                         style={{
                           width: 22, height: 22, borderRadius: "50%",
                           background: BG, boxShadow: raisedSm,
@@ -560,6 +643,7 @@ export default function KanbanBoardNM() {
                         onOpen={setSelectedTaskId}
                         getMemberById={getMemberById}
                         getProjectName={getProjectName}
+                        statusColor={getColorForStatus(task.status)}
                       />
                     </div>
                   ))}

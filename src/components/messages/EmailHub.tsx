@@ -337,7 +337,7 @@ interface NotionMailLayoutProps {
 function NotionMailLayout({
   accounts, selectedAccountId, setSelectedAccountId, account,
   messages, loadingMessages, selectedMessage, onSelectMessage,
-  onSync, syncing, onAddAccount, onCompose, onReply, onDelete, onCloseDetail,
+  onSync, syncing, onAddAccount, onCompose, onReply, onDelete, onMarkRead, onCloseDetail,
 }: NotionMailLayoutProps) {
   const [tab, setTab] = useState<FilterTab>('all');
   const [search, setSearch] = useState('');
@@ -541,46 +541,241 @@ function NotionMailLayout({
           </div>
 
           <div className="flex-1 overflow-y-auto px-8 py-6">
-            <h2 className="text-2xl font-semibold tracking-tight text-foreground mb-4 leading-snug">
-              {selectedMessage.subject || '(sans objet)'}
-            </h2>
-
-            <div className="flex items-start gap-3 pb-4 mb-5 border-b border-border">
-              <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-semibold shrink-0">
-                {(selectedMessage.from_name || selectedMessage.from_address).charAt(0).toUpperCase()}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-baseline justify-between gap-2 flex-wrap">
-                  <p className="text-sm font-medium text-foreground">
-                    {selectedMessage.from_name || selectedMessage.from_address}
-                  </p>
-                  <span className="text-xs text-muted-foreground">
-                    {new Date(selectedMessage.received_at).toLocaleString('fr-FR', {
-                      day: 'numeric', month: 'short', year: 'numeric',
-                      hour: '2-digit', minute: '2-digit',
-                    })}
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                  &lt;{selectedMessage.from_address}&gt;
-                </p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  À : <span className="text-foreground/80">{selectedMessage.to_addresses.join(', ')}</span>
-                </p>
-              </div>
-            </div>
-
-            <div className="prose prose-sm max-w-none dark:prose-invert text-foreground/90 leading-relaxed">
-              {selectedMessage.body_html ? (
-                <div dangerouslySetInnerHTML={{ __html: selectedMessage.body_html }} />
-              ) : (
-                <pre className="whitespace-pre-wrap font-sans text-sm">{selectedMessage.body_text}</pre>
-              )}
-            </div>
+            <ConversationView
+              selectedMessage={selectedMessage}
+              allMessages={messages}
+              onMarkRead={onMarkRead}
+            />
           </div>
         </section>
       )}
     </div>
+  );
+}
+
+// ============================================================================
+// Conversation (thread) view inside the reading pane
+// ============================================================================
+
+function normalizeSubject(s: string | null | undefined): string {
+  return (s || '')
+    .replace(/^\s*(re|fw|fwd|tr|rép|ref)\s*:\s*/gi, '')
+    .replace(/^\s*(re|fw|fwd|tr|rép|ref)\s*:\s*/gi, '')
+    .trim()
+    .toLowerCase();
+}
+
+function buildThread(selected: EmailMessage, all: EmailMessage[]): EmailMessage[] {
+  // 1) Group by explicit thread_id when present
+  if (selected.thread_id) {
+    const grouped = all.filter(m => m.thread_id && m.thread_id === selected.thread_id);
+    if (grouped.length > 1) {
+      return [...grouped].sort(
+        (a, b) => new Date(a.received_at).getTime() - new Date(b.received_at).getTime()
+      );
+    }
+  }
+
+  // 2) Fallback: same normalized subject + at least one common participant
+  const subjectKey = normalizeSubject(selected.subject);
+  if (!subjectKey) return [selected];
+
+  const participants = new Set<string>([
+    selected.from_address?.toLowerCase(),
+    ...(selected.to_addresses || []).map(a => a.toLowerCase()),
+    ...(selected.cc_addresses || []).map(a => a.toLowerCase()),
+  ].filter(Boolean) as string[]);
+
+  const related = all.filter(m => {
+    if (m.id === selected.id) return true;
+    if (normalizeSubject(m.subject) !== subjectKey) return false;
+    const pp = [
+      m.from_address?.toLowerCase(),
+      ...(m.to_addresses || []).map(a => a.toLowerCase()),
+      ...(m.cc_addresses || []).map(a => a.toLowerCase()),
+    ].filter(Boolean) as string[];
+    return pp.some(p => participants.has(p));
+  });
+
+  if (related.length <= 1) return [selected];
+  return related.sort(
+    (a, b) => new Date(a.received_at).getTime() - new Date(b.received_at).getTime()
+  );
+}
+
+function ConversationView({
+  selectedMessage,
+  allMessages,
+  onMarkRead,
+}: {
+  selectedMessage: EmailMessage;
+  allMessages: EmailMessage[];
+  onMarkRead: (m: EmailMessage) => void;
+}) {
+  const thread = useMemo(
+    () => buildThread(selectedMessage, allMessages),
+    [selectedMessage, allMessages]
+  );
+
+  const isThread = thread.length > 1;
+  // Latest selected by default; older ones collapsed
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(() => {
+    const s = new Set<string>();
+    s.add(selectedMessage.id);
+    // Also expand the most recent message by default
+    const latest = thread[thread.length - 1];
+    if (latest) s.add(latest.id);
+    return s;
+  });
+
+  // Reset expansion when switching to a different selected message / thread
+  useEffect(() => {
+    const s = new Set<string>();
+    s.add(selectedMessage.id);
+    const latest = thread[thread.length - 1];
+    if (latest) s.add(latest.id);
+    setExpandedIds(s);
+    // Mark all unread thread items as read on open
+    thread.forEach(m => { if (!m.is_read) onMarkRead(m); });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedMessage.id]);
+
+  const toggle = (id: string) => {
+    setExpandedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const expandAll = () => setExpandedIds(new Set(thread.map(m => m.id)));
+  const collapseAll = () => {
+    const latest = thread[thread.length - 1];
+    setExpandedIds(new Set(latest ? [latest.id] : []));
+  };
+
+  return (
+    <>
+      <h2 className="text-2xl font-semibold tracking-tight text-foreground mb-2 leading-snug">
+        {selectedMessage.subject?.replace(/^\s*(re|fw|fwd|tr)\s*:\s*/gi, '') || '(sans objet)'}
+      </h2>
+
+      {isThread && (
+        <div className="flex items-center justify-between gap-2 mb-4 pb-3 border-b border-border">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-muted/60 border border-border">
+              <Mail className="w-3 h-3" />
+              <span className="font-medium text-foreground">{thread.length}</span>
+              <span>messages dans cette conversation</span>
+            </span>
+          </div>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={expandAll}
+              className="text-[11px] text-muted-foreground hover:text-foreground px-2 py-1 rounded hover:bg-muted transition-colors"
+            >
+              Tout déplier
+            </button>
+            <button
+              onClick={collapseAll}
+              className="text-[11px] text-muted-foreground hover:text-foreground px-2 py-1 rounded hover:bg-muted transition-colors"
+            >
+              Tout replier
+            </button>
+          </div>
+        </div>
+      )}
+
+      <ol className={isThread ? 'space-y-3 relative' : ''}>
+        {isThread && (
+          <span
+            aria-hidden
+            className="absolute left-5 top-2 bottom-2 w-px bg-border"
+          />
+        )}
+        {thread.map((msg, idx) => {
+          const expanded = expandedIds.has(msg.id);
+          const isLast = idx === thread.length - 1;
+          const isCurrent = msg.id === selectedMessage.id;
+
+          return (
+            <li
+              key={msg.id}
+              className={`relative ${
+                isThread
+                  ? `rounded-lg border bg-card transition-all ${
+                      isCurrent ? 'border-primary/40 shadow-sm' : 'border-border'
+                    }`
+                  : ''
+              }`}
+            >
+              <button
+                onClick={() => toggle(msg.id)}
+                className={`w-full text-left flex items-start gap-3 ${
+                  isThread ? 'p-3' : 'pb-4 mb-5 border-b border-border'
+                } ${expanded && isThread ? 'border-b border-border/60' : ''}`}
+              >
+                <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-semibold shrink-0 relative z-10">
+                  {(msg.from_name || msg.from_address).charAt(0).toUpperCase()}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-baseline justify-between gap-2 flex-wrap">
+                    <p className="text-sm font-medium text-foreground truncate">
+                      {msg.from_name || msg.from_address}
+                      {!msg.is_read && (
+                        <span className="ml-2 inline-block w-1.5 h-1.5 rounded-full bg-primary align-middle" />
+                      )}
+                    </p>
+                    <span className="text-xs text-muted-foreground shrink-0">
+                      {new Date(msg.received_at).toLocaleString('fr-FR', {
+                        day: 'numeric', month: 'short',
+                        hour: '2-digit', minute: '2-digit',
+                      })}
+                    </span>
+                  </div>
+                  {expanded ? (
+                    <>
+                      <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                        &lt;{msg.from_address}&gt;
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        À : <span className="text-foreground/80">{msg.to_addresses.join(', ')}</span>
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-xs text-muted-foreground truncate mt-0.5">
+                      {msg.preview || msg.body_text?.slice(0, 140) || '…'}
+                    </p>
+                  )}
+                </div>
+                {isThread && (
+                  <span className="shrink-0 text-muted-foreground mt-1">
+                    {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  </span>
+                )}
+              </button>
+
+              {expanded && (
+                <div className={`prose prose-sm max-w-none dark:prose-invert text-foreground/90 leading-relaxed ${
+                  isThread ? 'px-4 pb-4 pt-3' : ''
+                }`}>
+                  {msg.body_html ? (
+                    <div dangerouslySetInnerHTML={{ __html: msg.body_html }} />
+                  ) : (
+                    <pre className="whitespace-pre-wrap font-sans text-sm">{msg.body_text}</pre>
+                  )}
+                </div>
+              )}
+
+              {!expanded && isThread && !isLast && (
+                <div className="h-2" />
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </>
   );
 }
 

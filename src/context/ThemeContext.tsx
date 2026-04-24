@@ -17,7 +17,14 @@ export type ThemePalette =
   | "nmForest"
   | "nmLavender"
   | "nmDeepForest"
-  | "ivoireChaud";
+  | "ivoireChaud"
+  | "dunesCuivre"
+  | "crepuscule"
+  | "brumeArdoise"
+  | "prunelle"
+  | "azurProfond"
+  | "auroreCorail"
+  | "braiseNocturne";
 
 export type DesignMode = "classic" | "neumorphic";
 
@@ -147,6 +154,41 @@ export const PALETTE_META: Record<ThemePalette, { label: string; description: st
     label: "Ivoire Chaud",
     description: "Crème doré · Terre cuite · Chaleur naturelle",
     colors: ["#c27838", "#3a2a1a", "#f5efe3", "#ede6d8"],
+  },
+  dunesCuivre: {
+    label: "Dunes Cuivre",
+    description: "Bleu nuit · Cuivre chaud · Sable minéral",
+    colors: ["#10232A", "#B58863", "#3D4D55", "#D3C3B9"],
+  },
+  crepuscule: {
+    label: "Crépuscule",
+    description: "Bleu nuit · Lavande · Corail tendre",
+    colors: ["#03122F", "#F1916D", "#413B61", "#F3DADF"],
+  },
+  brumeArdoise: {
+    label: "Brume Ardoise",
+    description: "Ardoise profonde · Brume claire · Sobriété",
+    colors: ["#1A2D42", "#AAB7B7", "#2E4156", "#D4D8DD"],
+  },
+  prunelle: {
+    label: "Prunelle",
+    description: "Pourpre nocturne · Rose poudré · Crème",
+    colors: ["#190019", "#854F6C", "#522B5B", "#FBE4D8"],
+  },
+  azurProfond: {
+    label: "Azur Profond",
+    description: "Bleu nuit · Ciel clair · Sérénité marine",
+    colors: ["#021024", "#7DA0CA", "#052659", "#C1E8FF"],
+  },
+  auroreCorail: {
+    label: "Aurore Corail",
+    description: "Bleu mauve · Corail · Aube douce",
+    colors: ["#2E365A", "#BD6C73", "#6B597F", "#92A1C2"],
+  },
+  braiseNocturne: {
+    label: "Braise Nocturne",
+    description: "Nuit profonde · Pêche braise · Rouge intense",
+    colors: ["#161522", "#FFA586", "#384358", "#B51A2B"],
   },
 };
 

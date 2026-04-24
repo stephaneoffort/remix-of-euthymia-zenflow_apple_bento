@@ -496,7 +496,7 @@ function StatusesPanel() {
 
 
 function ThemePalettePanel() {
-  const { palette, setPalette, theme, setTheme, designMode, setDesignMode } = useThemeMode();
+  const { palette, setPalette, theme, setTheme, designMode, setDesignMode, typeVariant, setTypeVariant } = useThemeMode();
   const palettes = Object.entries(PALETTE_META) as [ThemePalette, typeof PALETTE_META[ThemePalette]][];
 
   const handleSelect = (key: ThemePalette) => {

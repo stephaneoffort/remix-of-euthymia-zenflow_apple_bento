@@ -231,10 +231,39 @@ export default function KanbanBoardNM() {
     ? allTasks.filter(t => t.title.toLowerCase().includes(search.toLowerCase()))
     : allTasks;
 
-  /* ── Columns ── */
-  const columns = COLUMNS.filter(c => allStatuses.includes(c.key) || allTasks.some(t => t.status === c.key));
+  /* ── Columns dynamiques (statuts personnalisés inclus) ── */
+  // Ordre persisté (réorganisable par drag & drop)
+  const [columnOrder, setColumnOrder] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem(COLUMN_ORDER_KEY);
+      if (saved) {
+        const arr = JSON.parse(saved) as string[];
+        if (Array.isArray(arr)) return arr;
+      }
+    } catch { /* ignore */ }
+    return allStatuses;
+  });
 
-  /* ── Drag & Drop ── */
+  // Sync quand allStatuses change (ajout/suppression de statuts personnalisés)
+  useEffect(() => {
+    setColumnOrder(prev => {
+      const existing = new Set(allStatuses);
+      const kept = prev.filter(s => existing.has(s));
+      const newOnes = allStatuses.filter(s => !kept.includes(s));
+      const next = [...kept, ...newOnes];
+      try { localStorage.setItem(COLUMN_ORDER_KEY, JSON.stringify(next)); } catch { /* ignore */ }
+      return next;
+    });
+  }, [allStatuses]);
+
+  const columns = useMemo(
+    () => columnOrder
+      .filter(key => allStatuses.includes(key) || allTasks.some(t => t.status === key))
+      .map(key => ({ key, label: getStatusLabel(key), color: getColorForStatus(key) })),
+    [columnOrder, allStatuses, allTasks, getStatusLabel],
+  );
+
+  /* ── Drag & Drop tâches ── */
   const handleDragStart = (e: React.DragEvent, taskId: string) => {
     setDraggedTaskId(taskId);
     e.dataTransfer.setData("type", "task");
@@ -251,6 +280,37 @@ export default function KanbanBoardNM() {
     setDraggedTaskId(null);
     setDropTarget(null);
   };
+
+  /* ── Drag & Drop colonnes (réorganisation) ── */
+  const [draggedColumn, setDraggedColumn] = useState<string | null>(null);
+  const handleColumnDragStart = (e: React.DragEvent, status: string) => {
+    e.dataTransfer.setData("type", "column");
+    e.dataTransfer.setData("columnStatus", status);
+    e.dataTransfer.effectAllowed = "move";
+    setDraggedColumn(status);
+  };
+  const handleColumnDragOver = (e: React.DragEvent, targetStatus: string) => {
+    if (!draggedColumn || draggedColumn === targetStatus) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+  const handleColumnDrop = useCallback((e: React.DragEvent, targetStatus: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!draggedColumn || draggedColumn === targetStatus) return;
+    setColumnOrder(prev => {
+      const next = [...prev];
+      const fromIdx = next.indexOf(draggedColumn);
+      const toIdx = next.indexOf(targetStatus);
+      if (fromIdx === -1 || toIdx === -1) return prev;
+      next.splice(fromIdx, 1);
+      next.splice(toIdx, 0, draggedColumn);
+      try { localStorage.setItem(COLUMN_ORDER_KEY, JSON.stringify(next)); } catch { /* ignore */ }
+      return next;
+    });
+    setDraggedColumn(null);
+  }, [draggedColumn]);
+  const handleColumnDragEnd = () => setDraggedColumn(null);
 
   /* ── Add task ── */
   const handleAddTask = (status: string) => {

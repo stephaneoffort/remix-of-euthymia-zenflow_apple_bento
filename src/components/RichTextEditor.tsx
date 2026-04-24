@@ -447,6 +447,30 @@ export default function RichTextEditor({
         )}
       </div>
 
+      {isDictating && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="flex items-center gap-2 px-3 py-1.5 bg-priority-urgent/10 border-b border-priority-urgent/20 text-priority-urgent text-xs"
+        >
+          <span className="relative flex h-2 w-2 shrink-0">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-priority-urgent opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-priority-urgent" />
+          </span>
+          <span className="font-medium shrink-0">Dictée en cours…</span>
+          {interimTranscript && (
+            <span className="italic text-muted-foreground truncate">« {interimTranscript} »</span>
+          )}
+          <button
+            type="button"
+            onClick={stopDictation}
+            className="ml-auto px-2 py-0.5 rounded bg-priority-urgent text-white text-[10px] font-semibold hover:opacity-90 shrink-0"
+          >
+            Arrêter
+          </button>
+        </div>
+      )}
+
       <EditorContent editor={editor} className="px-3 py-2 min-h-[60px] max-h-64 overflow-y-auto scrollbar-thin" />
     </div>
   );

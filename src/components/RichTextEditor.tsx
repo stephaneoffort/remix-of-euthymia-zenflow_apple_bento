@@ -16,8 +16,9 @@ import {
   Bold, Italic, Underline as UnderlineIcon, Strikethrough,
   List, ListOrdered, Quote, Code, Heading1, Heading2,
   Link as LinkIcon, Image as ImageIcon, Table as TableIcon,
-  Highlighter, Palette, Undo, Redo, Minus
+  Highlighter, Palette, Undo, Redo, Minus, Mic, MicOff
 } from 'lucide-react';
+import { useVoiceDictation } from '@/hooks/useVoiceDictation';
 
 interface RichTextEditorProps {
   content: string;
@@ -77,6 +78,13 @@ export default function RichTextEditor({
   autofocus = false,
 }: RichTextEditorProps) {
   const lastSyncedContentRef = useRef(content);
+  const editorRef = useRef<ReturnType<typeof useEditor>>(null);
+
+  const handleVoiceTranscript = useCallback((text: string) => {
+    editorRef.current?.chain().focus().insertContent(text + ' ').run();
+  }, []);
+
+  const { isListening, isSupported, toggle: toggleVoice } = useVoiceDictation(handleVoiceTranscript);
 
   const editor = useEditor({
     extensions: [
@@ -131,6 +139,10 @@ export default function RichTextEditor({
     immediatelyRender: false,
     shouldRerenderOnTransaction: false,
   });
+
+  useEffect(() => {
+    editorRef.current = editor;
+  }, [editor]);
 
   useEffect(() => {
     if (!editor) return;
@@ -275,6 +287,21 @@ export default function RichTextEditor({
         >
           <Highlighter className={iconSize} />
         </ToolbarButton>
+
+        {isSupported && (
+          <>
+            <div className="w-px h-4 bg-border mx-1" />
+            <ToolbarButton
+              onClick={toggleVoice}
+              title={isListening ? 'Arrêter la dictée' : 'Dicter par la voix'}
+              active={isListening}
+            >
+              {isListening
+                ? <MicOff className={`${iconSize} text-destructive`} />
+                : <Mic className={iconSize} />}
+            </ToolbarButton>
+          </>
+        )}
 
         {!minimal && (
           <>

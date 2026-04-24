@@ -16,8 +16,9 @@ import {
   Bold, Italic, Underline as UnderlineIcon, Strikethrough,
   List, ListOrdered, Quote, Code, Heading1, Heading2,
   Link as LinkIcon, Image as ImageIcon, Table as TableIcon,
-  Highlighter, Palette, Undo, Redo, Minus
+  Highlighter, Palette, Undo, Redo, Minus, Mic, MicOff
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface RichTextEditorProps {
   content: string;

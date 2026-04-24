@@ -975,8 +975,14 @@ function MessageRow({
           <span className={`text-sm truncate ${!msg.is_read ? 'font-semibold text-foreground' : 'font-medium text-foreground/85'}`}>
             {msg.from_name || msg.from_address}
           </span>
-          <span className="text-[11px] text-muted-foreground shrink-0 tabular-nums">
-            {formatDistanceToNow(new Date(msg.received_at), { addSuffix: false, locale: fr })}
+          <span className="flex items-center gap-1.5 shrink-0">
+            {(() => {
+              const count = getAttachmentList(msg).length;
+              return count > 0 ? <AttachmentBadge count={count} /> : null;
+            })()}
+            <span className="text-[11px] text-muted-foreground tabular-nums">
+              {formatDistanceToNow(new Date(msg.received_at), { addSuffix: false, locale: fr })}
+            </span>
           </span>
         </div>
         <p className={`text-[13px] truncate leading-snug ${!msg.is_read ? 'text-foreground' : 'text-foreground/75'}`}>

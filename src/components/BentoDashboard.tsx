@@ -81,7 +81,7 @@ export default function BentoDashboard() {
                 month: "long",
               })}
             </p>
-            <h2 className="bento-hero-title">
+            <h2 className="bento-hero-title font-display">
               {greeting()}
               {firstName ? `, ${firstName}` : ""}
             </h2>
@@ -99,7 +99,10 @@ export default function BentoDashboard() {
               { n: `${completionPct}%`, l: "Complété", c: "hsl(var(--primary))" },
             ].map(({ n, l, c }) => (
               <div key={l} className="bento-stat">
-                <span className="bento-stat-n" style={{ color: c }}>
+                <span
+                  className="bento-stat-n font-numeric"
+                  style={{ color: c, fontVariantNumeric: 'tabular-nums' }}
+                >
                   {n}
                 </span>
                 <span className="bento-stat-l">{l}</span>

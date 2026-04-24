@@ -515,9 +515,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         }
       }
     },
+    onError: (err: any) => {
+      const msg = String(err?.message || '');
+      if (msg.includes('BLOCKED_BY_DEPENDENCIES')) {
+        const detail = msg.split('BLOCKED_BY_DEPENDENCIES:')[1]?.trim() || '';
+        toast.error('Impossible de terminer cette tâche', {
+          description: `Dépendances non terminées : ${detail}`,
+        });
+      } else {
+        toast.error(msg || 'Échec de la mise à jour de la tâche');
+      }
+      // Rollback optimistic update by refetching
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    },
   });
-
-  // Delete task mutation
   const deleteTaskMutation = useMutation({
     mutationFn: async (id: string) => {
       // Sync delete to ZENFLOW before removing

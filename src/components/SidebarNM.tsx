@@ -1118,7 +1118,7 @@ export default function SidebarNM() {
                 >
                   {[
                     { value: "classic", label: "⊞ Classic" },
-                    { value: "neumorphic", label: "✦ Ivoire" },
+                    { value: "neumorphic", label: "✦ Premium" },
                   ].map(({ value, label }) => (
                     <button
                       key={value}
@@ -1254,7 +1254,7 @@ export default function SidebarNM() {
                 >
                   {[
                     { value: "classic", label: "⊞ Classic" },
-                    { value: "neumorphic", label: "✦ Ivoire" },
+                    { value: "neumorphic", label: "✦ Premium" },
                   ].map(({ value, label }) => (
                     <button
                       key={value}

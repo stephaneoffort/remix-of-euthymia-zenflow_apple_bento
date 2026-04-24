@@ -569,7 +569,7 @@ function ThemePalettePanel() {
           <div className="flex gap-3">
             {([
               { key: "classic" as const, label: "⊞ Classic" },
-              { key: "neumorphic" as const, label: "✦ Ivoire" },
+              { key: "neumorphic" as const, label: "✦ Premium" },
             ]).map(({ key, label }) => (
               <button
                 key={key}

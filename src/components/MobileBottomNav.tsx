@@ -118,14 +118,25 @@ export default function MobileBottomNav({ onOpenVoice }: MobileBottomNavProps) {
                   className="text-base h-11"
                 />
 
+                <Select value={newSpaceId} onValueChange={setNewSpaceId}>
+                  <SelectTrigger className="h-10">
+                    <SelectValue placeholder="Espace…" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {visibleSpaces.map(s => (
+                      <SelectItem key={s.id} value={s.id}>{s.icon} {s.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
                 <div className="flex gap-2">
-                  <Select value={newProjectId} onValueChange={setNewProjectId}>
+                  <Select value={newProjectId} onValueChange={setNewProjectId} disabled={!newSpaceId}>
                     <SelectTrigger className="flex-1 h-10">
                       <SelectValue placeholder="Projet…" />
                     </SelectTrigger>
                     <SelectContent>
-                      {projectOptions.map(p => (
-                        <SelectItem key={p.id} value={p.id}>{p.label}</SelectItem>
+                      {projectsForSpace.map(p => (
+                        <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>

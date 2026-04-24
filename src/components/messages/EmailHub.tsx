@@ -1087,33 +1087,35 @@ function MessageRow({
         )}
       </div>
 
-      {/* Hover actions */}
-      <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
-        <button
-          type="button"
-          onClick={(e) => { e.stopPropagation(); onReply(); }}
-          className="h-7 w-7 flex items-center justify-center rounded-md bg-background/95 backdrop-blur border border-border shadow-sm hover:bg-muted text-foreground/80 hover:text-foreground"
-          title="Répondre"
-        >
-          <CornerUpLeft className="w-3.5 h-3.5" />
-        </button>
-        <button
-          type="button"
-          onClick={(e) => { e.stopPropagation(); /* archive placeholder */ }}
-          className="h-7 w-7 flex items-center justify-center rounded-md bg-background/95 backdrop-blur border border-border shadow-sm hover:bg-muted text-foreground/80 hover:text-foreground"
-          title="Archiver"
-        >
-          <Archive className="w-3.5 h-3.5" />
-        </button>
-        <button
-          type="button"
-          onClick={(e) => { e.stopPropagation(); onDelete(); }}
-          className="h-7 w-7 flex items-center justify-center rounded-md bg-background/95 backdrop-blur border border-border shadow-sm hover:bg-muted text-foreground/80 hover:text-destructive"
-          title="Supprimer"
-        >
-          <Trash2 className="w-3.5 h-3.5" />
-        </button>
-      </div>
+      {/* Hover actions — desktop only (no hover on touch devices) */}
+      {!isMobile && (
+        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onReply(); }}
+            className="h-7 w-7 flex items-center justify-center rounded-md bg-background/95 backdrop-blur border border-border shadow-sm hover:bg-muted text-foreground/80 hover:text-foreground"
+            title="Répondre"
+          >
+            <CornerUpLeft className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); /* archive placeholder */ }}
+            className="h-7 w-7 flex items-center justify-center rounded-md bg-background/95 backdrop-blur border border-border shadow-sm hover:bg-muted text-foreground/80 hover:text-foreground"
+            title="Archiver"
+          >
+            <Archive className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onDelete(); }}
+            className="h-7 w-7 flex items-center justify-center rounded-md bg-background/95 backdrop-blur border border-border shadow-sm hover:bg-muted text-foreground/80 hover:text-destructive"
+            title="Supprimer"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
     </li>
   );
 }

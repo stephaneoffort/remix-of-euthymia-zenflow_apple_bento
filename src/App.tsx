@@ -118,6 +118,14 @@ const App = () => (
                 }
               />
               <Route
+                path="/dev/numeric-audit"
+                element={
+                  <ProtectedRoute>
+                    <NumericAudit />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/"
                 element={
                   <ProtectedRoute>

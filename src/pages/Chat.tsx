@@ -81,7 +81,7 @@ export default function Chat() {
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute inset-0 bg-background" />
         <div
-          className="absolute inset-0 animate-[liquidMeshMoveDark_25s_ease-in-out_infinite]"
+          className="absolute inset-0 animate-[bentoMeshMoveDark_25s_ease-in-out_infinite]"
           style={{
             backgroundSize: '200% 200%',
             background:

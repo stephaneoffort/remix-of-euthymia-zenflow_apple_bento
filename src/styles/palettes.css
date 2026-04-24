@@ -1624,16 +1624,16 @@
    Mesh gradients + glass surfaces + shimmer + grain
    ═══════════════════════════════════════════════════════ */
 
-/* ─── Shared keyframes for bento mesh + glass reveal ─── */
-@keyframes liquidMeshMove {
+/* ─── Shared keyframes for bento mesh + cell reveal ─── */
+@keyframes bentoMeshMove {
   0%, 100% { background-position: 0% 0%, 100% 100%, 0% 0%; }
   50% { background-position: 100% 50%, 0% 50%, 0% 0%; }
 }
-@keyframes liquidMeshMoveDark {
+@keyframes bentoMeshMoveDark {
   0%, 100% { background-position: 0% 0%, 100% 100%, 0% 0%; }
   50% { background-position: 100% 50%, 0% 50%, 0% 0%; }
 }
-@keyframes liquidGlassReveal {
+@keyframes bentoCellReveal {
   from { opacity: 0; transform: translateY(8px) scale(0.98); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
@@ -1648,7 +1648,7 @@
     linear-gradient(135deg, #0f170f 0%, #141e16 50%, #0f170f 100%) !important;
   background-size: 200% 200%, 200% 200%, 100% 100% !important;
   background-attachment: fixed !important;
-  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
+  animation: bentoMeshMoveDark 25s ease-in-out infinite !important;
 }
 [data-palette="bento2026"].light {
   background:
@@ -1657,7 +1657,7 @@
     linear-gradient(135deg, #f5f0e8 0%, #ede8df 50%, #f5f0e8 100%) !important;
   background-size: 200% 200%, 200% 200%, 100% 100% !important;
   background-attachment: fixed !important;
-  animation: liquidMeshMove 25s ease-in-out infinite !important;
+  animation: bentoMeshMove 25s ease-in-out infinite !important;
 }
 [data-palette="bento2026"].mixed {
   background:
@@ -1666,7 +1666,7 @@
     linear-gradient(135deg, #f5f0e8 0%, #ede8df 50%, #f5f0e8 100%) !important;
   background-size: 200% 200%, 200% 200%, 100% 100% !important;
   background-attachment: fixed !important;
-  animation: liquidMeshMove 25s ease-in-out infinite !important;
+  animation: bentoMeshMove 25s ease-in-out infinite !important;
 }
 
 /* BENTO OCEAN */
@@ -1677,7 +1677,7 @@
     linear-gradient(135deg, #0a1420 0%, #0f1a28 50%, #0a1420 100%) !important;
   background-size: 200% 200%, 200% 200%, 100% 100% !important;
   background-attachment: fixed !important;
-  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
+  animation: bentoMeshMoveDark 25s ease-in-out infinite !important;
 }
 [data-palette="bentoOcean"].light {
   background:
@@ -1686,7 +1686,7 @@
     linear-gradient(135deg, #eef3f8 0%, #e4ecf4 50%, #eef3f8 100%) !important;
   background-size: 200% 200%, 200% 200%, 100% 100% !important;
   background-attachment: fixed !important;
-  animation: liquidMeshMove 25s ease-in-out infinite !important;
+  animation: bentoMeshMove 25s ease-in-out infinite !important;
 }
 [data-palette="bentoOcean"].mixed {
   background:
@@ -1695,7 +1695,7 @@
     linear-gradient(135deg, #eef3f8 0%, #e4ecf4 50%, #eef3f8 100%) !important;
   background-size: 200% 200%, 200% 200%, 100% 100% !important;
   background-attachment: fixed !important;
-  animation: liquidMeshMove 25s ease-in-out infinite !important;
+  animation: bentoMeshMove 25s ease-in-out infinite !important;
 }
 
 /* BENTO ROSE */
@@ -1706,7 +1706,7 @@
     linear-gradient(135deg, #160d12 0%, #1e1218 50%, #160d12 100%) !important;
   background-size: 200% 200%, 200% 200%, 100% 100% !important;
   background-attachment: fixed !important;
-  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
+  animation: bentoMeshMoveDark 25s ease-in-out infinite !important;
 }
 [data-palette="bentoRose"].light {
   background:
@@ -1715,7 +1715,7 @@
     linear-gradient(135deg, #f8f0f0 0%, #f0e6e6 50%, #f8f0f0 100%) !important;
   background-size: 200% 200%, 200% 200%, 100% 100% !important;
   background-attachment: fixed !important;
-  animation: liquidMeshMove 25s ease-in-out infinite !important;
+  animation: bentoMeshMove 25s ease-in-out infinite !important;
 }
 [data-palette="bentoRose"].mixed {
   background:
@@ -1724,7 +1724,7 @@
     linear-gradient(135deg, #f8f0f0 0%, #f0e6e6 50%, #f8f0f0 100%) !important;
   background-size: 200% 200%, 200% 200%, 100% 100% !important;
   background-attachment: fixed !important;
-  animation: liquidMeshMove 25s ease-in-out infinite !important;
+  animation: bentoMeshMove 25s ease-in-out infinite !important;
 }
 
 /* BENTO AMBER */
@@ -1735,7 +1735,7 @@
     linear-gradient(135deg, #141210 0%, #1c1a17 50%, #141210 100%) !important;
   background-size: 200% 200%, 200% 200%, 100% 100% !important;
   background-attachment: fixed !important;
-  animation: liquidMeshMoveDark 25s ease-in-out infinite !important;
+  animation: bentoMeshMoveDark 25s ease-in-out infinite !important;
 }
 [data-palette="bentoAmber"].light {
   background:
@@ -1744,7 +1744,7 @@
     linear-gradient(135deg, #f5efe5 0%, #ede6da 50%, #f5efe5 100%) !important;
   background-size: 200% 200%, 200% 200%, 100% 100% !important;
   background-attachment: fixed !important;
-  animation: liquidMeshMove 25s ease-in-out infinite !important;
+  animation: bentoMeshMove 25s ease-in-out infinite !important;
 }
 [data-palette="bentoAmber"].mixed {
   background:
@@ -1753,7 +1753,7 @@
     linear-gradient(135deg, #f5efe5 0%, #ede6da 50%, #f5efe5 100%) !important;
   background-size: 200% 200%, 200% 200%, 100% 100% !important;
   background-attachment: fixed !important;
-  animation: liquidMeshMove 25s ease-in-out infinite !important;
+  animation: bentoMeshMove 25s ease-in-out infinite !important;
 }
 
 /* ─── Grain overlay for non-LG palettes ─── */
@@ -1844,7 +1844,7 @@
 [data-palette="bentoOcean"] .bento-cell,
 [data-palette="bentoRose"] .bento-cell,
 [data-palette="bentoAmber"] .bento-cell {
-  animation: liquidGlassReveal 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: bentoCellReveal 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 [data-palette="bento2026"] .bento-cell:nth-child(1),
 [data-palette="bentoOcean"] .bento-cell:nth-child(1),
@@ -1934,7 +1934,7 @@
 [data-palette="bentoOcean"] .bg-card,
 [data-palette="bentoRose"] .bg-card,
 [data-palette="bentoAmber"] .bg-card {
-  animation: liquidGlassReveal 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: bentoCellReveal 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 /* ─── Reduced motion ─── */

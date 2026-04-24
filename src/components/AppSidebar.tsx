@@ -754,15 +754,25 @@ export default function AppSidebar() {
         {/* Spaces & Projects */}
         <div className="flex-1 overflow-y-auto scrollbar-thin px-3 py-3">
           <div className="flex items-center justify-between px-2 mb-1">
-            <p className="text-xs font-semibold text-sidebar-fg uppercase tracking-wider">Espaces</p>
             <button
-              onClick={() => setAddingSpace(true)}
+              onClick={() => setSpacesExpanded((prev) => !prev)}
+              className="flex items-center gap-1.5 flex-1 -mx-1 px-1 py-0.5 rounded hover:bg-sidebar-hover transition-colors"
+            >
+              <ChevronDown
+                className={`w-3.5 h-3.5 text-sidebar-fg transition-transform ${spacesExpanded ? "" : "-rotate-90"}`}
+              />
+              <p className="text-xs font-semibold text-sidebar-fg uppercase tracking-wider">Espaces</p>
+            </button>
+            <button
+              onClick={() => { setSpacesExpanded(true); setAddingSpace(true); }}
               className="p-2 -m-1.5 rounded-md hover:bg-sidebar-hover text-sidebar-fg transition-colors"
               title="Ajouter un espace"
             >
               <Plus className="w-3.5 h-3.5" />
             </button>
           </div>
+          {spacesExpanded && (<>
+          {/* spaces-content-start */}
           {draggingProjectId ? (
             <p className="text-[10px] text-primary/70 px-2 mb-2 leading-tight font-medium flex items-center gap-1">
               <MoveHorizontal className="w-3 h-3" />

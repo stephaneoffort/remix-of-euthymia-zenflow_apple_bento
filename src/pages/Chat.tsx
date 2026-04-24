@@ -15,10 +15,13 @@ import { useApp } from '@/context/AppContext';
 import { usePresence } from '@/hooks/usePresence';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useThemeMode } from '@/context/ThemeContext';
+import AppSidebar from '@/components/AppSidebar';
+import SidebarNM from '@/components/SidebarNM';
+import { PanelLeft } from 'lucide-react';
 
 export default function Chat() {
   const chat = useDiscordChat();
-  const { teamMembers } = useApp();
+  const { teamMembers, sidebarCollapsed, setSidebarCollapsed } = useApp();
   const { onlineMembers } = usePresence();
   const { designMode } = useThemeMode();
   const [showMembers, setShowMembers] = useState(true);
@@ -77,6 +80,21 @@ export default function Chat() {
 
   return (
     <div className={`flex h-[100dvh] relative overflow-hidden ${designMode === "neumorphic" ? "nm-chat" : ""}`}>
+      {/* ── Main app sidebar (persistent, like Index) ── */}
+      {!isMobile && !sidebarCollapsed && (
+        designMode === "neumorphic" ? <SidebarNM /> : <AppSidebar />
+      )}
+      {!isMobile && sidebarCollapsed && (
+        <button
+          onClick={() => setSidebarCollapsed(false)}
+          className="absolute top-3 left-3 z-50 p-1.5 rounded-md bg-card/80 backdrop-blur-md border border-border hover:bg-muted transition-colors"
+          title="Afficher la barre latérale"
+        >
+          <PanelLeft className="w-5 h-5" />
+        </button>
+      )}
+
+      <div className="flex-1 flex h-full relative overflow-hidden min-w-0">
       {/* ── Mesh gradient background ── */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute inset-0 bg-background" />
@@ -434,6 +452,7 @@ export default function Chat() {
             </>
           )}
         </div>
+      </div>
       </div>
 
       {isMobile && <MobileBottomNav />}

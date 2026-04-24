@@ -7,7 +7,18 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Check, FileWarning, RefreshCw, Search, ShieldCheck, Trash2, X } from "lucide-react";
+import { ArrowLeft, Check, FileWarning, RefreshCw, Search, ShieldCheck, Sparkles, Trash2, X } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { runNumericAudit, loadSourceContext, type NumericViolation } from "@/lib/numericAuditScanner";
 
@@ -46,6 +57,7 @@ export default function NumericAudit() {
   const [contextCache, setContextCache] = useState<Record<string, Awaited<ReturnType<typeof loadSourceContext>>>>({});
   const [busyKey, setBusyKey] = useState<string | null>(null);
   const [noteDraft, setNoteDraft] = useState<Record<string, string>>({});
+  const [cleaning, setCleaning] = useState(false);
 
   /* ─── Admin gate ─── */
   useEffect(() => {
@@ -124,6 +136,12 @@ export default function NumericAudit() {
     return { openCount, acceptedCount, total: rows.length };
   }, [rows]);
 
+  /* ─── Stale acceptances: violation no longer exists in current scan ─── */
+  const staleAcceptances = useMemo(() => {
+    const liveKeys = new Set(violations.map(v => violationKey(v)));
+    return acceptances.filter(a => !liveKeys.has(violationKey(a)));
+  }, [violations, acceptances]);
+
   /* ─── Lazy-load source context for a row ─── */
   const ensureContext = async (v: NumericViolation) => {
     const key = violationKey(v);
@@ -177,6 +195,24 @@ export default function NumericAudit() {
     toast.success("Acceptation retirée");
   };
 
+  /* ─── Bulk cleanup of stale acceptances ─── */
+  const cleanupStale = async () => {
+    if (staleAcceptances.length === 0) return;
+    setCleaning(true);
+    const ids = staleAcceptances.map(a => a.id);
+    const { error } = await supabase
+      .from("numeric_audit_acceptances")
+      .delete()
+      .in("id", ids);
+    setCleaning(false);
+    if (error) {
+      toast.error("Échec du nettoyage : " + error.message);
+      return;
+    }
+    setAcceptances(prev => prev.filter(a => !ids.includes(a.id)));
+    toast.success(`${ids.length} acceptation(s) obsolète(s) supprimée(s)`);
+  };
+
   /* ─── Loading / access guards ─── */
   if (loading || isAdmin === null) {
     return (
@@ -202,6 +238,45 @@ export default function NumericAudit() {
         <ShieldCheck className="w-5 h-5 text-primary" />
         <h1 className="font-display font-bold text-foreground text-lg">Audit typographique numérique</h1>
         <div className="ml-auto flex items-center gap-2">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={scanning || cleaning || staleAcceptances.length === 0}
+              >
+                <Sparkles className={`w-4 h-4 mr-1.5 ${cleaning ? "animate-pulse" : ""}`} />
+                Nettoyer obsolètes
+                {staleAcceptances.length > 0 && (
+                  <Badge variant="secondary" className="ml-2 h-5 px-1.5">
+                    <span data-numeric className="font-numeric tabular-nums text-xs">
+                      {staleAcceptances.length}
+                    </span>
+                  </Badge>
+                )}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="bg-popover text-popover-foreground">
+              <AlertDialogHeader>
+                <AlertDialogTitle>Nettoyer les acceptations obsolètes ?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Cette action supprimera définitivement{" "}
+                  <span data-numeric className="font-numeric tabular-nums font-semibold text-foreground">
+                    {staleAcceptances.length}
+                  </span>{" "}
+                  acceptation(s) dont la violation correspondante n'apparaît plus dans le scan actuel
+                  (code modifié, supprimé ou refactoré). Les acceptations encore liées à une violation
+                  active ne seront pas touchées.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Annuler</AlertDialogCancel>
+                <AlertDialogAction onClick={cleanupStale}>
+                  Supprimer les obsolètes
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
           <Button variant="outline" size="sm" onClick={refresh} disabled={scanning}>
             <RefreshCw className={`w-4 h-4 mr-1.5 ${scanning ? "animate-spin" : ""}`} />
             Re-scanner

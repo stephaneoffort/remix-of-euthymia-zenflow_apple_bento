@@ -79,7 +79,13 @@ function TaskCard({ task, allTasks, onOpen, getMemberById, getProjectName }: {
   getMemberById: (id: string) => any;
   getProjectName: (listId: string) => any;
 }) {
-  const col = COLUMNS.find(c => c.key === task.status);
+/* ─── Task Card ─── */
+function TaskCard({ task, allTasks, onOpen, getMemberById, getProjectName, statusColor }: {
+  task: any; allTasks: any[]; onOpen: (id: string) => void;
+  getMemberById: (id: string) => any;
+  getProjectName: (listId: string) => any;
+  statusColor: string;
+}) {
   const project = task.listId ? getProjectName(task.listId) : null;
   const assignees = (task.assigneeIds ?? []).map((id: string) => getMemberById(id)).filter(Boolean);
   const daysLeft = task.dueDate ? differenceInDays(parseISO(task.dueDate), new Date()) : null;

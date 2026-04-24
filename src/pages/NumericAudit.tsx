@@ -212,6 +212,8 @@ export default function NumericAudit() {
     setAcceptances(prev => prev.filter(a => !ids.includes(a.id)));
     toast.success(`${ids.length} acceptation(s) obsolète(s) supprimée(s)`);
   };
+
+  /* ─── Loading / access guards ─── */
   if (loading || isAdmin === null) {
     return (
       <div className="flex items-center justify-center h-screen bg-background">

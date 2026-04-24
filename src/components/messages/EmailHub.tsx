@@ -116,18 +116,31 @@ export default function EmailHub() {
     if (account) syncAccount.mutate(account);
   };
 
-  const handleDelete = async (msg: EmailMessage) => {
+  const handleDelete = async (msg: EmailMessage, opts?: { skipConfirm?: boolean; keepView?: boolean }) => {
     if (!account) return;
-    if (!confirm('Supprimer cet email ?')) return;
+    if (!opts?.skipConfirm && !confirm('Supprimer cet email ?')) return;
     try {
       await emailAction({ account_id: account.id, message_id: msg.id, action: 'delete' });
       queryClient.invalidateQueries({ queryKey: ['email-messages'] });
-      setView('list');
-      setSelectedMessage(null);
+      if (!opts?.keepView) {
+        setView('list');
+        setSelectedMessage(null);
+      }
       toast.success('Email supprimé');
     } catch (e: any) {
       toast.error(e.message);
     }
+  };
+
+  const handleQuickReply = (msg: EmailMessage) => {
+    setReplyTo(msg);
+    setSelectedMessage(msg);
+    setView('compose');
+  };
+
+  const handleQuickDelete = async (msg: EmailMessage) => {
+    if (!confirm('Supprimer cet email ?')) return;
+    await handleDelete(msg, { skipConfirm: true, keepView: true });
   };
 
   const handleMarkRead = async (msg: EmailMessage) => {
@@ -350,28 +363,56 @@ export default function EmailHub() {
           </div>
         )}
         {messages.map(msg => (
-          <button
+          <div
             key={msg.id}
-            onClick={() => { setSelectedMessage(msg); setView('detail'); handleMarkRead(msg); }}
-            className={`w-full text-left px-4 py-3 border-b border-border hover:bg-muted transition-colors ${
+            className={`group relative w-full border-b border-border hover:bg-muted transition-colors ${
               !msg.is_read ? 'bg-primary/5' : ''
             }`}
           >
-            <div className="flex items-baseline justify-between gap-2 mb-0.5">
-              <span className={`text-sm truncate ${!msg.is_read ? 'font-semibold' : 'font-medium'}`}>
-                {msg.from_name || msg.from_address}
-              </span>
-              <span className="text-xs text-muted-foreground shrink-0">
-                {formatDistanceToNow(new Date(msg.received_at), { addSuffix: false, locale: fr })}
-              </span>
+            <button
+              onClick={() => { setSelectedMessage(msg); setView('detail'); handleMarkRead(msg); }}
+              className="w-full text-left px-4 py-3 pr-20"
+            >
+              <div className="flex items-baseline justify-between gap-2 mb-0.5">
+                <span className={`text-sm truncate ${!msg.is_read ? 'font-semibold' : 'font-medium'}`}>
+                  {msg.from_name || msg.from_address}
+                </span>
+                <span className="text-xs text-muted-foreground shrink-0">
+                  {formatDistanceToNow(new Date(msg.received_at), { addSuffix: false, locale: fr })}
+                </span>
+              </div>
+              <p className={`text-sm truncate ${!msg.is_read ? 'text-foreground' : 'text-muted-foreground'}`}>
+                {msg.subject || '(sans objet)'}
+              </p>
+              {msg.preview && (
+                <p className="text-xs text-muted-foreground truncate mt-0.5">{msg.preview}</p>
+              )}
+            </button>
+
+            {/* Quick actions — visibles au survol (toujours visibles sur mobile/tactile) */}
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-within:opacity-100 transition-opacity md:opacity-0 max-md:opacity-100">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 bg-background/80 backdrop-blur hover:bg-background shadow-sm"
+                title="Répondre"
+                onClick={(e) => { e.stopPropagation(); handleQuickReply(msg); }}
+              >
+                <Reply className="w-4 h-4" />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 bg-background/80 backdrop-blur hover:bg-background hover:text-destructive shadow-sm"
+                title="Supprimer"
+                onClick={(e) => { e.stopPropagation(); handleQuickDelete(msg); }}
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
             </div>
-            <p className={`text-sm truncate ${!msg.is_read ? 'text-foreground' : 'text-muted-foreground'}`}>
-              {msg.subject || '(sans objet)'}
-            </p>
-            {msg.preview && (
-              <p className="text-xs text-muted-foreground truncate mt-0.5">{msg.preview}</p>
-            )}
-          </button>
+          </div>
         ))}
       </div>
     </div>

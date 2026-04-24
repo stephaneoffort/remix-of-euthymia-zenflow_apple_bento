@@ -544,7 +544,7 @@ export default function GanttView() {
       {/* Color Picker Dialog */}
       {editingColor && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm" onClick={() => setEditingColor(null)}>
-          <div className="bg-popover border border-border rounded-xl shadow-xl p-5 w-64 space-y-3" onClick={e => e.stopPropagation()}>
+          <div className="bg-popover border border-border rounded-xl shadow-xl p-5 w-[calc(100%-2rem)] max-w-[16rem] space-y-3" onClick={e => e.stopPropagation()}>
             <h3 className="text-sm font-medium text-foreground">Choisir une couleur</h3>
             <div className="grid grid-cols-5 gap-2">
               {COLORS.map(c => (

@@ -136,6 +136,12 @@ export default function NumericAudit() {
     return { openCount, acceptedCount, total: rows.length };
   }, [rows]);
 
+  /* ─── Stale acceptances: violation no longer exists in current scan ─── */
+  const staleAcceptances = useMemo(() => {
+    const liveKeys = new Set(violations.map(v => violationKey(v)));
+    return acceptances.filter(a => !liveKeys.has(violationKey(a)));
+  }, [violations, acceptances]);
+
   /* ─── Lazy-load source context for a row ─── */
   const ensureContext = async (v: NumericViolation) => {
     const key = violationKey(v);

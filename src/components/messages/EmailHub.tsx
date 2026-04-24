@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Mail, Plus, Trash2, RefreshCw, Send, Reply, Inbox, AlertCircle, X, Check, Loader2
 } from 'lucide-react';
@@ -12,16 +12,28 @@ import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import gmailLogo from '@/assets/integrations/gmail.png';
 
-type View = 'list' | 'detail' | 'compose' | 'add-account';
+type View = 'list' | 'detail' | 'compose' | 'add-account' | 'choose-provider';
 
 export default function EmailHub() {
   const queryClient = useQueryClient();
-  const { accounts, isLoading, addImapAccount, deleteAccount, syncAccount } = useEmailAccounts();
+  const {
+    accounts, isLoading, addImapAccount, deleteAccount, syncAccount,
+    connectGmail, importLegacyGmail,
+  } = useEmailAccounts();
   const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
   const [view, setView] = useState<View>('list');
   const [selectedMessage, setSelectedMessage] = useState<EmailMessage | null>(null);
   const [replyTo, setReplyTo] = useState<EmailMessage | null>(null);
+
+  // Auto-import legacy Gmail connection on mount (one-shot)
+  useEffect(() => {
+    if (!isLoading && accounts.length === 0) {
+      importLegacyGmail.mutate();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading]);
 
   // Auto-select first account
   if (!selectedAccountId && accounts.length > 0) {
@@ -58,8 +70,26 @@ export default function EmailHub() {
     } catch {}
   };
 
-  if (accounts.length === 0 && !isLoading) {
-    return <AddAccountForm onSubmit={(p) => addImapAccount.mutate(p)} onCancel={() => {}} requireFirst />;
+  // Empty state — show provider chooser instead of a giant IMAP form
+  if (accounts.length === 0 && !isLoading && !importLegacyGmail.isPending) {
+    return (
+      <ProviderChooser
+        onPickGmail={connectGmail}
+        onPickImap={() => setView('add-account')}
+        embedded={false}
+      />
+    );
+  }
+
+  if (view === 'choose-provider') {
+    return (
+      <ProviderChooser
+        onPickGmail={connectGmail}
+        onPickImap={() => setView('add-account')}
+        onCancel={() => setView('list')}
+        embedded
+      />
+    );
   }
 
   if (view === 'add-account') {

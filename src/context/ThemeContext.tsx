@@ -86,6 +86,28 @@ interface ThemeContextType {
   setDesignMode: (mode: DesignMode) => void;
   typeVariant: TypeVariant;
   setTypeVariant: (variant: TypeVariant) => void;
+  /** Opacité du fond du TaskDetailPanel pour les thèmes Bento (0.5 → 1) */
+  taskPanelOpacity: number;
+  setTaskPanelOpacity: (value: number) => void;
+}
+
+/** Liste des palettes Bento — utilisée pour conditionner les réglages spécifiques. */
+export const BENTO_PALETTES: ThemePalette[] = [
+  "bento2026",
+  "bentoOcean",
+  "bentoRose",
+  "bentoAmber",
+  "bentoDunesCuivre",
+  "bentoCrepuscule",
+  "bentoBrumeArdoise",
+  "bentoPrunelle",
+  "bentoAzurProfond",
+  "bentoAuroreCorail",
+  "bentoBraiseNocturne",
+];
+
+export function isBentoPalette(p: ThemePalette): boolean {
+  return BENTO_PALETTES.includes(p);
 }
 
 const ThemeContext = createContext<ThemeContextType | null>(null);

@@ -151,7 +151,7 @@ export default function CalendarAccountsManager({ accounts, syncing, visibleAcco
             <button className="flex items-center gap-2 w-full px-1 py-1.5 text-sm font-medium text-foreground hover:text-primary transition-colors">
               <ChevronDown className={`w-4 h-4 transition-transform ${accountsOpen ? '' : '-rotate-90'}`} />
               Agendas connectés
-              <span className="text-xs text-muted-foreground">({visibleAccountIds.size}/{accounts.length})</span>
+              <span data-numeric className="font-numeric tabular-nums text-xs text-muted-foreground">({visibleAccountIds.size}/{accounts.length})</span>
             </button>
           </CollapsibleTrigger>
           <CollapsibleContent>

@@ -146,6 +146,8 @@ function TaskCard({ task, allTasks, onOpen, getMemberById, getProjectName }: {
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginLeft: "auto" }}>
           {daysLeft !== null && (
             <span
+              data-numeric
+              className="font-numeric tabular-nums"
               style={{
                 fontSize: 10, fontWeight: 500,
                 color: isDone ? C.green : isOverdue ? C.red : daysLeft <= 2 ? C.orange : C.muted,

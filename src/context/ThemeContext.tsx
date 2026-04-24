@@ -325,6 +325,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [typeVariant, setTypeVariantState] = useState<TypeVariant>(() => {
     return (localStorage.getItem("euthymia-type") as TypeVariant) || "default";
   });
+  const [taskPanelOpacity, setTaskPanelOpacityState] = useState<number>(() => {
+    const stored = localStorage.getItem("euthymia-task-panel-opacity");
+    const parsed = stored ? parseFloat(stored) : NaN;
+    if (Number.isFinite(parsed) && parsed >= 0.5 && parsed <= 1) return parsed;
+    return 1; // 100% par défaut → totalement opaque, lisibilité maximale
+  });
 
   const setTheme = (t: ThemeMode) => {
     const root = document.documentElement;
@@ -347,6 +353,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("euthymia-type", v);
   };
 
+  const setTaskPanelOpacity = (value: number) => {
+    const clamped = Math.min(1, Math.max(0.5, value));
+    setTaskPanelOpacityState(clamped);
+    localStorage.setItem("euthymia-task-panel-opacity", String(clamped));
+  };
+
   useEffect(() => {
     const root = document.documentElement;
     root.classList.remove("light", "dark", "mixed");
@@ -367,8 +379,24 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     root.dataset.typeVariant = typeVariant;
   }, [typeVariant]);
 
+  // Expose l'opacité du panneau de détail comme variable CSS globale
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      "--task-panel-bg-opacity",
+      String(taskPanelOpacity),
+    );
+  }, [taskPanelOpacity]);
+
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, palette, setPalette, designMode, setDesignMode, typeVariant, setTypeVariant }}>
+    <ThemeContext.Provider
+      value={{
+        theme, setTheme,
+        palette, setPalette,
+        designMode, setDesignMode,
+        typeVariant, setTypeVariant,
+        taskPanelOpacity, setTaskPanelOpacity,
+      }}
+    >
       {children}
     </ThemeContext.Provider>
   );

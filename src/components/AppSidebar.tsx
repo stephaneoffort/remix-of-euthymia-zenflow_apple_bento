@@ -36,7 +36,7 @@ import {
   Archive,
   Users,
   Sparkles,
-} from "lucide-react";
+  MessageSquare,
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   DropdownMenu,

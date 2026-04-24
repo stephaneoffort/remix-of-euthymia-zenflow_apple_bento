@@ -298,6 +298,79 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     },
   });
 
+  // Fetch task dependencies (cross-project blocking deps)
+  const { data: taskDependencies = [] } = useQuery({
+    queryKey: ['task_dependencies'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('task_dependencies').select('*');
+      if (error) throw error;
+      return (data || []).map(d => ({
+        id: d.id,
+        taskId: d.task_id,
+        dependsOnId: d.depends_on_id,
+        type: (d.type || 'FS') as 'FS' | 'SS' | 'FF' | 'SF',
+        lagDays: d.lag_days || 0,
+      })) as TaskDependency[];
+    },
+  });
+
+  // Fetch task reference links (cross-project)
+  const { data: taskLinks = [] } = useQuery({
+    queryKey: ['task_links'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('task_links' as any).select('*');
+      if (error) throw error;
+      return ((data as any[]) || []).map(l => ({
+        id: l.id,
+        taskId: l.task_id,
+        linkedTaskId: l.linked_task_id,
+        createdAt: l.created_at,
+      })) as TaskLink[];
+    },
+  });
+
+  const addTaskDependencyMutation = useMutation({
+    mutationFn: async ({ taskId, dependsOnId }: { taskId: string; dependsOnId: string }) => {
+      const { error } = await supabase.from('task_dependencies').insert({
+        task_id: taskId,
+        depends_on_id: dependsOnId,
+        type: 'FS',
+        lag_days: 0,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['task_dependencies'] }),
+    onError: (err: any) => toast.error(err?.message || "Impossible d'ajouter la dépendance"),
+  });
+
+  const removeTaskDependencyMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('task_dependencies').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['task_dependencies'] }),
+  });
+
+  const addTaskLinkMutation = useMutation({
+    mutationFn: async ({ taskId, linkedTaskId }: { taskId: string; linkedTaskId: string }) => {
+      const { error } = await supabase.from('task_links' as any).insert({
+        task_id: taskId,
+        linked_task_id: linkedTaskId,
+      } as any);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['task_links'] }),
+    onError: (err: any) => toast.error(err?.message || "Impossible d'ajouter le lien"),
+  });
+
+  const removeTaskLinkMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('task_links' as any).delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['task_links'] }),
+  });
+
   // Add task mutation
   const addTaskMutation = useMutation({
     mutationFn: async (task: Omit<Task, 'id' | 'createdAt' | 'order'>) => {

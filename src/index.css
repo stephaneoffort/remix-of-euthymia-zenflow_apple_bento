@@ -20,6 +20,22 @@ html, body {
 body {
   font-family: var(--font-body, 'Plus Jakarta Sans'), system-ui, ui-sans-serif, sans-serif;
 }
+
+/* Titres → font display (sauf zones Ivoire qui pilotent leurs propres polices) */
+:where(h1, h2, h3, h4, h5, h6):not(.nm-app *):not([data-no-display]) {
+  font-family: var(--font-display, 'Plus Jakarta Sans'), system-ui, sans-serif;
+}
+
+/* Chiffres → font numeric + tabular figures */
+[data-numeric]:not(.nm-app *) {
+  font-family: var(--font-numeric, 'Plus Jakarta Sans'), system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Utilitaires explicites (override prioritaire) */
+.font-display { font-family: var(--font-display, 'Plus Jakarta Sans'), system-ui, sans-serif; }
+.font-body    { font-family: var(--font-body, 'Plus Jakarta Sans'), system-ui, sans-serif; }
+.font-numeric { font-family: var(--font-numeric, 'Plus Jakarta Sans'), system-ui, sans-serif; font-variant-numeric: tabular-nums; }
 a, button, [role="button"], label, select, summary,
 [type="button"], [type="submit"], [type="reset"],
 .cursor-pointer, [data-state] {

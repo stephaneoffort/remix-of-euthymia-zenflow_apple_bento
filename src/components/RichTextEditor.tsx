@@ -185,7 +185,12 @@ export default function RichTextEditor({
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const rafRef = useRef<number | null>(null);
-  const [audioLevel, setAudioLevel] = useState(0); // 0..1
+  const [audioLevel, setAudioLevel] = useState(0); // 0..1 (normalisé après calibration)
+  const [isCalibrating, setIsCalibrating] = useState(false);
+  // Plancher de bruit ambiant mesuré au démarrage (RMS brut)
+  const noiseFloorRef = useRef(0.01);
+  // Plafond utilisé pour normaliser (s'adapte aux pics de voix)
+  const peakRef = useRef(0.15);
 
   // Détection iOS (Safari iOS gère mal `continuous: true`)
   const isIOS =

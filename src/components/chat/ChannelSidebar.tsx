@@ -92,7 +92,7 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
     if (!name) return;
     setCreating(true);
     const { error } = await db.from('chat_channels').insert({
-      name, description: newDesc.trim() || null, type: newType, position: channels.length,
+      name, description: newDesc.trim() || null, type: newType, position: channels.length, created_by: user?.id,
     });
     setCreating(false);
     if (error) {
@@ -123,9 +123,13 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
     }
     // Create new DM
     const { data: newChannel, error } = await db.from('chat_channels').insert({
-      name: `dm-${Date.now()}`, type: 'dm', description: null,
+      name: `dm-${Date.now()}`, type: 'dm', description: null, created_by: user.id,
     }).select().single();
-    if (error || !newChannel) { toast.error('Impossible de créer la conversation'); return; }
+    if (error || !newChannel) {
+      console.error('[startDm] create channel failed', error);
+      toast.error(`Impossible de créer la conversation: ${error?.message || 'erreur inconnue'}`);
+      return;
+    }
     await db.from('chat_channel_members').insert([
       { channel_id: newChannel.id, user_id: user.id },
       { channel_id: newChannel.id, user_id: targetAuthId },

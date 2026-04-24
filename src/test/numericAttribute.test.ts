@@ -200,40 +200,48 @@ function extractJsxTextSegments(masked: string): { text: string; offset: number 
 }
 
 /**
- * Find the opening JSX tag that directly encloses the JSX text segment
- * starting at `offset`. We rely on the masked source so attributes
- * cannot contain stray `<` or `>` characters.
+ * Walk back from position `from` (exclusive) and return the immediately
+ * previous JSX tag (opener, closer or self-closing).
  */
-function findEnclosingOpenTag(masked: string, offset: number): { tag: string; start: number } | null {
-  // Walk back to the `<` that opens our parent. The character right before
-  // `offset` should be the `>` of the parent's opening tag (possibly with
-  // whitespace in-between if we extracted aggressively, so be tolerant).
-  let i = offset - 1;
+function findPrevTag(masked: string, from: number): { start: number; end: number; isCloser: boolean; isSelfClosing: boolean } | null {
+  let i = from - 1;
   while (i >= 0 && /\s/.test(masked[i])) i--;
   if (i < 0 || masked[i] !== ">") return null;
-  const closeGt = i;
+  const end = i;
+  let j = end - 1;
+  while (j >= 0 && masked[j] !== "<") j--;
+  if (j < 0) return null;
+  const tagText = masked.slice(j, end + 1);
+  return {
+    start: j,
+    end,
+    isCloser: tagText.startsWith("</"),
+    isSelfClosing: /\/\s*>$/.test(tagText),
+  };
+}
 
-  // Walk back balancing nested complete sibling tags
-  let depth = 1;
-  let j = closeGt - 1;
-  while (j >= 0) {
-    const ch = masked[j];
-    if (ch === ">") depth++;
-    else if (ch === "<") {
-      depth--;
-      if (depth === 0) {
-        const tag = masked.slice(j, closeGt + 1);
-        if (tag.startsWith("</")) {
-          // This was a closing tag — keep walking past its opener
-          depth = 1;
-        } else {
-          return { tag, start: j };
-        }
-      }
+/**
+ * Find the opening JSX tag that directly encloses the JSX text segment
+ * starting at `offset`. Skips over balanced sibling pairs `<X>...</X>`
+ * and self-closing siblings `<X />`.
+ */
+function findEnclosingOpenTag(masked: string, offset: number): { tag: string; start: number } | null {
+  let cur = offset;
+  let pendingClosers = 0;
+  while (true) {
+    const t = findPrevTag(masked, cur);
+    if (!t) return null;
+    if (t.isCloser) {
+      pendingClosers++;
+    } else if (t.isSelfClosing) {
+      // self-closing sibling — neither encloses us nor needs balancing
+    } else if (pendingClosers > 0) {
+      pendingClosers--;
+    } else {
+      return { tag: masked.slice(t.start, t.end + 1), start: t.start };
     }
-    j--;
+    cur = t.start;
   }
-  return null;
 }
 
 function isNumericExpression(expr: string): boolean {

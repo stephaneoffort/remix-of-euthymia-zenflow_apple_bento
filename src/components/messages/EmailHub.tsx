@@ -1037,13 +1037,14 @@ function FilterChip({
 }
 
 function MessageRow({
-  msg, selected, onClick, onReply, onDelete,
+  msg, selected, onClick, onReply, onDelete, isMobile = false,
 }: {
   msg: EmailMessage;
   selected: boolean;
   onClick: () => void;
   onReply: () => void;
   onDelete: () => void;
+  isMobile?: boolean;
 }) {
   return (
     <li

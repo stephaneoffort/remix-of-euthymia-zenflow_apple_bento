@@ -372,7 +372,7 @@ function ChannelItem({ channel, isActive, onClick, icon, unread = 0 }: {
       <span className={isActive ? 'text-primary' : unread > 0 ? 'opacity-70' : 'opacity-40'}>{icon}</span>
       <span className="truncate flex-1 text-left">{channel.name}</span>
       {unread > 0 && !isActive && (
-        <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center shrink-0">
+        <span data-numeric className="font-numeric tabular-nums w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center shrink-0">
           {unread > 99 ? '99+' : unread}
         </span>
       )}
@@ -404,7 +404,7 @@ function DmItem({ channelId, isActive, onClick, partnerName, partnerColor, unrea
       </div>
       <span className="truncate flex-1 text-left">{displayName}</span>
       {unread > 0 && !isActive && (
-        <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center shrink-0">
+        <span data-numeric className="font-numeric tabular-nums w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center shrink-0">
           {unread > 99 ? '99+' : unread}
         </span>
       )}

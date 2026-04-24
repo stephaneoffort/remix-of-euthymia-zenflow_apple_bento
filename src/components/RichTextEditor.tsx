@@ -172,70 +172,143 @@ export default function RichTextEditor({
     editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
   }, [editor]);
 
-  // Voice dictation (Web Speech API)
+  // Voice dictation (Web Speech API) — optimisée mobile/iOS
   const recognitionRef = useRef<any>(null);
+  const shouldRestartRef = useRef(false);
+  const manualStopRef = useRef(false);
+  const interimTextRef = useRef('');
   const [isDictating, setIsDictating] = useState(false);
+  const [interimTranscript, setInterimTranscript] = useState('');
 
-  const toggleDictation = useCallback(() => {
+  // Détection iOS (Safari iOS gère mal `continuous: true`)
+  const isIOS =
+    typeof navigator !== 'undefined' &&
+    (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && (navigator as any).maxTouchPoints > 1));
+
+  const stopDictation = useCallback(() => {
+    manualStopRef.current = true;
+    shouldRestartRef.current = false;
+    if (recognitionRef.current) {
+      try { recognitionRef.current.stop(); } catch {}
+    }
+  }, []);
+
+  const startRecognition = useCallback(() => {
     if (!editor) return;
     const SpeechRecognition: any =
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      toast.error("La dictée vocale n'est pas supportée par ce navigateur (essayez Chrome ou Edge).");
-      return;
-    }
-
-    if (isDictating && recognitionRef.current) {
-      recognitionRef.current.stop();
-      return;
-    }
+    if (!SpeechRecognition) return;
 
     const recognition = new SpeechRecognition();
     recognition.lang = 'fr-FR';
-    recognition.continuous = true;
-    recognition.interimResults = false;
+    // iOS Safari : sessions courtes, pas de continuous
+    recognition.continuous = !isIOS;
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
 
     recognition.onresult = (event: any) => {
       let finalText = '';
+      let interim = '';
       for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
         if (event.results[i].isFinal) {
-          finalText += event.results[i][0].transcript;
+          finalText += transcript;
+        } else {
+          interim += transcript;
         }
       }
       if (finalText.trim()) {
-        const prefix = editor.isEmpty ? '' : ' ';
-        editor.chain().focus().insertContent(prefix + finalText.trim()).run();
+        const needsSpace = !editor.isEmpty;
+        editor.chain().focus().insertContent((needsSpace ? ' ' : '') + finalText.trim()).run();
+        interimTextRef.current = '';
+        setInterimTranscript('');
+      } else {
+        interimTextRef.current = interim;
+        setInterimTranscript(interim);
       }
     };
 
     recognition.onerror = (event: any) => {
       console.error('Speech recognition error:', event.error);
       if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-        toast.error("Accès au microphone refusé. Autorisez le micro dans les paramètres du navigateur.");
-      } else if (event.error !== 'aborted' && event.error !== 'no-speech') {
+        toast.error("Accès au microphone refusé. Autorisez le micro dans les paramètres du navigateur (iOS : Réglages › Safari › Microphone).");
+        shouldRestartRef.current = false;
+      } else if (event.error === 'no-speech') {
+        // sur iOS, normal en fin de session — on relance silencieusement
+      } else if (event.error === 'audio-capture') {
+        toast.error("Aucun microphone détecté.");
+        shouldRestartRef.current = false;
+      } else if (event.error !== 'aborted') {
         toast.error(`Erreur de dictée : ${event.error}`);
       }
-      setIsDictating(false);
     };
 
     recognition.onend = () => {
-      setIsDictating(false);
+      // Auto-restart sur iOS pour simuler le mode continu, sauf si arrêt manuel
+      if (shouldRestartRef.current && !manualStopRef.current) {
+        try {
+          recognition.start();
+          return;
+        } catch {
+          // ignore — on retombe sur l'arrêt
+        }
+      }
       recognitionRef.current = null;
+      setIsDictating(false);
+      setInterimTranscript('');
+      interimTextRef.current = '';
     };
 
     try {
       recognition.start();
       recognitionRef.current = recognition;
-      setIsDictating(true);
-      toast.success('🎤 Dictée en cours… Parlez maintenant.');
     } catch (e) {
       console.error('Failed to start recognition:', e);
       toast.error("Impossible de démarrer la dictée.");
+      setIsDictating(false);
+      shouldRestartRef.current = false;
     }
-  }, [editor, isDictating]);
+  }, [editor, isIOS]);
+
+  const toggleDictation = useCallback(async () => {
+    if (!editor) return;
+    const SpeechRecognition: any =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast.error("La dictée vocale n'est pas supportée par ce navigateur (essayez Chrome, Edge ou Safari récent).");
+      return;
+    }
+
+    if (isDictating) {
+      stopDictation();
+      return;
+    }
+
+    // Pré-demande de permission micro (améliore l'UX iOS et Android)
+    if (navigator.mediaDevices?.getUserMedia) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        // Libère immédiatement — la reconnaissance vocale gère son propre flux
+        stream.getTracks().forEach((t) => t.stop());
+      } catch (e: any) {
+        toast.error("Accès au microphone refusé. Vérifiez les permissions du navigateur.");
+        return;
+      }
+    }
+
+    manualStopRef.current = false;
+    shouldRestartRef.current = true;
+    setIsDictating(true);
+    setInterimTranscript('');
+    toast.success('🎤 Dictée en cours… Parlez maintenant.');
+    startRecognition();
+  }, [editor, isDictating, startRecognition, stopDictation]);
 
   useEffect(() => {
     return () => {
+      shouldRestartRef.current = false;
+      manualStopRef.current = true;
       if (recognitionRef.current) {
         try { recognitionRef.current.stop(); } catch {}
       }

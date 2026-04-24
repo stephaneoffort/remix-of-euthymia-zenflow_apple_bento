@@ -2,12 +2,14 @@ import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useMemo, useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useIntegrations } from "@/hooks/useIntegrations";
+import { useIntegrations, INTEGRATION_CONFIG } from "@/hooks/useIntegrations";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useZoom } from "@/hooks/useZoom";
+import { useBrevo } from "@/hooks/useBrevo";
 import { format, parseISO, isToday, isTomorrow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
+import type { Project } from "@/types";
 
 /* ─── Design tokens ─── */
 const BG = "#EDE6DA";

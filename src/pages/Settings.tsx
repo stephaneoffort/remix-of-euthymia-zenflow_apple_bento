@@ -518,9 +518,9 @@ function ThemePalettePanel() {
   };
 
   const PALETTE_GROUPS: { title: string; keys: ThemePalette[] }[] = [
-    { title: "Classiques", keys: ["clubroom", "neutrals", "sapphire", "cinematic", "teal"] },
-    { title: "Bento 2026", keys: ["bento2026", "bentoOcean", "bentoRose", "bentoAmber"] },
-    { title: "Soft UI (Neumorphisme)", keys: ["nmCloud", "nmMidnight", "nmSand", "nmForest", "nmLavender", "nmDeepForest", "ivoireChaud"] },
+    { title: "Classiques", keys: ["clubroom", "neutrals", "sapphire", "cinematic", "teal", "dunesCuivre", "crepuscule", "brumeArdoise", "prunelle", "azurProfond", "auroreCorail", "braiseNocturne"] },
+    { title: "Bento 2026", keys: ["bento2026", "bentoOcean", "bentoRose", "bentoAmber", "bentoDunesCuivre", "bentoCrepuscule", "bentoBrumeArdoise", "bentoPrunelle", "bentoAzurProfond", "bentoAuroreCorail", "bentoBraiseNocturne"] },
+    { title: "Soft UI (Neumorphisme)", keys: ["nmCloud", "nmMidnight", "nmSand", "nmForest", "nmLavender", "nmDeepForest", "ivoireChaud", "nmDunesCuivre", "nmCrepuscule", "nmBrumeArdoise", "nmPrunelle", "nmAzurProfond", "nmAuroreCorail", "nmBraiseNocturne"] },
   ];
 
   return (

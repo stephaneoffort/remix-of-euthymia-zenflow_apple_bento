@@ -137,6 +137,8 @@ export default function Index() {
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [quickAddTitle, setQuickAddTitle] = useState("");
+  const [quickAddSpaceId, setQuickAddSpaceId] = useState<string>("");
+  const [quickAddProjectId, setQuickAddProjectId] = useState<string>("");
   const [voiceAddOpen, setVoiceAddOpen] = useState(false);
   const [projectMemberIds, setProjectMemberIds] = useState<string[]>([]);
   const [todayEventCount, setTodayEventCount] = useState(0);

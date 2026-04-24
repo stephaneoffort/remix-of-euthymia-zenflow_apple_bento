@@ -1941,8 +1941,7 @@
 [data-palette="bento2026"]:not(.light):not(.mixed) .bg-card,
 [data-palette="bentoOcean"]:not(.light):not(.mixed) .bg-card,
 [data-palette="bentoRose"]:not(.light):not(.mixed) .bg-card,
-[data-palette="bentoAmber"]:not(.light):not(.mixed) .bg-card,
-[data-palette^="liquidGlass"].dark .bg-card {
+[data-palette="bentoAmber"]:not(.light):not(.mixed) .bg-card {
   text-shadow: 0 1px 3px rgba(0,0,0,0.4);
 }
 

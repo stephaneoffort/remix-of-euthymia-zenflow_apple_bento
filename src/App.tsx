@@ -110,6 +110,26 @@ const App = () => (
                 }
               />
               <Route
+                path="/mentions"
+                element={
+                  <ProtectedRoute>
+                    <AppProvider>
+                      <Mentions />
+                    </AppProvider>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/email"
+                element={
+                  <ProtectedRoute>
+                    <AppProvider>
+                      <EmailPage />
+                    </AppProvider>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/settings"
                 element={
                   <ProtectedRoute>

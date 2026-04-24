@@ -17,14 +17,20 @@ type ActiveTile = 'home' | 'mentions' | 'email';
 interface MessagesHubDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  initialTile?: ActiveTile;
 }
 
-export default function MessagesHubDialog({ open, onOpenChange }: MessagesHubDialogProps) {
+export default function MessagesHubDialog({ open, onOpenChange, initialTile = 'home' }: MessagesHubDialogProps) {
   const navigate = useNavigate();
   const { teamMemberId } = useAuth();
   const { totalUnread: chatUnread } = useChatNotifications();
   const { totalUnread: emailUnread } = useEmailAccounts();
-  const [activeTile, setActiveTile] = useState<ActiveTile>('home');
+  const [activeTile, setActiveTile] = useState<ActiveTile>(initialTile);
+
+  // Sync to initialTile whenever the dialog is (re)opened
+  useEffect(() => {
+    if (open) setActiveTile(initialTile);
+  }, [open, initialTile]);
 
   const { data: mentionsCount = 0 } = useQuery<number>({
     queryKey: ['mentions-count', teamMemberId],
@@ -41,7 +47,7 @@ export default function MessagesHubDialog({ open, onOpenChange }: MessagesHubDia
 
   const handleClose = (v: boolean) => {
     onOpenChange(v);
-    if (!v) setActiveTile('home');
+    if (!v) setActiveTile(initialTile);
   };
 
   return (

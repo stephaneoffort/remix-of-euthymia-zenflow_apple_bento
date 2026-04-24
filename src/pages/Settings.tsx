@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown, Palette, BellRing, HardDrive, CalendarSync } from 'lucide-react';
-import { useThemeMode, PALETTE_META, type ThemePalette } from '@/context/ThemeContext';
+import { useThemeMode, PALETTE_META, TYPE_META, type ThemePalette, type TypeVariant } from '@/context/ThemeContext';
 import DataExportImport from '@/components/DataExportImport';
 import InviteMemberDialog from '@/components/InviteMemberDialog';
 import IntegrationsSettings from '@/components/settings/IntegrationsSettings';

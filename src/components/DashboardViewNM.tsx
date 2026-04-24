@@ -1142,3 +1142,210 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
     </>
   );
 }
+
+/* ─── Resource card (Drive / Canva) – Premium neumorphic ─── */
+function NMResourceCard({
+  title, icon, accent, total, projects, countsByProject, emptyText, emptyHint, onProjectClick,
+}: {
+  title: string;
+  icon: string;
+  accent: string;
+  total: number;
+  projects: Project[];
+  countsByProject: Record<string, number>;
+  emptyText: string;
+  emptyHint: string;
+  onProjectClick: (id: string) => void;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const MAX = 5;
+  const projectsWithFiles = projects.filter((p) => (countsByProject[p.id] ?? 0) > 0);
+  const visible = expanded ? projectsWithFiles : projectsWithFiles.slice(0, MAX);
+  const remaining = projectsWithFiles.length - MAX;
+
+  return (
+    <Tile style={{ padding: "14px 16px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+        <img src={icon} alt="" style={{ width: 18, height: 18 }} />
+        <span style={{ fontSize: 14, fontWeight: 600, color: C.text, letterSpacing: 0.3 }}>{title}</span>
+        {total > 0 && (
+          <span data-numeric className="font-numeric tabular-nums" style={{
+            marginLeft: "auto", fontSize: 13, color: C.muted,
+            background: BG, borderRadius: 4, boxShadow: pill, padding: "1px 8px",
+          }}>
+            {total}
+          </span>
+        )}
+      </div>
+
+      {/* Stats triplet */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8, marginBottom: 12 }}>
+        {[
+          { label: "Total", value: total, color: accent },
+          { label: "Projets", value: projectsWithFiles.length, color: C.orange },
+          { label: "Récents", value: Math.min(total, 5), color: C.green },
+        ].map((s) => (
+          <div key={s.label} style={{
+            background: BG, borderRadius: 10, boxShadow: barIn,
+            padding: "8px 4px", textAlign: "center",
+          }}>
+            <p data-numeric className="font-numeric tabular-nums" style={{ fontSize: 17, fontWeight: 700, color: s.color, margin: 0 }}>{s.value}</p>
+            <p style={{ fontSize: 11, color: C.muted, margin: 0, fontWeight: 500 }}>{s.label}</p>
+          </div>
+        ))}
+      </div>
+
+      {projectsWithFiles.length === 0 ? (
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, padding: "16px 0" }}>
+          <div style={{
+            width: 38, height: 38, borderRadius: "50%", background: BG, boxShadow: barIn,
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <img src={icon} alt="" style={{ width: 18, height: 18, opacity: 0.5 }} />
+          </div>
+          <p style={{ fontSize: 13, color: C.muted, textAlign: "center", margin: 0 }}>{emptyText}</p>
+          <p style={{ fontSize: 11, color: C.light, textAlign: "center", margin: 0 }}>{emptyHint}</p>
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          {visible.map((project) => (
+            <button
+              key={project.id}
+              onClick={() => onProjectClick(project.id)}
+              style={{
+                display: "flex", alignItems: "center", gap: 8,
+                padding: "8px 6px", border: "none", background: "transparent",
+                borderRadius: 8, cursor: "pointer", textAlign: "left",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(160,140,108,0.08)")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+            >
+              <span style={{ width: 8, height: 8, borderRadius: "50%", background: project.color, flexShrink: 0 }} />
+              <span style={{ fontSize: 13, color: C.text, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {project.name}
+              </span>
+              <span data-numeric className="font-numeric tabular-nums" style={{
+                fontSize: 11, color: accent, fontWeight: 600,
+                background: BG, borderRadius: 4, boxShadow: pill, padding: "1px 6px",
+              }}>
+                {countsByProject[project.id] ?? 0}
+              </span>
+            </button>
+          ))}
+          {remaining > 0 && (
+            <button
+              onClick={() => setExpanded(!expanded)}
+              style={{
+                marginTop: 4, padding: "6px 0", border: "none", background: BG,
+                boxShadow: pill, borderRadius: 8, cursor: "pointer",
+                fontSize: 12, fontWeight: 600, color: accent,
+              }}
+            >
+              {expanded ? "Réduire" : `+${remaining} projet${remaining > 1 ? "s" : ""}`}
+            </button>
+          )}
+        </div>
+      )}
+    </Tile>
+  );
+}
+
+/* ─── Brevo Campaigns detail card – Premium neumorphic ─── */
+function NMBrevoCampaigns({ campaigns, loading }: { campaigns: any[]; loading: boolean }) {
+  const [expanded, setExpanded] = useState(false);
+  const MAX = 5;
+  const visible = expanded ? campaigns : campaigns.slice(0, MAX);
+  const remaining = campaigns.length - MAX;
+
+  const STATUS: Record<string, { label: string; color: string }> = {
+    sent: { label: "Envoyé", color: C.green },
+    draft: { label: "Brouillon", color: C.muted },
+    queued: { label: "Planifié", color: "#2D8CFF" },
+    suspended: { label: "Suspendu", color: C.red },
+  };
+
+  return (
+    <Tile style={{ padding: "14px 16px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+        <img src={INTEGRATION_CONFIG.brevo.icon} alt="" style={{ width: 18, height: 18 }} />
+        <span style={{ fontSize: 14, fontWeight: 600, color: C.text, letterSpacing: 0.3 }}>Campagnes Email</span>
+        {campaigns.length > 0 && (
+          <span data-numeric className="font-numeric tabular-nums" style={{
+            marginLeft: "auto", fontSize: 13, color: C.muted,
+            background: BG, borderRadius: 4, boxShadow: pill, padding: "1px 8px",
+          }}>
+            {campaigns.length}
+          </span>
+        )}
+      </div>
+
+      {loading ? (
+        <p style={{ fontSize: 13, color: C.muted, textAlign: "center", padding: "16px 0" }}>Chargement…</p>
+      ) : campaigns.length === 0 ? (
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, padding: "16px 0" }}>
+          <div style={{
+            width: 38, height: 38, borderRadius: "50%", background: BG, boxShadow: barIn,
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <img src={INTEGRATION_CONFIG.brevo.icon} alt="" style={{ width: 18, height: 18, opacity: 0.5 }} />
+          </div>
+          <p style={{ fontSize: 13, color: C.muted, textAlign: "center", margin: 0 }}>Aucune campagne</p>
+          <p style={{ fontSize: 11, color: C.light, textAlign: "center", margin: 0 }}>Crée ta première newsletter dans Brevo.</p>
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          {visible.map((c: any) => {
+            const sent = c.statistics?.globalStats?.sent ?? 0;
+            const opens = c.statistics?.globalStats?.uniqueOpens ?? 0;
+            const clicks = c.statistics?.globalStats?.uniqueClicks ?? 0;
+            const openRate = sent > 0 ? (opens / sent) * 100 : 0;
+            const clickRate = sent > 0 ? (clicks / sent) * 100 : 0;
+            const status = STATUS[c.status] ?? { label: c.status, color: C.muted };
+
+            return (
+              <div key={c.id} style={{
+                display: "flex", alignItems: "center", gap: 8,
+                padding: "8px 6px", borderRadius: 8,
+              }}>
+                <div style={{
+                  width: 28, height: 28, borderRadius: 8, background: BG, boxShadow: barIn,
+                  display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                }}>
+                  <img src={INTEGRATION_CONFIG.brevo.icon} alt="" style={{ width: 14, height: 14 }} />
+                </div>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <p style={{ fontSize: 13, color: C.text, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {c.name}
+                  </p>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 2 }}>
+                    <span style={{
+                      fontSize: 10, fontWeight: 600, color: status.color,
+                      background: BG, borderRadius: 3, boxShadow: pill, padding: "1px 5px",
+                    }}>
+                      {status.label}
+                    </span>
+                    <span data-numeric className="font-numeric tabular-nums" style={{ fontSize: 10, color: C.light }}>
+                      {openRate.toFixed(0)}% ouv. · {clickRate.toFixed(1)}% clics · {sent} env.
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+          {remaining > 0 && (
+            <button
+              onClick={() => setExpanded(!expanded)}
+              style={{
+                marginTop: 4, padding: "6px 0", border: "none", background: BG,
+                boxShadow: pill, borderRadius: 8, cursor: "pointer",
+                fontSize: 12, fontWeight: 600, color: C.orange,
+              }}
+            >
+              {expanded ? "Réduire" : `+${remaining} autre${remaining > 1 ? "s" : ""}`}
+            </button>
+          )}
+        </div>
+      )}
+    </Tile>
+  );
+}

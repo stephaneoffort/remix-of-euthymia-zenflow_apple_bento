@@ -24,7 +24,23 @@ export type ThemePalette =
   | "prunelle"
   | "azurProfond"
   | "auroreCorail"
-  | "braiseNocturne";
+  | "braiseNocturne"
+  // Variantes Bento (style mesh-gradient + bento-cell)
+  | "bentoDunesCuivre"
+  | "bentoCrepuscule"
+  | "bentoBrumeArdoise"
+  | "bentoPrunelle"
+  | "bentoAzurProfond"
+  | "bentoAuroreCorail"
+  | "bentoBraiseNocturne"
+  // Variantes Neumorphism (Soft UI)
+  | "nmDunesCuivre"
+  | "nmCrepuscule"
+  | "nmBrumeArdoise"
+  | "nmPrunelle"
+  | "nmAzurProfond"
+  | "nmAuroreCorail"
+  | "nmBraiseNocturne";
 
 export type DesignMode = "classic" | "neumorphic";
 

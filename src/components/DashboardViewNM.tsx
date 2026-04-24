@@ -730,6 +730,33 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
   const [driveByProject, setDriveByProject] = useState<Record<string, number>>({});
   const [canvaByProject, setCanvaByProject] = useState<Record<string, number>>({});
 
+  // Debug mode (Shift+D toggle) – per-project entity breakdown for attachments
+  type AttachmentDebugRow = { entity_id: string; entity_type: string };
+  type ProjectAttachmentBreakdown = Record<string, AttachmentDebugRow[]>;
+  const [debugMode, setDebugMode] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem("nm-dashboard-debug") === "1";
+  });
+  const [driveDebug, setDriveDebug] = useState<ProjectAttachmentBreakdown>({});
+  const [canvaDebug, setCanvaDebug] = useState<ProjectAttachmentBreakdown>({});
+  const [driveOrphans, setDriveOrphans] = useState<AttachmentDebugRow[]>([]);
+  const [canvaOrphans, setCanvaOrphans] = useState<AttachmentDebugRow[]>([]);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.shiftKey && (e.key === "D" || e.key === "d") && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        setDebugMode((d) => {
+          const next = !d;
+          try { localStorage.setItem("nm-dashboard-debug", next ? "1" : "0"); } catch {}
+          return next;
+        });
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
   // Brevo campaigns detail
   const [brevoCampaigns, setBrevoCampaigns] = useState<any[]>([]);
   const [brevoLoading, setBrevoLoading] = useState(false);

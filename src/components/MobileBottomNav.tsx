@@ -67,10 +67,16 @@ export default function MobileBottomNav({ onOpenVoice }: MobileBottomNavProps) {
     if (!isHome) navigate('/');
   };
 
-  const projectOptions = projects.map(p => {
-    const space = spaces.find(s => s.id === p.spaceId);
-    return { id: p.id, label: space ? `${space.name} › ${p.name}` : p.name };
-  });
+  const visibleSpaces = spaces.filter(s => !s.isArchived);
+  const projectsForSpace = projects.filter(p => p.spaceId === newSpaceId && !p.isArchived);
+
+  // Sync project si l'espace change
+  React.useEffect(() => {
+    if (!newSpaceId) return;
+    if (!projectsForSpace.find(p => p.id === newProjectId)) {
+      setNewProjectId(projectsForSpace[0]?.id || '');
+    }
+  }, [newSpaceId, projects]);
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 bg-card/95 backdrop-blur-md border-t border-border pb-[env(safe-area-inset-bottom)]">

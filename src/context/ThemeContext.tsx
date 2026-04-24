@@ -30,6 +30,39 @@ export type ThemePalette =
 
 export type DesignMode = "classic" | "neumorphic";
 
+export type TypeVariant = "default" | "editorial" | "geometric" | "nature";
+
+export const TYPE_META: Record<TypeVariant, { label: string; description: string; display: string; body: string; numeric: string }> = {
+  default: {
+    label: "Défaut",
+    description: "Plus Jakarta Sans · Équilibré & moderne",
+    display: "'Plus Jakarta Sans', system-ui, sans-serif",
+    body: "'Plus Jakarta Sans', system-ui, sans-serif",
+    numeric: "'Plus Jakarta Sans', system-ui, sans-serif",
+  },
+  editorial: {
+    label: "Éditorial",
+    description: "Fraunces + Inter · Magazine raffiné",
+    display: "'Fraunces', 'Playfair Display', Georgia, serif",
+    body: "'Inter', system-ui, sans-serif",
+    numeric: "'JetBrains Mono', 'Fira Code', monospace",
+  },
+  geometric: {
+    label: "Géométrique",
+    description: "Space Grotesk · Tech contemporain",
+    display: "'Space Grotesk', system-ui, sans-serif",
+    body: "'Space Grotesk', system-ui, sans-serif",
+    numeric: "'JetBrains Mono', 'Fira Code', monospace",
+  },
+  nature: {
+    label: "Nature",
+    description: "Playfair + DM Sans · Organique chaleureux",
+    display: "'Playfair Display', Georgia, serif",
+    body: "'DM Sans', system-ui, sans-serif",
+    numeric: "'DM Sans', system-ui, sans-serif",
+  },
+};
+
 interface ThemeContextType {
   theme: ThemeMode;
   setTheme: (theme: ThemeMode) => void;
@@ -37,6 +70,8 @@ interface ThemeContextType {
   setPalette: (palette: ThemePalette) => void;
   designMode: DesignMode;
   setDesignMode: (mode: DesignMode) => void;
+  typeVariant: TypeVariant;
+  setTypeVariant: (variant: TypeVariant) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | null>(null);

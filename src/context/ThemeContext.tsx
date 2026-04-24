@@ -221,6 +221,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [palette, setPaletteState] = useState<ThemePalette>(() => {
     return (localStorage.getItem("euthymia-palette") as ThemePalette) || "sapphire";
   });
+  const [typeVariant, setTypeVariantState] = useState<TypeVariant>(() => {
+    return (localStorage.getItem("euthymia-type") as TypeVariant) || "default";
+  });
 
   const setTheme = (t: ThemeMode) => {
     const root = document.documentElement;
@@ -238,6 +241,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setTimeout(() => root.classList.remove("palette-transitioning"), 100);
   };
 
+  const setTypeVariant = (v: TypeVariant) => {
+    setTypeVariantState(v);
+    localStorage.setItem("euthymia-type", v);
+  };
+
   useEffect(() => {
     const root = document.documentElement;
     root.classList.remove("light", "dark", "mixed");
@@ -249,8 +257,17 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     root.dataset.palette = palette;
   }, [palette]);
 
+  useEffect(() => {
+    const root = document.documentElement;
+    const meta = TYPE_META[typeVariant];
+    root.style.setProperty("--font-display", meta.display);
+    root.style.setProperty("--font-body", meta.body);
+    root.style.setProperty("--font-numeric", meta.numeric);
+    root.dataset.typeVariant = typeVariant;
+  }, [typeVariant]);
+
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, palette, setPalette, designMode, setDesignMode }}>
+    <ThemeContext.Provider value={{ theme, setTheme, palette, setPalette, designMode, setDesignMode, typeVariant, setTypeVariant }}>
       {children}
     </ThemeContext.Provider>
   );

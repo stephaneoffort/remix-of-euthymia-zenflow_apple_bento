@@ -1602,7 +1602,7 @@ export default function CalendarView() {
         <div className="flex items-center gap-3">
           <Popover>
             <PopoverTrigger asChild>
-              <button className="text-lg font-bold text-foreground hover:text-primary transition-colors">
+              <button className="font-display text-lg font-bold text-foreground hover:text-primary transition-colors">
                 {headerTitle}
               </button>
             </PopoverTrigger>

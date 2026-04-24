@@ -362,8 +362,8 @@ export default function KanbanBoard() {
                   style={{ width: `${pct}%`, backgroundColor: project.color }}
                 />
               </div>
-              <span className="text-xs font-semibold tabular-nums text-foreground">{pct}%</span>
-              <span className="text-label text-muted-foreground">{doneTasks}/{projectTasks.length}</span>
+              <span className="font-numeric text-xs font-semibold tabular-nums text-foreground">{pct}%</span>
+              <span className="font-numeric text-label text-muted-foreground">{doneTasks}/{projectTasks.length}</span>
             </div>
           </div>
         );
@@ -422,7 +422,7 @@ export default function KanbanBoard() {
                 >
                   <div className={`w-2 h-2 rounded-full ${isActive ? 'bg-primary-foreground/70' : getStatusColor(status)}`} />
                   {getStatusLabel(status)}
-                  <span className={`ml-0.5 tabular-nums ${isActive ? 'text-primary-foreground/80' : 'text-muted-foreground/60'}`}>{count}</span>
+                  <span className={`font-numeric ml-0.5 tabular-nums ${isActive ? 'text-primary-foreground/80' : 'text-muted-foreground/60'}`}>{count}</span>
                 </button>
               );
             })}

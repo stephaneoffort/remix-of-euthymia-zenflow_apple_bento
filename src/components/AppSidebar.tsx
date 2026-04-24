@@ -36,6 +36,7 @@ import {
   Archive,
   Users,
   Sparkles,
+  MessageSquare,
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
@@ -65,6 +66,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
 import { QuickFilter } from "@/types";
 import { useChatNotifications } from "@/hooks/useChatNotifications";
+import { useEmailAccounts } from "@/hooks/useEmailAccounts";
+import MessagesHubDialog from "@/components/messages/MessagesHubDialog";
 
 import { usePresence } from "@/hooks/usePresence";
 import SpaceAccessDialog from "@/components/SpaceAccessDialog";
@@ -746,10 +749,11 @@ export default function AppSidebar() {
                 </button>
               ))}
 
-              <ChatLink handleNavClick={handleNavClick} />
+              <MessagesButton onOpen={() => setMessagesHubOpen(true)} />
             </>
           )}
         </div>
+        <MessagesHubDialog open={messagesHubOpen} onOpenChange={setMessagesHubOpen} />
 
         {/* Spaces & Projects */}
         <div className="flex-1 overflow-y-auto scrollbar-thin px-3 py-3">

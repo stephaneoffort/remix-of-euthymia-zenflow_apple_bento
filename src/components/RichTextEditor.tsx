@@ -16,8 +16,9 @@ import {
   Bold, Italic, Underline as UnderlineIcon, Strikethrough,
   List, ListOrdered, Quote, Code, Heading1, Heading2,
   Link as LinkIcon, Image as ImageIcon, Table as TableIcon,
-  Highlighter, Palette, Undo, Redo, Minus
+  Highlighter, Palette, Undo, Redo, Minus, Mic, MicOff
 } from 'lucide-react';
+import { useVoiceDictation } from '@/hooks/useVoiceDictation';
 
 interface RichTextEditorProps {
   content: string;
@@ -77,6 +78,7 @@ export default function RichTextEditor({
   autofocus = false,
 }: RichTextEditorProps) {
   const lastSyncedContentRef = useRef(content);
+  const { isListening, interimText, isSupported, start, stop } = useVoiceDictation();
 
   const editor = useEditor({
     extensions: [
@@ -170,6 +172,18 @@ export default function RichTextEditor({
     if (!editor) return;
     editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
   }, [editor]);
+
+  const toggleDictation = useCallback(() => {
+    if (isListening) {
+      stop();
+    } else {
+      start((text) => {
+        if (editor) {
+          editor.chain().focus().insertContent(text).run();
+        }
+      });
+    }
+  }, [isListening, start, stop, editor]);
 
   if (!editor) return null;
 
@@ -276,6 +290,26 @@ export default function RichTextEditor({
           <Highlighter className={iconSize} />
         </ToolbarButton>
 
+        {isSupported && (
+          <>
+            <div className="w-px h-4 bg-border mx-1" />
+            <button
+              type="button"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={toggleDictation}
+              title={isListening ? 'Arrêter la dictée vocale' : 'Dicter par la voix'}
+              className={`p-1.5 rounded transition-colors shrink-0 flex items-center gap-1 ${
+                isListening
+                  ? 'bg-red-500/15 text-red-500 animate-pulse'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              }`}
+            >
+              {isListening ? <MicOff className={iconSize} /> : <Mic className={iconSize} />}
+              {isListening && <span className="text-[10px] font-medium">En cours…</span>}
+            </button>
+          </>
+        )}
+
         {!minimal && (
           <>
             <div className="flex-1" />
@@ -290,6 +324,12 @@ export default function RichTextEditor({
       </div>
 
       <EditorContent editor={editor} className="px-3 py-2 min-h-[60px] max-h-64 overflow-y-auto scrollbar-thin" />
+
+      {isListening && interimText && (
+        <div className="px-3 py-1.5 border-t border-border bg-red-500/5 text-red-500/70 text-xs italic">
+          {interimText}
+        </div>
+      )}
     </div>
   );
 }

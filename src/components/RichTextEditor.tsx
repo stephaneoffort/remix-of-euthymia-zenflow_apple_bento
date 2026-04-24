@@ -193,13 +193,76 @@ export default function RichTextEditor({
     (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
       (navigator.platform === 'MacIntel' && (navigator as any).maxTouchPoints > 1));
 
+  const stopAudioMeter = useCallback(() => {
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+    if (audioStreamRef.current) {
+      audioStreamRef.current.getTracks().forEach((t) => t.stop());
+      audioStreamRef.current = null;
+    }
+    if (audioContextRef.current) {
+      audioContextRef.current.close().catch(() => {});
+      audioContextRef.current = null;
+    }
+    analyserRef.current = null;
+    setAudioLevel(0);
+  }, []);
+
+  const startAudioMeter = useCallback(async (): Promise<boolean> => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioStreamRef.current = stream;
+      const Ctx: typeof AudioContext =
+        (window as any).AudioContext || (window as any).webkitAudioContext;
+      if (!Ctx) return true; // permission OK mais pas de meter possible
+
+      const ctx = new Ctx();
+      // iOS : reprise nécessaire après un geste utilisateur
+      if (ctx.state === 'suspended') {
+        try { await ctx.resume(); } catch {}
+      }
+      audioContextRef.current = ctx;
+      const source = ctx.createMediaStreamSource(stream);
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 512;
+      analyser.smoothingTimeConstant = 0.7;
+      source.connect(analyser);
+      analyserRef.current = analyser;
+
+      const data = new Uint8Array(analyser.frequencyBinCount);
+      const tick = () => {
+        if (!analyserRef.current) return;
+        analyserRef.current.getByteTimeDomainData(data);
+        // RMS sur signal centré (128 = silence)
+        let sum = 0;
+        for (let i = 0; i < data.length; i++) {
+          const v = (data[i] - 128) / 128;
+          sum += v * v;
+        }
+        const rms = Math.sqrt(sum / data.length);
+        // Boost perceptuel + clamp
+        const level = Math.min(1, rms * 3.5);
+        setAudioLevel(level);
+        rafRef.current = requestAnimationFrame(tick);
+      };
+      tick();
+      return true;
+    } catch (e) {
+      console.error('Audio meter failed:', e);
+      return false;
+    }
+  }, []);
+
   const stopDictation = useCallback(() => {
     manualStopRef.current = true;
     shouldRestartRef.current = false;
     if (recognitionRef.current) {
       try { recognitionRef.current.stop(); } catch {}
     }
-  }, []);
+    stopAudioMeter();
+  }, [stopAudioMeter]);
 
   const startRecognition = useCallback(() => {
     if (!editor) return;

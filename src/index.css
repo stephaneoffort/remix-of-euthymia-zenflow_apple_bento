@@ -15,6 +15,11 @@
 html, body {
   cursor: var(--cursor-default);
 }
+
+/* ─── Typographie globale pilotée par TypeVariant (ThemeContext) ─── */
+body {
+  font-family: var(--font-body, 'Plus Jakarta Sans'), system-ui, ui-sans-serif, sans-serif;
+}
 a, button, [role="button"], label, select, summary,
 [type="button"], [type="submit"], [type="reset"],
 .cursor-pointer, [data-state] {

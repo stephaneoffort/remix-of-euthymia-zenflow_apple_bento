@@ -186,7 +186,7 @@ export default function CsvTaskImport() {
         ) : (
           <div className="space-y-3">
             <div className="p-3 rounded-lg bg-muted/50 border border-border space-y-2">
-              <p className="text-sm font-medium text-foreground">
+              <p data-numeric className="font-numeric tabular-nums text-sm font-medium text-foreground">
                 {csvRows.length} tâche(s) détectée(s)
               </p>
               <div className="max-h-40 overflow-y-auto space-y-1">
@@ -198,7 +198,7 @@ export default function CsvTaskImport() {
                   </div>
                 ))}
                 {csvRows.length > 20 && (
-                  <p className="text-xs text-muted-foreground">…et {csvRows.length - 20} autres</p>
+                  <p data-numeric className="font-numeric tabular-nums text-xs text-muted-foreground">…et {csvRows.length - 20} autres</p>
                 )}
               </div>
             </div>

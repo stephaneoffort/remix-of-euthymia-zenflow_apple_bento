@@ -130,7 +130,7 @@ function TaskCard({ task, allTasks, onOpen, getMemberById, getProjectName }: {
               <rect x="1" y="1" width="14" height="14" rx="3" stroke={C.light} strokeWidth="1.3" fill="none" />
               <path d="M4.5 8.5L7 11L11.5 5.5" stroke={subtaskDone === subtasks.length ? C.green : "#5A8A58"} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <span style={{ fontSize: 10, fontWeight: 600, color: subtaskDone === subtasks.length ? C.green : "#5A8A58", fontFamily: "'DM Sans', sans-serif" }}>
+            <span data-numeric className="font-numeric tabular-nums" style={{ fontSize: 10, fontWeight: 600, color: subtaskDone === subtasks.length ? C.green : "#5A8A58", fontFamily: "'DM Sans', sans-serif" }}>
               {subtaskDone}/{subtasks.length}
             </span>
           </div>
@@ -146,6 +146,8 @@ function TaskCard({ task, allTasks, onOpen, getMemberById, getProjectName }: {
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginLeft: "auto" }}>
           {daysLeft !== null && (
             <span
+              data-numeric
+              className="font-numeric tabular-nums"
               style={{
                 fontSize: 10, fontWeight: 500,
                 color: isDone ? C.green : isOverdue ? C.red : daysLeft <= 2 ? C.orange : C.muted,
@@ -309,7 +311,7 @@ export default function KanbanBoardNM() {
           />
         </div>
         {!isMobile && (
-          <span style={{ fontSize: 12, color: C.light, fontWeight: 500, whiteSpace: "nowrap" }}>
+          <span data-numeric className="font-numeric tabular-nums" style={{ fontSize: 12, color: C.light, fontWeight: 500, whiteSpace: "nowrap" }}>
             {filtered.length} tâche{filtered.length !== 1 ? "s" : ""}
           </span>
         )}
@@ -510,6 +512,8 @@ export default function KanbanBoardNM() {
                         {col.label}
                       </span>
                       <span
+                        data-numeric
+                        className="font-numeric tabular-nums"
                         style={{
                           fontSize: 11, fontWeight: 600, color: C.light,
                           background: BG, boxShadow: raisedSm,

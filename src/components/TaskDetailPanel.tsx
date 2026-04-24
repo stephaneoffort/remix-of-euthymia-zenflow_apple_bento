@@ -598,7 +598,7 @@ export default function TaskDetailPanel() {
             {/* Attachments & Links */}
             <div>
               <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1">
-                <Paperclip className="w-3 h-3" /> Pièces jointes ({task.attachments.length})
+                <Paperclip className="w-3 h-3" /> Pièces jointes (<span data-numeric className="font-numeric tabular-nums">{task.attachments.length}</span>)
               </label>
 
               {task.attachments.length > 0 && (
@@ -778,7 +778,7 @@ export default function TaskDetailPanel() {
               <div className="flex items-center justify-between mb-2">
                 <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider flex items-center gap-1">
                   Sous-tâches
-                  {subtasks.length > 0 && <span className="text-foreground/60">({doneSubtasks.length}/{subtasks.length})</span>}
+                  {subtasks.length > 0 && <span data-numeric className="font-numeric tabular-nums text-foreground/60">({doneSubtasks.length}/{subtasks.length})</span>}
                 </label>
               </div>
 
@@ -834,7 +834,7 @@ export default function TaskDetailPanel() {
             {/* Comments */}
             <div>
               <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1">
-                <MessageSquare className="w-3.5 h-3.5" /> Commentaires ({task.comments.length})
+                <MessageSquare className="w-3.5 h-3.5" /> Commentaires (<span data-numeric className="font-numeric tabular-nums">{task.comments.length}</span>)
               </label>
               <div className="space-y-3 mb-3">
                 {task.comments.map(c => {

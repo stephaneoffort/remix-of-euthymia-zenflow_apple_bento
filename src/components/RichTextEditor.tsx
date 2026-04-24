@@ -180,11 +180,80 @@ export default function RichTextEditor({
   const [isDictating, setIsDictating] = useState(false);
   const [interimTranscript, setInterimTranscript] = useState('');
 
+  // Audio level meter (Web Audio API)
+  const audioStreamRef = useRef<MediaStream | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const [audioLevel, setAudioLevel] = useState(0); // 0..1
+
   // Détection iOS (Safari iOS gère mal `continuous: true`)
   const isIOS =
     typeof navigator !== 'undefined' &&
     (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
       (navigator.platform === 'MacIntel' && (navigator as any).maxTouchPoints > 1));
+
+  const stopAudioMeter = useCallback(() => {
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+    if (audioStreamRef.current) {
+      audioStreamRef.current.getTracks().forEach((t) => t.stop());
+      audioStreamRef.current = null;
+    }
+    if (audioContextRef.current) {
+      audioContextRef.current.close().catch(() => {});
+      audioContextRef.current = null;
+    }
+    analyserRef.current = null;
+    setAudioLevel(0);
+  }, []);
+
+  const startAudioMeter = useCallback(async (): Promise<boolean> => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioStreamRef.current = stream;
+      const Ctx: typeof AudioContext =
+        (window as any).AudioContext || (window as any).webkitAudioContext;
+      if (!Ctx) return true; // permission OK mais pas de meter possible
+
+      const ctx = new Ctx();
+      // iOS : reprise nécessaire après un geste utilisateur
+      if (ctx.state === 'suspended') {
+        try { await ctx.resume(); } catch {}
+      }
+      audioContextRef.current = ctx;
+      const source = ctx.createMediaStreamSource(stream);
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 512;
+      analyser.smoothingTimeConstant = 0.7;
+      source.connect(analyser);
+      analyserRef.current = analyser;
+
+      const data = new Uint8Array(analyser.frequencyBinCount);
+      const tick = () => {
+        if (!analyserRef.current) return;
+        analyserRef.current.getByteTimeDomainData(data);
+        // RMS sur signal centré (128 = silence)
+        let sum = 0;
+        for (let i = 0; i < data.length; i++) {
+          const v = (data[i] - 128) / 128;
+          sum += v * v;
+        }
+        const rms = Math.sqrt(sum / data.length);
+        // Boost perceptuel + clamp
+        const level = Math.min(1, rms * 3.5);
+        setAudioLevel(level);
+        rafRef.current = requestAnimationFrame(tick);
+      };
+      tick();
+      return true;
+    } catch (e) {
+      console.error('Audio meter failed:', e);
+      return false;
+    }
+  }, []);
 
   const stopDictation = useCallback(() => {
     manualStopRef.current = true;
@@ -192,7 +261,8 @@ export default function RichTextEditor({
     if (recognitionRef.current) {
       try { recognitionRef.current.stop(); } catch {}
     }
-  }, []);
+    stopAudioMeter();
+  }, [stopAudioMeter]);
 
   const startRecognition = useCallback(() => {
     if (!editor) return;
@@ -285,16 +355,11 @@ export default function RichTextEditor({
       return;
     }
 
-    // Pré-demande de permission micro (améliore l'UX iOS et Android)
-    if (navigator.mediaDevices?.getUserMedia) {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        // Libère immédiatement — la reconnaissance vocale gère son propre flux
-        stream.getTracks().forEach((t) => t.stop());
-      } catch (e: any) {
-        toast.error("Accès au microphone refusé. Vérifiez les permissions du navigateur.");
-        return;
-      }
+    // Démarre le meter audio (et demande la permission micro en même temps)
+    const meterOk = await startAudioMeter();
+    if (!meterOk) {
+      toast.error("Accès au microphone refusé. Vérifiez les permissions du navigateur.");
+      return;
     }
 
     manualStopRef.current = false;
@@ -303,7 +368,7 @@ export default function RichTextEditor({
     setInterimTranscript('');
     toast.success('🎤 Dictée en cours… Parlez maintenant.');
     startRecognition();
-  }, [editor, isDictating, startRecognition, stopDictation]);
+  }, [editor, isDictating, startRecognition, stopDictation, startAudioMeter]);
 
   useEffect(() => {
     return () => {
@@ -312,8 +377,9 @@ export default function RichTextEditor({
       if (recognitionRef.current) {
         try { recognitionRef.current.stop(); } catch {}
       }
+      stopAudioMeter();
     };
-  }, []);
+  }, [stopAudioMeter]);
 
   if (!editor) return null;
 
@@ -458,6 +524,31 @@ export default function RichTextEditor({
             <span className="relative inline-flex rounded-full h-2 w-2 bg-priority-urgent" />
           </span>
           <span className="font-medium shrink-0">Dictée en cours…</span>
+
+          {/* Visualiseur de niveau sonore — 5 barres réactives */}
+          <div
+            className="flex items-end gap-0.5 h-4 shrink-0"
+            aria-label={`Niveau sonore : ${Math.round(audioLevel * 100)}%`}
+            title={audioLevel < 0.05 ? 'Aucun son détecté — parlez plus fort' : 'Son détecté'}
+          >
+            {[0.15, 0.35, 0.55, 0.75, 0.9].map((threshold, i) => {
+              const active = audioLevel >= threshold;
+              const heights = ['h-1.5', 'h-2', 'h-2.5', 'h-3', 'h-4'];
+              return (
+                <span
+                  key={i}
+                  className={`w-1 rounded-sm transition-all duration-75 ${heights[i]} ${
+                    active ? 'bg-priority-urgent' : 'bg-priority-urgent/20'
+                  }`}
+                  style={{
+                    transform: active ? `scaleY(${0.6 + audioLevel * 0.6})` : 'scaleY(0.6)',
+                    transformOrigin: 'bottom',
+                  }}
+                />
+              );
+            })}
+          </div>
+
           {interimTranscript && (
             <span className="italic text-muted-foreground truncate">« {interimTranscript} »</span>
           )}

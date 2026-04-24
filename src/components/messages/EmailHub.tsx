@@ -79,7 +79,10 @@ export default function EmailHub() {
 
   // Auto-import a échoué : afficher l'erreur + actions de récupération
   if (importLegacyGmail.isError && accounts.length === 0) {
-    const errMsg = (importLegacyGmail.error as any)?.message || 'Erreur inconnue';
+    const err = importLegacyGmail.error as any;
+    const errMsg = err?.message || 'Erreur inconnue';
+    const errCode = err?.code || err?.status || (err?.response?.status) || null;
+    const fullError = err?.toString ? err.toString() : JSON.stringify(err, null, 2);
     return (
       <div className="flex flex-col items-center justify-center h-full gap-4 text-center px-6">
         <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
@@ -106,6 +109,24 @@ export default function EmailHub() {
           <Button size="sm" onClick={connectGmail}>
             <Mail className="w-4 h-4 mr-1.5" /> Reconnecter Gmail
           </Button>
+        </div>
+
+        {/* Diagnostic technique */}
+        <div className="w-full max-w-sm mt-2 text-left">
+          <div className="rounded-md border border-destructive/20 bg-destructive/5 p-3 space-y-1.5">
+            <div className="flex items-center gap-1.5 text-destructive">
+              <AlertCircle className="w-3.5 h-3.5" />
+              <span className="text-xs font-semibold uppercase tracking-wider">Diagnostic technique</span>
+            </div>
+            {errCode && (
+              <p className="text-xs font-mono text-destructive/90">
+                <span className="font-semibold">Code :</span> {errCode}
+              </p>
+            )}
+            <pre className="text-[11px] font-mono text-muted-foreground whitespace-pre-wrap break-all leading-relaxed max-h-40 overflow-y-auto">
+              {fullError}
+            </pre>
+          </div>
         </div>
       </div>
     );

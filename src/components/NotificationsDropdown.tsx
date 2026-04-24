@@ -167,7 +167,7 @@ export default function NotificationsDropdown() {
           )}
         </button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-80 p-0">
+      <PopoverContent align="end" sideOffset={8} collisionPadding={12} className="w-[min(20rem,calc(100vw-1.5rem))] max-h-[80dvh] overflow-y-auto p-0">
         <div className="px-4 py-3 border-b border-border flex items-center justify-between">
           <div>
             <h3 className="font-semibold text-sm text-foreground">Notifications</h3>

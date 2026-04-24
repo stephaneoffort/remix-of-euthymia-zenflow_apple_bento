@@ -733,6 +733,7 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
   // Brevo campaigns detail
   const [brevoCampaigns, setBrevoCampaigns] = useState<any[]>([]);
   const [brevoLoading, setBrevoLoading] = useState(false);
+  const [brevoError, setBrevoError] = useState<string | null>(null);
 
   // Zoom create dialog state
   const [zoomDialogOpen, setZoomDialogOpen] = useState(false);

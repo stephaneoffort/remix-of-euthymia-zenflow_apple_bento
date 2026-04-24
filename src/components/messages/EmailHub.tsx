@@ -116,18 +116,31 @@ export default function EmailHub() {
     if (account) syncAccount.mutate(account);
   };
 
-  const handleDelete = async (msg: EmailMessage) => {
+  const handleDelete = async (msg: EmailMessage, opts?: { skipConfirm?: boolean; keepView?: boolean }) => {
     if (!account) return;
-    if (!confirm('Supprimer cet email ?')) return;
+    if (!opts?.skipConfirm && !confirm('Supprimer cet email ?')) return;
     try {
       await emailAction({ account_id: account.id, message_id: msg.id, action: 'delete' });
       queryClient.invalidateQueries({ queryKey: ['email-messages'] });
-      setView('list');
-      setSelectedMessage(null);
+      if (!opts?.keepView) {
+        setView('list');
+        setSelectedMessage(null);
+      }
       toast.success('Email supprimé');
     } catch (e: any) {
       toast.error(e.message);
     }
+  };
+
+  const handleQuickReply = (msg: EmailMessage) => {
+    setReplyTo(msg);
+    setSelectedMessage(msg);
+    setView('compose');
+  };
+
+  const handleQuickDelete = async (msg: EmailMessage) => {
+    if (!confirm('Supprimer cet email ?')) return;
+    await handleDelete(msg, { skipConfirm: true, keepView: true });
   };
 
   const handleMarkRead = async (msg: EmailMessage) => {

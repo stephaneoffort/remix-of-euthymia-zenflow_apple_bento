@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   Mail, Plus, Trash2, RefreshCw, Send, Reply, Inbox, AlertCircle, X, Check, Loader2,
   History, ChevronDown, ChevronUp, Search, Star, Archive, Clock, Tag, AtSign, Newspaper,
-  CornerUpLeft, MoreHorizontal,
+  CornerUpLeft, MoreHorizontal, Paperclip, Download,
 } from 'lucide-react';
 import { useEmailAccounts, useEmailMessages, sendEmail, emailAction, EmailAccount, EmailMessage } from '@/hooks/useEmailAccounts';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,111 @@ import { fr } from 'date-fns/locale';
 import gmailLogo from '@/assets/integrations/gmail.png';
 
 type View = 'list' | 'detail' | 'compose' | 'add-account' | 'choose-provider';
+
+// ----- Pièces jointes : helpers -----
+interface AttachmentInfo {
+  name: string;
+  size?: number;
+  mimeType?: string;
+  url?: string;
+}
+
+function getAttachmentList(msg: { attachments?: any; has_attachments?: boolean }): AttachmentInfo[] {
+  const raw = msg.attachments;
+  if (!raw) return [];
+  let arr: any[] = [];
+  if (Array.isArray(raw)) arr = raw;
+  else if (typeof raw === 'string') {
+    try { const parsed = JSON.parse(raw); if (Array.isArray(parsed)) arr = parsed; } catch { return []; }
+  } else if (typeof raw === 'object') {
+    arr = [raw];
+  }
+  return arr
+    .map((a): AttachmentInfo | null => {
+      if (!a) return null;
+      const name = a.name || a.filename || a.file_name || a.title || 'pièce jointe';
+      const size = typeof a.size === 'number' ? a.size : typeof a.file_size === 'number' ? a.file_size : undefined;
+      const mimeType = a.mime_type || a.mimeType || a.contentType || a.content_type;
+      const url = a.url || a.download_url || a.href;
+      return { name, size, mimeType, url };
+    })
+    .filter((a): a is AttachmentInfo => a !== null);
+}
+
+function formatFileSize(bytes?: number): string {
+  if (bytes == null || isNaN(bytes)) return '';
+  if (bytes < 1024) return `${bytes} o`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} Ko`;
+  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} Mo`;
+  return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} Go`;
+}
+
+function AttachmentBadge({ count, className = '' }: { count: number; className?: string }) {
+  if (count <= 0) return null;
+  return (
+    <span
+      className={`inline-flex items-center gap-0.5 text-[11px] text-muted-foreground tabular-nums ${className}`}
+      title={`${count} pièce${count > 1 ? 's' : ''} jointe${count > 1 ? 's' : ''}`}
+    >
+      <Paperclip className="w-3 h-3" />
+      {count}
+    </span>
+  );
+}
+
+function AttachmentList({ attachments }: { attachments: AttachmentInfo[] }) {
+  if (attachments.length === 0) return null;
+  return (
+    <div className="mt-4 pt-3 border-t border-border/60">
+      <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+        <Paperclip className="w-3 h-3" />
+        {attachments.length} pièce{attachments.length > 1 ? 's' : ''} jointe{attachments.length > 1 ? 's' : ''}
+      </div>
+      <ul className="grid gap-1.5 sm:grid-cols-2">
+        {attachments.map((att, i) => {
+          const ext = att.name.split('.').pop()?.toUpperCase().slice(0, 4) || 'FILE';
+          const Inner = (
+            <>
+              <span className="shrink-0 w-8 h-8 rounded-md bg-muted border border-border flex items-center justify-center text-[9px] font-bold text-muted-foreground">
+                {ext}
+              </span>
+              <span className="flex-1 min-w-0">
+                <span className="block text-xs font-medium text-foreground truncate" title={att.name}>
+                  {att.name}
+                </span>
+                {att.size != null && (
+                  <span className="block text-[10px] text-muted-foreground">{formatFileSize(att.size)}</span>
+                )}
+              </span>
+              {att.url && <Download className="w-3.5 h-3.5 text-muted-foreground shrink-0" />}
+            </>
+          );
+          return (
+            <li key={i}>
+              {att.url ? (
+                <a
+                  href={att.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download={att.name}
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex items-center gap-2 p-2 rounded-md border border-border bg-card hover:bg-muted/60 hover:border-primary/40 transition-colors"
+                >
+                  {Inner}
+                </a>
+              ) : (
+                <div className="flex items-center gap-2 p-2 rounded-md border border-border bg-card">
+                  {Inner}
+                </div>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
 
 // Historique local des échecs d'auto-import Gmail
 const IMPORT_HISTORY_KEY = 'gmail_autoimport_failures';
@@ -655,6 +760,11 @@ function ConversationView({
     setExpandedIds(new Set(latest ? [latest.id] : []));
   };
 
+  const totalAttachments = useMemo(
+    () => thread.reduce((sum, m) => sum + getAttachmentList(m).length, 0),
+    [thread]
+  );
+
   return (
     <>
       <h2 className="text-2xl font-semibold tracking-tight text-foreground mb-2 leading-snug">
@@ -662,13 +772,20 @@ function ConversationView({
       </h2>
 
       {isThread && (
-        <div className="flex items-center justify-between gap-2 mb-4 pb-3 border-b border-border">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <div className="flex items-center justify-between gap-2 mb-4 pb-3 border-b border-border flex-wrap">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
             <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-muted/60 border border-border">
               <Mail className="w-3 h-3" />
               <span className="font-medium text-foreground">{thread.length}</span>
               <span>messages dans cette conversation</span>
             </span>
+            {totalAttachments > 0 && (
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-muted/60 border border-border">
+                <Paperclip className="w-3 h-3" />
+                <span className="font-medium text-foreground">{totalAttachments}</span>
+                <span>pièce{totalAttachments > 1 ? 's' : ''} jointe{totalAttachments > 1 ? 's' : ''}</span>
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-1">
             <button
@@ -710,67 +827,87 @@ function ConversationView({
                   : ''
               }`}
             >
-              <button
-                onClick={() => toggle(msg.id)}
-                className={`w-full text-left flex items-start gap-3 ${
-                  isThread ? 'p-3' : 'pb-4 mb-5 border-b border-border'
-                } ${expanded && isThread ? 'border-b border-border/60' : ''}`}
-              >
-                <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-semibold shrink-0 relative z-10">
-                  {(msg.from_name || msg.from_address).charAt(0).toUpperCase()}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-baseline justify-between gap-2 flex-wrap">
-                    <p className="text-sm font-medium text-foreground truncate">
-                      {msg.from_name || msg.from_address}
-                      {!msg.is_read && (
-                        <span className="ml-2 inline-block w-1.5 h-1.5 rounded-full bg-primary align-middle" />
+              {(() => {
+                const msgAtts = getAttachmentList(msg);
+                return (
+                  <>
+                    <button
+                      onClick={() => toggle(msg.id)}
+                      className={`w-full text-left flex items-start gap-3 ${
+                        isThread ? 'p-3' : 'pb-4 mb-5 border-b border-border'
+                      } ${expanded && isThread ? 'border-b border-border/60' : ''}`}
+                    >
+                      <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-semibold shrink-0 relative z-10">
+                        {(msg.from_name || msg.from_address).charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-baseline justify-between gap-2 flex-wrap">
+                          <p className="text-sm font-medium text-foreground truncate">
+                            {msg.from_name || msg.from_address}
+                            {!msg.is_read && (
+                              <span className="ml-2 inline-block w-1.5 h-1.5 rounded-full bg-primary align-middle" />
+                            )}
+                          </p>
+                          <span className="flex items-center gap-2 shrink-0">
+                            <AttachmentBadge count={msgAtts.length} />
+                            <span className="text-xs text-muted-foreground">
+                              {new Date(msg.received_at).toLocaleString('fr-FR', {
+                                day: 'numeric', month: 'short',
+                                hour: '2-digit', minute: '2-digit',
+                              })}
+                            </span>
+                          </span>
+                        </div>
+                        {expanded ? (
+                          <>
+                            <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                              &lt;{msg.from_address}&gt;
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              À : <span className="text-foreground/80">{msg.to_addresses.join(', ')}</span>
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <p className="text-xs text-muted-foreground truncate mt-0.5">
+                              {msg.preview || msg.body_text?.slice(0, 140) || '…'}
+                            </p>
+                            {msgAtts.length > 0 && (
+                              <p className="text-[11px] text-muted-foreground/80 truncate mt-0.5 italic">
+                                <Paperclip className="inline w-3 h-3 mr-1 -mt-0.5" />
+                                {msgAtts.slice(0, 3).map(a => a.name).join(', ')}
+                                {msgAtts.length > 3 && ` + ${msgAtts.length - 3}`}
+                              </p>
+                            )}
+                          </>
+                        )}
+                      </div>
+                      {isThread && (
+                        <span className="shrink-0 text-muted-foreground mt-1">
+                          {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                        </span>
                       )}
-                    </p>
-                    <span className="text-xs text-muted-foreground shrink-0">
-                      {new Date(msg.received_at).toLocaleString('fr-FR', {
-                        day: 'numeric', month: 'short',
-                        hour: '2-digit', minute: '2-digit',
-                      })}
-                    </span>
-                  </div>
-                  {expanded ? (
-                    <>
-                      <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                        &lt;{msg.from_address}&gt;
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        À : <span className="text-foreground/80">{msg.to_addresses.join(', ')}</span>
-                      </p>
-                    </>
-                  ) : (
-                    <p className="text-xs text-muted-foreground truncate mt-0.5">
-                      {msg.preview || msg.body_text?.slice(0, 140) || '…'}
-                    </p>
-                  )}
-                </div>
-                {isThread && (
-                  <span className="shrink-0 text-muted-foreground mt-1">
-                    {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                  </span>
-                )}
-              </button>
+                    </button>
 
-              {expanded && (
-                <div className={`prose prose-sm max-w-none dark:prose-invert text-foreground/90 leading-relaxed ${
-                  isThread ? 'px-4 pb-4 pt-3' : ''
-                }`}>
-                  {msg.body_html ? (
-                    <div dangerouslySetInnerHTML={{ __html: msg.body_html }} />
-                  ) : (
-                    <pre className="whitespace-pre-wrap font-sans text-sm">{msg.body_text}</pre>
-                  )}
-                </div>
-              )}
+                    {expanded && (
+                      <div className={`${isThread ? 'px-4 pb-4 pt-3' : ''}`}>
+                        <div className="prose prose-sm max-w-none dark:prose-invert text-foreground/90 leading-relaxed">
+                          {msg.body_html ? (
+                            <div dangerouslySetInnerHTML={{ __html: msg.body_html }} />
+                          ) : (
+                            <pre className="whitespace-pre-wrap font-sans text-sm">{msg.body_text}</pre>
+                          )}
+                        </div>
+                        <AttachmentList attachments={msgAtts} />
+                      </div>
+                    )}
 
-              {!expanded && isThread && !isLast && (
-                <div className="h-2" />
-              )}
+                    {!expanded && isThread && !isLast && (
+                      <div className="h-2" />
+                    )}
+                  </>
+                );
+              })()}
             </li>
           );
         })}
@@ -870,8 +1007,14 @@ function MessageRow({
           <span className={`text-sm truncate ${!msg.is_read ? 'font-semibold text-foreground' : 'font-medium text-foreground/85'}`}>
             {msg.from_name || msg.from_address}
           </span>
-          <span className="text-[11px] text-muted-foreground shrink-0 tabular-nums">
-            {formatDistanceToNow(new Date(msg.received_at), { addSuffix: false, locale: fr })}
+          <span className="flex items-center gap-1.5 shrink-0">
+            {(() => {
+              const count = getAttachmentList(msg).length;
+              return count > 0 ? <AttachmentBadge count={count} /> : null;
+            })()}
+            <span className="text-[11px] text-muted-foreground tabular-nums">
+              {formatDistanceToNow(new Date(msg.received_at), { addSuffix: false, locale: fr })}
+            </span>
           </span>
         </div>
         <p className={`text-[13px] truncate leading-snug ${!msg.is_read ? 'text-foreground' : 'text-foreground/75'}`}>

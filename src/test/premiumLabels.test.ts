@@ -62,10 +62,15 @@ describe("Switch design mode — libellé « Premium »", () => {
     it(`${name} : affiche « Premium » (et non « Ivoire ») dans les libellés visibles`, () => {
       const literals = extractStringLiterals(src);
 
-      const visibleIvoire = literals.filter((s) => /Ivoire/i.test(s));
+      // On ignore les identifiants techniques en camelCase (ex: "ivoireChaud")
+      // qui restent comme clés de palette mais ne sont jamais affichés.
+      const TECH_IDS = new Set(["ivoireChaud"]);
+      const visibleIvoire = literals.filter(
+        (s) => /Ivoire/i.test(s) && !TECH_IDS.has(s),
+      );
       expect(
         visibleIvoire,
-        `Chaînes visibles contenant « Ivoire » à supprimer : ${JSON.stringify(visibleIvoire)}`,
+        `Libellés visibles contenant « Ivoire » à supprimer : ${JSON.stringify(visibleIvoire)}`,
       ).toEqual([]);
 
       const hasPremium = literals.some((s) => /Premium/.test(s));

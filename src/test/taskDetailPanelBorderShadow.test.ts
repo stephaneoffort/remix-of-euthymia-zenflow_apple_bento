@@ -1,18 +1,15 @@
-/**
- * Test : bordures & ombres du TaskDetailPanel en mode Bento.
- *
- * Garanties vérifiées :
- *  1. Le conteneur racine de TaskDetailPanel utilise les classes opaques
- *     `border-border` et `shadow-xl`, et n'introduit AUCUNE classe Tailwind
- *     translucide (`border-*/<n>`, `bg-*/<n>`, `shadow-none`, `border-transparent`)
- *     qui laisserait passer le mesh-gradient Bento.
- *  2. Pour chaque palette `bento*` (default/light/mixed/dark), la variable
- *     CSS `--border` (consommée par `border-border`) est définie en HSL
- *     opaque — jamais `transparent`, jamais une rgba/hsla avec alpha < 1.
- *  3. Aucune palette Bento ne neutralise `.shadow-xl` (ou ne le redéfinit
- *     avec un alpha global ≤ 0) au point de rendre l'ombre invisible :
- *     l'ombre matérialise visuellement la séparation du panneau.
- */
+// Test : bordures & ombres du TaskDetailPanel en mode Bento.
+//
+// Garanties vérifiées :
+//  1. Le conteneur racine de TaskDetailPanel utilise les classes opaques
+//     `border-border` et `shadow-xl`, et n'introduit AUCUNE classe Tailwind
+//     translucide (border-*<slash>N, bg-*<slash>N, shadow-none, border-transparent)
+//     qui laisserait passer le mesh-gradient Bento.
+//  2. Pour chaque palette `bento*` (default/light/mixed/dark), la variable
+//     CSS `--border` (consommée par `border-border`) est définie en HSL
+//     opaque — jamais `transparent`, jamais une rgba/hsla avec alpha < 1.
+//  3. Aucune palette Bento ne neutralise `.shadow-xl` au point de rendre
+//     l'ombre invisible : l'ombre matérialise la séparation du panneau.
 
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";

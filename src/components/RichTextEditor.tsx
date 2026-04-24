@@ -180,6 +180,13 @@ export default function RichTextEditor({
   const [isDictating, setIsDictating] = useState(false);
   const [interimTranscript, setInterimTranscript] = useState('');
 
+  // Audio level meter (Web Audio API)
+  const audioStreamRef = useRef<MediaStream | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const [audioLevel, setAudioLevel] = useState(0); // 0..1
+
   // Détection iOS (Safari iOS gère mal `continuous: true`)
   const isIOS =
     typeof navigator !== 'undefined' &&

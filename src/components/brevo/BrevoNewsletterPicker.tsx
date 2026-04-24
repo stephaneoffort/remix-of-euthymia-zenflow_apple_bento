@@ -133,7 +133,7 @@ export default function BrevoNewsletterPicker({ open, onClose, entityType, entit
                       <span>Envoyée le {format(new Date(c.sent_date), 'd MMM yyyy', { locale: fr })}</span>
                     )}
                     {c.open_rate != null && (
-                      <span>Taux ouverture : {(c.open_rate * 100).toFixed(0)}%</span>
+                      <span data-numeric className="font-numeric tabular-nums">Taux ouverture : {(c.open_rate * 100).toFixed(0)}%</span>
                     )}
                   </div>
                   <Button

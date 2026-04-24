@@ -136,7 +136,7 @@ export default function BentoDashboard() {
           <div className="bento-cell-header">
             <Flame className="w-4 h-4 bento-icon-urgent" />
             <span className="bento-cell-title">Urgent</span>
-            <span className="bento-badge bento-badge-urgent">{urgentTasks.length}</span>
+            <span data-numeric className="bento-badge bento-badge-urgent">{urgentTasks.length}</span>
           </div>
 
           {urgentTasks.length === 0 ? (
@@ -177,7 +177,7 @@ export default function BentoDashboard() {
           <div className="bento-cell-header">
             <CheckCircle2 className="w-4 h-4 bento-icon-blue" />
             <span className="bento-cell-title">Mes tâches</span>
-            <span className="bento-badge bento-badge-blue">{myTasks.length}</span>
+            <span data-numeric className="bento-badge bento-badge-blue">{myTasks.length}</span>
           </div>
 
           {myTasks.length === 0 ? (
@@ -195,7 +195,7 @@ export default function BentoDashboard() {
                   </div>
                 </div>
               ))}
-              {myTasks.length > 3 && <p className="bento-more">+{myTasks.length - 3} autres</p>}
+              {myTasks.length > 3 && <p data-numeric className="bento-more">+{myTasks.length - 3} autres</p>}
             </div>
           )}
 
@@ -211,7 +211,7 @@ export default function BentoDashboard() {
           <div className="bento-cell-header">
             <Clock className="w-4 h-4 bento-icon-amber" />
             <span className="bento-cell-title">Aujourd'hui</span>
-            <span className="bento-badge bento-badge-amber">{dueTodayTasks.length}</span>
+            <span data-numeric className="bento-badge bento-badge-amber">{dueTodayTasks.length}</span>
           </div>
 
           {dueTodayTasks.length === 0 ? (
@@ -329,8 +329,8 @@ export default function BentoDashboard() {
                   </div>
                 </div>
                 <div style={{ textAlign: "right", flexShrink: 0 }}>
-                  <span className="bento-project-pct">{p.pct}%</span>
-                  <p className="text-[10px] text-muted-foreground mt-px">
+                  <span data-numeric className="bento-project-pct">{p.pct}%</span>
+                  <p data-numeric className="text-[10px] text-muted-foreground mt-px">
                     {p.done}/{p.total}
                   </p>
                 </div>

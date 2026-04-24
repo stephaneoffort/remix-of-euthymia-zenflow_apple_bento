@@ -76,7 +76,7 @@ export default function TaskChecklist({ taskId }: TaskChecklistProps) {
       <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider mb-2 flex items-center gap-1">
         <CheckSquare className="w-3.5 h-3.5" /> Checklist
         {items.length > 0 && (
-          <span className="text-foreground/60">({checkedCount}/{items.length})</span>
+          <span data-numeric className="font-numeric tabular-nums text-foreground/60">({checkedCount}/{items.length})</span>
         )}
       </label>
 

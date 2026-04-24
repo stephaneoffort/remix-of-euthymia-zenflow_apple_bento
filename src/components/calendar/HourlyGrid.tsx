@@ -302,7 +302,7 @@ function DayAllDayZone({ items, onTaskClick, onEventClick }: {
     <div className="border-b border-border bg-muted/20 shrink-0">
       <div className="flex items-center gap-2 px-3 py-1.5">
         <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider shrink-0">Toute la journée</span>
-        <span className="text-[10px] text-muted-foreground">{items.length}</span>
+        <span data-numeric className="font-numeric tabular-nums text-[10px] text-muted-foreground">{items.length}</span>
       </div>
       <div className="px-3 pb-2 flex flex-wrap gap-1 max-h-[120px] overflow-y-auto">
         {items.map(item => {

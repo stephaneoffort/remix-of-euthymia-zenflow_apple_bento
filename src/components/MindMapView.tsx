@@ -366,7 +366,7 @@ export default function MindMapView() {
         <button onClick={() => setZoom(z => Math.min(2, z + 0.15))} className="p-1.5 rounded-md hover:bg-muted transition-colors shrink-0" title="Zoom +">
           <ZoomIn className="w-4 h-4 text-muted-foreground" />
         </button>
-        <span className="text-xs text-muted-foreground w-10 text-center shrink-0">{Math.round(zoom * 100)}%</span>
+        <span data-numeric className="font-numeric tabular-nums text-xs text-muted-foreground w-10 text-center shrink-0">{Math.round(zoom * 100)}%</span>
         <button onClick={() => setZoom(z => Math.max(0.2, z - 0.15))} className="p-1.5 rounded-md hover:bg-muted transition-colors shrink-0" title="Zoom -">
           <ZoomOut className="w-4 h-4 text-muted-foreground" />
         </button>
@@ -612,7 +612,7 @@ function NodeCard({ positioned, expandedIds, visibleDepth, toggleExpand, onSelec
                 className="mt-1 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-primary/10 text-primary text-[10px] font-semibold hover:bg-primary/20 transition-colors"
               >
                 <Plus className="w-2.5 h-2.5" />
-                {children.length} direct{totalDescendants > children.length && ` · ${totalDescendants} au total`}
+                <span data-numeric className="font-numeric tabular-nums">{children.length} direct{totalDescendants > children.length && ` · ${totalDescendants} au total`}</span>
               </button>
             )}
           </div>

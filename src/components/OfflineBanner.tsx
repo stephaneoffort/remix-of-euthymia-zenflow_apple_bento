@@ -74,7 +74,9 @@ export default function OfflineBanner() {
         <>
           <WifiOff className="w-4 h-4" />
           Mode hors-ligne
-          {queuedCount > 0 && ` — ${queuedCount} modification${queuedCount > 1 ? 's' : ''} en attente`}
+          {queuedCount > 0 && (
+            <span data-numeric className="font-numeric tabular-nums">{` — ${queuedCount} modification${queuedCount > 1 ? 's' : ''} en attente`}</span>
+          )}
         </>
       )}
     </div>

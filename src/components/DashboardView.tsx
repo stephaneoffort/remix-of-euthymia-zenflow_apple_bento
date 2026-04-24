@@ -512,11 +512,11 @@ export default function DashboardView() {
                     </div>
                     <div className="min-w-0">
                       <p className="text-sm font-medium text-foreground truncate">{m.name}</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p data-numeric className="font-numeric tabular-nums text-xs text-muted-foreground">
                         {m.total} tâche{m.total !== 1 ? "s" : ""}
                       </p>
                     </div>
-                    <span className="text-xs font-semibold text-primary ml-auto">{m.completion}%</span>
+                    <span data-numeric className="font-numeric tabular-nums text-xs font-semibold text-primary ml-auto">{m.completion}%</span>
                   </div>
                   <Progress value={m.completion} className="h-1.5" />
                 </CardContent>

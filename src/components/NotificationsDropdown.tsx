@@ -171,7 +171,7 @@ export default function NotificationsDropdown() {
         <div className="px-4 py-3 border-b border-border flex items-center justify-between">
           <div>
             <h3 className="font-semibold text-sm text-foreground">Notifications</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <p data-numeric className="font-numeric tabular-nums text-xs text-muted-foreground mt-0.5">
               {totalCount === 0 ? 'Aucune notification' : `${totalCount} notification${totalCount > 1 ? 's' : ''}`}
             </p>
           </div>

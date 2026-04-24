@@ -438,7 +438,7 @@ export default function Index() {
                     >
                       <Filter className="w-3.5 h-3.5" />
                       {filterCount > 0 && (
-                        <span className="bg-primary text-primary-foreground rounded-full w-4 h-4 flex items-center justify-center text-label">
+                        <span data-numeric className="font-numeric tabular-nums bg-primary text-primary-foreground rounded-full w-4 h-4 flex items-center justify-center text-label">
                           {filterCount}
                         </span>
                       )}

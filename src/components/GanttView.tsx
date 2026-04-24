@@ -707,7 +707,7 @@ export default function GanttView() {
                             step={5}
                             onValueChange={([v]) => handleProgressChange(task.id, v)}
                           />
-                          <div className="text-xs text-muted-foreground text-center mt-1">{task.progress ?? 0}%</div>
+                          <div data-numeric className="font-numeric tabular-nums text-xs text-muted-foreground text-center mt-1">{task.progress ?? 0}%</div>
                         </>
                       )}
                     </PopoverContent>

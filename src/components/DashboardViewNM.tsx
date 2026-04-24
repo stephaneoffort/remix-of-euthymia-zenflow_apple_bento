@@ -279,7 +279,7 @@ export default function DashboardViewNM() {
                           <div style={{ height: 3, borderRadius: 2, background: colors[i], width: `${pct}%` }} />
                         </div>
                       </div>
-                      <span style={{ fontSize: 12, color: C.light, whiteSpace: "nowrap" }}>{taskLabel} · {pct}%</span>
+                      <span data-numeric className="font-numeric tabular-nums" style={{ fontSize: 12, color: C.light, whiteSpace: "nowrap" }}>{taskLabel} · {pct}%</span>
                     </div>
                   );
                 })
@@ -592,7 +592,7 @@ export default function DashboardViewNM() {
                         <div style={{ height: 2, borderRadius: 1, background: colors[i], width: `${pct}%` }} />
                       </div>
                     </div>
-                    <span style={{ fontSize: 15, color: C.light, whiteSpace: "nowrap" }}>{taskLabel} · {pct}%</span>
+                    <span data-numeric className="font-numeric tabular-nums" style={{ fontSize: 15, color: C.light, whiteSpace: "nowrap" }}>{taskLabel} · {pct}%</span>
                   </div>
                 );
               })

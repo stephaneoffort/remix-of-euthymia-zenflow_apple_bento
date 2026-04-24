@@ -25,6 +25,9 @@ export interface EmailAccount {
   last_sync_at: string | null;
   last_sync_error: string | null;
   unread_count: number;
+  oauth_access_token?: string | null;
+  oauth_refresh_token?: string | null;
+  oauth_token_expiry?: string | null;
 }
 
 export interface EmailMessage {
@@ -113,19 +116,22 @@ export function useEmailAccounts() {
 
   const syncAccount = useMutation({
     mutationFn: async (account: EmailAccount) => {
-      if (account.account_type !== 'imap') {
-        throw new Error('Sync Gmail non implémentée ici');
-      }
       const { data: { session } } = await supabase.auth.getSession();
+      const endpoint =
+        account.account_type === 'gmail' ? 'gmail-sync' : 'imap-fetch';
+      const body =
+        account.account_type === 'gmail'
+          ? { account_id: account.id, limit: 25 }
+          : { account_id: account.id, folder: 'INBOX', limit: 30 };
       const res = await fetch(
-        `https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/imap-fetch`,
+        `https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/${endpoint}`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${session?.access_token}`,
           },
-          body: JSON.stringify({ account_id: account.id, folder: 'INBOX', limit: 30 }),
+          body: JSON.stringify(body),
         }
       );
       if (!res.ok) {
@@ -139,6 +145,61 @@ export function useEmailAccounts() {
       queryClient.invalidateQueries({ queryKey: ['email-messages'] });
     },
     onError: (e: any) => toast.error(e.message || 'Sync échouée'),
+  });
+
+  // Connect another Gmail account via OAuth (multi-account)
+  const connectGmail = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      toast.error('Session expirée');
+      return;
+    }
+    const url = `https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/gmail-account-oauth/authorize?token=${encodeURIComponent(session.access_token)}`;
+    window.location.href = url;
+  };
+
+  // Auto-import legacy gmail_connections row → email_accounts (one-shot)
+  const importLegacyGmail = useMutation({
+    mutationFn: async () => {
+      if (!user) return null;
+      const { data: legacy } = await db
+        .from('gmail_connections')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      if (!legacy?.email) return null;
+
+      // Already imported?
+      const { data: existing } = await db
+        .from('email_accounts')
+        .select('id')
+        .eq('user_id', user.id)
+        .ilike('email_address', legacy.email)
+        .maybeSingle();
+      if (existing) return null;
+
+      const { data, error } = await db
+        .from('email_accounts')
+        .insert({
+          user_id: user.id,
+          account_type: 'gmail',
+          email_address: legacy.email,
+          display_name: legacy.display_name || legacy.email,
+          oauth_access_token: legacy.access_token,
+          oauth_refresh_token: legacy.refresh_token,
+          oauth_token_expiry: legacy.token_expiry,
+        })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data) => {
+      if (data) {
+        queryClient.invalidateQueries({ queryKey: ['email-accounts'] });
+        toast.success('Compte Gmail importé automatiquement');
+      }
+    },
   });
 
   return {

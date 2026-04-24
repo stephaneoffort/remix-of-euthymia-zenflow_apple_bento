@@ -1883,6 +1883,25 @@
 
 /* ─── bg-background for bento palettes now uses opaque HSL from variables ─── */
 
+/* ─── Opacité ajustable du TaskDetailPanel sur les thèmes Bento ───
+   La variable --task-panel-bg-opacity (0.5 → 1) est pilotée depuis ThemeContext.
+   On ne touche QUE le panneau de détail (.task-detail-panel), pas le bg global. */
+[data-palette="bento2026"] .task-detail-panel,
+[data-palette="bentoOcean"] .task-detail-panel,
+[data-palette="bentoRose"] .task-detail-panel,
+[data-palette="bentoAmber"] .task-detail-panel,
+[data-palette="bentoDunesCuivre"] .task-detail-panel,
+[data-palette="bentoCrepuscule"] .task-detail-panel,
+[data-palette="bentoBrumeArdoise"] .task-detail-panel,
+[data-palette="bentoPrunelle"] .task-detail-panel,
+[data-palette="bentoAzurProfond"] .task-detail-panel,
+[data-palette="bentoAuroreCorail"] .task-detail-panel,
+[data-palette="bentoBraiseNocturne"] .task-detail-panel {
+  background-color: hsl(var(--background) / var(--task-panel-bg-opacity, 1)) !important;
+  backdrop-filter: blur(calc((1 - var(--task-panel-bg-opacity, 1)) * 24px)) saturate(1.4);
+  -webkit-backdrop-filter: blur(calc((1 - var(--task-panel-bg-opacity, 1)) * 24px)) saturate(1.4);
+}
+
 /* ─── Glass cards (shadcn) for bento palettes (light/mixed) ─── */
 [data-palette="bento2026"].light .bg-card,
 [data-palette="bento2026"].mixed .bg-card,

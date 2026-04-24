@@ -508,8 +508,15 @@ function StatusesPanel() {
 
 
 function ThemePalettePanel() {
-  const { palette, setPalette, theme, setTheme, designMode, setDesignMode, typeVariant, setTypeVariant } = useThemeMode();
+  const {
+    palette, setPalette,
+    theme, setTheme,
+    designMode, setDesignMode,
+    typeVariant, setTypeVariant,
+    taskPanelOpacity, setTaskPanelOpacity,
+  } = useThemeMode();
   const palettes = Object.entries(PALETTE_META) as [ThemePalette, typeof PALETTE_META[ThemePalette]][];
+  const isBento = palette.startsWith("bento");
 
   const handleSelect = (key: ThemePalette) => {
     if (key === palette) return;

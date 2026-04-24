@@ -810,7 +810,7 @@ export default function AppSidebar() {
                 )}
               </button>
               <button
-                onClick={() => { setMessagesHubOpen(true); handleNavClick(); }}
+                onClick={() => { openMessagesHub('mentions'); handleNavClick(); }}
                 className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors text-sidebar-fg hover:bg-sidebar-hover"
               >
                 <AtSign className="w-4 h-4" />
@@ -822,7 +822,7 @@ export default function AppSidebar() {
                 )}
               </button>
               <button
-                onClick={() => { setMessagesHubOpen(true); handleNavClick(); }}
+                onClick={() => { openMessagesHub('email'); handleNavClick(); }}
                 className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors text-sidebar-fg hover:bg-sidebar-hover"
               >
                 <Mail className="w-4 h-4" />
@@ -834,7 +834,7 @@ export default function AppSidebar() {
                 )}
               </button>
               <button
-                onClick={() => { setMessagesHubOpen(true); handleNavClick(); }}
+                onClick={() => { openMessagesHub('home'); handleNavClick(); }}
                 className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-xs transition-colors text-sidebar-fg/70 hover:bg-sidebar-hover hover:text-sidebar-fg mt-1"
               >
                 <MessageSquare className="w-3.5 h-3.5" />
@@ -843,7 +843,7 @@ export default function AppSidebar() {
             </>
           )}
         </div>
-        <MessagesHubDialog open={messagesHubOpen} onOpenChange={setMessagesHubOpen} />
+        <MessagesHubDialog open={messagesHubOpen} onOpenChange={setMessagesHubOpen} initialTile={messagesHubTile} />
 
         {/* Spaces & Projects */}
         <div className="flex-1 overflow-y-auto scrollbar-thin px-3 py-3">

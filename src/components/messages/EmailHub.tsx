@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Mail, Plus, Trash2, RefreshCw, Send, Reply, Inbox, AlertCircle, X, Check, Loader2
 } from 'lucide-react';
@@ -12,16 +12,28 @@ import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import gmailLogo from '@/assets/integrations/gmail.png';
 
-type View = 'list' | 'detail' | 'compose' | 'add-account';
+type View = 'list' | 'detail' | 'compose' | 'add-account' | 'choose-provider';
 
 export default function EmailHub() {
   const queryClient = useQueryClient();
-  const { accounts, isLoading, addImapAccount, deleteAccount, syncAccount } = useEmailAccounts();
+  const {
+    accounts, isLoading, addImapAccount, deleteAccount, syncAccount,
+    connectGmail, importLegacyGmail,
+  } = useEmailAccounts();
   const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
   const [view, setView] = useState<View>('list');
   const [selectedMessage, setSelectedMessage] = useState<EmailMessage | null>(null);
   const [replyTo, setReplyTo] = useState<EmailMessage | null>(null);
+
+  // Auto-import legacy Gmail connection on mount (one-shot)
+  useEffect(() => {
+    if (!isLoading && accounts.length === 0) {
+      importLegacyGmail.mutate();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading]);
 
   // Auto-select first account
   if (!selectedAccountId && accounts.length > 0) {
@@ -58,8 +70,26 @@ export default function EmailHub() {
     } catch {}
   };
 
-  if (accounts.length === 0 && !isLoading) {
-    return <AddAccountForm onSubmit={(p) => addImapAccount.mutate(p)} onCancel={() => {}} requireFirst />;
+  // Empty state — show provider chooser instead of a giant IMAP form
+  if (accounts.length === 0 && !isLoading && !importLegacyGmail.isPending) {
+    return (
+      <ProviderChooser
+        onPickGmail={connectGmail}
+        onPickImap={() => setView('add-account')}
+        embedded={false}
+      />
+    );
+  }
+
+  if (view === 'choose-provider') {
+    return (
+      <ProviderChooser
+        onPickGmail={connectGmail}
+        onPickImap={() => setView('add-account')}
+        onCancel={() => setView('list')}
+        embedded
+      />
+    );
   }
 
   if (view === 'add-account') {
@@ -147,7 +177,7 @@ export default function EmailHub() {
         <Button variant="ghost" size="sm" onClick={handleSync} disabled={syncAccount.isPending}>
           {syncAccount.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
         </Button>
-        <Button variant="ghost" size="sm" onClick={() => setView('add-account')}>
+        <Button variant="ghost" size="sm" onClick={() => setView('choose-provider')}>
           <Plus className="w-4 h-4 mr-1" /> Compte
         </Button>
         <div className="flex-1" />
@@ -419,6 +449,70 @@ function ComposeView({
             className="font-sans"
           />
         </div>
+      </div>
+    </div>
+  );
+}
+
+function ProviderChooser({
+  onPickGmail, onPickImap, onCancel, embedded,
+}: {
+  onPickGmail: () => void;
+  onPickImap: () => void;
+  onCancel?: () => void;
+  embedded?: boolean;
+}) {
+  return (
+    <div className="flex flex-col h-full">
+      <div className="px-6 py-4 border-b border-border flex items-center justify-between">
+        <div>
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <Mail className="w-5 h-5 text-primary" />
+            {embedded ? 'Ajouter un compte email' : 'Connecter une boîte mail'}
+          </h2>
+          <p className="text-xs text-muted-foreground mt-1">
+            Choisissez votre fournisseur. Vous pouvez ajouter plusieurs comptes.
+          </p>
+        </div>
+        {onCancel && (
+          <Button type="button" variant="ghost" size="sm" onClick={onCancel}>
+            <X className="w-4 h-4" />
+          </Button>
+        )}
+      </div>
+      <div className="flex-1 overflow-y-auto p-6 grid sm:grid-cols-2 gap-3">
+        <button
+          onClick={onPickGmail}
+          className="group flex flex-col items-start gap-3 p-5 rounded-xl border border-border bg-card hover:border-primary/50 hover:shadow-md transition-all text-left"
+        >
+          <img src={gmailLogo} alt="Gmail" className="w-10 h-10" />
+          <div>
+            <h3 className="font-semibold text-sm">Gmail</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Connexion sécurisée via Google. Idéal — pas de mot de passe à saisir.
+            </p>
+          </div>
+          <span className="mt-auto text-xs text-primary font-medium group-hover:underline">
+            Se connecter avec Google →
+          </span>
+        </button>
+        <button
+          onClick={onPickImap}
+          className="group flex flex-col items-start gap-3 p-5 rounded-xl border border-border bg-card hover:border-primary/50 hover:shadow-md transition-all text-left"
+        >
+          <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
+            <Mail className="w-5 h-5 text-muted-foreground" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-sm">Autre (IMAP/SMTP)</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Yahoo, Outlook, OVH, ProtonMail, hébergement perso… Configuration manuelle.
+            </p>
+          </div>
+          <span className="mt-auto text-xs text-primary font-medium group-hover:underline">
+            Configurer manuellement →
+          </span>
+        </button>
       </div>
     </div>
   );

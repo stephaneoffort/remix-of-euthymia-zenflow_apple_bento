@@ -72,13 +72,88 @@ Deno.serve(async (req) => {
       .eq("user_id", user.id)
       .maybeSingle();
 
-    if (!account || account.account_type !== "imap") {
-      return new Response(JSON.stringify({ error: "IMAP account not found" }), {
+    if (!account) {
+      return new Response(JSON.stringify({ error: "Account not found" }), {
         status: 404,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
+    // ===== Gmail OAuth path =====
+    if (account.account_type === "gmail") {
+      let accessToken = account.oauth_access_token as string;
+      const expiry = account.oauth_token_expiry
+        ? new Date(account.oauth_token_expiry).getTime()
+        : 0;
+      if (expiry - Date.now() <= 5 * 60 * 1000) {
+        if (!account.oauth_refresh_token) throw new Error("Reconnect Gmail");
+        const r = await fetch("https://oauth2.googleapis.com/token", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            client_id: Deno.env.get("GOOGLE_CLIENT_ID") ?? "",
+            client_secret: Deno.env.get("GOOGLE_CLIENT_SECRET") ?? "",
+            refresh_token: account.oauth_refresh_token,
+            grant_type: "refresh_token",
+          }),
+        });
+        const t = await r.json();
+        if (t.error) throw new Error(`Refresh failed: ${t.error}`);
+        accessToken = t.access_token;
+        await supabase
+          .from("email_accounts")
+          .update({
+            oauth_access_token: t.access_token,
+            oauth_token_expiry: new Date(Date.now() + t.expires_in * 1000).toISOString(),
+          })
+          .eq("id", account.id);
+      }
+
+      const gid = msg.external_id;
+      if (action === "mark_read") {
+        await fetch(
+          `https://gmail.googleapis.com/gmail/v1/users/me/messages/${gid}/modify`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ removeLabelIds: ["UNREAD"] }),
+          }
+        );
+        await supabase.from("email_messages").update({ is_read: true }).eq("id", message_id);
+      } else if (action === "mark_unread") {
+        await fetch(
+          `https://gmail.googleapis.com/gmail/v1/users/me/messages/${gid}/modify`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ addLabelIds: ["UNREAD"] }),
+          }
+        );
+        await supabase.from("email_messages").update({ is_read: false }).eq("id", message_id);
+      } else if (action === "delete") {
+        await fetch(
+          `https://gmail.googleapis.com/gmail/v1/users/me/messages/${gid}/trash`,
+          {
+            method: "POST",
+            headers: { Authorization: `Bearer ${accessToken}` },
+          }
+        );
+        await supabase.from("email_messages").delete().eq("id", message_id);
+      }
+
+      return new Response(JSON.stringify({ success: true }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // ===== IMAP path =====
     const client = new ImapFlow({
       host: account.imap_host,
       port: account.imap_port || 993,

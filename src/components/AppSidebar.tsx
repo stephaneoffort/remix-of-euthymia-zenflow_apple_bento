@@ -241,6 +241,7 @@ export default function AppSidebar() {
     null,
   );
   const [filtersExpanded, setFiltersExpanded] = useState(() => !window.matchMedia("(max-width: 767px)").matches);
+  const [spacesExpanded, setSpacesExpanded] = useState(true);
   const [accessDialogSpace, setAccessDialogSpace] = useState<{ id: string; name: string; isPrivate: boolean } | null>(
     null,
   );

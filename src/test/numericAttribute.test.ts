@@ -201,13 +201,16 @@ function extractJsxTextSegments(masked: string): { text: string; offset: number 
 
 /**
  * Walk back from position `from` (exclusive) and return the immediately
- * previous JSX tag (opener, closer or self-closing).
+ * previous JSX tag (opener, closer or self-closing). Skips over text
+ * content (anything that is not `<` or `>`) until a tag boundary is found.
  */
 function findPrevTag(masked: string, from: number): { start: number; end: number; isCloser: boolean; isSelfClosing: boolean } | null {
+  // Find the previous `>`
   let i = from - 1;
-  while (i >= 0 && /\s/.test(masked[i])) i--;
-  if (i < 0 || masked[i] !== ">") return null;
+  while (i >= 0 && masked[i] !== ">") i--;
+  if (i < 0) return null;
   const end = i;
+  // Find its matching `<`
   let j = end - 1;
   while (j >= 0 && masked[j] !== "<") j--;
   if (j < 0) return null;
@@ -221,11 +224,20 @@ function findPrevTag(masked: string, from: number): { start: number; end: number
 }
 
 /**
- * Find the opening JSX tag that directly encloses the JSX text segment
+ * Find the JSX opening tag that directly encloses the JSX text segment
  * starting at `offset`. Skips over balanced sibling pairs `<X>...</X>`
  * and self-closing siblings `<X />`.
+ *
+ * Requires that `offset` sits immediately after a `>` (with optional
+ * whitespace), otherwise the segment isn't actually inside JSX.
  */
 function findEnclosingOpenTag(masked: string, offset: number): { tag: string; start: number } | null {
+  // Validate the segment really is JSX text: char before (after skipping
+  // whitespace) must be `>`.
+  let probe = offset - 1;
+  while (probe >= 0 && /\s/.test(masked[probe])) probe--;
+  if (probe < 0 || masked[probe] !== ">") return null;
+
   let cur = offset;
   let pendingClosers = 0;
   while (true) {

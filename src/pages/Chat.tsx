@@ -21,7 +21,7 @@ import { PanelLeft } from 'lucide-react';
 
 export default function Chat() {
   const chat = useDiscordChat();
-  const { teamMembers } = useApp();
+  const { teamMembers, sidebarCollapsed, setSidebarCollapsed } = useApp();
   const { onlineMembers } = usePresence();
   const { designMode } = useThemeMode();
   const [showMembers, setShowMembers] = useState(true);

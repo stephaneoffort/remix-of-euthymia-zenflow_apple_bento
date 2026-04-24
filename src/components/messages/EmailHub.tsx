@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Mail, Plus, Trash2, RefreshCw, Send, Reply, Inbox, AlertCircle, X, Check, Loader2,
-  History, ChevronDown, ChevronUp,
+  History, ChevronDown, ChevronUp, Search, Star, Archive, Clock, Tag, AtSign, Newspaper,
+  CornerUpLeft, MoreHorizontal,
 } from 'lucide-react';
 import { useEmailAccounts, useEmailMessages, sendEmail, emailAction, EmailAccount, EmailMessage } from '@/hooks/useEmailAccounts';
 import { Button } from '@/components/ui/button';

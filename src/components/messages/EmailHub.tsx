@@ -177,7 +177,7 @@ export default function EmailHub() {
         <Button variant="ghost" size="sm" onClick={handleSync} disabled={syncAccount.isPending}>
           {syncAccount.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
         </Button>
-        <Button variant="ghost" size="sm" onClick={() => setView('add-account')}>
+        <Button variant="ghost" size="sm" onClick={() => setView('choose-provider')}>
           <Plus className="w-4 h-4 mr-1" /> Compte
         </Button>
         <div className="flex-1" />

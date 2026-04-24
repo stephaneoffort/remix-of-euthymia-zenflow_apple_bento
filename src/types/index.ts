@@ -93,6 +93,13 @@ export interface TaskDependency {
   lagDays: number;
 }
 
+export interface TaskLink {
+  id: string;
+  taskId: string;
+  linkedTaskId: string;
+  createdAt: string;
+}
+
 export interface TaskList {
   id: string;
   name: string;

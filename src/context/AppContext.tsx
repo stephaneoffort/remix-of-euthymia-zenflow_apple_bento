@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
-import { Task, Space, Project, TaskList, TeamMember, ViewType, QuickFilter, Status, Priority, Comment, Attachment, CustomStatus, DEFAULT_STATUSES, STATUS_LABELS, SpaceMember, SpaceManager, Recurrence } from '@/types';
+import { Task, Space, Project, TaskList, TeamMember, ViewType, QuickFilter, Status, Priority, Comment, Attachment, CustomStatus, DEFAULT_STATUSES, STATUS_LABELS, SpaceMember, SpaceManager, Recurrence, TaskDependency, TaskLink } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -36,6 +36,8 @@ interface AppState {
   sidebarCollapsed: boolean;
   isLoading: boolean;
   advancedFilters: AdvancedFilters;
+  taskDependencies: TaskDependency[];
+  taskLinks: TaskLink[];
 }
 
 interface AppContextType extends AppState {
@@ -80,6 +82,11 @@ interface AppContextType extends AppState {
   isSpaceManager: (spaceId: string) => boolean;
   getSpaceManagers: (spaceId: string) => string[];
   refreshSpaceAccess: () => void;
+  addTaskDependency: (taskId: string, dependsOnId: string) => Promise<void>;
+  removeTaskDependency: (dependencyId: string) => Promise<void>;
+  addTaskLink: (taskId: string, linkedTaskId: string) => Promise<void>;
+  removeTaskLink: (linkId: string) => Promise<void>;
+  getBlockingDependencies: (taskId: string) => Task[];
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -291,6 +298,79 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     },
   });
 
+  // Fetch task dependencies (cross-project blocking deps)
+  const { data: taskDependencies = [] } = useQuery({
+    queryKey: ['task_dependencies'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('task_dependencies').select('*');
+      if (error) throw error;
+      return (data || []).map(d => ({
+        id: d.id,
+        taskId: d.task_id,
+        dependsOnId: d.depends_on_id,
+        type: (d.type || 'FS') as 'FS' | 'SS' | 'FF' | 'SF',
+        lagDays: d.lag_days || 0,
+      })) as TaskDependency[];
+    },
+  });
+
+  // Fetch task reference links (cross-project)
+  const { data: taskLinks = [] } = useQuery({
+    queryKey: ['task_links'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('task_links' as any).select('*');
+      if (error) throw error;
+      return ((data as any[]) || []).map(l => ({
+        id: l.id,
+        taskId: l.task_id,
+        linkedTaskId: l.linked_task_id,
+        createdAt: l.created_at,
+      })) as TaskLink[];
+    },
+  });
+
+  const addTaskDependencyMutation = useMutation({
+    mutationFn: async ({ taskId, dependsOnId }: { taskId: string; dependsOnId: string }) => {
+      const { error } = await supabase.from('task_dependencies').insert({
+        task_id: taskId,
+        depends_on_id: dependsOnId,
+        type: 'FS',
+        lag_days: 0,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['task_dependencies'] }),
+    onError: (err: any) => toast.error(err?.message || "Impossible d'ajouter la dépendance"),
+  });
+
+  const removeTaskDependencyMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('task_dependencies').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['task_dependencies'] }),
+  });
+
+  const addTaskLinkMutation = useMutation({
+    mutationFn: async ({ taskId, linkedTaskId }: { taskId: string; linkedTaskId: string }) => {
+      const { error } = await supabase.from('task_links' as any).insert({
+        task_id: taskId,
+        linked_task_id: linkedTaskId,
+      } as any);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['task_links'] }),
+    onError: (err: any) => toast.error(err?.message || "Impossible d'ajouter le lien"),
+  });
+
+  const removeTaskLinkMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('task_links' as any).delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['task_links'] }),
+  });
+
   // Add task mutation
   const addTaskMutation = useMutation({
     mutationFn: async (task: Omit<Task, 'id' | 'createdAt' | 'order'>) => {
@@ -435,9 +515,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         }
       }
     },
+    onError: (err: any) => {
+      const msg = String(err?.message || '');
+      if (msg.includes('BLOCKED_BY_DEPENDENCIES')) {
+        const detail = msg.split('BLOCKED_BY_DEPENDENCIES:')[1]?.trim() || '';
+        toast.error('Impossible de terminer cette tâche', {
+          description: `Dépendances non terminées : ${detail}`,
+        });
+      } else {
+        toast.error(msg || 'Échec de la mise à jour de la tâche');
+      }
+      // Rollback optimistic update by refetching
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    },
   });
-
-  // Delete task mutation
   const deleteTaskMutation = useMutation({
     mutationFn: async (id: string) => {
       // Sync delete to ZENFLOW before removing
@@ -926,6 +1017,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [addTaskMutation]);
 
   const updateTask = useCallback((id: string, updates: Partial<Task>) => {
+    // Pre-check: block done if blocking dependencies remain
+    if (updates.status === 'done') {
+      const blockingDeps = taskDependencies.filter(d => d.taskId === id);
+      const blocking = blockingDeps
+        .map(d => tasks.find(t => t.id === d.dependsOnId))
+        .filter((t): t is Task => !!t && t.status !== 'done');
+      if (blocking.length > 0) {
+        toast.error('Impossible de terminer cette tâche', {
+          description: `Dépendances non terminées : ${blocking.map(t => t.title).join(', ')}`,
+        });
+        return;
+      }
+    }
     // Optimistic update for responsiveness
     queryClient.setQueryData<Task[]>(['tasks'], old => {
       if (!old) return old;
@@ -935,7 +1039,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       });
     });
     updateTaskMutation.mutate({ id, updates });
-  }, [updateTaskMutation, queryClient]);
+  }, [updateTaskMutation, queryClient, taskDependencies, tasks]);
 
   const deleteTask = useCallback((id: string) => {
     deleteTaskMutation.mutate(id);
@@ -952,6 +1056,30 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const moveTask = useCallback((taskId: string, newStatus: string) => {
     updateTask(taskId, { status: newStatus as Status });
   }, [updateTask]);
+
+  const addTaskDependency = useCallback(async (taskId: string, dependsOnId: string) => {
+    await addTaskDependencyMutation.mutateAsync({ taskId, dependsOnId });
+  }, [addTaskDependencyMutation]);
+
+  const removeTaskDependency = useCallback(async (id: string) => {
+    await removeTaskDependencyMutation.mutateAsync(id);
+  }, [removeTaskDependencyMutation]);
+
+  const addTaskLink = useCallback(async (taskId: string, linkedTaskId: string) => {
+    await addTaskLinkMutation.mutateAsync({ taskId, linkedTaskId });
+  }, [addTaskLinkMutation]);
+
+  const removeTaskLink = useCallback(async (id: string) => {
+    await removeTaskLinkMutation.mutateAsync(id);
+  }, [removeTaskLinkMutation]);
+
+  const getBlockingDependencies = useCallback((taskId: string): Task[] => {
+    const deps = taskDependencies.filter(d => d.taskId === taskId);
+    return deps
+      .map(d => tasks.find(t => t.id === d.dependsOnId))
+      .filter((t): t is Task => !!t && t.status !== 'done');
+  }, [taskDependencies, tasks]);
+
 
   const getSubtasks = useCallback((taskId: string) => {
     return tasks.filter(t => t.parentTaskId === taskId).sort((a, b) => a.order - b.order);
@@ -1149,7 +1277,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     isSpaceManager: isSpaceManagerFn,
     getSpaceManagers: getSpaceManagersFn,
     refreshSpaceAccess,
-  }), [accessibleSpaces, archivedSpaces, archivedProjects, accessibleProjects, lists, accessibleTasks, teamMembers, customStatuses, allStatuses, spaceMembers, spaceManagers, selectedProjectId, selectedSpaceId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, setSelectedProjectId, setSelectedSpaceId, addTask, updateTask, deleteTask, addAttachment, deleteAttachment, moveTask, addSpace, addProject, duplicateSpace, duplicateProject, duplicateTask, archiveSpace, archiveProject, renameSpace, renameProject, moveProject, deleteSpace, deleteProject, convertTaskToProject, reorderSpaces, reorderProjects, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb, getStatusLabel, canAccessSpace, isSpaceManagerFn, getSpaceManagersFn, refreshSpaceAccess]);
+    taskDependencies,
+    taskLinks,
+    addTaskDependency,
+    removeTaskDependency,
+    addTaskLink,
+    removeTaskLink,
+    getBlockingDependencies,
+  }), [accessibleSpaces, archivedSpaces, archivedProjects, accessibleProjects, lists, accessibleTasks, teamMembers, customStatuses, allStatuses, spaceMembers, spaceManagers, selectedProjectId, selectedSpaceId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, setSelectedProjectId, setSelectedSpaceId, addTask, updateTask, deleteTask, addAttachment, deleteAttachment, moveTask, addSpace, addProject, duplicateSpace, duplicateProject, duplicateTask, archiveSpace, archiveProject, renameSpace, renameProject, moveProject, deleteSpace, deleteProject, convertTaskToProject, reorderSpaces, reorderProjects, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb, getStatusLabel, canAccessSpace, isSpaceManagerFn, getSpaceManagersFn, refreshSpaceAccess, taskDependencies, taskLinks, addTaskDependency, removeTaskDependency, addTaskLink, removeTaskLink, getBlockingDependencies]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

@@ -85,7 +85,7 @@ function DriveCard({ projects }: Props) {
                 { label: "Récents", value: Math.min(totalFiles, 5), color: "text-emerald-500" },
               ].map((s) => (
                 <div key={s.label} className="bg-muted/40 rounded-lg px-3 py-2 text-center">
-                  <p className={`text-lg font-bold ${s.color}`}>{s.value}</p>
+                  <p className={`font-numeric text-lg font-bold ${s.color}`}>{s.value}</p>
                   <p className="text-[10px] text-muted-foreground font-medium">{s.label}</p>
                 </div>
               ))}
@@ -200,7 +200,7 @@ function CanvaCard({ projects }: Props) {
                 { label: "Récents", value: Math.min(totalDesigns, 5), color: "text-emerald-500" },
               ].map((s) => (
                 <div key={s.label} className="bg-muted/40 rounded-lg px-3 py-2 text-center">
-                  <p className={`text-lg font-bold ${s.color}`}>{s.value}</p>
+                  <p className={`font-numeric text-lg font-bold ${s.color}`}>{s.value}</p>
                   <p className="text-[10px] text-muted-foreground font-medium">{s.label}</p>
                 </div>
               ))}

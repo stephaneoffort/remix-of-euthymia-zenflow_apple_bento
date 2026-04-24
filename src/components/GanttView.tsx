@@ -525,7 +525,7 @@ export default function GanttView() {
       {/* Edit Dates Dialog */}
       {editingDates && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm" onClick={() => setEditingDates(null)}>
-          <div className="bg-popover border border-border rounded-xl shadow-xl p-5 w-80 space-y-3" onClick={e => e.stopPropagation()}>
+          <div className="bg-popover border border-border rounded-xl shadow-xl p-5 w-[calc(100%-2rem)] max-w-[20rem] space-y-3" onClick={e => e.stopPropagation()}>
             <h3 className="text-sm font-medium text-foreground">Modifier les dates</h3>
             <div className="space-y-2">
               <label className="text-xs text-muted-foreground">Début</label>

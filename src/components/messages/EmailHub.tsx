@@ -378,6 +378,88 @@ export default function EmailHub() {
   );
 }
 
+function FailureHistoryPanel({
+  history, open, onToggle, onClear,
+}: {
+  history: ImportFailure[];
+  open: boolean;
+  onToggle: () => void;
+  onClear: () => void;
+}) {
+  if (history.length === 0) return null;
+
+  const stepLabel: Record<ImportFailure['step'], string> = {
+    connexion: 'Connexion',
+    synchronisation: 'Synchronisation',
+    verification: 'Vérification',
+    inconnue: 'Étape inconnue',
+  };
+
+  return (
+    <div className="w-full max-w-sm text-left">
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-md border border-border bg-muted/30 hover:bg-muted transition-colors"
+      >
+        <div className="flex items-center gap-2 text-foreground">
+          <History className="w-4 h-4 text-muted-foreground" />
+          <span className="text-xs font-semibold">
+            Historique des échecs
+          </span>
+          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-destructive/15 text-destructive font-mono">
+            {history.length}
+          </span>
+        </div>
+        {open ? (
+          <ChevronUp className="w-4 h-4 text-muted-foreground" />
+        ) : (
+          <ChevronDown className="w-4 h-4 text-muted-foreground" />
+        )}
+      </button>
+
+      {open && (
+        <div className="mt-2 rounded-md border border-border bg-card overflow-hidden">
+          <ul className="max-h-64 overflow-y-auto divide-y divide-border">
+            {history.map((f, idx) => (
+              <li key={idx} className="px-3 py-2 hover:bg-muted/40 transition-colors">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <span className="text-[10px] uppercase tracking-wider font-semibold text-destructive">
+                    {stepLabel[f.step]}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground font-mono">
+                    {new Date(f.timestamp).toLocaleString('fr-FR', {
+                      day: '2-digit', month: '2-digit', year: '2-digit',
+                      hour: '2-digit', minute: '2-digit',
+                    })}
+                  </span>
+                </div>
+                {f.code != null && (
+                  <p className="text-[11px] font-mono text-muted-foreground">
+                    Code : <span className="text-foreground">{f.code}</span>
+                  </p>
+                )}
+                <p className="text-xs text-foreground break-words leading-snug">
+                  {f.message}
+                </p>
+              </li>
+            ))}
+          </ul>
+          <div className="px-3 py-2 border-t border-border bg-muted/20 flex justify-end">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClear}
+              className="h-7 text-xs text-muted-foreground hover:text-destructive"
+            >
+              <Trash2 className="w-3 h-3 mr-1" /> Vider l'historique
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ImportProgress({ currentStep }: { currentStep: number }) {
   const steps = [
     { label: 'Connexion', desc: 'Vérification de votre session Gmail' },

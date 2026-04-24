@@ -1138,6 +1138,27 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
       );
     })()}
 
+    {debugMode && (isActive("google_drive") || isActive("canva")) && (
+      <NMAttachmentsDebugPanel
+        projects={projects}
+        driveTotal={driveCount}
+        canvaTotal={canvaCount}
+        driveByProject={driveByProject}
+        canvaByProject={canvaByProject}
+        driveDebug={driveDebug}
+        canvaDebug={canvaDebug}
+        driveOrphans={driveOrphans}
+        canvaOrphans={canvaOrphans}
+        showDrive={isActive("google_drive")}
+        showCanva={isActive("canva")}
+        onClose={() => {
+          setDebugMode(false);
+          try { localStorage.setItem("nm-dashboard-debug", "0"); } catch {}
+        }}
+        isMobile={isMobileProp}
+      />
+    )}
+
     {/* Zoom create dialog – neumorphic style */}
 
     {zoomDialogOpen && (

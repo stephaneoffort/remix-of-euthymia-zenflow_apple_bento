@@ -1,0 +1,261 @@
+diff --git a/index.html b/index.html
+--- a/index.html
++++ b/index.html
+@@ -31,7 +31,7 @@
+     <link rel="preconnect" href="https://fonts.googleapis.com" />
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+     <link
+-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Playfair+Display:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap"
++      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Playfair+Display:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+       rel="stylesheet"
+     />
+
+diff --git a/src/context/ThemeContext.tsx b/src/context/ThemeContext.tsx
+--- a/src/context/ThemeContext.tsx
++++ b/src/context/ThemeContext.tsx
+@@ -29,6 +29,8 @@ export type ThemePalette =
+
+ export type DesignMode = "classic" | "neumorphic";
+
++export type TypeVariant = "default" | "editorial" | "geometric" | "nature";
++
+ interface ThemeContextType {
+   theme: ThemeMode;
+   setTheme: (theme: ThemeMode) => void;
+@@ -36,6 +38,8 @@ interface ThemeContextType {
+   setPalette: (palette: ThemePalette) => void;
+   designMode: DesignMode;
+   setDesignMode: (mode: DesignMode) => void;
++  typeVariant: TypeVariant;
++  setTypeVariant: (variant: TypeVariant) => void;
+ }
+
+ const ThemeContext = createContext<ThemeContextType | null>(null);
+@@ -152,6 +156,43 @@ export const PALETTE_META: Record<ThemePalette, { label: string; description: st
+   },
+ };
+
++/**
++ * Typographic variants — applied as CSS custom properties on <html>.
++ * `--font-display` drives headlines/hero titles, `--font-body` drives body text,
++ * `--font-numeric` drives stats counters (tabular figures preferred).
++ */
++export const TYPE_META: Record<TypeVariant, {
++  label: string;
++  description: string;
++  display: string;
++  body: string;
++  numeric: string;
++  sample: { title: string; body: string };
++}> = {
++  default: {
++    label: "Sans (par défaut)",
++    description: "Plus Jakarta Sans partout — le réglage actuel",
++    display: "'Plus Jakarta Sans', system-ui, sans-serif",
++    body: "'Plus Jakarta Sans', system-ui, sans-serif",
++    numeric: "'Plus Jakarta Sans', system-ui, sans-serif",
++  },
++  editorial: {
++    label: "Éditorial",
++    description: "Fraunces serif pour les titres · Jakarta pour le corps · magazine premium",
++    display: "'Fraunces', 'Playfair Display', Georgia, serif",
++    body: "'Plus Jakarta Sans', system-ui, sans-serif",
++    numeric: "'Fraunces', Georgia, serif",
++  },
++  geometric: {
++    label: "Géométrique",
++    description: "Space Grotesk + Inter · allure tech contemporaine",
++    display: "'Space Grotesk', 'Inter', system-ui, sans-serif",
++    body: "'Inter', system-ui, sans-serif",
++    numeric: "'JetBrains Mono', 'Space Grotesk', monospace",
++  },
++  nature: {
++    label: "Nature",
++    description: "Fraunces sur tout · chaleureux, humain, organique",
++    display: "'Fraunces', Georgia, serif",
++    body: "'Fraunces', Georgia, serif",
++    numeric: "'Fraunces', Georgia, serif",
++  },
++};
++
+ export function ThemeProvider({ children }: { children: React.ReactNode }) {
+   const [theme, setThemeState] = useState<ThemeMode>(() => {
+     return (localStorage.getItem("euthymia-theme") as ThemeMode) || "dark";
+@@ -170,6 +211,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
+   const [palette, setPaletteState] = useState<ThemePalette>(() => {
+     return (localStorage.getItem("euthymia-palette") as ThemePalette) || "sapphire";
+   });
++  const [typeVariant, setTypeVariantState] = useState<TypeVariant>(() => {
++    return (localStorage.getItem("euthymia-type") as TypeVariant) || "default";
++  });
+
+   const setTheme = (t: ThemeMode) => {
+     const root = document.documentElement;
+@@ -187,6 +231,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
+     setTimeout(() => root.classList.remove("palette-transitioning"), 100);
+   };
+
++  const setTypeVariant = (v: TypeVariant) => {
++    const root = document.documentElement;
++    root.classList.add("palette-transitioning");
++    setTypeVariantState(v);
++    localStorage.setItem("euthymia-type", v);
++    setTimeout(() => root.classList.remove("palette-transitioning"), 300);
++  };
++
+   useEffect(() => {
+     const root = document.documentElement;
+     root.classList.remove("light", "dark", "mixed");
+@@ -198,8 +250,18 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
+     root.dataset.palette = palette;
+   }, [palette]);
+
++  useEffect(() => {
++    const root = document.documentElement;
++    const meta = TYPE_META[typeVariant];
++    root.style.setProperty("--font-display", meta.display);
++    root.style.setProperty("--font-body", meta.body);
++    root.style.setProperty("--font-numeric", meta.numeric);
++    root.dataset.typeVariant = typeVariant;
++  }, [typeVariant]);
++
+   return (
+-    <ThemeContext.Provider value={{ theme, setTheme, palette, setPalette, designMode, setDesignMode }}>
++    <ThemeContext.Provider
++      value={{ theme, setTheme, palette, setPalette, designMode, setDesignMode, typeVariant, setTypeVariant }}
++    >
+       {children}
+     </ThemeContext.Provider>
+   );
+
+diff --git a/tailwind.config.ts b/tailwind.config.ts
+--- a/tailwind.config.ts
++++ b/tailwind.config.ts
+@@ -26,6 +26,9 @@ export default {
+       },
+       fontFamily: {
+         sans: ['"Plus Jakarta Sans"', "system-ui", "ui-sans-serif", "sans-serif"],
++        display: ["var(--font-display)", '"Plus Jakarta Sans"', "system-ui", "sans-serif"],
++        body: ["var(--font-body)", '"Plus Jakarta Sans"', "system-ui", "sans-serif"],
++        numeric: ["var(--font-numeric)", '"Plus Jakarta Sans"', "system-ui", "sans-serif"],
+       },
+       backdropBlur: {
+         xs: "4px",
+
+diff --git a/src/pages/Settings.tsx b/src/pages/Settings.tsx
+--- a/src/pages/Settings.tsx
++++ b/src/pages/Settings.tsx
+@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
+ import { Label } from '@/components/ui/label';
+ import { toast } from 'sonner';
+ import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown, Palette, BellRing, HardDrive, CalendarSync } from 'lucide-react';
+-import { useThemeMode, PALETTE_META, type ThemePalette } from '@/context/ThemeContext';
++import { useThemeMode, PALETTE_META, TYPE_META, type ThemePalette, type TypeVariant } from '@/context/ThemeContext';
+ import DataExportImport from '@/components/DataExportImport';
+ import InviteMemberDialog from '@/components/InviteMemberDialog';
+ import IntegrationsSettings from '@/components/settings/IntegrationsSettings';
+@@ -540,7 +540,7 @@ function StatusesPanel() {
+
+
+ function ThemePalettePanel() {
+-  const { palette, setPalette, theme, setTheme, designMode, setDesignMode } = useThemeMode();
++  const { palette, setPalette, theme, setTheme, designMode, setDesignMode, typeVariant, setTypeVariant } = useThemeMode();
+   const palettes = Object.entries(PALETTE_META) as [ThemePalette, typeof PALETTE_META[ThemePalette]][];
+
+   const handleSelect = (key: ThemePalette) => {
+@@ -616,6 +616,55 @@ function ThemePalettePanel() {
+         </CardContent>
+       </Card>
+
++      {/* Typographie */}
++      <Card className="border-border bg-card">
++        <CardHeader>
++          <CardTitle className="flex items-center gap-2 text-foreground text-base">
++            <span className="font-[var(--font-display)] text-xl leading-none">Aa</span>
++            Typographie
++          </CardTitle>
++          <p className="text-sm text-muted-foreground">
++            Change la personnalité typographique · affecte les titres, le corps et les chiffres clés.
++          </p>
++        </CardHeader>
++        <CardContent>
++          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
++            {(Object.entries(TYPE_META) as [TypeVariant, typeof TYPE_META[TypeVariant]][]).map(([key, meta]) => {
++              const active = typeVariant === key;
++              return (
++                <button
++                  key={key}
++                  onClick={() => {
++                    if (key === typeVariant) return;
++                    setTypeVariant(key);
++                    toast.success(`Typographie "${meta.label}" appliquée`);
++                  }}
++                  className={`group relative flex flex-col gap-3 p-5 rounded-xl border-2 transition-all text-left ${
++                    active
++                      ? 'border-primary bg-accent/40 shadow-md'
++                      : 'border-border bg-card hover:border-muted-foreground/30 hover:bg-muted/30'
++                  }`}
++                >
++                  {active && (
++                    <span className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
++                      <Check className="w-3.5 h-3.5 text-primary-foreground" />
++                    </span>
++                  )}
++                  {/* Aperçu vivant */}
++                  <div className="space-y-1">
++                    <p className="text-2xl leading-tight text-foreground" style={{ fontFamily: meta.display }}>
++                      Bonjour, Stéphane
++                    </p>
++                    <p className="text-sm text-muted-foreground" style={{ fontFamily: meta.body }}>
++                      12 tâches ouvertes aujourd'hui
++                    </p>
++                    <p className="text-lg font-bold text-primary" style={{ fontFamily: meta.numeric, fontVariantNumeric: 'tabular-nums' }}>
++                      87%
++                    </p>
++                  </div>
++                  <div className="pt-2 border-t border-border/50">
++                    <p className="font-semibold text-sm text-foreground">{meta.label}</p>
++                    <p className="text-xs text-muted-foreground mt-0.5">{meta.description}</p>
++                  </div>
++                </button>
++              );
++            })}
++          </div>
++        </CardContent>
++      </Card>
++
+       {/* Palettes groupées */}
+       {PALETTE_GROUPS.map(group => (
+         <Card key={group.title} className="border-border bg-card">
+
+diff --git a/src/components/BentoDashboard.tsx b/src/components/BentoDashboard.tsx
+--- a/src/components/BentoDashboard.tsx
++++ b/src/components/BentoDashboard.tsx
+@@ -80,12 +80,12 @@ export default function BentoDashboard() {
+                 month: "long",
+               })}
+             </p>
+-            <h2 className="bento-hero-title">
++            <h2 className="bento-hero-title font-display">
+               {greeting()}
+               {firstName ? `, ${firstName}` : ""}
+             </h2>
+             <p className="bento-hero-sub">
+               {openTasks.length} tâches ouvertes
+               {overdueTasks.length > 0 ? ` · ${overdueTasks.length} en retard` : " · tout à jour ✓"}
+             </p>
+           </div>
+
+           <div className="bento-stats-row">
+             {[
+               { n: doneTasks.length, l: "Terminées", c: "hsl(var(--status-done))" },
+               { n: openTasks.length, l: "En cours", c: "hsl(var(--status-progress))" },
+               { n: overdueTasks.length, l: "En retard", c: overdueTasks.length > 0 ? "hsl(var(--priority-urgent))" : "hsl(var(--muted-foreground))" },
+               { n: `${completionPct}%`, l: "Complété", c: "hsl(var(--primary))" },
+             ].map(({ n, l, c }) => (
+               <div key={l} className="bento-stat">
+-                <span className="bento-stat-n" style={{ color: c }}>
++                <span className="bento-stat-n font-numeric" style={{ color: c, fontVariantNumeric: 'tabular-nums' }}>
+                   {n}
+                 </span>
+                 <span className="bento-stat-l">{l}</span>

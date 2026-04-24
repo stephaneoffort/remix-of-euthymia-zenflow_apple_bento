@@ -245,6 +245,9 @@ export default function AppSidebar() {
   );
   const [filtersExpanded, setFiltersExpanded] = useState(() => !window.matchMedia("(max-width: 767px)").matches);
   const [spacesExpanded, setSpacesExpanded] = useState(true);
+  const [messagesHubOpen, setMessagesHubOpen] = useState(false);
+  const { totalUnread: chatUnreadCount } = useChatNotifications();
+  const { totalUnread: emailUnreadCount } = useEmailAccounts();
   const [accessDialogSpace, setAccessDialogSpace] = useState<{ id: string; name: string; isPrivate: boolean } | null>(
     null,
   );

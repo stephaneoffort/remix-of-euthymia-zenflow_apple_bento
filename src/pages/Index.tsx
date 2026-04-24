@@ -205,10 +205,30 @@ export default function Index() {
     onToggleHelp: useCallback(() => setShortcutsOpen((prev) => !prev), []),
   });
 
+  // Pré-remplit espace/projet à l'ouverture du quick-add
+  useEffect(() => {
+    if (!quickAddOpen) return;
+    const project = projects.find((p) => p.id === selectedProjectId);
+    const initialSpace = project?.spaceId || selectedSpaceId || spaces[0]?.id || "";
+    setQuickAddSpaceId(initialSpace);
+    const projectsInSpace = projects.filter((p) => p.spaceId === initialSpace && !p.isArchived);
+    setQuickAddProjectId(selectedProjectId || projectsInSpace[0]?.id || "");
+  }, [quickAddOpen, selectedProjectId, selectedSpaceId, projects, spaces]);
+
+  // Quand on change l'espace dans le quick-add, on réinitialise le projet
+  useEffect(() => {
+    if (!quickAddOpen || !quickAddSpaceId) return;
+    const projectsInSpace = projects.filter((p) => p.spaceId === quickAddSpaceId && !p.isArchived);
+    if (!projectsInSpace.find((p) => p.id === quickAddProjectId)) {
+      setQuickAddProjectId(projectsInSpace[0]?.id || "");
+    }
+  }, [quickAddSpaceId, quickAddOpen, projects, quickAddProjectId]);
+
   const handleQuickAdd = () => {
-    if (!quickAddTitle.trim()) return;
-    const lists = selectedProjectId ? getListsForProject(selectedProjectId) : [];
-    const listId = lists[0]?.id || "l1";
+    if (!quickAddTitle.trim() || !quickAddProjectId) return;
+    const lists = getListsForProject(quickAddProjectId);
+    const listId = lists[0]?.id;
+    if (!listId) return;
     addTask({
       title: quickAddTitle.trim(),
       description: "",

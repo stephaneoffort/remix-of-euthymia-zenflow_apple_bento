@@ -771,6 +771,60 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
       setMeetEvents(meetOnly);
     }
 
+    // Build task -> project map (via task_lists) so we can attribute task-level
+    // attachments to their parent project. This guarantees the per-project
+    // counts equal the actual attachments tied to each project's scope.
+    const buildTaskProjectMap = async (): Promise<Record<string, string>> => {
+      const { data: lists } = await (supabase as any)
+        .from("task_lists")
+        .select("id, project_id");
+      const listToProject: Record<string, string> = {};
+      (lists ?? []).forEach((l: any) => {
+        if (l?.id && l?.project_id) listToProject[l.id] = l.project_id;
+      });
+      const { data: taskRows } = await (supabase as any)
+        .from("tasks")
+        .select("id, list_id, parent_task_id");
+      const taskToProject: Record<string, string> = {};
+      const tasksById: Record<string, any> = {};
+      (taskRows ?? []).forEach((t: any) => {
+        tasksById[t.id] = t;
+      });
+      const resolve = (taskId: string, depth = 0): string | undefined => {
+        if (depth > 12) return undefined;
+        const t = tasksById[taskId];
+        if (!t) return undefined;
+        if (t.list_id && listToProject[t.list_id]) return listToProject[t.list_id];
+        if (t.parent_task_id) return resolve(t.parent_task_id, depth + 1);
+        return undefined;
+      };
+      Object.keys(tasksById).forEach((id) => {
+        const pid = resolve(id);
+        if (pid) taskToProject[id] = pid;
+      });
+      return taskToProject;
+    };
+
+    const aggregateByProject = (
+      rows: Array<{ entity_id: string; entity_type: string }>,
+      taskToProject: Record<string, string>
+    ): Record<string, number> => {
+      const counts: Record<string, number> = {};
+      rows.forEach((r) => {
+        let projectId: string | undefined;
+        if (r.entity_type === "project") {
+          projectId = r.entity_id;
+        } else if (r.entity_type === "task" || r.entity_type === "subtask") {
+          projectId = taskToProject[r.entity_id];
+        }
+        if (projectId) counts[projectId] = (counts[projectId] || 0) + 1;
+      });
+      return counts;
+    };
+
+    const needTaskMap = isActive("google_drive") || isActive("canva");
+    const taskToProject = needTaskMap ? await buildTaskProjectMap() : {};
+
     if (isActive("google_drive")) {
       const { count } = await supabase
         .from("drive_attachments")
@@ -780,13 +834,9 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
 
       const { data: rows } = await (supabase as any)
         .from("drive_attachments")
-        .select("entity_id")
-        .eq("entity_type", "project");
-      const counts: Record<string, number> = {};
-      (rows ?? []).forEach((r: any) => {
-        counts[r.entity_id] = (counts[r.entity_id] || 0) + 1;
-      });
-      setDriveByProject(counts);
+        .select("entity_id, entity_type")
+        .eq("user_id", user.id);
+      setDriveByProject(aggregateByProject(rows ?? [], taskToProject));
     }
 
     if (isActive("canva")) {
@@ -798,13 +848,9 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
 
       const { data: rows } = await (supabase as any)
         .from("canva_attachments")
-        .select("entity_id")
-        .eq("entity_type", "project");
-      const counts: Record<string, number> = {};
-      (rows ?? []).forEach((r: any) => {
-        counts[r.entity_id] = (counts[r.entity_id] || 0) + 1;
-      });
-      setCanvaByProject(counts);
+        .select("entity_id, entity_type")
+        .eq("user_id", user.id);
+      setCanvaByProject(aggregateByProject(rows ?? [], taskToProject));
     }
 
     if (isActive("brevo")) {

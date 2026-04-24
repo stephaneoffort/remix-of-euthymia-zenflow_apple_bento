@@ -18,6 +18,111 @@ import gmailLogo from '@/assets/integrations/gmail.png';
 
 type View = 'list' | 'detail' | 'compose' | 'add-account' | 'choose-provider';
 
+// ----- Pièces jointes : helpers -----
+interface AttachmentInfo {
+  name: string;
+  size?: number;
+  mimeType?: string;
+  url?: string;
+}
+
+function getAttachmentList(msg: { attachments?: any; has_attachments?: boolean }): AttachmentInfo[] {
+  const raw = msg.attachments;
+  if (!raw) return [];
+  let arr: any[] = [];
+  if (Array.isArray(raw)) arr = raw;
+  else if (typeof raw === 'string') {
+    try { const parsed = JSON.parse(raw); if (Array.isArray(parsed)) arr = parsed; } catch { return []; }
+  } else if (typeof raw === 'object') {
+    arr = [raw];
+  }
+  return arr
+    .map((a): AttachmentInfo | null => {
+      if (!a) return null;
+      const name = a.name || a.filename || a.file_name || a.title || 'pièce jointe';
+      const size = typeof a.size === 'number' ? a.size : typeof a.file_size === 'number' ? a.file_size : undefined;
+      const mimeType = a.mime_type || a.mimeType || a.contentType || a.content_type;
+      const url = a.url || a.download_url || a.href;
+      return { name, size, mimeType, url };
+    })
+    .filter((a): a is AttachmentInfo => a !== null);
+}
+
+function formatFileSize(bytes?: number): string {
+  if (bytes == null || isNaN(bytes)) return '';
+  if (bytes < 1024) return `${bytes} o`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} Ko`;
+  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} Mo`;
+  return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} Go`;
+}
+
+function AttachmentBadge({ count, className = '' }: { count: number; className?: string }) {
+  if (count <= 0) return null;
+  return (
+    <span
+      className={`inline-flex items-center gap-0.5 text-[11px] text-muted-foreground tabular-nums ${className}`}
+      title={`${count} pièce${count > 1 ? 's' : ''} jointe${count > 1 ? 's' : ''}`}
+    >
+      <Paperclip className="w-3 h-3" />
+      {count}
+    </span>
+  );
+}
+
+function AttachmentList({ attachments }: { attachments: AttachmentInfo[] }) {
+  if (attachments.length === 0) return null;
+  return (
+    <div className="mt-4 pt-3 border-t border-border/60">
+      <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+        <Paperclip className="w-3 h-3" />
+        {attachments.length} pièce{attachments.length > 1 ? 's' : ''} jointe{attachments.length > 1 ? 's' : ''}
+      </div>
+      <ul className="grid gap-1.5 sm:grid-cols-2">
+        {attachments.map((att, i) => {
+          const ext = att.name.split('.').pop()?.toUpperCase().slice(0, 4) || 'FILE';
+          const Inner = (
+            <>
+              <span className="shrink-0 w-8 h-8 rounded-md bg-muted border border-border flex items-center justify-center text-[9px] font-bold text-muted-foreground">
+                {ext}
+              </span>
+              <span className="flex-1 min-w-0">
+                <span className="block text-xs font-medium text-foreground truncate" title={att.name}>
+                  {att.name}
+                </span>
+                {att.size != null && (
+                  <span className="block text-[10px] text-muted-foreground">{formatFileSize(att.size)}</span>
+                )}
+              </span>
+              {att.url && <Download className="w-3.5 h-3.5 text-muted-foreground shrink-0" />}
+            </>
+          );
+          return (
+            <li key={i}>
+              {att.url ? (
+                <a
+                  href={att.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download={att.name}
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex items-center gap-2 p-2 rounded-md border border-border bg-card hover:bg-muted/60 hover:border-primary/40 transition-colors"
+                >
+                  {Inner}
+                </a>
+              ) : (
+                <div className="flex items-center gap-2 p-2 rounded-md border border-border bg-card">
+                  {Inner}
+                </div>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
+
 // Historique local des échecs d'auto-import Gmail
 const IMPORT_HISTORY_KEY = 'gmail_autoimport_failures';
 const MAX_HISTORY = 20;

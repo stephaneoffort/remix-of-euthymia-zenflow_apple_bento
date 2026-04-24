@@ -82,6 +82,11 @@ interface AppContextType extends AppState {
   isSpaceManager: (spaceId: string) => boolean;
   getSpaceManagers: (spaceId: string) => string[];
   refreshSpaceAccess: () => void;
+  addTaskDependency: (taskId: string, dependsOnId: string) => Promise<void>;
+  removeTaskDependency: (dependencyId: string) => Promise<void>;
+  addTaskLink: (taskId: string, linkedTaskId: string) => Promise<void>;
+  removeTaskLink: (linkId: string) => Promise<void>;
+  getBlockingDependencies: (taskId: string) => Task[];
 }
 
 const AppContext = createContext<AppContextType | null>(null);

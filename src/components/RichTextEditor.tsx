@@ -405,6 +405,8 @@ export default function RichTextEditor({
     }
 
     // Démarre le meter audio (et demande la permission micro en même temps)
+    // Inclut une phase de calibration ~600ms du bruit ambiant.
+    toast.info('🎚️ Calibrage du micro… restez silencieux ~1 s.');
     const meterOk = await startAudioMeter();
     if (!meterOk) {
       toast.error("Accès au microphone refusé. Vérifiez les permissions du navigateur.");

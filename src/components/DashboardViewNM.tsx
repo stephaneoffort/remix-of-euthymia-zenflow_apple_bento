@@ -716,8 +716,9 @@ export default function DashboardViewNM() {
 /* ─── NM Integrations sub-component ─── */
 function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {}) {
   const { isActive } = useIntegrations();
-  const { setSelectedView } = useApp();
+  const { setSelectedView, setSelectedProjectId, projects } = useApp();
   const zoom = useZoom();
+  const brevo = useBrevo();
   const [zoomCount, setZoomCount] = useState(0);
   const [meetEvents, setMeetEvents] = useState<{ id: string; title: string; start_time: string; meet_link: string }[]>([]);
   const [zoomMeetings, setZoomMeetings] = useState<{ id: string; topic: string; start_time: string | null; join_url: string }[]>([]);
@@ -725,12 +726,21 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
   const [canvaCount, setCanvaCount] = useState(0);
   const [brevoCount, setBrevoCount] = useState(0);
 
+  // Per-project file counts for Resources section
+  const [driveByProject, setDriveByProject] = useState<Record<string, number>>({});
+  const [canvaByProject, setCanvaByProject] = useState<Record<string, number>>({});
+
+  // Brevo campaigns detail
+  const [brevoCampaigns, setBrevoCampaigns] = useState<any[]>([]);
+  const [brevoLoading, setBrevoLoading] = useState(false);
+
   // Zoom create dialog state
   const [zoomDialogOpen, setZoomDialogOpen] = useState(false);
   const [zoomTopic, setZoomTopic] = useState("Réunion rapide");
   const [zoomStartTime, setZoomStartTime] = useState("");
   const [zoomDuration, setZoomDuration] = useState(30);
   const [zoomCreating, setZoomCreating] = useState(false);
+
 
   const fetchAll = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();

@@ -704,10 +704,15 @@ export default function CalendarView() {
           const { data: activeAccounts } = await supabase.from("calendar_accounts").select("*").eq("is_active", true);
 
           if (activeAccounts && activeAccounts.length > 0) {
+            const { data: { session } } = await supabase.auth.getSession();
+            const headers: Record<string, string> = { "Content-Type": "application/json" };
+            if (session?.access_token) {
+              headers["Authorization"] = `Bearer ${session.access_token}`;
+            }
             for (const acc of activeAccounts) {
               await fetch("https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/calendar-sync", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers,
                 body: JSON.stringify({ account_id: acc.id, direction: "pull" }),
               });
             }

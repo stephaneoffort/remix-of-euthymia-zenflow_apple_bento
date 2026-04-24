@@ -780,7 +780,7 @@ function PushDebugPanel() {
               ) : (
                 <>
                   <StatusDot ok={backendSubs.length > 0} />
-                  <span className="font-medium text-foreground">{backendSubs.length} abonnement(s)</span>
+                  <span data-numeric className="font-numeric tabular-nums font-medium text-foreground">{backendSubs.length} abonnement(s)</span>
                 </>
               )}
             </div>

@@ -266,7 +266,7 @@ function WeekAllDayZone({ days, dataByDay, onTaskClick, onEventClick, labelWidth
                     </button>
                   </PopoverTrigger>
                   <PopoverContent className="w-52 p-1.5" align="start">
-                    <p className="text-xs font-semibold text-muted-foreground px-2 py-1">{items.length} éléments</p>
+                    <p data-numeric className="font-numeric tabular-nums text-xs font-semibold text-muted-foreground px-2 py-1">{items.length} éléments</p>
                     {items.slice(maxVisible).map(item => {
                       const title = item.task?.title || item.event?.title || '';
                       const chipColor = getChipColor(item);
@@ -382,7 +382,7 @@ function OverflowBadge({ items, top, height, onTaskClick, onEventClick }: {
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-52 p-1.5" align="end">
-        <p className="text-xs font-semibold text-muted-foreground px-2 py-1">{items.length} autres</p>
+        <p data-numeric className="font-numeric tabular-nums text-xs font-semibold text-muted-foreground px-2 py-1">{items.length} autres</p>
         {items.map(item => {
           const title = item.task?.title || item.event?.title || '';
           const chipColor = getChipColor(item);

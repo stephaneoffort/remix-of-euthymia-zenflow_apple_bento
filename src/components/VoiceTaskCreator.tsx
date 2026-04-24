@@ -463,7 +463,7 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
                     {parsedTask.subtasks.length > 0 && (
                       <div>
                         <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
-                          Sous-tâches ({parsedTask.subtasks.length})
+                          Sous-tâches (<span data-numeric className="font-numeric tabular-nums">{parsedTask.subtasks.length}</span>)
                         </span>
                         <div className="space-y-1 mt-0.5">
                           {parsedTask.subtasks.map((st, i) => (

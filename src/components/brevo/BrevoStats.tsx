@@ -47,7 +47,7 @@ export default function BrevoStats() {
           <img src={INTEGRATION_CONFIG.brevo.icon} alt="Brevo" className="w-5 h-5" />
           Campagnes Email
           {campaigns.length > 0 && (
-            <span className="text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full ml-auto">
+            <span data-numeric className="font-numeric tabular-nums text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full ml-auto">
               {campaigns.length}
             </span>
           )}
@@ -85,7 +85,7 @@ export default function BrevoStats() {
                       <Badge variant={statusInfo.variant} className="text-[10px] h-4">
                         {statusInfo.label}
                       </Badge>
-                      <span className="text-[10px] text-muted-foreground">
+                      <span data-numeric className="font-numeric tabular-nums text-[10px] text-muted-foreground">
                         {openRate.toFixed(0)}% ouv. · {clickRate.toFixed(1)}% clics · {sent} env.
                       </span>
                     </div>

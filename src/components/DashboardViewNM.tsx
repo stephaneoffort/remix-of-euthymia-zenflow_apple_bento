@@ -168,7 +168,7 @@ export default function DashboardViewNM() {
               <div style={{ height: 5, borderRadius: 3, background: BG, boxShadow: barIn, overflow: "hidden" }}>
                 <div style={{ width: `${stats.pct}%`, height: "100%", background: C.green, borderRadius: 3 }} />
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: C.light, marginTop: 3 }}>
+              <div data-numeric className="font-numeric tabular-nums" style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: C.light, marginTop: 3 }}>
                 <span>0</span>
                 <span>{stats.pct}% · {stats.done}/{stats.total}</span>
                 <span>{stats.total}</span>
@@ -202,7 +202,7 @@ export default function DashboardViewNM() {
             {/* PROGRESSION */}
             <Tile style={{ padding: 14, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
               <Lbl>Progression</Lbl>
-              <div style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300, fontSize: 24, color: C.text, marginTop: 3 }}>
+              <div data-numeric className="font-numeric tabular-nums" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300, fontSize: 24, color: C.text, marginTop: 3 }}>
                 {stats.pct}%
               </div>
               <svg width="48" height="48" viewBox="0 0 48 48" style={{ margin: "6px auto 0" }}>
@@ -211,7 +211,7 @@ export default function DashboardViewNM() {
                   strokeDasharray={stats.circ} strokeDashoffset={stats.offset}
                   strokeLinecap="round" transform="rotate(-90 24 24)" />
               </svg>
-              <div style={{ fontSize: 13, color: C.light, marginTop: 3 }}>{stats.done} / {stats.total}</div>
+              <div data-numeric className="font-numeric tabular-nums" style={{ fontSize: 13, color: C.light, marginTop: 3 }}>{stats.done} / {stats.total}</div>
             </Tile>
           </div>
 
@@ -324,6 +324,8 @@ export default function DashboardViewNM() {
               <div style={{ width: `${stats.pct}%`, height: "100%", background: C.green, borderRadius: 3 }} />
             </div>
             <div
+              data-numeric
+              className="font-numeric tabular-nums"
               style={{ display: "flex", justifyContent: "space-between", fontSize: 15, color: C.light, marginTop: 3 }}
             >
               <span>0</span>
@@ -389,6 +391,8 @@ export default function DashboardViewNM() {
         >
           <Lbl>Progression</Lbl>
           <div
+            data-numeric
+            className="font-numeric tabular-nums"
             style={{
               fontFamily: "'Cormorant Garamond', serif",
               fontWeight: 300,
@@ -414,7 +418,7 @@ export default function DashboardViewNM() {
               transform="rotate(-90 24 24)"
             />
           </svg>
-          <div style={{ fontSize: 15, color: C.light, marginTop: 3 }}>
+          <div data-numeric className="font-numeric tabular-nums" style={{ fontSize: 15, color: C.light, marginTop: 3 }}>
             {stats.done} / {stats.total}
           </div>
         </Tile>
@@ -692,7 +696,7 @@ export default function DashboardViewNM() {
                   <polyline points={pts} fill="none" stroke={C.green} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   <circle cx={peakX} cy={peakY} r="3" fill={C.green} />
                 </svg>
-                <div style={{ fontSize: 15, color: C.muted, marginTop: 4 }}>
+                <div data-numeric className="font-numeric tabular-nums" style={{ fontSize: 15, color: C.muted, marginTop: 4 }}>
                   Pic <span style={{ color: C.orange }}>{peakDay}</span> ({counts[peakIdx]}) · <span style={{ color: C.text }}>{weekTotal} actions</span>
                 </div>
               </>

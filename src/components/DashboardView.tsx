@@ -395,7 +395,7 @@ export default function DashboardView() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-foreground">Progression globale</span>
-                <span className="text-sm text-muted-foreground">
+                <span data-numeric className="font-numeric tabular-nums text-sm text-muted-foreground">
                   {globalCompletion}% · {globalDone}/{totalTasks}
                 </span>
               </div>
@@ -558,7 +558,8 @@ export default function DashboardView() {
                       </div>
                     </div>
                     <span
-                      className={`text-xs font-medium shrink-0 ${isOverdue ? "text-destructive" : "text-muted-foreground"}`}
+                      data-numeric
+                      className={`font-numeric tabular-nums text-xs font-medium shrink-0 ${isOverdue ? "text-destructive" : "text-muted-foreground"}`}
                     >
                       {isOverdue ? `${Math.abs(daysLeft)}j retard` : daysLeft === 0 ? "Aujourd'hui" : `${daysLeft}j`}
                     </span>

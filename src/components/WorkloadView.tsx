@@ -129,7 +129,7 @@ export default function WorkloadView() {
           </div>
           <div>
             <h3 className="font-semibold text-foreground">{selectedMember.member.name}</h3>
-            <p className="text-xs text-muted-foreground">
+            <p data-numeric className="font-numeric tabular-nums text-xs text-muted-foreground">
               {selectedMember.total} tâche{selectedMember.total !== 1 ? 's' : ''} · {selectedMember.completionRate}% terminé
             </p>
           </div>
@@ -346,7 +346,7 @@ export default function WorkloadView() {
               </div>
 
               {timeEstimated > 0 && (
-                <p className="text-[11px] text-muted-foreground">
+                <p data-numeric className="font-numeric tabular-nums text-[11px] text-muted-foreground">
                   ⏱ {formatMinutes(timeLogged)} / {formatMinutes(timeEstimated)} estimé
                 </p>
               )}

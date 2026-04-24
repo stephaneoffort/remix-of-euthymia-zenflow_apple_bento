@@ -254,7 +254,7 @@ export default function ShareTaskDialog({ open, onOpenChange, taskId }: ShareTas
                 className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
                 <Clock className="w-3 h-3" />
-                Historique ({shareHistory.length})
+                Historique (<span data-numeric className="font-numeric tabular-nums">{shareHistory.length}</span>)
               </button>
               <div className="flex-1 h-px bg-border" />
             </div>

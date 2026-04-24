@@ -599,7 +599,7 @@ function NodeCard({ positioned, expandedIds, visibleDepth, toggleExpand, onSelec
                     style={{ width: `${progress}%`, backgroundColor: statusColor }}
                   />
                 </div>
-                <span className="text-[10px] font-medium text-muted-foreground whitespace-nowrap">
+                <span data-numeric className="font-numeric tabular-nums text-[10px] font-medium text-muted-foreground whitespace-nowrap">
                   {doneDescendants}/{totalDescendants}
                 </span>
               </div>

@@ -99,7 +99,7 @@ export function SubtaskProgress({ total, done }: { total: number; done: number }
         />
       </span>
       <CheckCircle className="w-3 h-3" />
-      {done}/{total}
+      <span data-numeric className="font-numeric tabular-nums">{done}/{total}</span>
     </span>
   );
 }

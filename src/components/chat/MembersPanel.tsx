@@ -135,7 +135,7 @@ export function MembersPanel({ memberProfiles, onDmCreated, onlineTeamMemberIds 
     <div className="w-60 border-l border-border/20 backdrop-blur-2xl bg-card/80 shrink-0 overflow-y-auto shadow-[inset_1px_0_0_rgba(255,255,255,0.06)]">
       <div className="p-3">
         <div className="flex items-center justify-between mb-4 px-2">
-          <h4 className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">
+          <h4 data-numeric className="font-numeric tabular-nums text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">
             Membres — {teamMembers.length}
           </h4>
           <button onClick={() => setShowGroupDm(true)}
@@ -146,7 +146,7 @@ export function MembersPanel({ memberProfiles, onDmCreated, onlineTeamMemberIds 
 
         {onlineList.length > 0 && (
           <>
-            <p className="text-[10px] text-green-500/70 uppercase tracking-widest px-2 mb-1.5 font-semibold">
+            <p data-numeric className="font-numeric tabular-nums text-[10px] text-green-500/70 uppercase tracking-widest px-2 mb-1.5 font-semibold">
               En ligne — {onlineList.length}
             </p>
             <div className="space-y-0.5 mb-4">
@@ -157,7 +157,7 @@ export function MembersPanel({ memberProfiles, onDmCreated, onlineTeamMemberIds 
 
         {offlineList.length > 0 && (
           <>
-            <p className="text-[10px] text-muted-foreground/40 uppercase tracking-widest px-2 mb-1.5 font-semibold">
+            <p data-numeric className="font-numeric tabular-nums text-[10px] text-muted-foreground/40 uppercase tracking-widest px-2 mb-1.5 font-semibold">
               Hors ligne — {offlineList.length}
             </p>
             <div className="space-y-0.5">
@@ -202,7 +202,7 @@ export function MembersPanel({ memberProfiles, onDmCreated, onlineTeamMemberIds 
           <div className="flex justify-end gap-2 pt-2">
             <Button variant="outline" size="sm" onClick={() => setShowGroupDm(false)}>Annuler</Button>
             <Button size="sm" disabled={selectedForGroup.length === 0 || creating} onClick={startGroupDm}>
-              {creating ? 'Création...' : `Créer (${selectedForGroup.length})`}
+              {creating ? 'Création...' : <>Créer (<span data-numeric className="font-numeric tabular-nums">{selectedForGroup.length}</span>)</>}
             </Button>
           </div>
         </DialogContent>

@@ -72,7 +72,7 @@ export default function BrevoNewsletterLinks({ entityType, entityId, compact }: 
           <span className="text-xs font-medium text-foreground">Newsletters</span>
           {links.length > 0 && (
             <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-              {links.length}
+              <span data-numeric className="font-numeric tabular-nums">{links.length}</span>
             </Badge>
           )}
         </div>

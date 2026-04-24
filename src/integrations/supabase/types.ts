@@ -1406,6 +1406,27 @@ export type Database = {
           },
         ]
       }
+      task_links: {
+        Row: {
+          created_at: string
+          id: string
+          linked_task_id: string
+          task_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          linked_task_id: string
+          task_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          linked_task_id?: string
+          task_id?: string
+        }
+        Relationships: []
+      }
       task_lists: {
         Row: {
           id: string

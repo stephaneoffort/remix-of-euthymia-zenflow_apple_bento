@@ -1881,13 +1881,7 @@
   border-right: 1px solid rgba(255,255,255,0.06) !important;
 }
 
-/* ─── Transparent bg-background for bento palettes (ALL modes) ─── */
-[data-palette="bento2026"] .bg-background,
-[data-palette="bentoOcean"] .bg-background,
-[data-palette="bentoRose"] .bg-background,
-[data-palette="bentoAmber"] .bg-background {
-  background: transparent !important;
-}
+/* ─── bg-background for bento palettes now uses opaque HSL from variables ─── */
 
 /* ─── Glass cards (shadcn) for bento palettes (light/mixed) ─── */
 [data-palette="bento2026"].light .bg-card,

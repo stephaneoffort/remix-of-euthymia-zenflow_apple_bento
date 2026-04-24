@@ -827,67 +827,87 @@ function ConversationView({
                   : ''
               }`}
             >
-              <button
-                onClick={() => toggle(msg.id)}
-                className={`w-full text-left flex items-start gap-3 ${
-                  isThread ? 'p-3' : 'pb-4 mb-5 border-b border-border'
-                } ${expanded && isThread ? 'border-b border-border/60' : ''}`}
-              >
-                <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-semibold shrink-0 relative z-10">
-                  {(msg.from_name || msg.from_address).charAt(0).toUpperCase()}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-baseline justify-between gap-2 flex-wrap">
-                    <p className="text-sm font-medium text-foreground truncate">
-                      {msg.from_name || msg.from_address}
-                      {!msg.is_read && (
-                        <span className="ml-2 inline-block w-1.5 h-1.5 rounded-full bg-primary align-middle" />
+              {(() => {
+                const msgAtts = getAttachmentList(msg);
+                return (
+                  <>
+                    <button
+                      onClick={() => toggle(msg.id)}
+                      className={`w-full text-left flex items-start gap-3 ${
+                        isThread ? 'p-3' : 'pb-4 mb-5 border-b border-border'
+                      } ${expanded && isThread ? 'border-b border-border/60' : ''}`}
+                    >
+                      <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-semibold shrink-0 relative z-10">
+                        {(msg.from_name || msg.from_address).charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-baseline justify-between gap-2 flex-wrap">
+                          <p className="text-sm font-medium text-foreground truncate">
+                            {msg.from_name || msg.from_address}
+                            {!msg.is_read && (
+                              <span className="ml-2 inline-block w-1.5 h-1.5 rounded-full bg-primary align-middle" />
+                            )}
+                          </p>
+                          <span className="flex items-center gap-2 shrink-0">
+                            <AttachmentBadge count={msgAtts.length} />
+                            <span className="text-xs text-muted-foreground">
+                              {new Date(msg.received_at).toLocaleString('fr-FR', {
+                                day: 'numeric', month: 'short',
+                                hour: '2-digit', minute: '2-digit',
+                              })}
+                            </span>
+                          </span>
+                        </div>
+                        {expanded ? (
+                          <>
+                            <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                              &lt;{msg.from_address}&gt;
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              À : <span className="text-foreground/80">{msg.to_addresses.join(', ')}</span>
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <p className="text-xs text-muted-foreground truncate mt-0.5">
+                              {msg.preview || msg.body_text?.slice(0, 140) || '…'}
+                            </p>
+                            {msgAtts.length > 0 && (
+                              <p className="text-[11px] text-muted-foreground/80 truncate mt-0.5 italic">
+                                <Paperclip className="inline w-3 h-3 mr-1 -mt-0.5" />
+                                {msgAtts.slice(0, 3).map(a => a.name).join(', ')}
+                                {msgAtts.length > 3 && ` + ${msgAtts.length - 3}`}
+                              </p>
+                            )}
+                          </>
+                        )}
+                      </div>
+                      {isThread && (
+                        <span className="shrink-0 text-muted-foreground mt-1">
+                          {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                        </span>
                       )}
-                    </p>
-                    <span className="text-xs text-muted-foreground shrink-0">
-                      {new Date(msg.received_at).toLocaleString('fr-FR', {
-                        day: 'numeric', month: 'short',
-                        hour: '2-digit', minute: '2-digit',
-                      })}
-                    </span>
-                  </div>
-                  {expanded ? (
-                    <>
-                      <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                        &lt;{msg.from_address}&gt;
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        À : <span className="text-foreground/80">{msg.to_addresses.join(', ')}</span>
-                      </p>
-                    </>
-                  ) : (
-                    <p className="text-xs text-muted-foreground truncate mt-0.5">
-                      {msg.preview || msg.body_text?.slice(0, 140) || '…'}
-                    </p>
-                  )}
-                </div>
-                {isThread && (
-                  <span className="shrink-0 text-muted-foreground mt-1">
-                    {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                  </span>
-                )}
-              </button>
+                    </button>
 
-              {expanded && (
-                <div className={`prose prose-sm max-w-none dark:prose-invert text-foreground/90 leading-relaxed ${
-                  isThread ? 'px-4 pb-4 pt-3' : ''
-                }`}>
-                  {msg.body_html ? (
-                    <div dangerouslySetInnerHTML={{ __html: msg.body_html }} />
-                  ) : (
-                    <pre className="whitespace-pre-wrap font-sans text-sm">{msg.body_text}</pre>
-                  )}
-                </div>
-              )}
+                    {expanded && (
+                      <div className={`${isThread ? 'px-4 pb-4 pt-3' : ''}`}>
+                        <div className="prose prose-sm max-w-none dark:prose-invert text-foreground/90 leading-relaxed">
+                          {msg.body_html ? (
+                            <div dangerouslySetInnerHTML={{ __html: msg.body_html }} />
+                          ) : (
+                            <pre className="whitespace-pre-wrap font-sans text-sm">{msg.body_text}</pre>
+                          )}
+                        </div>
+                        <AttachmentList attachments={msgAtts} />
+                      </div>
+                    )}
 
-              {!expanded && isThread && !isLast && (
-                <div className="h-2" />
-              )}
+                    {!expanded && isThread && !isLast && (
+                      <div className="h-2" />
+                    )}
+                  </>
+                );
+              })()}
             </li>
           );
         })}

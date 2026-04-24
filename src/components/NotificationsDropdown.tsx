@@ -159,7 +159,7 @@ export default function NotificationsDropdown() {
         <button className="relative p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors">
           <Bell className="w-4 h-4" />
           {totalCount > 0 && (
-            <span className={`absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full text-[10px] font-bold ${
+            <span data-numeric className={`font-numeric tabular-nums absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full text-[10px] font-bold ${
               overdueCount > 0 ? 'bg-destructive text-destructive-foreground' : 'bg-primary text-primary-foreground'
             }`}>
               {totalCount}

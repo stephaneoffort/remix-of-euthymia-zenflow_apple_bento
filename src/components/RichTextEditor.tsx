@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useRef, forwardRef } from 'react';
+import React, { useEffect, useCallback, useRef, useState, forwardRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
@@ -16,8 +16,9 @@ import {
   Bold, Italic, Underline as UnderlineIcon, Strikethrough,
   List, ListOrdered, Quote, Code, Heading1, Heading2,
   Link as LinkIcon, Image as ImageIcon, Table as TableIcon,
-  Highlighter, Palette, Undo, Redo, Minus
+  Highlighter, Palette, Undo, Redo, Minus, Mic, MicOff
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface RichTextEditorProps {
   content: string;
@@ -171,6 +172,76 @@ export default function RichTextEditor({
     editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
   }, [editor]);
 
+  // Voice dictation (Web Speech API)
+  const recognitionRef = useRef<any>(null);
+  const [isDictating, setIsDictating] = useState(false);
+
+  const toggleDictation = useCallback(() => {
+    if (!editor) return;
+    const SpeechRecognition: any =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast.error("La dictée vocale n'est pas supportée par ce navigateur (essayez Chrome ou Edge).");
+      return;
+    }
+
+    if (isDictating && recognitionRef.current) {
+      recognitionRef.current.stop();
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'fr-FR';
+    recognition.continuous = true;
+    recognition.interimResults = false;
+
+    recognition.onresult = (event: any) => {
+      let finalText = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        if (event.results[i].isFinal) {
+          finalText += event.results[i][0].transcript;
+        }
+      }
+      if (finalText.trim()) {
+        const prefix = editor.isEmpty ? '' : ' ';
+        editor.chain().focus().insertContent(prefix + finalText.trim()).run();
+      }
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error('Speech recognition error:', event.error);
+      if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+        toast.error("Accès au microphone refusé. Autorisez le micro dans les paramètres du navigateur.");
+      } else if (event.error !== 'aborted' && event.error !== 'no-speech') {
+        toast.error(`Erreur de dictée : ${event.error}`);
+      }
+      setIsDictating(false);
+    };
+
+    recognition.onend = () => {
+      setIsDictating(false);
+      recognitionRef.current = null;
+    };
+
+    try {
+      recognition.start();
+      recognitionRef.current = recognition;
+      setIsDictating(true);
+      toast.success('🎤 Dictée en cours… Parlez maintenant.');
+    } catch (e) {
+      console.error('Failed to start recognition:', e);
+      toast.error("Impossible de démarrer la dictée.");
+    }
+  }, [editor, isDictating]);
+
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        try { recognitionRef.current.stop(); } catch {}
+      }
+    };
+  }, []);
+
   if (!editor) return null;
 
   const iconSize = 'w-3.5 h-3.5';
@@ -274,6 +345,20 @@ export default function RichTextEditor({
           title="Surligner"
         >
           <Highlighter className={iconSize} />
+        </ToolbarButton>
+
+        <div className="w-px h-4 bg-border mx-1" />
+
+        <ToolbarButton
+          active={isDictating}
+          onClick={toggleDictation}
+          title={isDictating ? 'Arrêter la dictée' : 'Dicter (microphone)'}
+        >
+          {isDictating ? (
+            <MicOff className={`${iconSize} text-priority-urgent animate-pulse`} />
+          ) : (
+            <Mic className={iconSize} />
+          )}
         </ToolbarButton>
 
         {!minimal && (

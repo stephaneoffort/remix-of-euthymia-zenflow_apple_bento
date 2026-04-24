@@ -249,9 +249,22 @@ export default function AppSidebar() {
   );
   const [filtersExpanded, setFiltersExpanded] = useState(() => !window.matchMedia("(max-width: 767px)").matches);
   const [spacesExpanded, setSpacesExpanded] = useState(true);
+  const [messagesExpanded, setMessagesExpanded] = useState(() => !window.matchMedia("(max-width: 767px)").matches);
   const [messagesHubOpen, setMessagesHubOpen] = useState(false);
   const { totalUnread: chatUnreadCount } = useChatNotifications();
   const { totalUnread: emailUnreadCount } = useEmailAccounts();
+  const { data: mentionsCount = 0 } = useQuery<number>({
+    queryKey: ['sidebar-mentions-count', teamMemberId],
+    queryFn: async () => {
+      if (!teamMemberId) return 0;
+      const { count } = await (supabase as any)
+        .from('comments')
+        .select('id', { count: 'exact', head: true })
+        .contains('mentioned_member_ids', [teamMemberId]);
+      return count || 0;
+    },
+    enabled: !!teamMemberId,
+  });
   const [accessDialogSpace, setAccessDialogSpace] = useState<{ id: string; name: string; isPrivate: boolean } | null>(
     null,
   );

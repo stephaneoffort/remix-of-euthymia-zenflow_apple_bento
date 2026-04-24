@@ -70,6 +70,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { QuickFilter } from "@/types";
 import { useChatNotifications } from "@/hooks/useChatNotifications";
 import { useEmailAccounts } from "@/hooks/useEmailAccounts";
+import { useQuery } from "@tanstack/react-query";
 import MessagesHubDialog from "@/components/messages/MessagesHubDialog";
 
 import { usePresence } from "@/hooks/usePresence";

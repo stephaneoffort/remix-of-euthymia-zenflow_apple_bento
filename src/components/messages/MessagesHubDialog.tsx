@@ -52,7 +52,7 @@ export default function MessagesHubDialog({ open, onOpenChange, initialTile = 'h
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-3xl w-[calc(100vw-1.5rem)] sm:w-[calc(100%-2rem)] h-[min(600px,calc(100dvh-2rem))] p-0 gap-0 overflow-hidden flex flex-col bg-popover text-popover-foreground">
+      <DialogContent scrollable={false} className="max-w-3xl w-[calc(100vw-1.5rem)] sm:w-[calc(100%-2rem)] h-[min(600px,calc(100dvh-2rem))] p-0 gap-0 overflow-hidden flex flex-col bg-popover text-popover-foreground">
         {activeTile === 'home' ? (
           <div className="flex flex-col h-full">
             <div className="px-6 py-4 border-b border-border">

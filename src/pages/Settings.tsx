@@ -520,7 +520,6 @@ function ThemePalettePanel() {
   const PALETTE_GROUPS: { title: string; keys: ThemePalette[] }[] = [
     { title: "Classiques", keys: ["clubroom", "neutrals", "sapphire", "cinematic", "teal"] },
     { title: "Bento 2026", keys: ["bento2026", "bentoOcean", "bentoRose", "bentoAmber"] },
-    { title: "Liquid Glass", keys: ["liquidGlass", "liquidGlassOcean", "liquidGlassAurora", "liquidGlassRose", "liquidGlassAmber", "liquidGlassViolet", "liquidGlassCoral", "liquidGlassSlate", "liquidGlassMidnight"] },
     { title: "Soft UI (Neumorphisme)", keys: ["nmCloud", "nmMidnight", "nmSand", "nmForest", "nmLavender", "nmDeepForest", "ivoireChaud"] },
   ];
 

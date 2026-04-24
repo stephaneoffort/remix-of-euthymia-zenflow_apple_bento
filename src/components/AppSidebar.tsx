@@ -752,7 +752,18 @@ export default function AppSidebar() {
                 </button>
               ))}
 
-              <MessagesButton onOpen={() => setMessagesHubOpen(true)} />
+              <button
+                onClick={() => { setMessagesHubOpen(true); handleNavClick(); }}
+                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors text-sidebar-fg hover:bg-sidebar-hover"
+              >
+                <MessageSquare className="w-4 h-4" />
+                Messages
+                {(chatUnreadCount + emailUnreadCount) > 0 && (
+                  <span data-numeric className="font-numeric tabular-nums ml-auto text-xs bg-primary text-primary-foreground rounded-full px-1.5 py-0.5">
+                    {chatUnreadCount + emailUnreadCount}
+                  </span>
+                )}
+              </button>
             </>
           )}
         </div>

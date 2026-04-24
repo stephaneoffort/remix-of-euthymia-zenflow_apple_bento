@@ -566,6 +566,69 @@ function ThemePalettePanel() {
         </CardContent>
       </Card>
 
+      {/* Opacité du panneau de détail — uniquement pour les thèmes Bento */}
+      {isBento && (
+        <Card className="border-border bg-card">
+          <CardHeader>
+            <CardTitle className="text-base text-foreground">Opacité du panneau de tâche</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Ajustez la transparence du fond du panneau de détail pour optimiser la lisibilité selon votre écran.
+              Réservé aux thèmes Bento.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between gap-4">
+                <Label htmlFor="task-panel-opacity" className="text-sm text-foreground">
+                  Opacité du fond
+                </Label>
+                <span
+                  className="text-sm font-semibold text-primary tabular-nums min-w-[3.5rem] text-right"
+                  data-numeric
+                >
+                  {Math.round(taskPanelOpacity * 100)}%
+                </span>
+              </div>
+              <input
+                id="task-panel-opacity"
+                type="range"
+                min={50}
+                max={100}
+                step={5}
+                value={Math.round(taskPanelOpacity * 100)}
+                onChange={(e) => setTaskPanelOpacity(Number(e.target.value) / 100)}
+                className="w-full h-2 rounded-full appearance-none cursor-pointer bg-muted accent-primary"
+                style={{
+                  background: `linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary)) ${
+                    ((taskPanelOpacity - 0.5) / 0.5) * 100
+                  }%, hsl(var(--muted)) ${((taskPanelOpacity - 0.5) / 0.5) * 100}%, hsl(var(--muted)) 100%)`,
+                }}
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>50% · Verre dépoli</span>
+                <span>100% · Opaque</span>
+              </div>
+              <div className="flex flex-wrap gap-2 pt-1">
+                {[0.6, 0.75, 0.9, 1].map((v) => (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => setTaskPanelOpacity(v)}
+                    className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
+                      Math.abs(taskPanelOpacity - v) < 0.001
+                        ? "border-primary bg-accent/40 text-foreground shadow-sm"
+                        : "border-border bg-card text-muted-foreground hover:border-muted-foreground/30 hover:bg-muted/30"
+                    }`}
+                  >
+                    {Math.round(v * 100)}%
+                  </button>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Mode de design */}
       <Card className="border-border bg-card">
         <CardHeader>

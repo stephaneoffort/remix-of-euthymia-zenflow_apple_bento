@@ -167,7 +167,7 @@ export const PALETTE_META: Record<ThemePalette, { label: string; description: st
     colors: ["#1A1F1A", "#5A9A6A", "#0F1210", "#252C25"],
   },
   ivoireChaud: {
-    label: "Ivoire Chaud",
+    label: "Premium Chaud",
     description: "Crème doré · Terre cuite · Chaleur naturelle",
     colors: ["#c27838", "#3a2a1a", "#f5efe3", "#ede6d8"],
   },

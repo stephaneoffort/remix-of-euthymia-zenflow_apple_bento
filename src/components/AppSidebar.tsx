@@ -1707,7 +1707,7 @@ function ThemeSwitcher() {
     { key: "nmForest", label: "Forest", colors: ["#C3CAC5", "#4E7A45"] },
     { key: "nmLavender", label: "Lavender", colors: ["#CAC5CD", "#7B5EA7"] },
     { key: "nmDeepForest", label: "Deep Forest", colors: ["#1A1F1A", "#5A9A6A"] },
-    { key: "ivoireChaud", label: "Ivoire Chaud", colors: ["#c27838", "#3a2a1a"] },
+    { key: "ivoireChaud", label: "Premium Chaud", colors: ["#c27838", "#3a2a1a"] },
   ];
 
   return (
@@ -1774,7 +1774,7 @@ function ThemeSwitcher() {
             }`}
           >
             <Sparkles className="w-3 h-3" />
-            Ivoire
+            Premium
           </button>
         </div>
       </div>

@@ -72,7 +72,7 @@ export default function WorkloadViewNM() {
     return { total, done, unassigned };
   }, [tasks]);
 
-  /* ── Charge par membre ── */
+  /* ── Charge par membre (avec time tracking) ── */
   const workload = useMemo(() => {
     return teamMembers.map(m => {
       const memberTasks = tasks.filter(t => t.assigneeIds?.includes(m.id));
@@ -84,13 +84,49 @@ export default function WorkloadViewNM() {
         normal: memberTasks.filter(t => t.priority === "normal").length,
         low:    memberTasks.filter(t => t.priority === "low").length,
       };
+      const byStatus = {
+        todo:        memberTasks.filter(t => t.status === "todo").length,
+        in_progress: memberTasks.filter(t => t.status === "in_progress").length,
+        in_review:   memberTasks.filter(t => t.status === "in_review").length,
+        done,
+        blocked:     memberTasks.filter(t => t.status === "blocked").length,
+      };
+      const timeEstimated = memberTasks.reduce((s, t) => s + (t.timeEstimate || 0), 0);
+      const timeLogged    = memberTasks.reduce((s, t) => s + (t.timeLogged    || 0), 0);
       const upcoming = memberTasks
         .filter(t => t.dueDate && t.status !== "done")
         .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime())
         .slice(0, 3);
-      return { ...m, memberTasks, done, completion, byPriority, upcoming, total: memberTasks.length };
+      return { ...m, memberTasks, done, completion, byPriority, byStatus, timeEstimated, timeLogged, upcoming, total: memberTasks.length };
     }).filter(m => m.total > 0).sort((a, b) => b.total - a.total);
   }, [tasks, teamMembers]);
+
+  /* ── Données graphiques ── */
+  const barData = useMemo(() => workload.map(d => ({
+    name: d.name.split(" ")[0],
+    "À faire":  d.byStatus.todo,
+    "En cours": d.byStatus.in_progress,
+    "En revue": d.byStatus.in_review,
+    "Terminé":  d.byStatus.done,
+    "Bloqué":   d.byStatus.blocked,
+  })), [workload]);
+
+  const priorityData = useMemo(() => {
+    const counts: Record<string, number> = {};
+    tasks.forEach(t => { counts[t.priority] = (counts[t.priority] || 0) + 1; });
+    return Object.entries(counts).map(([k, v]) => ({
+      name: PRIORITY_FULL_LABELS[k] || k,
+      value: v,
+      color: PRIORITY_COLORS[k] || C.muted,
+    }));
+  }, [tasks]);
+
+  const formatMinutes = (m: number): string => {
+    if (m < 60) return `${m}min`;
+    const h = Math.floor(m / 60);
+    const r = m % 60;
+    return r > 0 ? `${h}h${r}m` : `${h}h`;
+  };
 
   const daysLabel = (due: string) => {
     const diff = differenceInDays(parseISO(due), new Date());

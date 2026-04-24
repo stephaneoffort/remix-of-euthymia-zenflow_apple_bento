@@ -209,6 +209,8 @@ export function useEmailAccounts() {
     addImapAccount,
     deleteAccount,
     syncAccount,
+    connectGmail,
+    importLegacyGmail,
     refresh: () => queryClient.invalidateQueries({ queryKey: ['email-accounts'] }),
   };
 }

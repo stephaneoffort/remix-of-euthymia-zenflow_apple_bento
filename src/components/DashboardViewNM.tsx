@@ -989,7 +989,60 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
       ))}
     </div>
 
+    {/* ─── Row 5 : Resources Drive / Canva / Brevo Campaigns (detailed) ─── */}
+    {(() => {
+      const showDrive = isActive("google_drive") && projects.length > 0;
+      const showCanva = isActive("canva") && projects.length > 0;
+      const showBrevo = isActive("brevo");
+      if (!showDrive && !showCanva && !showBrevo) return null;
+      const visible = [showDrive, showCanva, showBrevo].filter(Boolean).length;
+      const detailCols = isMobileProp ? 1 : Math.min(visible, 3);
+      return (
+        <div style={{
+          ...(isMobileProp ? {} : { gridColumn: "1 / 5", gridRow: 5 }),
+          display: "grid",
+          gridTemplateColumns: `repeat(${detailCols}, minmax(0,1fr))`,
+          gap: 10,
+          marginTop: 10,
+        }}>
+          {showDrive && (
+            <NMResourceCard
+              title="Ressources Drive"
+              icon={INTEGRATION_CONFIG.google_drive.icon}
+              accent="#4285F4"
+              total={driveCount}
+              projects={projects}
+              countsByProject={driveByProject}
+              emptyText="Aucune ressource Drive."
+              emptyHint="Attache des fichiers Drive à tes projets ou tâches."
+              onProjectClick={(id) => { setSelectedProjectId(id); setSelectedView("kanban"); }}
+            />
+          )}
+          {showCanva && (
+            <NMResourceCard
+              title="Ressources Canva"
+              icon={INTEGRATION_CONFIG.canva.icon}
+              accent="#7D2AE7"
+              total={canvaCount}
+              projects={projects}
+              countsByProject={canvaByProject}
+              emptyText="Aucune ressource Canva."
+              emptyHint="Attache des designs Canva à tes projets ou tâches."
+              onProjectClick={(id) => { setSelectedProjectId(id); setSelectedView("kanban"); }}
+            />
+          )}
+          {showBrevo && (
+            <NMBrevoCampaigns
+              campaigns={brevoCampaigns}
+              loading={brevoLoading}
+            />
+          )}
+        </div>
+      );
+    })()}
+
     {/* Zoom create dialog – neumorphic style */}
+
     {zoomDialogOpen && (
       <div
         onClick={() => setZoomDialogOpen(false)}

@@ -339,7 +339,7 @@ export default function KanbanBoardNM() {
   };
 
   const mobileColTasks = filtered.filter(t => t.status === mobileActiveStatus);
-  const mobileCol = COLUMNS.find(c => c.key === mobileActiveStatus);
+  const mobileCol = columns.find(c => c.key === mobileActiveStatus);
 
   return (
     <div style={{ fontFamily: "'DM Sans', sans-serif", background: BG, padding: isMobile ? "8px 8px" : "12px 16px", height: "100%", width: "100%", boxSizing: "border-box", display: "flex", flexDirection: "column", gap: 10 }}>

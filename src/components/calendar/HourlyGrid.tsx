@@ -374,7 +374,8 @@ function OverflowBadge({ items, top, height, onTaskClick, onEventClick }: {
     <Popover>
       <PopoverTrigger asChild>
         <button
-          className="absolute z-20 rounded px-1 py-0.5 text-[9px] font-bold bg-muted text-foreground border border-border hover:bg-accent transition-colors cursor-pointer"
+          data-numeric
+          className="font-numeric tabular-nums absolute z-20 rounded px-1 py-0.5 text-[9px] font-bold bg-muted text-foreground border border-border hover:bg-accent transition-colors cursor-pointer"
           style={{ top: top + 2, right: 2, height: Math.min(20, height - 4) }}
           onClick={e => e.stopPropagation()}
         >

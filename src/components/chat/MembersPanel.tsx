@@ -74,8 +74,13 @@ export function MembersPanel({ memberProfiles, onDmCreated, onlineTeamMemberIds 
     const authUserIds = selectedForGroup.map(tmId => teamMemberToAuthId[tmId]).filter(Boolean);
     if (authUserIds.length === 0) { toast.error('Membres introuvables'); setCreating(false); return; }
     const channelName = names.length <= 3 ? names.join(', ') : `${names.slice(0, 2).join(', ')} +${names.length - 2}`;
-    const { data: newChannel, error } = await db.from('chat_channels').insert({ name: channelName, type: 'private', description: `Groupe: ${names.join(', ')}` }).select().single();
-    if (error || !newChannel) { toast.error('Impossible de créer le groupe'); setCreating(false); return; }
+    const { data: newChannel, error } = await db.from('chat_channels').insert({ name: channelName, type: 'private', description: `Groupe: ${names.join(', ')}`, created_by: user.id }).select().single();
+    if (error || !newChannel) {
+      console.error('[startGroupDm] create channel failed', error);
+      toast.error(`Impossible de créer le groupe: ${error?.message || 'erreur inconnue'}`);
+      setCreating(false);
+      return;
+    }
     await db.from('chat_channel_members').insert([
       { channel_id: newChannel.id, user_id: user.id },
       ...authUserIds.map((uid: string) => ({ channel_id: newChannel.id, user_id: uid })),

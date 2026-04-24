@@ -37,6 +37,9 @@ import {
   Users,
   Sparkles,
   MessageSquare,
+  AtSign,
+  Mail,
+  MessagesSquare,
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {

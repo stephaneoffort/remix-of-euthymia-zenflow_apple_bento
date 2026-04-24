@@ -195,7 +195,23 @@ export default function NumericAudit() {
     toast.success("Acceptation retirée");
   };
 
-  /* ─── Loading / access guards ─── */
+  /* ─── Bulk cleanup of stale acceptances ─── */
+  const cleanupStale = async () => {
+    if (staleAcceptances.length === 0) return;
+    setCleaning(true);
+    const ids = staleAcceptances.map(a => a.id);
+    const { error } = await supabase
+      .from("numeric_audit_acceptances")
+      .delete()
+      .in("id", ids);
+    setCleaning(false);
+    if (error) {
+      toast.error("Échec du nettoyage : " + error.message);
+      return;
+    }
+    setAcceptances(prev => prev.filter(a => !ids.includes(a.id)));
+    toast.success(`${ids.length} acceptation(s) obsolète(s) supprimée(s)`);
+  };
   if (loading || isAdmin === null) {
     return (
       <div className="flex items-center justify-center h-screen bg-background">

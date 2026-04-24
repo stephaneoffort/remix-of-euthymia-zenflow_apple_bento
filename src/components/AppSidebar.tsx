@@ -157,7 +157,7 @@ export default function AppSidebar() {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const { isOnline } = usePresence();
-  const { user } = useAuth();
+  const { user, teamMemberId } = useAuth();
   const { designMode } = useThemeMode();
 
   // Resizable sidebar

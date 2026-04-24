@@ -206,6 +206,78 @@ export const PALETTE_META: Record<ThemePalette, { label: string; description: st
     description: "Nuit profonde · Pêche braise · Rouge intense",
     colors: ["#161522", "#FFA586", "#384358", "#B51A2B"],
   },
+  // ─── Variantes Bento (style mesh-gradient + glassmorphism) ───
+  bentoDunesCuivre: {
+    label: "Bento Dunes Cuivre",
+    description: "Bleu nuit · Cuivre · Glassmorphism Bento",
+    colors: ["#10232A", "#B58863", "#3D4D55", "#D3C3B9"],
+  },
+  bentoCrepuscule: {
+    label: "Bento Crépuscule",
+    description: "Bleu nuit · Corail · Glassmorphism Bento",
+    colors: ["#03122F", "#F1916D", "#413B61", "#F3DADF"],
+  },
+  bentoBrumeArdoise: {
+    label: "Bento Brume Ardoise",
+    description: "Ardoise profonde · Brume · Glassmorphism Bento",
+    colors: ["#1A2D42", "#AAB7B7", "#2E4156", "#D4D8DD"],
+  },
+  bentoPrunelle: {
+    label: "Bento Prunelle",
+    description: "Pourpre nocturne · Mauve · Glassmorphism Bento",
+    colors: ["#190019", "#854F6C", "#522B5B", "#FBE4D8"],
+  },
+  bentoAzurProfond: {
+    label: "Bento Azur Profond",
+    description: "Bleu nuit · Ciel clair · Glassmorphism Bento",
+    colors: ["#021024", "#7DA0CA", "#052659", "#C1E8FF"],
+  },
+  bentoAuroreCorail: {
+    label: "Bento Aurore Corail",
+    description: "Bleu mauve · Corail · Glassmorphism Bento",
+    colors: ["#2E365A", "#BD6C73", "#6B597F", "#92A1C2"],
+  },
+  bentoBraiseNocturne: {
+    label: "Bento Braise Nocturne",
+    description: "Nuit profonde · Pêche braise · Glassmorphism Bento",
+    colors: ["#161522", "#FFA586", "#384358", "#B51A2B"],
+  },
+  // ─── Variantes Neumorphism (Soft UI) ───
+  nmDunesCuivre: {
+    label: "Soft Dunes Cuivre",
+    description: "Soft UI · Sable cuivré · Doux & minéral",
+    colors: ["#E0D5C8", "#B58863", "#B5A998", "#FFFFFF"],
+  },
+  nmCrepuscule: {
+    label: "Soft Crépuscule",
+    description: "Soft UI · Lavande poudrée · Corail tendre",
+    colors: ["#F3DADF", "#F1916D", "#D5B8BD", "#FFFFFF"],
+  },
+  nmBrumeArdoise: {
+    label: "Soft Brume Ardoise",
+    description: "Soft UI · Ardoise claire · Sobre & apaisé",
+    colors: ["#D4D8DD", "#2E4156", "#B0B5BB", "#FFFFFF"],
+  },
+  nmPrunelle: {
+    label: "Soft Prunelle",
+    description: "Soft UI · Crème chaud · Mauve velours",
+    colors: ["#FBE4D8", "#854F6C", "#DDC4B5", "#FFFFFF"],
+  },
+  nmAzurProfond: {
+    label: "Soft Azur Profond",
+    description: "Soft UI · Ciel pâle · Bleu marine",
+    colors: ["#D8EBF7", "#5483B3", "#A8C5DA", "#FFFFFF"],
+  },
+  nmAuroreCorail: {
+    label: "Soft Aurore Corail",
+    description: "Soft UI · Mauve gris · Corail rosé",
+    colors: ["#CFCFDC", "#BD6C73", "#A9A9B8", "#FFFFFF"],
+  },
+  nmBraiseNocturne: {
+    label: "Soft Braise Nocturne",
+    description: "Soft UI · Pêche pastel · Rouge braise",
+    colors: ["#FFE0D2", "#B51A2B", "#E0BBA8", "#FFFFFF"],
+  },
 };
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {

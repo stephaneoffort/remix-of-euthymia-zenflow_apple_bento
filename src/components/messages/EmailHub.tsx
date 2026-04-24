@@ -447,6 +447,14 @@ function NotionMailLayout({
 }: NotionMailLayoutProps) {
   const [tab, setTab] = useState<FilterTab>('all');
   const [search, setSearch] = useState('');
+  const isMobile = useIsMobile();
+  // Mobile pane navigation: 'accounts' | 'list' | 'detail'
+  const [mobilePane, setMobilePane] = useState<'accounts' | 'list' | 'detail'>('list');
+
+  // Auto-switch to detail pane on mobile when a message is selected
+  useEffect(() => {
+    if (isMobile && selectedMessage) setMobilePane('detail');
+  }, [isMobile, selectedMessage]);
 
   const filtered = useMemo(() => {
     let list = messages;
@@ -484,159 +492,209 @@ function NotionMailLayout({
     starred: messages.filter(m => m.is_starred).length,
   }), [messages]);
 
+  // Visibility helpers (mobile = one pane at a time, desktop = all)
+  const showAccounts = !isMobile || mobilePane === 'accounts';
+  const showList = !isMobile || mobilePane === 'list';
+  const showDetail = (!isMobile && !!selectedMessage) || (isMobile && mobilePane === 'detail' && !!selectedMessage);
+
   return (
     <div className="flex h-full bg-background overflow-hidden">
       {/* COLUMN 1 — Accounts / Folders sidebar */}
-      <aside className="w-60 shrink-0 border-r border-border bg-muted/20 flex flex-col">
-        <div className="px-3 py-3 border-b border-border">
-          <button
-            onClick={onCompose}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-md bg-foreground text-background hover:opacity-90 transition-opacity text-sm font-medium"
-          >
-            <Send className="w-4 h-4" />
-            Nouveau message
-          </button>
-        </div>
-
-        <div className="flex-1 overflow-y-auto px-2 py-3 space-y-4">
-          {/* Comptes */}
-          <div>
-            <div className="flex items-center justify-between px-2 mb-1">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                Comptes
-              </span>
+      {showAccounts && (
+        <aside
+          className={`${
+            isMobile ? 'w-full' : 'w-60 shrink-0 border-r border-border'
+          } bg-muted/20 flex flex-col`}
+        >
+          <div className="px-3 py-3 border-b border-border flex items-center gap-2">
+            {isMobile && (
               <button
-                onClick={onAddAccount}
-                className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
-                title="Ajouter un compte"
+                onClick={() => setMobilePane('list')}
+                className="p-1.5 rounded-md hover:bg-muted text-muted-foreground"
+                title="Retour"
+                aria-label="Retour à la liste"
               >
-                <Plus className="w-3.5 h-3.5" />
+                <ArrowLeft className="w-4 h-4" />
               </button>
-            </div>
-            <ul className="space-y-0.5">
-              {accounts.map(a => {
-                const active = a.id === selectedAccountId;
-                return (
-                  <li key={a.id}>
-                    <button
-                      onClick={() => setSelectedAccountId(a.id)}
-                      className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors text-left ${
-                        active
-                          ? 'bg-foreground/10 text-foreground font-medium'
-                          : 'text-foreground/70 hover:bg-muted hover:text-foreground'
-                      }`}
-                    >
-                      {a.account_type === 'gmail' ? (
-                        <img src={gmailLogo} alt="" className="w-4 h-4 shrink-0" />
-                      ) : (
-                        <Mail className="w-4 h-4 shrink-0 text-muted-foreground" />
-                      )}
-                      <span className="truncate flex-1 min-w-0">{a.email_address}</span>
-                      {a.unread_count > 0 && (
-                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/15 text-primary font-mono shrink-0">
-                          {a.unread_count}
-                        </span>
-                      )}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
+            )}
+            <button
+              onClick={() => { onCompose(); if (isMobile) setMobilePane('list'); }}
+              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md bg-foreground text-background hover:opacity-90 transition-opacity text-sm font-medium"
+            >
+              <Send className="w-4 h-4" />
+              Nouveau message
+            </button>
           </div>
 
-          {/* Vues */}
-          {account && (
+          <div className="flex-1 overflow-y-auto px-2 py-3 space-y-4">
+            {/* Comptes */}
             <div>
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground px-2 mb-1 block">
-                Vues
-              </span>
+              <div className="flex items-center justify-between px-2 mb-1">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  Comptes
+                </span>
+                <button
+                  onClick={onAddAccount}
+                  className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+                  title="Ajouter un compte"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                </button>
+              </div>
               <ul className="space-y-0.5">
-                <SidebarFolder icon={Inbox} label="Réception" count={counts.all} active={tab === 'all'} onClick={() => setTab('all')} />
-                <SidebarFolder icon={Mail} label="Non lus" count={counts.unread} active={tab === 'unread'} onClick={() => setTab('unread')} />
-                <SidebarFolder icon={AtSign} label="Mentions" active={tab === 'mentions'} onClick={() => setTab('mentions')} />
-                <SidebarFolder icon={Newspaper} label="Newsletters" active={tab === 'newsletters'} onClick={() => setTab('newsletters')} />
-                <SidebarFolder icon={Star} label="Favoris" count={counts.starred} active={tab === 'starred'} onClick={() => setTab('starred')} />
+                {accounts.map(a => {
+                  const active = a.id === selectedAccountId;
+                  return (
+                    <li key={a.id}>
+                      <button
+                        onClick={() => { setSelectedAccountId(a.id); if (isMobile) setMobilePane('list'); }}
+                        className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors text-left ${
+                          active
+                            ? 'bg-foreground/10 text-foreground font-medium'
+                            : 'text-foreground/70 hover:bg-muted hover:text-foreground'
+                        }`}
+                      >
+                        {a.account_type === 'gmail' ? (
+                          <img src={gmailLogo} alt="" className="w-4 h-4 shrink-0" />
+                        ) : (
+                          <Mail className="w-4 h-4 shrink-0 text-muted-foreground" />
+                        )}
+                        <span className="truncate flex-1 min-w-0">{a.email_address}</span>
+                        {a.unread_count > 0 && (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/15 text-primary font-mono shrink-0">
+                            {a.unread_count}
+                          </span>
+                        )}
+                      </button>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
-          )}
-        </div>
-      </aside>
+
+            {/* Vues */}
+            {account && (
+              <div>
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground px-2 mb-1 block">
+                  Vues
+                </span>
+                <ul className="space-y-0.5">
+                  <SidebarFolder icon={Inbox} label="Réception" count={counts.all} active={tab === 'all'} onClick={() => { setTab('all'); if (isMobile) setMobilePane('list'); }} />
+                  <SidebarFolder icon={Mail} label="Non lus" count={counts.unread} active={tab === 'unread'} onClick={() => { setTab('unread'); if (isMobile) setMobilePane('list'); }} />
+                  <SidebarFolder icon={AtSign} label="Mentions" active={tab === 'mentions'} onClick={() => { setTab('mentions'); if (isMobile) setMobilePane('list'); }} />
+                  <SidebarFolder icon={Newspaper} label="Newsletters" active={tab === 'newsletters'} onClick={() => { setTab('newsletters'); if (isMobile) setMobilePane('list'); }} />
+                  <SidebarFolder icon={Star} label="Favoris" count={counts.starred} active={tab === 'starred'} onClick={() => { setTab('starred'); if (isMobile) setMobilePane('list'); }} />
+                </ul>
+              </div>
+            )}
+          </div>
+        </aside>
+      )}
 
       {/* COLUMN 2 — Message list */}
-      <section className={`${selectedMessage ? 'w-[380px] shrink-0' : 'flex-1'} border-r border-border flex flex-col min-w-0 transition-all`}>
-        {/* Header: search + sync */}
-        <div className="px-3 py-2 border-b border-border flex items-center gap-2 shrink-0">
-          <div className="relative flex-1">
-            <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Rechercher dans les emails…"
-              className="h-8 pl-7 text-xs border-transparent bg-muted/40 focus-visible:bg-background"
-            />
-          </div>
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onSync} disabled={syncing} title="Synchroniser">
-            {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-          </Button>
-        </div>
-
-        {/* Tabs / Views */}
-        <div className="px-2 border-b border-border flex items-center gap-0.5 overflow-x-auto scrollbar-thin shrink-0">
-          <FilterChip label="Tous" active={tab === 'all'} onClick={() => setTab('all')} count={counts.all} />
-          <FilterChip label="Non lus" active={tab === 'unread'} onClick={() => setTab('unread')} count={counts.unread} />
-          <FilterChip label="Mentions" active={tab === 'mentions'} onClick={() => setTab('mentions')} />
-          <FilterChip label="Newsletters" active={tab === 'newsletters'} onClick={() => setTab('newsletters')} />
-          <FilterChip label="Favoris" active={tab === 'starred'} onClick={() => setTab('starred')} count={counts.starred} />
-        </div>
-
-        {account?.last_sync_error && (
-          <div className="px-3 py-2 bg-destructive/10 text-destructive text-xs flex items-center gap-2 shrink-0">
-            <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-            <span className="truncate">{account.last_sync_error}</span>
-          </div>
-        )}
-
-        {/* List */}
-        <div className="flex-1 overflow-y-auto">
-          {loadingMessages ? (
-            <p className="text-xs text-muted-foreground text-center py-8">Chargement…</p>
-          ) : filtered.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground px-4">
-              <Inbox className="w-10 h-10 mx-auto mb-3 opacity-30" />
-              <p className="text-sm">Aucun email</p>
-              {messages.length === 0 && (
-                <Button variant="link" onClick={onSync} className="mt-1 text-xs">
-                  Synchroniser maintenant
-                </Button>
-              )}
+      {showList && (
+        <section
+          className={`${
+            isMobile
+              ? 'w-full'
+              : selectedMessage
+                ? 'w-[380px] shrink-0 border-r border-border'
+                : 'flex-1 border-r border-border'
+          } flex flex-col min-w-0 transition-all`}
+        >
+          {/* Header: search + sync (+ menu on mobile) */}
+          <div className="px-3 py-2 border-b border-border flex items-center gap-2 shrink-0">
+            {isMobile && (
+              <button
+                onClick={() => setMobilePane('accounts')}
+                className="p-1.5 rounded-md hover:bg-muted text-muted-foreground shrink-0"
+                title="Comptes & vues"
+                aria-label="Ouvrir comptes et vues"
+              >
+                <Menu className="w-4 h-4" />
+              </button>
+            )}
+            <div className="relative flex-1 min-w-0">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Rechercher…"
+                className="h-8 pl-7 text-xs border-transparent bg-muted/40 focus-visible:bg-background"
+              />
             </div>
-          ) : (
-            <ul className="divide-y divide-border/60">
-              {filtered.map(msg => (
-                <MessageRow
-                  key={msg.id}
-                  msg={msg}
-                  selected={selectedMessage?.id === msg.id}
-                  onClick={() => onSelectMessage(msg)}
-                  onReply={() => onReply(msg)}
-                  onDelete={() => onDelete(msg)}
-                />
-              ))}
-            </ul>
+            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={onSync} disabled={syncing} title="Synchroniser">
+              {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+            </Button>
+          </div>
+
+          {/* Tabs / Views */}
+          <div className="px-2 border-b border-border flex items-center gap-0.5 overflow-x-auto scrollbar-thin shrink-0">
+            <FilterChip label="Tous" active={tab === 'all'} onClick={() => setTab('all')} count={counts.all} />
+            <FilterChip label="Non lus" active={tab === 'unread'} onClick={() => setTab('unread')} count={counts.unread} />
+            <FilterChip label="Mentions" active={tab === 'mentions'} onClick={() => setTab('mentions')} />
+            <FilterChip label="Newsletters" active={tab === 'newsletters'} onClick={() => setTab('newsletters')} />
+            <FilterChip label="Favoris" active={tab === 'starred'} onClick={() => setTab('starred')} count={counts.starred} />
+          </div>
+
+          {account?.last_sync_error && (
+            <div className="px-3 py-2 bg-destructive/10 text-destructive text-xs flex items-center gap-2 shrink-0">
+              <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate">{account.last_sync_error}</span>
+            </div>
           )}
-        </div>
-      </section>
+
+          {/* List */}
+          <div className="flex-1 overflow-y-auto">
+            {loadingMessages ? (
+              <p className="text-xs text-muted-foreground text-center py-8">Chargement…</p>
+            ) : filtered.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground px-4">
+                <Inbox className="w-10 h-10 mx-auto mb-3 opacity-30" />
+                <p className="text-sm">Aucun email</p>
+                {messages.length === 0 && (
+                  <Button variant="link" onClick={onSync} className="mt-1 text-xs">
+                    Synchroniser maintenant
+                  </Button>
+                )}
+              </div>
+            ) : (
+              <ul className="divide-y divide-border/60">
+                {filtered.map(msg => (
+                  <MessageRow
+                    key={msg.id}
+                    msg={msg}
+                    selected={selectedMessage?.id === msg.id}
+                    onClick={() => onSelectMessage(msg)}
+                    onReply={() => onReply(msg)}
+                    onDelete={() => onDelete(msg)}
+                    isMobile={isMobile}
+                  />
+                ))}
+              </ul>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* COLUMN 3 — Reading pane */}
-      {selectedMessage && (
-        <section className="flex-1 flex flex-col min-w-0 bg-background">
-          <div className="px-5 py-3 border-b border-border flex items-center gap-2 shrink-0">
-            <Button variant="ghost" size="sm" onClick={onCloseDetail} className="h-8 w-8 p-0" title="Fermer">
-              <X className="w-4 h-4" />
+      {showDetail && selectedMessage && (
+        <section className={`${isMobile ? 'w-full' : 'flex-1'} flex flex-col min-w-0 bg-background`}>
+          <div className="px-3 sm:px-5 py-3 border-b border-border flex items-center gap-1 sm:gap-2 shrink-0">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => { if (isMobile) setMobilePane('list'); onCloseDetail(); }}
+              className="h-8 w-8 p-0"
+              title={isMobile ? 'Retour' : 'Fermer'}
+              aria-label={isMobile ? 'Retour à la liste' : 'Fermer le message'}
+            >
+              {isMobile ? <ArrowLeft className="w-4 h-4" /> : <X className="w-4 h-4" />}
             </Button>
-            <div className="flex-1" />
-            <Button variant="ghost" size="sm" onClick={() => onReply(selectedMessage)} className="h-8">
-              <CornerUpLeft className="w-4 h-4 mr-1.5" /> Répondre
+            <div className="flex-1 min-w-0" />
+            <Button variant="ghost" size="sm" onClick={() => onReply(selectedMessage)} className="h-8 px-2 sm:px-3">
+              <CornerUpLeft className="w-4 h-4 sm:mr-1.5" />
+              <span className="hidden sm:inline">Répondre</span>
             </Button>
             <Button variant="ghost" size="icon" className="h-8 w-8" title="Archiver">
               <Archive className="w-4 h-4" />
@@ -646,7 +704,7 @@ function NotionMailLayout({
             </Button>
           </div>
 
-          <div className="flex-1 overflow-y-auto px-8 py-6">
+          <div className="flex-1 overflow-y-auto px-4 sm:px-8 py-4 sm:py-6">
             <ConversationView
               selectedMessage={selectedMessage}
               allMessages={messages}

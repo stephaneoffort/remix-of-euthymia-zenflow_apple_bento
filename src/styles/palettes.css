@@ -5416,3 +5416,2179 @@
   --bento-border-h: rgba(0,0,0,0.10);
   --bento-shadow: 0 8px 32px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ╔═══════════════════════════════════════════════════════════════════╗
+   ║  EXTENSIONS BENTO  —  7 palettes scopées style Bento 2026          ║
+   ║  Réutilise les couleurs source : dunesCuivre, crepuscule,          ║
+   ║  brumeArdoise, prunelle, azurProfond, auroreCorail, braiseNocturne ║
+   ╚═══════════════════════════════════════════════════════════════════╝
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ─── BENTO DUNES CUIVRE (#10232A · #B58863 · #D3C3B9) ─────────────── */
+[data-palette="bentoDunesCuivre"] {
+  --background: 195 47% 10%;
+  --foreground: 33 33% 90%;
+  --card: 195 38% 13%;
+  --card-foreground: 33 33% 90%;
+  --popover: 195 47% 11%;
+  --popover-foreground: 33 33% 92%;
+  --primary: 28 36% 55%;
+  --primary-foreground: 195 47% 10%;
+  --secondary: 210 14% 22%;
+  --secondary-foreground: 33 18% 70%;
+  --muted: 200 18% 16%;
+  --muted-foreground: 33 12% 60%;
+  --accent: 28 30% 22%;
+  --accent-foreground: 28 50% 78%;
+  --destructive: 0 65% 52%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 200 16% 22%;
+  --input: 200 18% 17%;
+  --ring: 28 36% 55%;
+  --sidebar-background: 195 50% 7%;
+  --sidebar-foreground: 33 14% 78%;
+  --sidebar-primary: 28 36% 55%;
+  --sidebar-primary-foreground: 195 47% 10%;
+  --sidebar-accent: 200 22% 14%;
+  --sidebar-accent-foreground: 33 18% 90%;
+  --sidebar-ring: 28 36% 55%;
+  --sidebar-bg: 195 50% 7%;
+  --sidebar-fg: 33 14% 72%;
+  --sidebar-fg-bright: 33 30% 92%;
+  --sidebar-hover: 200 22% 14%;
+  --sidebar-active: 28 36% 55%;
+  --sidebar-active-fg: 195 50% 8%;
+  --sidebar-border: 200 18% 16%;
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(181,136,99,0.06);
+  --bento-border: rgba(181,136,99,0.10);
+  --bento-accent: rgba(181,136,99,0.12);
+  --priority-urgent: 4 58% 52%;
+  --priority-high: 28 55% 52%;
+  --priority-normal: 200 35% 48%;
+  --priority-low: 33 18% 52%;
+  --status-todo: 33 18% 52%;
+  --status-progress: 200 40% 48%;
+  --status-review: 28 50% 52%;
+  --status-done: 165 38% 42%;
+  --status-blocked: 4 50% 50%;
+}
+[data-palette="bentoDunesCuivre"].light {
+  --background: 33 38% 93%;
+  --foreground: 195 47% 12%;
+  --card: 33 30% 96%;
+  --card-foreground: 195 47% 12%;
+  --popover: 33 25% 97%;
+  --popover-foreground: 195 47% 12%;
+  --primary: 195 47% 18%;
+  --primary-foreground: 33 38% 93%;
+  --secondary: 33 22% 88%;
+  --secondary-foreground: 195 25% 28%;
+  --muted: 33 18% 90%;
+  --muted-foreground: 195 12% 38%;
+  --accent: 28 36% 38%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 65% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 33 18% 82%;
+  --input: 33 20% 86%;
+  --ring: 195 47% 18%;
+  --sidebar-background: 33 30% 95%;
+  --sidebar-foreground: 195 22% 28%;
+  --sidebar-primary: 195 47% 18%;
+  --sidebar-primary-foreground: 33 38% 93%;
+  --sidebar-accent: 33 22% 88%;
+  --sidebar-accent-foreground: 195 47% 18%;
+  --sidebar-ring: 195 47% 18%;
+  --sidebar-bg: 33 30% 95%;
+  --sidebar-fg: 195 22% 30%;
+  --sidebar-fg-bright: 195 47% 12%;
+  --sidebar-hover: 33 22% 88%;
+  --sidebar-active: 195 47% 18%;
+  --sidebar-active-fg: 33 38% 93%;
+  --sidebar-border: 33 16% 85%;
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(16,35,42,0.04);
+  --bento-border: rgba(16,35,42,0.08);
+  --bento-accent: rgba(181,136,99,0.14);
+  --priority-urgent: 4 52% 46%;
+  --priority-high: 28 50% 44%;
+  --priority-normal: 200 30% 40%;
+  --priority-low: 33 16% 46%;
+  --status-todo: 33 16% 46%;
+  --status-progress: 200 36% 40%;
+  --status-review: 28 45% 44%;
+  --status-done: 165 38% 36%;
+  --status-blocked: 4 48% 42%;
+}
+[data-palette="bentoDunesCuivre"].mixed {
+  --background: 33 38% 93%;
+  --foreground: 195 47% 12%;
+  --card: 33 30% 96%;
+  --card-foreground: 195 47% 12%;
+  --popover: 33 25% 97%;
+  --popover-foreground: 195 47% 12%;
+  --primary: 195 47% 18%;
+  --primary-foreground: 33 38% 93%;
+  --secondary: 33 22% 88%;
+  --secondary-foreground: 195 25% 28%;
+  --muted: 33 18% 90%;
+  --muted-foreground: 195 12% 38%;
+  --accent: 28 36% 38%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 65% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 33 18% 82%;
+  --input: 33 20% 86%;
+  --ring: 195 47% 18%;
+  --sidebar-background: 195 50% 7%;
+  --sidebar-foreground: 33 14% 78%;
+  --sidebar-primary: 28 36% 55%;
+  --sidebar-primary-foreground: 195 47% 10%;
+  --sidebar-accent: 200 22% 14%;
+  --sidebar-accent-foreground: 33 18% 90%;
+  --sidebar-ring: 28 36% 55%;
+  --sidebar-bg: 195 50% 7%;
+  --sidebar-fg: 33 14% 72%;
+  --sidebar-fg-bright: 33 30% 92%;
+  --sidebar-hover: 200 22% 14%;
+  --sidebar-active: 28 36% 55%;
+  --sidebar-active-fg: 195 50% 8%;
+  --sidebar-border: 200 18% 16%;
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(16,35,42,0.04);
+  --bento-border: rgba(16,35,42,0.08);
+  --bento-accent: rgba(181,136,99,0.14);
+  --priority-urgent: 4 52% 46%;
+  --priority-high: 28 50% 44%;
+  --priority-normal: 200 30% 40%;
+  --priority-low: 33 16% 46%;
+  --status-todo: 33 16% 46%;
+  --status-progress: 200 36% 40%;
+  --status-review: 28 45% 44%;
+  --status-done: 165 38% 36%;
+  --status-blocked: 4 48% 42%;
+}
+[data-palette="bentoDunesCuivre"] {
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+}
+[data-palette="bentoDunesCuivre"] body { font-family: var(--font-body); font-size: clamp(14px, 1.5vw, 16px); }
+[data-palette="bentoDunesCuivre"] h1 { font-family: var(--font-heading); font-size: clamp(24px, 4vw, 40px); font-weight: 700; }
+[data-palette="bentoDunesCuivre"] h2 { font-family: var(--font-heading); font-size: clamp(18px, 3vw, 28px); font-weight: 600; }
+[data-palette="bentoDunesCuivre"].light .bento-cell,
+[data-palette="bentoDunesCuivre"].mixed .bento-cell {
+  border-radius: 20px;
+  border: 1px solid rgba(16,35,42,0.08);
+  box-shadow: 0 4px 30px rgba(16,35,42,0.10), 0 1px 3px rgba(16,35,42,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
+  backdrop-filter: blur(16px) saturate(1.4); -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  background: rgba(245,239,227,0.65);
+}
+[data-palette="bentoDunesCuivre"] .bento-cell {
+  border-radius: 20px;
+  border: 1px solid rgba(181,136,99,0.10);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.25), 0 1px 3px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.05);
+  backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  background: rgba(16,35,42,0.35);
+}
+[data-palette="bentoDunesCuivre"] .bento-cell:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 40px rgba(16,35,42,0.18), 0 2px 6px rgba(16,35,42,0.10), inset 0 1px 0 rgba(255,255,255,0.7);
+}
+[data-palette="bentoDunesCuivre"].light .bento-hero,
+[data-palette="bentoDunesCuivre"].mixed .bento-hero {
+  background: linear-gradient(135deg, rgba(16,35,42,0.04) 0%, rgba(245,239,227,0.90) 60%);
+}
+[data-palette="bentoDunesCuivre"].light .bento-hero-glow,
+[data-palette="bentoDunesCuivre"].mixed .bento-hero-glow {
+  background: radial-gradient(ellipse 60% 80% at 0% 100%, rgba(181,136,99,0.22) 0%, transparent 70%);
+}
+[data-palette="bentoDunesCuivre"] button.rounded-md,
+[data-palette="bentoDunesCuivre"] button.rounded-lg { border-radius: 12px; }
+
+
+/* ─── BENTO Crepuscule ─────────────────────────────────────────── */
+[data-palette="bentoCrepuscule"] {
+  --background: 222 80% 10%;
+  --foreground: 14 84% 90%;
+  --card: 222 75% 13%;
+  --card-foreground: 14 84% 90%;
+  --popover: 222 80% 11%;
+  --popover-foreground: 14 84% 92%;
+  --primary: 14 60% 62%;
+  --primary-foreground: 222 80% 10%;
+  --secondary: 222 14% 18%;
+  --secondary-foreground: 14 14% 70%;
+  --muted: 222 12% 15%;
+  --muted-foreground: 14 8% 60%;
+  --accent: 222 22% 22%;
+  --accent-foreground: 14 50% 75%;
+  --destructive: 0 65% 52%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 222 14% 22%;
+  --input: 222 14% 18%;
+  --ring: 14 60% 62%;
+  --sidebar-background: 222 50% 7%;
+  --sidebar-foreground: 14 14% 78%;
+  --sidebar-primary: 14 60% 62%;
+  --sidebar-primary-foreground: 222 80% 10%;
+  --sidebar-accent: 222 18% 14%;
+  --sidebar-accent-foreground: 14 18% 90%;
+  --sidebar-ring: 14 60% 62%;
+  --sidebar-bg: 222 50% 7%;
+  --sidebar-fg: 14 14% 72%;
+  --sidebar-fg-bright: 14 30% 92%;
+  --sidebar-hover: 222 18% 14%;
+  --sidebar-active: 14 60% 62%;
+  --sidebar-active-fg: 222 50% 8%;
+  --sidebar-border: 222 16% 16%;
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(241,145,109,0.06);
+  --bento-border: rgba(241,145,109,0.10);
+  --bento-accent: rgba(241,145,109,0.14);
+  --priority-urgent: 4 58% 52%;
+  --priority-high: 28 55% 52%;
+  --priority-normal: 200 35% 48%;
+  --priority-low: 14 18% 52%;
+  --status-todo: 14 18% 52%;
+  --status-progress: 200 40% 48%;
+  --status-review: 28 50% 52%;
+  --status-done: 165 38% 42%;
+  --status-blocked: 4 50% 50%;
+}
+[data-palette="bentoCrepuscule"].light {
+  --background: 14 38% 95%;
+  --foreground: 222 80% 12%;
+  --card: 14 30% 97%;
+  --card-foreground: 222 80% 12%;
+  --popover: 14 25% 98%;
+  --popover-foreground: 222 80% 12%;
+  --primary: 222 80% 22%;
+  --primary-foreground: 14 38% 95%;
+  --secondary: 14 22% 90%;
+  --secondary-foreground: 222 22% 28%;
+  --muted: 14 18% 92%;
+  --muted-foreground: 222 12% 38%;
+  --accent: 14 60% 50%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 65% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 14 18% 84%;
+  --input: 14 20% 88%;
+  --ring: 222 80% 22%;
+  --sidebar-background: 14 30% 95%;
+  --sidebar-foreground: 222 22% 28%;
+  --sidebar-primary: 222 80% 22%;
+  --sidebar-primary-foreground: 14 38% 95%;
+  --sidebar-accent: 14 22% 90%;
+  --sidebar-accent-foreground: 222 80% 22%;
+  --sidebar-ring: 222 80% 22%;
+  --sidebar-bg: 14 30% 95%;
+  --sidebar-fg: 222 22% 30%;
+  --sidebar-fg-bright: 222 80% 12%;
+  --sidebar-hover: 14 22% 90%;
+  --sidebar-active: 222 80% 22%;
+  --sidebar-active-fg: 14 38% 95%;
+  --sidebar-border: 14 16% 86%;
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(3,18,47,0.04);
+  --bento-border: rgba(3,18,47,0.08);
+  --bento-accent: rgba(241,145,109,0.16);
+  --priority-urgent: 4 52% 46%;
+  --priority-high: 28 50% 44%;
+  --priority-normal: 200 30% 40%;
+  --priority-low: 14 16% 46%;
+  --status-todo: 14 16% 46%;
+  --status-progress: 200 36% 40%;
+  --status-review: 28 45% 44%;
+  --status-done: 165 38% 36%;
+  --status-blocked: 4 48% 42%;
+}
+[data-palette="bentoCrepuscule"].mixed {
+  --background: 14 38% 95%;
+  --foreground: 222 80% 12%;
+  --card: 14 30% 97%;
+  --card-foreground: 222 80% 12%;
+  --popover: 14 25% 98%;
+  --popover-foreground: 222 80% 12%;
+  --primary: 222 80% 22%;
+  --primary-foreground: 14 38% 95%;
+  --secondary: 14 22% 90%;
+  --secondary-foreground: 222 22% 28%;
+  --muted: 14 18% 92%;
+  --muted-foreground: 222 12% 38%;
+  --accent: 14 60% 50%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 65% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 14 18% 84%;
+  --input: 14 20% 88%;
+  --ring: 222 80% 22%;
+  --sidebar-background: 222 50% 7%;
+  --sidebar-foreground: 14 14% 78%;
+  --sidebar-primary: 14 60% 62%;
+  --sidebar-primary-foreground: 222 80% 10%;
+  --sidebar-accent: 222 18% 14%;
+  --sidebar-accent-foreground: 14 18% 90%;
+  --sidebar-ring: 14 60% 62%;
+  --sidebar-bg: 222 50% 7%;
+  --sidebar-fg: 14 14% 72%;
+  --sidebar-fg-bright: 14 30% 92%;
+  --sidebar-hover: 222 18% 14%;
+  --sidebar-active: 14 60% 62%;
+  --sidebar-active-fg: 222 50% 8%;
+  --sidebar-border: 222 16% 16%;
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(3,18,47,0.04);
+  --bento-border: rgba(3,18,47,0.08);
+  --bento-accent: rgba(241,145,109,0.16);
+  --priority-urgent: 4 52% 46%;
+  --priority-high: 28 50% 44%;
+  --priority-normal: 200 30% 40%;
+  --priority-low: 14 16% 46%;
+  --status-todo: 14 16% 46%;
+  --status-progress: 200 36% 40%;
+  --status-review: 28 45% 44%;
+  --status-done: 165 38% 36%;
+  --status-blocked: 4 48% 42%;
+}
+[data-palette="bentoCrepuscule"] {
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+}
+[data-palette="bentoCrepuscule"] body { font-family: var(--font-body); font-size: clamp(14px, 1.5vw, 16px); }
+[data-palette="bentoCrepuscule"] h1 { font-family: var(--font-heading); font-size: clamp(24px, 4vw, 40px); font-weight: 700; }
+[data-palette="bentoCrepuscule"] h2 { font-family: var(--font-heading); font-size: clamp(18px, 3vw, 28px); font-weight: 600; }
+[data-palette="bentoCrepuscule"].light .bento-cell,
+[data-palette="bentoCrepuscule"].mixed .bento-cell {
+  border-radius: 20px;
+  border: 1px solid rgba(3,18,47,0.08);
+  box-shadow: 0 4px 30px rgba(3,18,47,0.10), 0 1px 3px rgba(3,18,47,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
+  backdrop-filter: blur(16px) saturate(1.4); -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  background: rgba(255,255,255,0.65);
+}
+[data-palette="bentoCrepuscule"] .bento-cell {
+  border-radius: 20px;
+  border: 1px solid rgba(241,145,109,0.10);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.25), 0 1px 3px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.05);
+  backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  background: rgba(3,18,47,0.35);
+}
+[data-palette="bentoCrepuscule"] .bento-cell:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 40px rgba(3,18,47,0.18), 0 2px 6px rgba(3,18,47,0.10), inset 0 1px 0 rgba(255,255,255,0.7);
+}
+[data-palette="bentoCrepuscule"].light .bento-hero,
+[data-palette="bentoCrepuscule"].mixed .bento-hero {
+  background: linear-gradient(135deg, rgba(3,18,47,0.04) 0%, rgba(255,255,255,0.90) 60%);
+}
+[data-palette="bentoCrepuscule"].light .bento-hero-glow,
+[data-palette="bentoCrepuscule"].mixed .bento-hero-glow {
+  background: radial-gradient(ellipse 60% 80% at 0% 100%, rgba(241,145,109,0.22) 0%, transparent 70%);
+}
+[data-palette="bentoCrepuscule"] button.rounded-md,
+[data-palette="bentoCrepuscule"] button.rounded-lg { border-radius: 12px; }
+
+
+/* ─── BENTO BrumeArdoise ─────────────────────────────────────────── */
+[data-palette="bentoBrumeArdoise"] {
+  --background: 215 43% 14%;
+  --foreground: 180 8% 90%;
+  --card: 215 38% 17%;
+  --card-foreground: 180 8% 90%;
+  --popover: 215 43% 15%;
+  --popover-foreground: 180 8% 92%;
+  --primary: 180 8% 62%;
+  --primary-foreground: 215 43% 14%;
+  --secondary: 215 14% 18%;
+  --secondary-foreground: 180 14% 70%;
+  --muted: 215 12% 15%;
+  --muted-foreground: 180 8% 60%;
+  --accent: 215 22% 22%;
+  --accent-foreground: 180 50% 75%;
+  --destructive: 0 65% 52%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 215 14% 22%;
+  --input: 215 14% 18%;
+  --ring: 180 8% 62%;
+  --sidebar-background: 215 48% 11%;
+  --sidebar-foreground: 180 14% 78%;
+  --sidebar-primary: 180 8% 62%;
+  --sidebar-primary-foreground: 215 43% 14%;
+  --sidebar-accent: 215 18% 14%;
+  --sidebar-accent-foreground: 180 18% 90%;
+  --sidebar-ring: 180 8% 62%;
+  --sidebar-bg: 215 48% 11%;
+  --sidebar-fg: 180 14% 72%;
+  --sidebar-fg-bright: 180 30% 92%;
+  --sidebar-hover: 215 18% 14%;
+  --sidebar-active: 180 8% 62%;
+  --sidebar-active-fg: 215 48% 8%;
+  --sidebar-border: 215 16% 16%;
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(170,183,183,0.06);
+  --bento-border: rgba(170,183,183,0.10);
+  --bento-accent: rgba(170,183,183,0.14);
+  --priority-urgent: 4 58% 52%;
+  --priority-high: 28 55% 52%;
+  --priority-normal: 200 35% 48%;
+  --priority-low: 180 18% 52%;
+  --status-todo: 180 18% 52%;
+  --status-progress: 200 40% 48%;
+  --status-review: 28 50% 52%;
+  --status-done: 165 38% 42%;
+  --status-blocked: 4 50% 50%;
+}
+[data-palette="bentoBrumeArdoise"].light {
+  --background: 180 38% 95%;
+  --foreground: 215 43% 12%;
+  --card: 180 30% 97%;
+  --card-foreground: 215 43% 12%;
+  --popover: 180 25% 98%;
+  --popover-foreground: 215 43% 12%;
+  --primary: 215 43% 22%;
+  --primary-foreground: 180 38% 95%;
+  --secondary: 180 22% 90%;
+  --secondary-foreground: 215 22% 28%;
+  --muted: 180 18% 92%;
+  --muted-foreground: 215 12% 38%;
+  --accent: 180 8% 50%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 65% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 180 18% 84%;
+  --input: 180 20% 88%;
+  --ring: 215 43% 22%;
+  --sidebar-background: 180 30% 95%;
+  --sidebar-foreground: 215 22% 28%;
+  --sidebar-primary: 215 43% 22%;
+  --sidebar-primary-foreground: 180 38% 95%;
+  --sidebar-accent: 180 22% 90%;
+  --sidebar-accent-foreground: 215 43% 22%;
+  --sidebar-ring: 215 43% 22%;
+  --sidebar-bg: 180 30% 95%;
+  --sidebar-fg: 215 22% 30%;
+  --sidebar-fg-bright: 215 43% 12%;
+  --sidebar-hover: 180 22% 90%;
+  --sidebar-active: 215 43% 22%;
+  --sidebar-active-fg: 180 38% 95%;
+  --sidebar-border: 180 16% 86%;
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(26,45,66,0.04);
+  --bento-border: rgba(26,45,66,0.08);
+  --bento-accent: rgba(170,183,183,0.16);
+  --priority-urgent: 4 52% 46%;
+  --priority-high: 28 50% 44%;
+  --priority-normal: 200 30% 40%;
+  --priority-low: 180 16% 46%;
+  --status-todo: 180 16% 46%;
+  --status-progress: 200 36% 40%;
+  --status-review: 28 45% 44%;
+  --status-done: 165 38% 36%;
+  --status-blocked: 4 48% 42%;
+}
+[data-palette="bentoBrumeArdoise"].mixed {
+  --background: 180 38% 95%;
+  --foreground: 215 43% 12%;
+  --card: 180 30% 97%;
+  --card-foreground: 215 43% 12%;
+  --popover: 180 25% 98%;
+  --popover-foreground: 215 43% 12%;
+  --primary: 215 43% 22%;
+  --primary-foreground: 180 38% 95%;
+  --secondary: 180 22% 90%;
+  --secondary-foreground: 215 22% 28%;
+  --muted: 180 18% 92%;
+  --muted-foreground: 215 12% 38%;
+  --accent: 180 8% 50%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 65% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 180 18% 84%;
+  --input: 180 20% 88%;
+  --ring: 215 43% 22%;
+  --sidebar-background: 215 48% 11%;
+  --sidebar-foreground: 180 14% 78%;
+  --sidebar-primary: 180 8% 62%;
+  --sidebar-primary-foreground: 215 43% 14%;
+  --sidebar-accent: 215 18% 14%;
+  --sidebar-accent-foreground: 180 18% 90%;
+  --sidebar-ring: 180 8% 62%;
+  --sidebar-bg: 215 48% 11%;
+  --sidebar-fg: 180 14% 72%;
+  --sidebar-fg-bright: 180 30% 92%;
+  --sidebar-hover: 215 18% 14%;
+  --sidebar-active: 180 8% 62%;
+  --sidebar-active-fg: 215 48% 8%;
+  --sidebar-border: 215 16% 16%;
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(26,45,66,0.04);
+  --bento-border: rgba(26,45,66,0.08);
+  --bento-accent: rgba(170,183,183,0.16);
+  --priority-urgent: 4 52% 46%;
+  --priority-high: 28 50% 44%;
+  --priority-normal: 200 30% 40%;
+  --priority-low: 180 16% 46%;
+  --status-todo: 180 16% 46%;
+  --status-progress: 200 36% 40%;
+  --status-review: 28 45% 44%;
+  --status-done: 165 38% 36%;
+  --status-blocked: 4 48% 42%;
+}
+[data-palette="bentoBrumeArdoise"] {
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+}
+[data-palette="bentoBrumeArdoise"] body { font-family: var(--font-body); font-size: clamp(14px, 1.5vw, 16px); }
+[data-palette="bentoBrumeArdoise"] h1 { font-family: var(--font-heading); font-size: clamp(24px, 4vw, 40px); font-weight: 700; }
+[data-palette="bentoBrumeArdoise"] h2 { font-family: var(--font-heading); font-size: clamp(18px, 3vw, 28px); font-weight: 600; }
+[data-palette="bentoBrumeArdoise"].light .bento-cell,
+[data-palette="bentoBrumeArdoise"].mixed .bento-cell {
+  border-radius: 20px;
+  border: 1px solid rgba(26,45,66,0.08);
+  box-shadow: 0 4px 30px rgba(26,45,66,0.10), 0 1px 3px rgba(26,45,66,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
+  backdrop-filter: blur(16px) saturate(1.4); -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  background: rgba(255,255,255,0.65);
+}
+[data-palette="bentoBrumeArdoise"] .bento-cell {
+  border-radius: 20px;
+  border: 1px solid rgba(170,183,183,0.10);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.25), 0 1px 3px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.05);
+  backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  background: rgba(26,45,66,0.35);
+}
+[data-palette="bentoBrumeArdoise"] .bento-cell:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 40px rgba(26,45,66,0.18), 0 2px 6px rgba(26,45,66,0.10), inset 0 1px 0 rgba(255,255,255,0.7);
+}
+[data-palette="bentoBrumeArdoise"].light .bento-hero,
+[data-palette="bentoBrumeArdoise"].mixed .bento-hero {
+  background: linear-gradient(135deg, rgba(26,45,66,0.04) 0%, rgba(255,255,255,0.90) 60%);
+}
+[data-palette="bentoBrumeArdoise"].light .bento-hero-glow,
+[data-palette="bentoBrumeArdoise"].mixed .bento-hero-glow {
+  background: radial-gradient(ellipse 60% 80% at 0% 100%, rgba(170,183,183,0.22) 0%, transparent 70%);
+}
+[data-palette="bentoBrumeArdoise"] button.rounded-md,
+[data-palette="bentoBrumeArdoise"] button.rounded-lg { border-radius: 12px; }
+
+
+/* ─── BENTO Prunelle ─────────────────────────────────────────── */
+[data-palette="bentoPrunelle"] {
+  --background: 300 100% 6%;
+  --foreground: 333 26% 90%;
+  --card: 300 95% 9%;
+  --card-foreground: 333 26% 90%;
+  --popover: 300 100% 7%;
+  --popover-foreground: 333 26% 92%;
+  --primary: 333 26% 62%;
+  --primary-foreground: 300 100% 6%;
+  --secondary: 300 14% 18%;
+  --secondary-foreground: 333 14% 70%;
+  --muted: 300 12% 15%;
+  --muted-foreground: 333 8% 60%;
+  --accent: 300 22% 22%;
+  --accent-foreground: 333 50% 75%;
+  --destructive: 0 65% 52%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 300 14% 22%;
+  --input: 300 14% 18%;
+  --ring: 333 26% 62%;
+  --sidebar-background: 300 50% 5%;
+  --sidebar-foreground: 333 14% 78%;
+  --sidebar-primary: 333 26% 62%;
+  --sidebar-primary-foreground: 300 100% 6%;
+  --sidebar-accent: 300 18% 14%;
+  --sidebar-accent-foreground: 333 18% 90%;
+  --sidebar-ring: 333 26% 62%;
+  --sidebar-bg: 300 50% 5%;
+  --sidebar-fg: 333 14% 72%;
+  --sidebar-fg-bright: 333 30% 92%;
+  --sidebar-hover: 300 18% 14%;
+  --sidebar-active: 333 26% 62%;
+  --sidebar-active-fg: 300 50% 8%;
+  --sidebar-border: 300 16% 16%;
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(133,79,108,0.06);
+  --bento-border: rgba(133,79,108,0.10);
+  --bento-accent: rgba(133,79,108,0.14);
+  --priority-urgent: 4 58% 52%;
+  --priority-high: 28 55% 52%;
+  --priority-normal: 200 35% 48%;
+  --priority-low: 333 18% 52%;
+  --status-todo: 333 18% 52%;
+  --status-progress: 200 40% 48%;
+  --status-review: 28 50% 52%;
+  --status-done: 165 38% 42%;
+  --status-blocked: 4 50% 50%;
+}
+[data-palette="bentoPrunelle"].light {
+  --background: 333 38% 95%;
+  --foreground: 300 100% 12%;
+  --card: 333 30% 97%;
+  --card-foreground: 300 100% 12%;
+  --popover: 333 25% 98%;
+  --popover-foreground: 300 100% 12%;
+  --primary: 300 100% 22%;
+  --primary-foreground: 333 38% 95%;
+  --secondary: 333 22% 90%;
+  --secondary-foreground: 300 22% 28%;
+  --muted: 333 18% 92%;
+  --muted-foreground: 300 12% 38%;
+  --accent: 333 26% 50%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 65% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 333 18% 84%;
+  --input: 333 20% 88%;
+  --ring: 300 100% 22%;
+  --sidebar-background: 333 30% 95%;
+  --sidebar-foreground: 300 22% 28%;
+  --sidebar-primary: 300 100% 22%;
+  --sidebar-primary-foreground: 333 38% 95%;
+  --sidebar-accent: 333 22% 90%;
+  --sidebar-accent-foreground: 300 100% 22%;
+  --sidebar-ring: 300 100% 22%;
+  --sidebar-bg: 333 30% 95%;
+  --sidebar-fg: 300 22% 30%;
+  --sidebar-fg-bright: 300 100% 12%;
+  --sidebar-hover: 333 22% 90%;
+  --sidebar-active: 300 100% 22%;
+  --sidebar-active-fg: 333 38% 95%;
+  --sidebar-border: 333 16% 86%;
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(25,0,25,0.04);
+  --bento-border: rgba(25,0,25,0.08);
+  --bento-accent: rgba(133,79,108,0.16);
+  --priority-urgent: 4 52% 46%;
+  --priority-high: 28 50% 44%;
+  --priority-normal: 200 30% 40%;
+  --priority-low: 333 16% 46%;
+  --status-todo: 333 16% 46%;
+  --status-progress: 200 36% 40%;
+  --status-review: 28 45% 44%;
+  --status-done: 165 38% 36%;
+  --status-blocked: 4 48% 42%;
+}
+[data-palette="bentoPrunelle"].mixed {
+  --background: 333 38% 95%;
+  --foreground: 300 100% 12%;
+  --card: 333 30% 97%;
+  --card-foreground: 300 100% 12%;
+  --popover: 333 25% 98%;
+  --popover-foreground: 300 100% 12%;
+  --primary: 300 100% 22%;
+  --primary-foreground: 333 38% 95%;
+  --secondary: 333 22% 90%;
+  --secondary-foreground: 300 22% 28%;
+  --muted: 333 18% 92%;
+  --muted-foreground: 300 12% 38%;
+  --accent: 333 26% 50%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 65% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 333 18% 84%;
+  --input: 333 20% 88%;
+  --ring: 300 100% 22%;
+  --sidebar-background: 300 50% 5%;
+  --sidebar-foreground: 333 14% 78%;
+  --sidebar-primary: 333 26% 62%;
+  --sidebar-primary-foreground: 300 100% 6%;
+  --sidebar-accent: 300 18% 14%;
+  --sidebar-accent-foreground: 333 18% 90%;
+  --sidebar-ring: 333 26% 62%;
+  --sidebar-bg: 300 50% 5%;
+  --sidebar-fg: 333 14% 72%;
+  --sidebar-fg-bright: 333 30% 92%;
+  --sidebar-hover: 300 18% 14%;
+  --sidebar-active: 333 26% 62%;
+  --sidebar-active-fg: 300 50% 8%;
+  --sidebar-border: 300 16% 16%;
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(25,0,25,0.04);
+  --bento-border: rgba(25,0,25,0.08);
+  --bento-accent: rgba(133,79,108,0.16);
+  --priority-urgent: 4 52% 46%;
+  --priority-high: 28 50% 44%;
+  --priority-normal: 200 30% 40%;
+  --priority-low: 333 16% 46%;
+  --status-todo: 333 16% 46%;
+  --status-progress: 200 36% 40%;
+  --status-review: 28 45% 44%;
+  --status-done: 165 38% 36%;
+  --status-blocked: 4 48% 42%;
+}
+[data-palette="bentoPrunelle"] {
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+}
+[data-palette="bentoPrunelle"] body { font-family: var(--font-body); font-size: clamp(14px, 1.5vw, 16px); }
+[data-palette="bentoPrunelle"] h1 { font-family: var(--font-heading); font-size: clamp(24px, 4vw, 40px); font-weight: 700; }
+[data-palette="bentoPrunelle"] h2 { font-family: var(--font-heading); font-size: clamp(18px, 3vw, 28px); font-weight: 600; }
+[data-palette="bentoPrunelle"].light .bento-cell,
+[data-palette="bentoPrunelle"].mixed .bento-cell {
+  border-radius: 20px;
+  border: 1px solid rgba(25,0,25,0.08);
+  box-shadow: 0 4px 30px rgba(25,0,25,0.10), 0 1px 3px rgba(25,0,25,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
+  backdrop-filter: blur(16px) saturate(1.4); -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  background: rgba(255,255,255,0.65);
+}
+[data-palette="bentoPrunelle"] .bento-cell {
+  border-radius: 20px;
+  border: 1px solid rgba(133,79,108,0.10);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.25), 0 1px 3px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.05);
+  backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  background: rgba(25,0,25,0.35);
+}
+[data-palette="bentoPrunelle"] .bento-cell:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 40px rgba(25,0,25,0.18), 0 2px 6px rgba(25,0,25,0.10), inset 0 1px 0 rgba(255,255,255,0.7);
+}
+[data-palette="bentoPrunelle"].light .bento-hero,
+[data-palette="bentoPrunelle"].mixed .bento-hero {
+  background: linear-gradient(135deg, rgba(25,0,25,0.04) 0%, rgba(255,255,255,0.90) 60%);
+}
+[data-palette="bentoPrunelle"].light .bento-hero-glow,
+[data-palette="bentoPrunelle"].mixed .bento-hero-glow {
+  background: radial-gradient(ellipse 60% 80% at 0% 100%, rgba(133,79,108,0.22) 0%, transparent 70%);
+}
+[data-palette="bentoPrunelle"] button.rounded-md,
+[data-palette="bentoPrunelle"] button.rounded-lg { border-radius: 12px; }
+
+
+/* ─── BENTO AzurProfond ─────────────────────────────────────────── */
+[data-palette="bentoAzurProfond"] {
+  --background: 213 84% 8%;
+  --foreground: 213 41% 90%;
+  --card: 213 79% 11%;
+  --card-foreground: 213 41% 90%;
+  --popover: 213 84% 9%;
+  --popover-foreground: 213 41% 92%;
+  --primary: 213 41% 62%;
+  --primary-foreground: 213 84% 8%;
+  --secondary: 213 14% 18%;
+  --secondary-foreground: 213 14% 70%;
+  --muted: 213 12% 15%;
+  --muted-foreground: 213 8% 60%;
+  --accent: 213 22% 22%;
+  --accent-foreground: 213 50% 75%;
+  --destructive: 0 65% 52%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 213 14% 22%;
+  --input: 213 14% 18%;
+  --ring: 213 41% 62%;
+  --sidebar-background: 213 50% 5%;
+  --sidebar-foreground: 213 14% 78%;
+  --sidebar-primary: 213 41% 62%;
+  --sidebar-primary-foreground: 213 84% 8%;
+  --sidebar-accent: 213 18% 14%;
+  --sidebar-accent-foreground: 213 18% 90%;
+  --sidebar-ring: 213 41% 62%;
+  --sidebar-bg: 213 50% 5%;
+  --sidebar-fg: 213 14% 72%;
+  --sidebar-fg-bright: 213 30% 92%;
+  --sidebar-hover: 213 18% 14%;
+  --sidebar-active: 213 41% 62%;
+  --sidebar-active-fg: 213 50% 8%;
+  --sidebar-border: 213 16% 16%;
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(125,160,202,0.06);
+  --bento-border: rgba(125,160,202,0.10);
+  --bento-accent: rgba(125,160,202,0.14);
+  --priority-urgent: 4 58% 52%;
+  --priority-high: 28 55% 52%;
+  --priority-normal: 200 35% 48%;
+  --priority-low: 213 18% 52%;
+  --status-todo: 213 18% 52%;
+  --status-progress: 200 40% 48%;
+  --status-review: 28 50% 52%;
+  --status-done: 165 38% 42%;
+  --status-blocked: 4 50% 50%;
+}
+[data-palette="bentoAzurProfond"].light {
+  --background: 213 38% 95%;
+  --foreground: 213 84% 12%;
+  --card: 213 30% 97%;
+  --card-foreground: 213 84% 12%;
+  --popover: 213 25% 98%;
+  --popover-foreground: 213 84% 12%;
+  --primary: 213 84% 22%;
+  --primary-foreground: 213 38% 95%;
+  --secondary: 213 22% 90%;
+  --secondary-foreground: 213 22% 28%;
+  --muted: 213 18% 92%;
+  --muted-foreground: 213 12% 38%;
+  --accent: 213 41% 50%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 65% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 213 18% 84%;
+  --input: 213 20% 88%;
+  --ring: 213 84% 22%;
+  --sidebar-background: 213 30% 95%;
+  --sidebar-foreground: 213 22% 28%;
+  --sidebar-primary: 213 84% 22%;
+  --sidebar-primary-foreground: 213 38% 95%;
+  --sidebar-accent: 213 22% 90%;
+  --sidebar-accent-foreground: 213 84% 22%;
+  --sidebar-ring: 213 84% 22%;
+  --sidebar-bg: 213 30% 95%;
+  --sidebar-fg: 213 22% 30%;
+  --sidebar-fg-bright: 213 84% 12%;
+  --sidebar-hover: 213 22% 90%;
+  --sidebar-active: 213 84% 22%;
+  --sidebar-active-fg: 213 38% 95%;
+  --sidebar-border: 213 16% 86%;
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(2,16,36,0.04);
+  --bento-border: rgba(2,16,36,0.08);
+  --bento-accent: rgba(125,160,202,0.16);
+  --priority-urgent: 4 52% 46%;
+  --priority-high: 28 50% 44%;
+  --priority-normal: 200 30% 40%;
+  --priority-low: 213 16% 46%;
+  --status-todo: 213 16% 46%;
+  --status-progress: 200 36% 40%;
+  --status-review: 28 45% 44%;
+  --status-done: 165 38% 36%;
+  --status-blocked: 4 48% 42%;
+}
+[data-palette="bentoAzurProfond"].mixed {
+  --background: 213 38% 95%;
+  --foreground: 213 84% 12%;
+  --card: 213 30% 97%;
+  --card-foreground: 213 84% 12%;
+  --popover: 213 25% 98%;
+  --popover-foreground: 213 84% 12%;
+  --primary: 213 84% 22%;
+  --primary-foreground: 213 38% 95%;
+  --secondary: 213 22% 90%;
+  --secondary-foreground: 213 22% 28%;
+  --muted: 213 18% 92%;
+  --muted-foreground: 213 12% 38%;
+  --accent: 213 41% 50%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 65% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 213 18% 84%;
+  --input: 213 20% 88%;
+  --ring: 213 84% 22%;
+  --sidebar-background: 213 50% 5%;
+  --sidebar-foreground: 213 14% 78%;
+  --sidebar-primary: 213 41% 62%;
+  --sidebar-primary-foreground: 213 84% 8%;
+  --sidebar-accent: 213 18% 14%;
+  --sidebar-accent-foreground: 213 18% 90%;
+  --sidebar-ring: 213 41% 62%;
+  --sidebar-bg: 213 50% 5%;
+  --sidebar-fg: 213 14% 72%;
+  --sidebar-fg-bright: 213 30% 92%;
+  --sidebar-hover: 213 18% 14%;
+  --sidebar-active: 213 41% 62%;
+  --sidebar-active-fg: 213 50% 8%;
+  --sidebar-border: 213 16% 16%;
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(2,16,36,0.04);
+  --bento-border: rgba(2,16,36,0.08);
+  --bento-accent: rgba(125,160,202,0.16);
+  --priority-urgent: 4 52% 46%;
+  --priority-high: 28 50% 44%;
+  --priority-normal: 200 30% 40%;
+  --priority-low: 213 16% 46%;
+  --status-todo: 213 16% 46%;
+  --status-progress: 200 36% 40%;
+  --status-review: 28 45% 44%;
+  --status-done: 165 38% 36%;
+  --status-blocked: 4 48% 42%;
+}
+[data-palette="bentoAzurProfond"] {
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+}
+[data-palette="bentoAzurProfond"] body { font-family: var(--font-body); font-size: clamp(14px, 1.5vw, 16px); }
+[data-palette="bentoAzurProfond"] h1 { font-family: var(--font-heading); font-size: clamp(24px, 4vw, 40px); font-weight: 700; }
+[data-palette="bentoAzurProfond"] h2 { font-family: var(--font-heading); font-size: clamp(18px, 3vw, 28px); font-weight: 600; }
+[data-palette="bentoAzurProfond"].light .bento-cell,
+[data-palette="bentoAzurProfond"].mixed .bento-cell {
+  border-radius: 20px;
+  border: 1px solid rgba(2,16,36,0.08);
+  box-shadow: 0 4px 30px rgba(2,16,36,0.10), 0 1px 3px rgba(2,16,36,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
+  backdrop-filter: blur(16px) saturate(1.4); -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  background: rgba(255,255,255,0.65);
+}
+[data-palette="bentoAzurProfond"] .bento-cell {
+  border-radius: 20px;
+  border: 1px solid rgba(125,160,202,0.10);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.25), 0 1px 3px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.05);
+  backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  background: rgba(2,16,36,0.35);
+}
+[data-palette="bentoAzurProfond"] .bento-cell:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 40px rgba(2,16,36,0.18), 0 2px 6px rgba(2,16,36,0.10), inset 0 1px 0 rgba(255,255,255,0.7);
+}
+[data-palette="bentoAzurProfond"].light .bento-hero,
+[data-palette="bentoAzurProfond"].mixed .bento-hero {
+  background: linear-gradient(135deg, rgba(2,16,36,0.04) 0%, rgba(255,255,255,0.90) 60%);
+}
+[data-palette="bentoAzurProfond"].light .bento-hero-glow,
+[data-palette="bentoAzurProfond"].mixed .bento-hero-glow {
+  background: radial-gradient(ellipse 60% 80% at 0% 100%, rgba(125,160,202,0.22) 0%, transparent 70%);
+}
+[data-palette="bentoAzurProfond"] button.rounded-md,
+[data-palette="bentoAzurProfond"] button.rounded-lg { border-radius: 12px; }
+
+
+/* ─── BENTO AuroreCorail ─────────────────────────────────────────── */
+[data-palette="bentoAuroreCorail"] {
+  --background: 229 32% 14%;
+  --foreground: 355 38% 90%;
+  --card: 229 27% 17%;
+  --card-foreground: 355 38% 90%;
+  --popover: 229 32% 15%;
+  --popover-foreground: 355 38% 92%;
+  --primary: 355 38% 62%;
+  --primary-foreground: 229 32% 14%;
+  --secondary: 229 14% 18%;
+  --secondary-foreground: 355 14% 70%;
+  --muted: 229 12% 15%;
+  --muted-foreground: 355 8% 60%;
+  --accent: 229 22% 22%;
+  --accent-foreground: 355 50% 75%;
+  --destructive: 0 65% 52%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 229 14% 22%;
+  --input: 229 14% 18%;
+  --ring: 355 38% 62%;
+  --sidebar-background: 229 37% 11%;
+  --sidebar-foreground: 355 14% 78%;
+  --sidebar-primary: 355 38% 62%;
+  --sidebar-primary-foreground: 229 32% 14%;
+  --sidebar-accent: 229 18% 14%;
+  --sidebar-accent-foreground: 355 18% 90%;
+  --sidebar-ring: 355 38% 62%;
+  --sidebar-bg: 229 37% 11%;
+  --sidebar-fg: 355 14% 72%;
+  --sidebar-fg-bright: 355 30% 92%;
+  --sidebar-hover: 229 18% 14%;
+  --sidebar-active: 355 38% 62%;
+  --sidebar-active-fg: 229 37% 8%;
+  --sidebar-border: 229 16% 16%;
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(189,108,115,0.06);
+  --bento-border: rgba(189,108,115,0.10);
+  --bento-accent: rgba(189,108,115,0.14);
+  --priority-urgent: 4 58% 52%;
+  --priority-high: 28 55% 52%;
+  --priority-normal: 200 35% 48%;
+  --priority-low: 355 18% 52%;
+  --status-todo: 355 18% 52%;
+  --status-progress: 200 40% 48%;
+  --status-review: 28 50% 52%;
+  --status-done: 165 38% 42%;
+  --status-blocked: 4 50% 50%;
+}
+[data-palette="bentoAuroreCorail"].light {
+  --background: 355 38% 95%;
+  --foreground: 229 32% 12%;
+  --card: 355 30% 97%;
+  --card-foreground: 229 32% 12%;
+  --popover: 355 25% 98%;
+  --popover-foreground: 229 32% 12%;
+  --primary: 229 32% 22%;
+  --primary-foreground: 355 38% 95%;
+  --secondary: 355 22% 90%;
+  --secondary-foreground: 229 22% 28%;
+  --muted: 355 18% 92%;
+  --muted-foreground: 229 12% 38%;
+  --accent: 355 38% 50%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 65% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 355 18% 84%;
+  --input: 355 20% 88%;
+  --ring: 229 32% 22%;
+  --sidebar-background: 355 30% 95%;
+  --sidebar-foreground: 229 22% 28%;
+  --sidebar-primary: 229 32% 22%;
+  --sidebar-primary-foreground: 355 38% 95%;
+  --sidebar-accent: 355 22% 90%;
+  --sidebar-accent-foreground: 229 32% 22%;
+  --sidebar-ring: 229 32% 22%;
+  --sidebar-bg: 355 30% 95%;
+  --sidebar-fg: 229 22% 30%;
+  --sidebar-fg-bright: 229 32% 12%;
+  --sidebar-hover: 355 22% 90%;
+  --sidebar-active: 229 32% 22%;
+  --sidebar-active-fg: 355 38% 95%;
+  --sidebar-border: 355 16% 86%;
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(46,54,90,0.04);
+  --bento-border: rgba(46,54,90,0.08);
+  --bento-accent: rgba(189,108,115,0.16);
+  --priority-urgent: 4 52% 46%;
+  --priority-high: 28 50% 44%;
+  --priority-normal: 200 30% 40%;
+  --priority-low: 355 16% 46%;
+  --status-todo: 355 16% 46%;
+  --status-progress: 200 36% 40%;
+  --status-review: 28 45% 44%;
+  --status-done: 165 38% 36%;
+  --status-blocked: 4 48% 42%;
+}
+[data-palette="bentoAuroreCorail"].mixed {
+  --background: 355 38% 95%;
+  --foreground: 229 32% 12%;
+  --card: 355 30% 97%;
+  --card-foreground: 229 32% 12%;
+  --popover: 355 25% 98%;
+  --popover-foreground: 229 32% 12%;
+  --primary: 229 32% 22%;
+  --primary-foreground: 355 38% 95%;
+  --secondary: 355 22% 90%;
+  --secondary-foreground: 229 22% 28%;
+  --muted: 355 18% 92%;
+  --muted-foreground: 229 12% 38%;
+  --accent: 355 38% 50%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 65% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 355 18% 84%;
+  --input: 355 20% 88%;
+  --ring: 229 32% 22%;
+  --sidebar-background: 229 37% 11%;
+  --sidebar-foreground: 355 14% 78%;
+  --sidebar-primary: 355 38% 62%;
+  --sidebar-primary-foreground: 229 32% 14%;
+  --sidebar-accent: 229 18% 14%;
+  --sidebar-accent-foreground: 355 18% 90%;
+  --sidebar-ring: 355 38% 62%;
+  --sidebar-bg: 229 37% 11%;
+  --sidebar-fg: 355 14% 72%;
+  --sidebar-fg-bright: 355 30% 92%;
+  --sidebar-hover: 229 18% 14%;
+  --sidebar-active: 355 38% 62%;
+  --sidebar-active-fg: 229 37% 8%;
+  --sidebar-border: 229 16% 16%;
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(46,54,90,0.04);
+  --bento-border: rgba(46,54,90,0.08);
+  --bento-accent: rgba(189,108,115,0.16);
+  --priority-urgent: 4 52% 46%;
+  --priority-high: 28 50% 44%;
+  --priority-normal: 200 30% 40%;
+  --priority-low: 355 16% 46%;
+  --status-todo: 355 16% 46%;
+  --status-progress: 200 36% 40%;
+  --status-review: 28 45% 44%;
+  --status-done: 165 38% 36%;
+  --status-blocked: 4 48% 42%;
+}
+[data-palette="bentoAuroreCorail"] {
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+}
+[data-palette="bentoAuroreCorail"] body { font-family: var(--font-body); font-size: clamp(14px, 1.5vw, 16px); }
+[data-palette="bentoAuroreCorail"] h1 { font-family: var(--font-heading); font-size: clamp(24px, 4vw, 40px); font-weight: 700; }
+[data-palette="bentoAuroreCorail"] h2 { font-family: var(--font-heading); font-size: clamp(18px, 3vw, 28px); font-weight: 600; }
+[data-palette="bentoAuroreCorail"].light .bento-cell,
+[data-palette="bentoAuroreCorail"].mixed .bento-cell {
+  border-radius: 20px;
+  border: 1px solid rgba(46,54,90,0.08);
+  box-shadow: 0 4px 30px rgba(46,54,90,0.10), 0 1px 3px rgba(46,54,90,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
+  backdrop-filter: blur(16px) saturate(1.4); -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  background: rgba(255,255,255,0.65);
+}
+[data-palette="bentoAuroreCorail"] .bento-cell {
+  border-radius: 20px;
+  border: 1px solid rgba(189,108,115,0.10);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.25), 0 1px 3px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.05);
+  backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  background: rgba(46,54,90,0.35);
+}
+[data-palette="bentoAuroreCorail"] .bento-cell:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 40px rgba(46,54,90,0.18), 0 2px 6px rgba(46,54,90,0.10), inset 0 1px 0 rgba(255,255,255,0.7);
+}
+[data-palette="bentoAuroreCorail"].light .bento-hero,
+[data-palette="bentoAuroreCorail"].mixed .bento-hero {
+  background: linear-gradient(135deg, rgba(46,54,90,0.04) 0%, rgba(255,255,255,0.90) 60%);
+}
+[data-palette="bentoAuroreCorail"].light .bento-hero-glow,
+[data-palette="bentoAuroreCorail"].mixed .bento-hero-glow {
+  background: radial-gradient(ellipse 60% 80% at 0% 100%, rgba(189,108,115,0.22) 0%, transparent 70%);
+}
+[data-palette="bentoAuroreCorail"] button.rounded-md,
+[data-palette="bentoAuroreCorail"] button.rounded-lg { border-radius: 12px; }
+
+
+/* ─── BENTO BraiseNocturne ─────────────────────────────────────────── */
+[data-palette="bentoBraiseNocturne"] {
+  --background: 248 30% 11%;
+  --foreground: 16 100% 90%;
+  --card: 248 25% 14%;
+  --card-foreground: 16 100% 90%;
+  --popover: 248 30% 12%;
+  --popover-foreground: 16 100% 92%;
+  --primary: 16 60% 62%;
+  --primary-foreground: 248 30% 11%;
+  --secondary: 248 14% 18%;
+  --secondary-foreground: 16 14% 70%;
+  --muted: 248 12% 15%;
+  --muted-foreground: 16 8% 60%;
+  --accent: 248 22% 22%;
+  --accent-foreground: 16 50% 75%;
+  --destructive: 0 65% 52%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 248 14% 22%;
+  --input: 248 14% 18%;
+  --ring: 16 60% 62%;
+  --sidebar-background: 248 35% 8%;
+  --sidebar-foreground: 16 14% 78%;
+  --sidebar-primary: 16 60% 62%;
+  --sidebar-primary-foreground: 248 30% 11%;
+  --sidebar-accent: 248 18% 14%;
+  --sidebar-accent-foreground: 16 18% 90%;
+  --sidebar-ring: 16 60% 62%;
+  --sidebar-bg: 248 35% 8%;
+  --sidebar-fg: 16 14% 72%;
+  --sidebar-fg-bright: 16 30% 92%;
+  --sidebar-hover: 248 18% 14%;
+  --sidebar-active: 16 60% 62%;
+  --sidebar-active-fg: 248 35% 8%;
+  --sidebar-border: 248 16% 16%;
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(255,165,134,0.06);
+  --bento-border: rgba(255,165,134,0.10);
+  --bento-accent: rgba(255,165,134,0.14);
+  --priority-urgent: 4 58% 52%;
+  --priority-high: 28 55% 52%;
+  --priority-normal: 200 35% 48%;
+  --priority-low: 16 18% 52%;
+  --status-todo: 16 18% 52%;
+  --status-progress: 200 40% 48%;
+  --status-review: 28 50% 52%;
+  --status-done: 165 38% 42%;
+  --status-blocked: 4 50% 50%;
+}
+[data-palette="bentoBraiseNocturne"].light {
+  --background: 16 38% 95%;
+  --foreground: 248 30% 12%;
+  --card: 16 30% 97%;
+  --card-foreground: 248 30% 12%;
+  --popover: 16 25% 98%;
+  --popover-foreground: 248 30% 12%;
+  --primary: 248 30% 22%;
+  --primary-foreground: 16 38% 95%;
+  --secondary: 16 22% 90%;
+  --secondary-foreground: 248 22% 28%;
+  --muted: 16 18% 92%;
+  --muted-foreground: 248 12% 38%;
+  --accent: 16 60% 50%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 65% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 16 18% 84%;
+  --input: 16 20% 88%;
+  --ring: 248 30% 22%;
+  --sidebar-background: 16 30% 95%;
+  --sidebar-foreground: 248 22% 28%;
+  --sidebar-primary: 248 30% 22%;
+  --sidebar-primary-foreground: 16 38% 95%;
+  --sidebar-accent: 16 22% 90%;
+  --sidebar-accent-foreground: 248 30% 22%;
+  --sidebar-ring: 248 30% 22%;
+  --sidebar-bg: 16 30% 95%;
+  --sidebar-fg: 248 22% 30%;
+  --sidebar-fg-bright: 248 30% 12%;
+  --sidebar-hover: 16 22% 90%;
+  --sidebar-active: 248 30% 22%;
+  --sidebar-active-fg: 16 38% 95%;
+  --sidebar-border: 16 16% 86%;
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(22,21,34,0.04);
+  --bento-border: rgba(22,21,34,0.08);
+  --bento-accent: rgba(255,165,134,0.16);
+  --priority-urgent: 4 52% 46%;
+  --priority-high: 28 50% 44%;
+  --priority-normal: 200 30% 40%;
+  --priority-low: 16 16% 46%;
+  --status-todo: 16 16% 46%;
+  --status-progress: 200 36% 40%;
+  --status-review: 28 45% 44%;
+  --status-done: 165 38% 36%;
+  --status-blocked: 4 48% 42%;
+}
+[data-palette="bentoBraiseNocturne"].mixed {
+  --background: 16 38% 95%;
+  --foreground: 248 30% 12%;
+  --card: 16 30% 97%;
+  --card-foreground: 248 30% 12%;
+  --popover: 16 25% 98%;
+  --popover-foreground: 248 30% 12%;
+  --primary: 248 30% 22%;
+  --primary-foreground: 16 38% 95%;
+  --secondary: 16 22% 90%;
+  --secondary-foreground: 248 22% 28%;
+  --muted: 16 18% 92%;
+  --muted-foreground: 248 12% 38%;
+  --accent: 16 60% 50%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 65% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 16 18% 84%;
+  --input: 16 20% 88%;
+  --ring: 248 30% 22%;
+  --sidebar-background: 248 35% 8%;
+  --sidebar-foreground: 16 14% 78%;
+  --sidebar-primary: 16 60% 62%;
+  --sidebar-primary-foreground: 248 30% 11%;
+  --sidebar-accent: 248 18% 14%;
+  --sidebar-accent-foreground: 16 18% 90%;
+  --sidebar-ring: 16 60% 62%;
+  --sidebar-bg: 248 35% 8%;
+  --sidebar-fg: 16 14% 72%;
+  --sidebar-fg-bright: 16 30% 92%;
+  --sidebar-hover: 248 18% 14%;
+  --sidebar-active: 16 60% 62%;
+  --sidebar-active-fg: 248 35% 8%;
+  --sidebar-border: 248 16% 16%;
+  --bento-bg: transparent;
+  --bento-bg-hover: rgba(22,21,34,0.04);
+  --bento-border: rgba(22,21,34,0.08);
+  --bento-accent: rgba(255,165,134,0.16);
+  --priority-urgent: 4 52% 46%;
+  --priority-high: 28 50% 44%;
+  --priority-normal: 200 30% 40%;
+  --priority-low: 16 16% 46%;
+  --status-todo: 16 16% 46%;
+  --status-progress: 200 36% 40%;
+  --status-review: 28 45% 44%;
+  --status-done: 165 38% 36%;
+  --status-blocked: 4 48% 42%;
+}
+[data-palette="bentoBraiseNocturne"] {
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+}
+[data-palette="bentoBraiseNocturne"] body { font-family: var(--font-body); font-size: clamp(14px, 1.5vw, 16px); }
+[data-palette="bentoBraiseNocturne"] h1 { font-family: var(--font-heading); font-size: clamp(24px, 4vw, 40px); font-weight: 700; }
+[data-palette="bentoBraiseNocturne"] h2 { font-family: var(--font-heading); font-size: clamp(18px, 3vw, 28px); font-weight: 600; }
+[data-palette="bentoBraiseNocturne"].light .bento-cell,
+[data-palette="bentoBraiseNocturne"].mixed .bento-cell {
+  border-radius: 20px;
+  border: 1px solid rgba(22,21,34,0.08);
+  box-shadow: 0 4px 30px rgba(22,21,34,0.10), 0 1px 3px rgba(22,21,34,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
+  backdrop-filter: blur(16px) saturate(1.4); -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  background: rgba(255,255,255,0.65);
+}
+[data-palette="bentoBraiseNocturne"] .bento-cell {
+  border-radius: 20px;
+  border: 1px solid rgba(255,165,134,0.10);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.25), 0 1px 3px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.05);
+  backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  background: rgba(22,21,34,0.35);
+}
+[data-palette="bentoBraiseNocturne"] .bento-cell:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 40px rgba(22,21,34,0.18), 0 2px 6px rgba(22,21,34,0.10), inset 0 1px 0 rgba(255,255,255,0.7);
+}
+[data-palette="bentoBraiseNocturne"].light .bento-hero,
+[data-palette="bentoBraiseNocturne"].mixed .bento-hero {
+  background: linear-gradient(135deg, rgba(22,21,34,0.04) 0%, rgba(255,255,255,0.90) 60%);
+}
+[data-palette="bentoBraiseNocturne"].light .bento-hero-glow,
+[data-palette="bentoBraiseNocturne"].mixed .bento-hero-glow {
+  background: radial-gradient(ellipse 60% 80% at 0% 100%, rgba(255,165,134,0.22) 0%, transparent 70%);
+}
+[data-palette="bentoBraiseNocturne"] button.rounded-md,
+[data-palette="bentoBraiseNocturne"] button.rounded-lg { border-radius: 12px; }
+
+/* ─── NM DunesCuivre (Soft UI) ─────────────────────────────────────── */
+[data-palette="nmDunesCuivre"],
+[data-palette="nmDunesCuivre"].light,
+[data-palette="nmDunesCuivre"].dark,
+[data-palette="nmDunesCuivre"].mixed {
+  --nm-bg: 33 22% 88%;
+  --nm-shadow-dark: #B5A998;
+  --nm-shadow-light: #FFFFFF;
+  --nm-accent-h: 28;
+  --nm-accent-s: 36%;
+  --nm-accent-l: 55%;
+
+  --background: 33 22% 88%;
+  --foreground: 195 35% 18%;
+  --card: 33 22% 88%;
+  --card-foreground: 195 35% 18%;
+  --popover: 33 22% 88%;
+  --popover-foreground: 195 35% 18%;
+  --primary: 28 36% 55%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 33 22% 88%;
+  --secondary-foreground: 195 23% 35%;
+  --muted: 33 22% 88%;
+  --muted-foreground: 195 12% 38%;
+  --accent: 28 36% 43%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 35% 45%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 33 18% 82%;
+  --input: 33 22% 88%;
+  --ring: 28 36% 55%;
+  --radius: 12px;
+
+  --sidebar-background: 33 22% 88%;
+  --sidebar-foreground: 195 23% 35%;
+  --sidebar-primary: 28 36% 55%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 33 22% 88%;
+  --sidebar-accent-foreground: 28 36% 55%;
+  --sidebar-ring: 28 36% 55%;
+  --sidebar-bg: 33 22% 88%;
+  --sidebar-fg: 195 23% 35%;
+  --sidebar-fg-bright: 195 35% 18%;
+  --sidebar-hover: 33 22% 88%;
+  --sidebar-active: 28 36% 43%;
+  --sidebar-active-fg: 0 0% 100%;
+  --sidebar-border: 33 18% 82%;
+
+  --priority-urgent: 0 35% 45%;
+  --priority-high: 25 45% 45%;
+  --priority-normal: 28 36% 55%;
+  --priority-low: 195 12% 38%;
+  --status-todo: 195 12% 38%;
+  --status-progress: 28 36% 55%;
+  --status-review: 38 55% 38%;
+  --status-done: 145 30% 40%;
+  --status-blocked: 0 35% 45%;
+
+  --bento-bg: transparent;
+  --bento-bg-hover: transparent;
+  --bento-border: transparent;
+  --bento-border-h: transparent;
+  --bento-shadow: none;
+  --bento-radius: 16px;
+  --bento-gap: 16px;
+}
+
+[data-palette="nmDunesCuivre"] {
+  --nm-ext-sm: 4px 4px 8px #B5A998, -4px -4px 8px #FFFFFF;
+  --nm-ext-md: 6px 6px 12px #B5A998, -6px -6px 12px #FFFFFF;
+  --nm-ext-lg: 10px 10px 20px #B5A998, -10px -10px 20px #FFFFFF;
+  --nm-in-sm: inset 3px 3px 6px #B5A998, inset -3px -3px 6px #FFFFFF;
+  --nm-in-md: inset 4px 4px 8px #B5A998, inset -4px -4px 8px #FFFFFF;
+  --nm-in-lg: inset 6px 6px 12px #B5A998, inset -6px -6px 12px #FFFFFF;
+}
+
+[data-palette="nmDunesCuivre"] body,
+[data-palette="nmDunesCuivre"] #root {
+  background: #E0D5C8 !important;
+  font-family: 'Inter', 'Plus Jakarta Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+[data-palette="nmDunesCuivre"] .border,
+[data-palette="nmDunesCuivre"] .border-border,
+[data-palette="nmDunesCuivre"] .border-input,
+[data-palette="nmDunesCuivre"] [class*="border-"] {
+  border-color: transparent !important;
+}
+
+[data-palette="nmDunesCuivre"] .bg-card,
+[data-palette="nmDunesCuivre"] .rounded-lg.border.bg-card {
+  background: #E0D5C8 !important;
+  box-shadow: 6px 6px 12px #B5A998, -6px -6px 12px #FFFFFF !important;
+  border: none !important;
+  border-radius: 16px !important;
+}
+[data-palette="nmDunesCuivre"] .bg-card:hover {
+  box-shadow: 10px 10px 20px #B5A998, -10px -10px 20px #FFFFFF !important;
+}
+
+[data-palette="nmDunesCuivre"] button:not([data-state]):not(.ghost),
+[data-palette="nmDunesCuivre"] [role="button"]:not([data-state]) {
+  background: #E0D5C8;
+  border: none !important;
+  border-radius: 12px;
+}
+
+[data-palette="nmDunesCuivre"] .bg-primary {
+  background: #E0D5C8 !important;
+  color: hsl(28, 36%, 55%) !important;
+  box-shadow: 6px 6px 12px #B5A998, -6px -6px 12px #FFFFFF;
+}
+[data-palette="nmDunesCuivre"] .bg-primary:hover {
+  box-shadow: inset 4px 4px 8px #B5A998, inset -4px -4px 8px #FFFFFF;
+}
+
+[data-palette="nmDunesCuivre"] input,
+[data-palette="nmDunesCuivre"] textarea,
+[data-palette="nmDunesCuivre"] select {
+  background: #E0D5C8 !important;
+  border: none !important;
+  border-radius: 10px !important;
+  box-shadow: inset 3px 3px 6px #B5A998, inset -3px -3px 6px #FFFFFF !important;
+}
+
+
+/* ─── NM Crepuscule (Soft UI) ─────────────────────────────────────── */
+[data-palette="nmCrepuscule"],
+[data-palette="nmCrepuscule"].light,
+[data-palette="nmCrepuscule"].dark,
+[data-palette="nmCrepuscule"].mixed {
+  --nm-bg: 350 38% 92%;
+  --nm-shadow-dark: #D5B8BD;
+  --nm-shadow-light: #FFFFFF;
+  --nm-accent-h: 14;
+  --nm-accent-s: 84%;
+  --nm-accent-l: 60%;
+
+  --background: 350 38% 92%;
+  --foreground: 222 60% 18%;
+  --card: 350 38% 92%;
+  --card-foreground: 222 60% 18%;
+  --popover: 350 38% 92%;
+  --popover-foreground: 222 60% 18%;
+  --primary: 14 84% 60%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 350 38% 92%;
+  --secondary-foreground: 222 48% 35%;
+  --muted: 350 38% 92%;
+  --muted-foreground: 222 12% 38%;
+  --accent: 14 84% 48%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 35% 45%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 350 34% 86%;
+  --input: 350 38% 92%;
+  --ring: 14 84% 60%;
+  --radius: 12px;
+
+  --sidebar-background: 350 38% 92%;
+  --sidebar-foreground: 222 48% 35%;
+  --sidebar-primary: 14 84% 60%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 350 38% 92%;
+  --sidebar-accent-foreground: 14 84% 60%;
+  --sidebar-ring: 14 84% 60%;
+  --sidebar-bg: 350 38% 92%;
+  --sidebar-fg: 222 48% 35%;
+  --sidebar-fg-bright: 222 60% 18%;
+  --sidebar-hover: 350 38% 92%;
+  --sidebar-active: 14 84% 48%;
+  --sidebar-active-fg: 0 0% 100%;
+  --sidebar-border: 350 34% 86%;
+
+  --priority-urgent: 0 35% 45%;
+  --priority-high: 25 45% 45%;
+  --priority-normal: 14 84% 60%;
+  --priority-low: 222 12% 38%;
+  --status-todo: 222 12% 38%;
+  --status-progress: 14 84% 60%;
+  --status-review: 38 55% 38%;
+  --status-done: 145 30% 40%;
+  --status-blocked: 0 35% 45%;
+
+  --bento-bg: transparent;
+  --bento-bg-hover: transparent;
+  --bento-border: transparent;
+  --bento-border-h: transparent;
+  --bento-shadow: none;
+  --bento-radius: 16px;
+  --bento-gap: 16px;
+}
+
+[data-palette="nmCrepuscule"] {
+  --nm-ext-sm: 4px 4px 8px #D5B8BD, -4px -4px 8px #FFFFFF;
+  --nm-ext-md: 6px 6px 12px #D5B8BD, -6px -6px 12px #FFFFFF;
+  --nm-ext-lg: 10px 10px 20px #D5B8BD, -10px -10px 20px #FFFFFF;
+  --nm-in-sm: inset 3px 3px 6px #D5B8BD, inset -3px -3px 6px #FFFFFF;
+  --nm-in-md: inset 4px 4px 8px #D5B8BD, inset -4px -4px 8px #FFFFFF;
+  --nm-in-lg: inset 6px 6px 12px #D5B8BD, inset -6px -6px 12px #FFFFFF;
+}
+
+[data-palette="nmCrepuscule"] body,
+[data-palette="nmCrepuscule"] #root {
+  background: #F3DADF !important;
+  font-family: 'Inter', 'Plus Jakarta Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+[data-palette="nmCrepuscule"] .border,
+[data-palette="nmCrepuscule"] .border-border,
+[data-palette="nmCrepuscule"] .border-input,
+[data-palette="nmCrepuscule"] [class*="border-"] {
+  border-color: transparent !important;
+}
+
+[data-palette="nmCrepuscule"] .bg-card,
+[data-palette="nmCrepuscule"] .rounded-lg.border.bg-card {
+  background: #F3DADF !important;
+  box-shadow: 6px 6px 12px #D5B8BD, -6px -6px 12px #FFFFFF !important;
+  border: none !important;
+  border-radius: 16px !important;
+}
+[data-palette="nmCrepuscule"] .bg-card:hover {
+  box-shadow: 10px 10px 20px #D5B8BD, -10px -10px 20px #FFFFFF !important;
+}
+
+[data-palette="nmCrepuscule"] button:not([data-state]):not(.ghost),
+[data-palette="nmCrepuscule"] [role="button"]:not([data-state]) {
+  background: #F3DADF;
+  border: none !important;
+  border-radius: 12px;
+}
+
+[data-palette="nmCrepuscule"] .bg-primary {
+  background: #F3DADF !important;
+  color: hsl(14, 84%, 60%) !important;
+  box-shadow: 6px 6px 12px #D5B8BD, -6px -6px 12px #FFFFFF;
+}
+[data-palette="nmCrepuscule"] .bg-primary:hover {
+  box-shadow: inset 4px 4px 8px #D5B8BD, inset -4px -4px 8px #FFFFFF;
+}
+
+[data-palette="nmCrepuscule"] input,
+[data-palette="nmCrepuscule"] textarea,
+[data-palette="nmCrepuscule"] select {
+  background: #F3DADF !important;
+  border: none !important;
+  border-radius: 10px !important;
+  box-shadow: inset 3px 3px 6px #D5B8BD, inset -3px -3px 6px #FFFFFF !important;
+}
+
+
+/* ─── NM BrumeArdoise (Soft UI) ─────────────────────────────────────── */
+[data-palette="nmBrumeArdoise"],
+[data-palette="nmBrumeArdoise"].light,
+[data-palette="nmBrumeArdoise"].dark,
+[data-palette="nmBrumeArdoise"].mixed {
+  --nm-bg: 220 9% 86%;
+  --nm-shadow-dark: #B0B5BB;
+  --nm-shadow-light: #FFFFFF;
+  --nm-accent-h: 215;
+  --nm-accent-s: 30%;
+  --nm-accent-l: 32%;
+
+  --background: 220 9% 86%;
+  --foreground: 215 43% 18%;
+  --card: 220 9% 86%;
+  --card-foreground: 215 43% 18%;
+  --popover: 220 9% 86%;
+  --popover-foreground: 215 43% 18%;
+  --primary: 215 30% 32%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 220 9% 86%;
+  --secondary-foreground: 215 31% 35%;
+  --muted: 220 9% 86%;
+  --muted-foreground: 215 12% 38%;
+  --accent: 215 30% 20%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 35% 45%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 220 5% 80%;
+  --input: 220 9% 86%;
+  --ring: 215 30% 32%;
+  --radius: 12px;
+
+  --sidebar-background: 220 9% 86%;
+  --sidebar-foreground: 215 31% 35%;
+  --sidebar-primary: 215 30% 32%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 220 9% 86%;
+  --sidebar-accent-foreground: 215 30% 32%;
+  --sidebar-ring: 215 30% 32%;
+  --sidebar-bg: 220 9% 86%;
+  --sidebar-fg: 215 31% 35%;
+  --sidebar-fg-bright: 215 43% 18%;
+  --sidebar-hover: 220 9% 86%;
+  --sidebar-active: 215 30% 20%;
+  --sidebar-active-fg: 0 0% 100%;
+  --sidebar-border: 220 5% 80%;
+
+  --priority-urgent: 0 35% 45%;
+  --priority-high: 25 45% 45%;
+  --priority-normal: 215 30% 32%;
+  --priority-low: 215 12% 38%;
+  --status-todo: 215 12% 38%;
+  --status-progress: 215 30% 32%;
+  --status-review: 38 55% 38%;
+  --status-done: 145 30% 40%;
+  --status-blocked: 0 35% 45%;
+
+  --bento-bg: transparent;
+  --bento-bg-hover: transparent;
+  --bento-border: transparent;
+  --bento-border-h: transparent;
+  --bento-shadow: none;
+  --bento-radius: 16px;
+  --bento-gap: 16px;
+}
+
+[data-palette="nmBrumeArdoise"] {
+  --nm-ext-sm: 4px 4px 8px #B0B5BB, -4px -4px 8px #FFFFFF;
+  --nm-ext-md: 6px 6px 12px #B0B5BB, -6px -6px 12px #FFFFFF;
+  --nm-ext-lg: 10px 10px 20px #B0B5BB, -10px -10px 20px #FFFFFF;
+  --nm-in-sm: inset 3px 3px 6px #B0B5BB, inset -3px -3px 6px #FFFFFF;
+  --nm-in-md: inset 4px 4px 8px #B0B5BB, inset -4px -4px 8px #FFFFFF;
+  --nm-in-lg: inset 6px 6px 12px #B0B5BB, inset -6px -6px 12px #FFFFFF;
+}
+
+[data-palette="nmBrumeArdoise"] body,
+[data-palette="nmBrumeArdoise"] #root {
+  background: #D4D8DD !important;
+  font-family: 'Inter', 'Plus Jakarta Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+[data-palette="nmBrumeArdoise"] .border,
+[data-palette="nmBrumeArdoise"] .border-border,
+[data-palette="nmBrumeArdoise"] .border-input,
+[data-palette="nmBrumeArdoise"] [class*="border-"] {
+  border-color: transparent !important;
+}
+
+[data-palette="nmBrumeArdoise"] .bg-card,
+[data-palette="nmBrumeArdoise"] .rounded-lg.border.bg-card {
+  background: #D4D8DD !important;
+  box-shadow: 6px 6px 12px #B0B5BB, -6px -6px 12px #FFFFFF !important;
+  border: none !important;
+  border-radius: 16px !important;
+}
+[data-palette="nmBrumeArdoise"] .bg-card:hover {
+  box-shadow: 10px 10px 20px #B0B5BB, -10px -10px 20px #FFFFFF !important;
+}
+
+[data-palette="nmBrumeArdoise"] button:not([data-state]):not(.ghost),
+[data-palette="nmBrumeArdoise"] [role="button"]:not([data-state]) {
+  background: #D4D8DD;
+  border: none !important;
+  border-radius: 12px;
+}
+
+[data-palette="nmBrumeArdoise"] .bg-primary {
+  background: #D4D8DD !important;
+  color: hsl(215, 30%, 32%) !important;
+  box-shadow: 6px 6px 12px #B0B5BB, -6px -6px 12px #FFFFFF;
+}
+[data-palette="nmBrumeArdoise"] .bg-primary:hover {
+  box-shadow: inset 4px 4px 8px #B0B5BB, inset -4px -4px 8px #FFFFFF;
+}
+
+[data-palette="nmBrumeArdoise"] input,
+[data-palette="nmBrumeArdoise"] textarea,
+[data-palette="nmBrumeArdoise"] select {
+  background: #D4D8DD !important;
+  border: none !important;
+  border-radius: 10px !important;
+  box-shadow: inset 3px 3px 6px #B0B5BB, inset -3px -3px 6px #FFFFFF !important;
+}
+
+
+/* ─── NM Prunelle (Soft UI) ─────────────────────────────────────── */
+[data-palette="nmPrunelle"],
+[data-palette="nmPrunelle"].light,
+[data-palette="nmPrunelle"].dark,
+[data-palette="nmPrunelle"].mixed {
+  --nm-bg: 21 80% 92%;
+  --nm-shadow-dark: #DDC4B5;
+  --nm-shadow-light: #FFFFFF;
+  --nm-accent-h: 333;
+  --nm-accent-s: 26%;
+  --nm-accent-l: 42%;
+
+  --background: 21 80% 92%;
+  --foreground: 300 60% 12%;
+  --card: 21 80% 92%;
+  --card-foreground: 300 60% 12%;
+  --popover: 21 80% 92%;
+  --popover-foreground: 300 60% 12%;
+  --primary: 333 26% 42%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 21 80% 92%;
+  --secondary-foreground: 300 48% 35%;
+  --muted: 21 80% 92%;
+  --muted-foreground: 300 12% 38%;
+  --accent: 333 26% 30%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 35% 45%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 21 76% 86%;
+  --input: 21 80% 92%;
+  --ring: 333 26% 42%;
+  --radius: 12px;
+
+  --sidebar-background: 21 80% 92%;
+  --sidebar-foreground: 300 48% 35%;
+  --sidebar-primary: 333 26% 42%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 21 80% 92%;
+  --sidebar-accent-foreground: 333 26% 42%;
+  --sidebar-ring: 333 26% 42%;
+  --sidebar-bg: 21 80% 92%;
+  --sidebar-fg: 300 48% 35%;
+  --sidebar-fg-bright: 300 60% 12%;
+  --sidebar-hover: 21 80% 92%;
+  --sidebar-active: 333 26% 30%;
+  --sidebar-active-fg: 0 0% 100%;
+  --sidebar-border: 21 76% 86%;
+
+  --priority-urgent: 0 35% 45%;
+  --priority-high: 25 45% 45%;
+  --priority-normal: 333 26% 42%;
+  --priority-low: 300 12% 38%;
+  --status-todo: 300 12% 38%;
+  --status-progress: 333 26% 42%;
+  --status-review: 38 55% 38%;
+  --status-done: 145 30% 40%;
+  --status-blocked: 0 35% 45%;
+
+  --bento-bg: transparent;
+  --bento-bg-hover: transparent;
+  --bento-border: transparent;
+  --bento-border-h: transparent;
+  --bento-shadow: none;
+  --bento-radius: 16px;
+  --bento-gap: 16px;
+}
+
+[data-palette="nmPrunelle"] {
+  --nm-ext-sm: 4px 4px 8px #DDC4B5, -4px -4px 8px #FFFFFF;
+  --nm-ext-md: 6px 6px 12px #DDC4B5, -6px -6px 12px #FFFFFF;
+  --nm-ext-lg: 10px 10px 20px #DDC4B5, -10px -10px 20px #FFFFFF;
+  --nm-in-sm: inset 3px 3px 6px #DDC4B5, inset -3px -3px 6px #FFFFFF;
+  --nm-in-md: inset 4px 4px 8px #DDC4B5, inset -4px -4px 8px #FFFFFF;
+  --nm-in-lg: inset 6px 6px 12px #DDC4B5, inset -6px -6px 12px #FFFFFF;
+}
+
+[data-palette="nmPrunelle"] body,
+[data-palette="nmPrunelle"] #root {
+  background: #FBE4D8 !important;
+  font-family: 'Inter', 'Plus Jakarta Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+[data-palette="nmPrunelle"] .border,
+[data-palette="nmPrunelle"] .border-border,
+[data-palette="nmPrunelle"] .border-input,
+[data-palette="nmPrunelle"] [class*="border-"] {
+  border-color: transparent !important;
+}
+
+[data-palette="nmPrunelle"] .bg-card,
+[data-palette="nmPrunelle"] .rounded-lg.border.bg-card {
+  background: #FBE4D8 !important;
+  box-shadow: 6px 6px 12px #DDC4B5, -6px -6px 12px #FFFFFF !important;
+  border: none !important;
+  border-radius: 16px !important;
+}
+[data-palette="nmPrunelle"] .bg-card:hover {
+  box-shadow: 10px 10px 20px #DDC4B5, -10px -10px 20px #FFFFFF !important;
+}
+
+[data-palette="nmPrunelle"] button:not([data-state]):not(.ghost),
+[data-palette="nmPrunelle"] [role="button"]:not([data-state]) {
+  background: #FBE4D8;
+  border: none !important;
+  border-radius: 12px;
+}
+
+[data-palette="nmPrunelle"] .bg-primary {
+  background: #FBE4D8 !important;
+  color: hsl(333, 26%, 42%) !important;
+  box-shadow: 6px 6px 12px #DDC4B5, -6px -6px 12px #FFFFFF;
+}
+[data-palette="nmPrunelle"] .bg-primary:hover {
+  box-shadow: inset 4px 4px 8px #DDC4B5, inset -4px -4px 8px #FFFFFF;
+}
+
+[data-palette="nmPrunelle"] input,
+[data-palette="nmPrunelle"] textarea,
+[data-palette="nmPrunelle"] select {
+  background: #FBE4D8 !important;
+  border: none !important;
+  border-radius: 10px !important;
+  box-shadow: inset 3px 3px 6px #DDC4B5, inset -3px -3px 6px #FFFFFF !important;
+}
+
+
+/* ─── NM AzurProfond (Soft UI) ─────────────────────────────────────── */
+[data-palette="nmAzurProfond"],
+[data-palette="nmAzurProfond"].light,
+[data-palette="nmAzurProfond"].dark,
+[data-palette="nmAzurProfond"].mixed {
+  --nm-bg: 207 60% 88%;
+  --nm-shadow-dark: #A8C5DA;
+  --nm-shadow-light: #FFFFFF;
+  --nm-accent-h: 213;
+  --nm-accent-s: 38%;
+  --nm-accent-l: 51%;
+
+  --background: 207 60% 88%;
+  --foreground: 213 80% 14%;
+  --card: 207 60% 88%;
+  --card-foreground: 213 80% 14%;
+  --popover: 207 60% 88%;
+  --popover-foreground: 213 80% 14%;
+  --primary: 213 38% 51%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 207 60% 88%;
+  --secondary-foreground: 213 68% 35%;
+  --muted: 207 60% 88%;
+  --muted-foreground: 213 12% 38%;
+  --accent: 213 38% 39%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 35% 45%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 207 56% 82%;
+  --input: 207 60% 88%;
+  --ring: 213 38% 51%;
+  --radius: 12px;
+
+  --sidebar-background: 207 60% 88%;
+  --sidebar-foreground: 213 68% 35%;
+  --sidebar-primary: 213 38% 51%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 207 60% 88%;
+  --sidebar-accent-foreground: 213 38% 51%;
+  --sidebar-ring: 213 38% 51%;
+  --sidebar-bg: 207 60% 88%;
+  --sidebar-fg: 213 68% 35%;
+  --sidebar-fg-bright: 213 80% 14%;
+  --sidebar-hover: 207 60% 88%;
+  --sidebar-active: 213 38% 39%;
+  --sidebar-active-fg: 0 0% 100%;
+  --sidebar-border: 207 56% 82%;
+
+  --priority-urgent: 0 35% 45%;
+  --priority-high: 25 45% 45%;
+  --priority-normal: 213 38% 51%;
+  --priority-low: 213 12% 38%;
+  --status-todo: 213 12% 38%;
+  --status-progress: 213 38% 51%;
+  --status-review: 38 55% 38%;
+  --status-done: 145 30% 40%;
+  --status-blocked: 0 35% 45%;
+
+  --bento-bg: transparent;
+  --bento-bg-hover: transparent;
+  --bento-border: transparent;
+  --bento-border-h: transparent;
+  --bento-shadow: none;
+  --bento-radius: 16px;
+  --bento-gap: 16px;
+}
+
+[data-palette="nmAzurProfond"] {
+  --nm-ext-sm: 4px 4px 8px #A8C5DA, -4px -4px 8px #FFFFFF;
+  --nm-ext-md: 6px 6px 12px #A8C5DA, -6px -6px 12px #FFFFFF;
+  --nm-ext-lg: 10px 10px 20px #A8C5DA, -10px -10px 20px #FFFFFF;
+  --nm-in-sm: inset 3px 3px 6px #A8C5DA, inset -3px -3px 6px #FFFFFF;
+  --nm-in-md: inset 4px 4px 8px #A8C5DA, inset -4px -4px 8px #FFFFFF;
+  --nm-in-lg: inset 6px 6px 12px #A8C5DA, inset -6px -6px 12px #FFFFFF;
+}
+
+[data-palette="nmAzurProfond"] body,
+[data-palette="nmAzurProfond"] #root {
+  background: #D8EBF7 !important;
+  font-family: 'Inter', 'Plus Jakarta Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+[data-palette="nmAzurProfond"] .border,
+[data-palette="nmAzurProfond"] .border-border,
+[data-palette="nmAzurProfond"] .border-input,
+[data-palette="nmAzurProfond"] [class*="border-"] {
+  border-color: transparent !important;
+}
+
+[data-palette="nmAzurProfond"] .bg-card,
+[data-palette="nmAzurProfond"] .rounded-lg.border.bg-card {
+  background: #D8EBF7 !important;
+  box-shadow: 6px 6px 12px #A8C5DA, -6px -6px 12px #FFFFFF !important;
+  border: none !important;
+  border-radius: 16px !important;
+}
+[data-palette="nmAzurProfond"] .bg-card:hover {
+  box-shadow: 10px 10px 20px #A8C5DA, -10px -10px 20px #FFFFFF !important;
+}
+
+[data-palette="nmAzurProfond"] button:not([data-state]):not(.ghost),
+[data-palette="nmAzurProfond"] [role="button"]:not([data-state]) {
+  background: #D8EBF7;
+  border: none !important;
+  border-radius: 12px;
+}
+
+[data-palette="nmAzurProfond"] .bg-primary {
+  background: #D8EBF7 !important;
+  color: hsl(213, 38%, 51%) !important;
+  box-shadow: 6px 6px 12px #A8C5DA, -6px -6px 12px #FFFFFF;
+}
+[data-palette="nmAzurProfond"] .bg-primary:hover {
+  box-shadow: inset 4px 4px 8px #A8C5DA, inset -4px -4px 8px #FFFFFF;
+}
+
+[data-palette="nmAzurProfond"] input,
+[data-palette="nmAzurProfond"] textarea,
+[data-palette="nmAzurProfond"] select {
+  background: #D8EBF7 !important;
+  border: none !important;
+  border-radius: 10px !important;
+  box-shadow: inset 3px 3px 6px #A8C5DA, inset -3px -3px 6px #FFFFFF !important;
+}
+
+
+/* ─── NM AuroreCorail (Soft UI) ─────────────────────────────────────── */
+[data-palette="nmAuroreCorail"],
+[data-palette="nmAuroreCorail"].light,
+[data-palette="nmAuroreCorail"].dark,
+[data-palette="nmAuroreCorail"].mixed {
+  --nm-bg: 230 14% 86%;
+  --nm-shadow-dark: #A9A9B8;
+  --nm-shadow-light: #FFFFFF;
+  --nm-accent-h: 355;
+  --nm-accent-s: 38%;
+  --nm-accent-l: 52%;
+
+  --background: 230 14% 86%;
+  --foreground: 229 30% 22%;
+  --card: 230 14% 86%;
+  --card-foreground: 229 30% 22%;
+  --popover: 230 14% 86%;
+  --popover-foreground: 229 30% 22%;
+  --primary: 355 38% 52%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 230 14% 86%;
+  --secondary-foreground: 229 18% 35%;
+  --muted: 230 14% 86%;
+  --muted-foreground: 229 12% 38%;
+  --accent: 355 38% 40%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 35% 45%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 230 10% 80%;
+  --input: 230 14% 86%;
+  --ring: 355 38% 52%;
+  --radius: 12px;
+
+  --sidebar-background: 230 14% 86%;
+  --sidebar-foreground: 229 18% 35%;
+  --sidebar-primary: 355 38% 52%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 230 14% 86%;
+  --sidebar-accent-foreground: 355 38% 52%;
+  --sidebar-ring: 355 38% 52%;
+  --sidebar-bg: 230 14% 86%;
+  --sidebar-fg: 229 18% 35%;
+  --sidebar-fg-bright: 229 30% 22%;
+  --sidebar-hover: 230 14% 86%;
+  --sidebar-active: 355 38% 40%;
+  --sidebar-active-fg: 0 0% 100%;
+  --sidebar-border: 230 10% 80%;
+
+  --priority-urgent: 0 35% 45%;
+  --priority-high: 25 45% 45%;
+  --priority-normal: 355 38% 52%;
+  --priority-low: 229 12% 38%;
+  --status-todo: 229 12% 38%;
+  --status-progress: 355 38% 52%;
+  --status-review: 38 55% 38%;
+  --status-done: 145 30% 40%;
+  --status-blocked: 0 35% 45%;
+
+  --bento-bg: transparent;
+  --bento-bg-hover: transparent;
+  --bento-border: transparent;
+  --bento-border-h: transparent;
+  --bento-shadow: none;
+  --bento-radius: 16px;
+  --bento-gap: 16px;
+}
+
+[data-palette="nmAuroreCorail"] {
+  --nm-ext-sm: 4px 4px 8px #A9A9B8, -4px -4px 8px #FFFFFF;
+  --nm-ext-md: 6px 6px 12px #A9A9B8, -6px -6px 12px #FFFFFF;
+  --nm-ext-lg: 10px 10px 20px #A9A9B8, -10px -10px 20px #FFFFFF;
+  --nm-in-sm: inset 3px 3px 6px #A9A9B8, inset -3px -3px 6px #FFFFFF;
+  --nm-in-md: inset 4px 4px 8px #A9A9B8, inset -4px -4px 8px #FFFFFF;
+  --nm-in-lg: inset 6px 6px 12px #A9A9B8, inset -6px -6px 12px #FFFFFF;
+}
+
+[data-palette="nmAuroreCorail"] body,
+[data-palette="nmAuroreCorail"] #root {
+  background: #CFCFDC !important;
+  font-family: 'Inter', 'Plus Jakarta Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+[data-palette="nmAuroreCorail"] .border,
+[data-palette="nmAuroreCorail"] .border-border,
+[data-palette="nmAuroreCorail"] .border-input,
+[data-palette="nmAuroreCorail"] [class*="border-"] {
+  border-color: transparent !important;
+}
+
+[data-palette="nmAuroreCorail"] .bg-card,
+[data-palette="nmAuroreCorail"] .rounded-lg.border.bg-card {
+  background: #CFCFDC !important;
+  box-shadow: 6px 6px 12px #A9A9B8, -6px -6px 12px #FFFFFF !important;
+  border: none !important;
+  border-radius: 16px !important;
+}
+[data-palette="nmAuroreCorail"] .bg-card:hover {
+  box-shadow: 10px 10px 20px #A9A9B8, -10px -10px 20px #FFFFFF !important;
+}
+
+[data-palette="nmAuroreCorail"] button:not([data-state]):not(.ghost),
+[data-palette="nmAuroreCorail"] [role="button"]:not([data-state]) {
+  background: #CFCFDC;
+  border: none !important;
+  border-radius: 12px;
+}
+
+[data-palette="nmAuroreCorail"] .bg-primary {
+  background: #CFCFDC !important;
+  color: hsl(355, 38%, 52%) !important;
+  box-shadow: 6px 6px 12px #A9A9B8, -6px -6px 12px #FFFFFF;
+}
+[data-palette="nmAuroreCorail"] .bg-primary:hover {
+  box-shadow: inset 4px 4px 8px #A9A9B8, inset -4px -4px 8px #FFFFFF;
+}
+
+[data-palette="nmAuroreCorail"] input,
+[data-palette="nmAuroreCorail"] textarea,
+[data-palette="nmAuroreCorail"] select {
+  background: #CFCFDC !important;
+  border: none !important;
+  border-radius: 10px !important;
+  box-shadow: inset 3px 3px 6px #A9A9B8, inset -3px -3px 6px #FFFFFF !important;
+}
+
+
+/* ─── NM BraiseNocturne (Soft UI) ─────────────────────────────────────── */
+[data-palette="nmBraiseNocturne"],
+[data-palette="nmBraiseNocturne"].light,
+[data-palette="nmBraiseNocturne"].dark,
+[data-palette="nmBraiseNocturne"].mixed {
+  --nm-bg: 18 88% 92%;
+  --nm-shadow-dark: #E0BBA8;
+  --nm-shadow-light: #FFFFFF;
+  --nm-accent-h: 354;
+  --nm-accent-s: 76%;
+  --nm-accent-l: 41%;
+
+  --background: 18 88% 92%;
+  --foreground: 248 30% 14%;
+  --card: 18 88% 92%;
+  --card-foreground: 248 30% 14%;
+  --popover: 18 88% 92%;
+  --popover-foreground: 248 30% 14%;
+  --primary: 354 76% 41%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 18 88% 92%;
+  --secondary-foreground: 248 18% 35%;
+  --muted: 18 88% 92%;
+  --muted-foreground: 248 12% 38%;
+  --accent: 354 76% 29%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 35% 45%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 18 84% 86%;
+  --input: 18 88% 92%;
+  --ring: 354 76% 41%;
+  --radius: 12px;
+
+  --sidebar-background: 18 88% 92%;
+  --sidebar-foreground: 248 18% 35%;
+  --sidebar-primary: 354 76% 41%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 18 88% 92%;
+  --sidebar-accent-foreground: 354 76% 41%;
+  --sidebar-ring: 354 76% 41%;
+  --sidebar-bg: 18 88% 92%;
+  --sidebar-fg: 248 18% 35%;
+  --sidebar-fg-bright: 248 30% 14%;
+  --sidebar-hover: 18 88% 92%;
+  --sidebar-active: 354 76% 29%;
+  --sidebar-active-fg: 0 0% 100%;
+  --sidebar-border: 18 84% 86%;
+
+  --priority-urgent: 0 35% 45%;
+  --priority-high: 25 45% 45%;
+  --priority-normal: 354 76% 41%;
+  --priority-low: 248 12% 38%;
+  --status-todo: 248 12% 38%;
+  --status-progress: 354 76% 41%;
+  --status-review: 38 55% 38%;
+  --status-done: 145 30% 40%;
+  --status-blocked: 0 35% 45%;
+
+  --bento-bg: transparent;
+  --bento-bg-hover: transparent;
+  --bento-border: transparent;
+  --bento-border-h: transparent;
+  --bento-shadow: none;
+  --bento-radius: 16px;
+  --bento-gap: 16px;
+}
+
+[data-palette="nmBraiseNocturne"] {
+  --nm-ext-sm: 4px 4px 8px #E0BBA8, -4px -4px 8px #FFFFFF;
+  --nm-ext-md: 6px 6px 12px #E0BBA8, -6px -6px 12px #FFFFFF;
+  --nm-ext-lg: 10px 10px 20px #E0BBA8, -10px -10px 20px #FFFFFF;
+  --nm-in-sm: inset 3px 3px 6px #E0BBA8, inset -3px -3px 6px #FFFFFF;
+  --nm-in-md: inset 4px 4px 8px #E0BBA8, inset -4px -4px 8px #FFFFFF;
+  --nm-in-lg: inset 6px 6px 12px #E0BBA8, inset -6px -6px 12px #FFFFFF;
+}
+
+[data-palette="nmBraiseNocturne"] body,
+[data-palette="nmBraiseNocturne"] #root {
+  background: #FFE0D2 !important;
+  font-family: 'Inter', 'Plus Jakarta Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+[data-palette="nmBraiseNocturne"] .border,
+[data-palette="nmBraiseNocturne"] .border-border,
+[data-palette="nmBraiseNocturne"] .border-input,
+[data-palette="nmBraiseNocturne"] [class*="border-"] {
+  border-color: transparent !important;
+}
+
+[data-palette="nmBraiseNocturne"] .bg-card,
+[data-palette="nmBraiseNocturne"] .rounded-lg.border.bg-card {
+  background: #FFE0D2 !important;
+  box-shadow: 6px 6px 12px #E0BBA8, -6px -6px 12px #FFFFFF !important;
+  border: none !important;
+  border-radius: 16px !important;
+}
+[data-palette="nmBraiseNocturne"] .bg-card:hover {
+  box-shadow: 10px 10px 20px #E0BBA8, -10px -10px 20px #FFFFFF !important;
+}
+
+[data-palette="nmBraiseNocturne"] button:not([data-state]):not(.ghost),
+[data-palette="nmBraiseNocturne"] [role="button"]:not([data-state]) {
+  background: #FFE0D2;
+  border: none !important;
+  border-radius: 12px;
+}
+
+[data-palette="nmBraiseNocturne"] .bg-primary {
+  background: #FFE0D2 !important;
+  color: hsl(354, 76%, 41%) !important;
+  box-shadow: 6px 6px 12px #E0BBA8, -6px -6px 12px #FFFFFF;
+}
+[data-palette="nmBraiseNocturne"] .bg-primary:hover {
+  box-shadow: inset 4px 4px 8px #E0BBA8, inset -4px -4px 8px #FFFFFF;
+}
+
+[data-palette="nmBraiseNocturne"] input,
+[data-palette="nmBraiseNocturne"] textarea,
+[data-palette="nmBraiseNocturne"] select {
+  background: #FFE0D2 !important;
+  border: none !important;
+  border-radius: 10px !important;
+  box-shadow: inset 3px 3px 6px #E0BBA8, inset -3px -3px 6px #FFFFFF !important;
+}

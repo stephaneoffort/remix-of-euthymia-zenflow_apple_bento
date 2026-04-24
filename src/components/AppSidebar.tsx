@@ -754,8 +754,6 @@ export default function AppSidebar() {
           )}
         </div>
         <MessagesHubDialog open={messagesHubOpen} onOpenChange={setMessagesHubOpen} />
-        <div style={{ display: 'none' }}>
-        {/* placeholder spacer to keep diff small */}
 
         {/* Spaces & Projects */}
         <div className="flex-1 overflow-y-auto scrollbar-thin px-3 py-3">

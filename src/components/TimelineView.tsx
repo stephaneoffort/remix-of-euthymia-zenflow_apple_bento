@@ -546,7 +546,7 @@ export default function TimelineView() {
                                     {item.task.title}
                                   </span>
                                   {progress > 0 && width > 100 && (
-                                    <span className="text-[9px] text-muted-foreground shrink-0">
+                                    <span data-numeric className="font-numeric tabular-nums text-[9px] text-muted-foreground shrink-0">
                                       {progress}%
                                     </span>
                                   )}
@@ -571,7 +571,7 @@ export default function TimelineView() {
                                   : "—"}
                               </div>
                               <div className="text-muted-foreground">
-                                Progression : {progress}%
+                                Progression : <span data-numeric className="font-numeric tabular-nums">{progress}%</span>
                               </div>
                               {item.hasOverlap && (
                                 <div className="text-destructive font-medium flex items-center gap-1">

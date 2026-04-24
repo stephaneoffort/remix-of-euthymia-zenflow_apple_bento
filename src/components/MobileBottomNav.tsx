@@ -163,7 +163,7 @@ export default function MobileBottomNav({ onOpenVoice }: MobileBottomNavProps) {
           <div className="relative">
             <MessageCircle className="w-5 h-5" />
             {totalUnread > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
+              <span data-numeric className="font-numeric tabular-nums absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
                 {totalUnread > 99 ? '99+' : totalUnread}
               </span>
             )}

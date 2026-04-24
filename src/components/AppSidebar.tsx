@@ -549,7 +549,7 @@ export default function AppSidebar() {
                 >
                   {f.icon}
                   {f.key === "overdue" && overdueCount > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-priority-urgent text-sidebar-fg-bright rounded-full text-label flex items-center justify-center font-bold">
+                    <span data-numeric className="font-numeric tabular-nums absolute -top-0.5 -right-0.5 w-4 h-4 bg-priority-urgent text-sidebar-fg-bright rounded-full text-label flex items-center justify-center font-bold">
                       {overdueCount > 9 ? "9+" : overdueCount}
                     </span>
                   )}
@@ -740,7 +740,7 @@ export default function AppSidebar() {
                   {f.icon}
                   {f.label}
                   {f.key === "overdue" && overdueCount > 0 && (
-                    <span className="ml-auto text-xs bg-priority-urgent text-sidebar-fg-bright rounded-full px-1.5 py-0.5">
+                    <span data-numeric className="font-numeric tabular-nums ml-auto text-xs bg-priority-urgent text-sidebar-fg-bright rounded-full px-1.5 py-0.5">
                       {overdueCount}
                     </span>
                   )}

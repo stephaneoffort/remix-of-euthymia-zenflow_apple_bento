@@ -100,6 +100,7 @@ export default function BentoDashboard() {
             ].map(({ n, l, c }) => (
               <div key={l} className="bento-stat">
                 <span
+                  data-numeric
                   className="bento-stat-n font-numeric"
                   style={{ color: c, fontVariantNumeric: 'tabular-nums' }}
                 >

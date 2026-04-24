@@ -1885,7 +1885,15 @@
 
 /* ─── Opacité ajustable du TaskDetailPanel sur les thèmes Bento ───
    La variable --task-panel-bg-opacity (0.5 → 1) est pilotée depuis ThemeContext.
-   On ne touche QUE le panneau de détail (.task-detail-panel), pas le bg global. */
+   On ne touche QUE le panneau de détail (.task-detail-panel), pas le bg global.
+
+   Notes contraste :
+   - Mode clair/mixed : opacité utilisateur appliquée telle quelle (le fond
+     clair conserve un bon contraste même autour de 0.5).
+   - Mode sombre : on releve le plancher effectif (≥ 0.78) car les fonds
+     sombres semi-transparents laissent passer le mesh-gradient et brisent
+     le contraste du texte clair. Le flou et un voile noir additionnel
+     compensent la perte d'opacité visuelle. */
 [data-palette="bento2026"] .task-detail-panel,
 [data-palette="bentoOcean"] .task-detail-panel,
 [data-palette="bentoRose"] .task-detail-panel,
@@ -1897,9 +1905,44 @@
 [data-palette="bentoAzurProfond"] .task-detail-panel,
 [data-palette="bentoAuroreCorail"] .task-detail-panel,
 [data-palette="bentoBraiseNocturne"] .task-detail-panel {
+  /* Par défaut (light/mixed) : opacité brute du réglage utilisateur */
   background-color: hsl(var(--background) / var(--task-panel-bg-opacity, 1)) !important;
   backdrop-filter: blur(calc((1 - var(--task-panel-bg-opacity, 1)) * 24px)) saturate(1.4);
   -webkit-backdrop-filter: blur(calc((1 - var(--task-panel-bg-opacity, 1)) * 24px)) saturate(1.4);
+}
+
+/* ─── Mode sombre : plancher d'opacité + voile pour préserver le contraste ─── */
+[data-palette="bento2026"].dark .task-detail-panel,
+[data-palette="bentoOcean"].dark .task-detail-panel,
+[data-palette="bentoRose"].dark .task-detail-panel,
+[data-palette="bentoAmber"].dark .task-detail-panel,
+[data-palette="bentoDunesCuivre"].dark .task-detail-panel,
+[data-palette="bentoCrepuscule"].dark .task-detail-panel,
+[data-palette="bentoBrumeArdoise"].dark .task-detail-panel,
+[data-palette="bentoPrunelle"].dark .task-detail-panel,
+[data-palette="bentoAzurProfond"].dark .task-detail-panel,
+[data-palette="bentoAuroreCorail"].dark .task-detail-panel,
+[data-palette="bentoBraiseNocturne"].dark .task-detail-panel {
+  /* Plancher : max(0.78, opacité utilisateur). Empêche la perte de contraste
+     même si l'utilisateur descend le slider à 50 %. */
+  background-color: hsl(
+    var(--background) /
+    max(0.78, var(--task-panel-bg-opacity, 1))
+  ) !important;
+  /* Flou plus généreux (jusqu'à 32px) pour estomper le mesh-gradient
+     coloré qui transparaît derrière le panneau. */
+  backdrop-filter:
+    blur(calc((1 - var(--task-panel-bg-opacity, 1)) * 32px))
+    saturate(1.2)
+    brightness(0.85);
+  -webkit-backdrop-filter:
+    blur(calc((1 - var(--task-panel-bg-opacity, 1)) * 32px))
+    saturate(1.2)
+    brightness(0.85);
+  /* Voile sombre additionnel proportionnel à la transparence demandée :
+     intensité max ~22 % quand opacité utilisateur = 0.5, nul à 1.0. */
+  box-shadow:
+    inset 0 0 0 100vmax rgba(0, 0, 0, calc((1 - var(--task-panel-bg-opacity, 1)) * 0.22));
 }
 
 /* ─── Glass cards (shadcn) for bento palettes (light/mixed) ─── */

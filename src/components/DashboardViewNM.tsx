@@ -1523,3 +1523,294 @@ function NMBrevoCampaigns({
     </Tile>
   );
 }
+
+/* ─── Attachments Debug Panel – Premium neumorphic ─── */
+function NMAttachmentsDebugPanel({
+  projects,
+  driveTotal,
+  canvaTotal,
+  driveByProject,
+  canvaByProject,
+  driveDebug,
+  canvaDebug,
+  driveOrphans,
+  canvaOrphans,
+  showDrive,
+  showCanva,
+  onClose,
+  isMobile,
+}: {
+  projects: Array<{ id: string; name: string; color?: string }>;
+  driveTotal: number;
+  canvaTotal: number;
+  driveByProject: Record<string, number>;
+  canvaByProject: Record<string, number>;
+  driveDebug: Record<string, Array<{ entity_id: string; entity_type: string }>>;
+  canvaDebug: Record<string, Array<{ entity_id: string; entity_type: string }>>;
+  driveOrphans: Array<{ entity_id: string; entity_type: string }>;
+  canvaOrphans: Array<{ entity_id: string; entity_type: string }>;
+  showDrive: boolean;
+  showCanva: boolean;
+  onClose: () => void;
+  isMobile: boolean;
+}) {
+  const [tab, setTab] = useState<"drive" | "canva">(showDrive ? "drive" : "canva");
+  const total = tab === "drive" ? driveTotal : canvaTotal;
+  const byProject = tab === "drive" ? driveByProject : canvaByProject;
+  const breakdown = tab === "drive" ? driveDebug : canvaDebug;
+  const orphans = tab === "drive" ? driveOrphans : canvaOrphans;
+  const aggregated = Object.values(byProject).reduce((a, b) => a + b, 0);
+  const projectsById = useMemo(() => {
+    const m: Record<string, { name: string; color?: string }> = {};
+    projects.forEach((p) => { m[p.id] = { name: p.name, color: p.color }; });
+    return m;
+  }, [projects]);
+
+  const sortedProjectIds = Object.keys(byProject).sort(
+    (a, b) => (byProject[b] || 0) - (byProject[a] || 0)
+  );
+
+  const TYPE_COLOR: Record<string, string> = {
+    project: "#4285F4",
+    task: "#2A5828",
+    subtask: "#9CA38A",
+  };
+
+  const exportJson = () => {
+    const payload = {
+      tab,
+      total,
+      aggregated,
+      orphansCount: orphans.length,
+      byProject: sortedProjectIds.map((pid) => ({
+        project_id: pid,
+        project_name: projectsById[pid]?.name ?? "(inconnu)",
+        count: byProject[pid],
+        rows: breakdown[pid] ?? [],
+      })),
+      orphans,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `dashboard-debug-${tab}-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div style={{
+      ...(isMobile ? {} : { gridColumn: "1 / 5", gridRow: 6 }),
+      marginTop: 10,
+    }}>
+      <Tile style={{ padding: "14px 16px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12, flexWrap: "wrap" }}>
+          <span style={{
+            fontSize: 11, fontWeight: 700, letterSpacing: 1, color: C.orange,
+            background: BG, boxShadow: pill, borderRadius: 4, padding: "3px 8px",
+          }}>
+            DEBUG
+          </span>
+          <span style={{ fontSize: 14, fontWeight: 600, color: C.text }}>
+            Diagnostic des pièces jointes par projet
+          </span>
+          <span style={{ fontSize: 11, color: C.light, marginLeft: 4 }}>
+            (Ctrl/Cmd+Shift+D pour basculer)
+          </span>
+          <div style={{ marginLeft: "auto", display: "flex", gap: 6 }}>
+            {showDrive && (
+              <button
+                onClick={() => setTab("drive")}
+                style={{
+                  border: "none", cursor: "pointer", borderRadius: 8, padding: "5px 12px",
+                  fontSize: 12, fontWeight: 600,
+                  background: BG, color: tab === "drive" ? "#4285F4" : C.muted,
+                  boxShadow: tab === "drive" ? barIn : pill,
+                }}
+              >
+                Drive
+              </button>
+            )}
+            {showCanva && (
+              <button
+                onClick={() => setTab("canva")}
+                style={{
+                  border: "none", cursor: "pointer", borderRadius: 8, padding: "5px 12px",
+                  fontSize: 12, fontWeight: 600,
+                  background: BG, color: tab === "canva" ? "#7D2AE7" : C.muted,
+                  boxShadow: tab === "canva" ? barIn : pill,
+                }}
+              >
+                Canva
+              </button>
+            )}
+            <button
+              onClick={exportJson}
+              style={{
+                border: "none", cursor: "pointer", borderRadius: 8, padding: "5px 12px",
+                fontSize: 12, fontWeight: 600, background: BG, color: C.text, boxShadow: pill,
+              }}
+            >
+              Exporter JSON
+            </button>
+            <button
+              onClick={onClose}
+              style={{
+                border: "none", cursor: "pointer", borderRadius: 8, padding: "5px 10px",
+                fontSize: 12, fontWeight: 600, background: BG, color: C.red, boxShadow: pill,
+              }}
+              aria-label="Fermer"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+
+        {/* Summary row */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+          gap: 8, marginBottom: 14,
+        }}>
+          <DebugStat label="Total attendu (DB)" value={total} accent={C.text} />
+          <DebugStat label="Comptés par projet" value={aggregated} accent={aggregated === total ? C.green : C.orange} />
+          <DebugStat label="Orphelins" value={orphans.length} accent={orphans.length === 0 ? C.green : C.red} />
+          <DebugStat label="Projets impactés" value={sortedProjectIds.length} accent={C.text} />
+        </div>
+
+        {aggregated !== total && (
+          <div style={{
+            fontSize: 12, color: C.red, background: BG, boxShadow: barIn,
+            borderRadius: 8, padding: "8px 12px", marginBottom: 12,
+          }}>
+            ⚠ Écart de {Math.abs(total - aggregated)} pièce{Math.abs(total - aggregated) > 1 ? "s" : ""} entre la DB et l'agrégation par projet.
+            {orphans.length > 0 && ` ${orphans.length} attachement${orphans.length > 1 ? "s" : ""} sans projet rattachable (voir détail ci-dessous).`}
+          </div>
+        )}
+
+        {/* Per-project breakdown */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 420, overflowY: "auto", paddingRight: 4 }}>
+          {sortedProjectIds.length === 0 && orphans.length === 0 && (
+            <p style={{ fontSize: 13, color: C.muted, textAlign: "center", padding: "12px 0" }}>
+              Aucun attachement {tab === "drive" ? "Drive" : "Canva"} rattaché à un projet.
+            </p>
+          )}
+          {sortedProjectIds.map((pid) => {
+            const rows = breakdown[pid] ?? [];
+            const counts = { project: 0, task: 0, subtask: 0 } as Record<string, number>;
+            rows.forEach((r) => { counts[r.entity_type] = (counts[r.entity_type] || 0) + 1; });
+            const proj = projectsById[pid];
+            return (
+              <div key={pid} style={{
+                background: BG, borderRadius: 10, boxShadow: barIn, padding: "10px 12px",
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
+                  <span style={{
+                    width: 10, height: 10, borderRadius: 3,
+                    background: proj?.color ?? C.muted,
+                  }} />
+                  <span style={{ fontSize: 13, fontWeight: 600, color: C.text }}>
+                    {proj?.name ?? pid}
+                  </span>
+                  <span style={{ fontSize: 11, color: C.light, fontFamily: "monospace" }}>{pid}</span>
+                  <span data-numeric className="font-numeric tabular-nums" style={{
+                    marginLeft: "auto", fontSize: 13, fontWeight: 700, color: C.text,
+                    background: BG, boxShadow: pill, borderRadius: 4, padding: "1px 8px",
+                  }}>
+                    {byProject[pid]}
+                  </span>
+                </div>
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 6 }}>
+                  {(["project", "task", "subtask"] as const).map((t) =>
+                    counts[t] > 0 ? (
+                      <span key={t} style={{
+                        fontSize: 10, fontWeight: 600, color: TYPE_COLOR[t],
+                        background: BG, boxShadow: pill, borderRadius: 4, padding: "2px 6px",
+                      }}>
+                        {t} · {counts[t]}
+                      </span>
+                    ) : null
+                  )}
+                </div>
+                <details style={{ fontSize: 11 }}>
+                  <summary style={{ cursor: "pointer", color: C.muted, userSelect: "none" }}>
+                    Voir les {rows.length} entity_id
+                  </summary>
+                  <div style={{
+                    marginTop: 6, fontFamily: "monospace", color: C.light,
+                    display: "flex", flexDirection: "column", gap: 2,
+                  }}>
+                    {rows.map((r, i) => (
+                      <div key={`${r.entity_id}-${i}`} style={{ display: "flex", gap: 6 }}>
+                        <span style={{ color: TYPE_COLOR[r.entity_type] ?? C.muted, minWidth: 56 }}>
+                          {r.entity_type}
+                        </span>
+                        <span>{r.entity_id}</span>
+                      </div>
+                    ))}
+                  </div>
+                </details>
+              </div>
+            );
+          })}
+
+          {orphans.length > 0 && (
+            <div style={{
+              background: BG, borderRadius: 10, boxShadow: barIn, padding: "10px 12px",
+              borderLeft: `3px solid ${C.red}`,
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: C.red }}>
+                  Orphelins (non rattachables)
+                </span>
+                <span data-numeric className="font-numeric tabular-nums" style={{
+                  marginLeft: "auto", fontSize: 13, fontWeight: 700, color: C.red,
+                  background: BG, boxShadow: pill, borderRadius: 4, padding: "1px 8px",
+                }}>
+                  {orphans.length}
+                </span>
+              </div>
+              <details style={{ fontSize: 11 }}>
+                <summary style={{ cursor: "pointer", color: C.muted, userSelect: "none" }}>
+                  Voir les entity_id
+                </summary>
+                <div style={{
+                  marginTop: 6, fontFamily: "monospace", color: C.light,
+                  display: "flex", flexDirection: "column", gap: 2,
+                }}>
+                  {orphans.map((r, i) => (
+                    <div key={`${r.entity_id}-${i}`} style={{ display: "flex", gap: 6 }}>
+                      <span style={{ color: TYPE_COLOR[r.entity_type] ?? C.muted, minWidth: 56 }}>
+                        {r.entity_type}
+                      </span>
+                      <span>{r.entity_id}</span>
+                    </div>
+                  ))}
+                </div>
+              </details>
+            </div>
+          )}
+        </div>
+      </Tile>
+    </div>
+  );
+}
+
+function DebugStat({ label, value, accent }: { label: string; value: number; accent: string }) {
+  return (
+    <div style={{
+      background: BG, boxShadow: barIn, borderRadius: 10, padding: "8px 12px",
+    }}>
+      <div style={{ fontSize: 10, fontWeight: 600, color: C.muted, letterSpacing: 0.6, textTransform: "uppercase" }}>
+        {label}
+      </div>
+      <div data-numeric className="font-numeric tabular-nums" style={{
+        fontSize: 22, fontWeight: 700, color: accent, marginTop: 2,
+      }}>
+        {value}
+      </div>
+    </div>
+  );
+}
+

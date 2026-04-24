@@ -92,7 +92,7 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
     if (!name) return;
     setCreating(true);
     const { error } = await db.from('chat_channels').insert({
-      name, description: newDesc.trim() || null, type: newType, position: channels.length,
+      name, description: newDesc.trim() || null, type: newType, position: channels.length, created_by: user?.id,
     });
     setCreating(false);
     if (error) {

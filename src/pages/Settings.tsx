@@ -60,7 +60,7 @@ export default function Settings() {
           <ArrowLeft className="w-5 h-5" />
         </button>
         <Shield className="w-5 h-5 text-primary" />
-        <h1 className="font-bold text-foreground text-lg">Administration</h1>
+        <h1 className="font-display font-bold text-foreground text-lg">Administration</h1>
       </header>
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6">

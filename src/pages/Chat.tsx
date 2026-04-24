@@ -15,6 +15,9 @@ import { useApp } from '@/context/AppContext';
 import { usePresence } from '@/hooks/usePresence';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useThemeMode } from '@/context/ThemeContext';
+import AppSidebar from '@/components/AppSidebar';
+import SidebarNM from '@/components/SidebarNM';
+import { PanelLeft } from 'lucide-react';
 
 export default function Chat() {
   const chat = useDiscordChat();

@@ -810,7 +810,7 @@ export default function AppSidebar() {
                 )}
               </button>
               <button
-                onClick={() => { openMessagesHub('mentions'); handleNavClick(); }}
+                onClick={() => { navigate('/mentions'); handleNavClick(); }}
                 className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors text-sidebar-fg hover:bg-sidebar-hover"
               >
                 <AtSign className="w-4 h-4" />
@@ -822,7 +822,7 @@ export default function AppSidebar() {
                 )}
               </button>
               <button
-                onClick={() => { openMessagesHub('email'); handleNavClick(); }}
+                onClick={() => { navigate('/email'); handleNavClick(); }}
                 className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors text-sidebar-fg hover:bg-sidebar-hover"
               >
                 <Mail className="w-4 h-4" />

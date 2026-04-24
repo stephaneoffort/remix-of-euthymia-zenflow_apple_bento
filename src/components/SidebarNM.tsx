@@ -1105,7 +1105,7 @@ export default function SidebarNM() {
                   ))}
                 </div>
 
-                {/* Switch Classic / Ivoire */}
+                {/* Switch Classic / Premium */}
                 <div
                   style={{
                     display: "flex",
@@ -1240,7 +1240,7 @@ export default function SidebarNM() {
                 </div>
               </div>
 
-              {/* Switch Classic / Ivoire */}
+              {/* Switch Classic / Premium */}
               <div>
                 <div
                   style={{

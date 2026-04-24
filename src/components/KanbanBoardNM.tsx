@@ -74,12 +74,6 @@ const Avatar = ({ name, color }: { name: string; color?: string }) => {
 };
 
 /* ─── Task Card ─── */
-function TaskCard({ task, allTasks, onOpen, getMemberById, getProjectName }: {
-  task: any; allTasks: any[]; onOpen: (id: string) => void;
-  getMemberById: (id: string) => any;
-  getProjectName: (listId: string) => any;
-}) {
-/* ─── Task Card ─── */
 function TaskCard({ task, allTasks, onOpen, getMemberById, getProjectName, statusColor }: {
   task: any; allTasks: any[]; onOpen: (id: string) => void;
   getMemberById: (id: string) => any;

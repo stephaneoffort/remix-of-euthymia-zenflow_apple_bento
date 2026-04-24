@@ -1017,6 +1017,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [addTaskMutation]);
 
   const updateTask = useCallback((id: string, updates: Partial<Task>) => {
+    // Pre-check: block done if blocking dependencies remain
+    if (updates.status === 'done') {
+      const blockingDeps = taskDependencies.filter(d => d.taskId === id);
+      const blocking = blockingDeps
+        .map(d => tasks.find(t => t.id === d.dependsOnId))
+        .filter((t): t is Task => !!t && t.status !== 'done');
+      if (blocking.length > 0) {
+        toast.error('Impossible de terminer cette tâche', {
+          description: `Dépendances non terminées : ${blocking.map(t => t.title).join(', ')}`,
+        });
+        return;
+      }
+    }
     // Optimistic update for responsiveness
     queryClient.setQueryData<Task[]>(['tasks'], old => {
       if (!old) return old;
@@ -1026,7 +1039,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       });
     });
     updateTaskMutation.mutate({ id, updates });
-  }, [updateTaskMutation, queryClient]);
+  }, [updateTaskMutation, queryClient, taskDependencies, tasks]);
 
   const deleteTask = useCallback((id: string) => {
     deleteTaskMutation.mutate(id);
@@ -1043,6 +1056,30 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const moveTask = useCallback((taskId: string, newStatus: string) => {
     updateTask(taskId, { status: newStatus as Status });
   }, [updateTask]);
+
+  const addTaskDependency = useCallback(async (taskId: string, dependsOnId: string) => {
+    await addTaskDependencyMutation.mutateAsync({ taskId, dependsOnId });
+  }, [addTaskDependencyMutation]);
+
+  const removeTaskDependency = useCallback(async (id: string) => {
+    await removeTaskDependencyMutation.mutateAsync(id);
+  }, [removeTaskDependencyMutation]);
+
+  const addTaskLink = useCallback(async (taskId: string, linkedTaskId: string) => {
+    await addTaskLinkMutation.mutateAsync({ taskId, linkedTaskId });
+  }, [addTaskLinkMutation]);
+
+  const removeTaskLink = useCallback(async (id: string) => {
+    await removeTaskLinkMutation.mutateAsync(id);
+  }, [removeTaskLinkMutation]);
+
+  const getBlockingDependencies = useCallback((taskId: string): Task[] => {
+    const deps = taskDependencies.filter(d => d.taskId === taskId);
+    return deps
+      .map(d => tasks.find(t => t.id === d.dependsOnId))
+      .filter((t): t is Task => !!t && t.status !== 'done');
+  }, [taskDependencies, tasks]);
+
 
   const getSubtasks = useCallback((taskId: string) => {
     return tasks.filter(t => t.parentTaskId === taskId).sort((a, b) => a.order - b.order);

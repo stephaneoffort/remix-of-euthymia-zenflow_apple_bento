@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
-  Mail, Plus, Trash2, RefreshCw, Send, Reply, Inbox, AlertCircle, X, Check, Loader2
+  Mail, Plus, Trash2, RefreshCw, Send, Reply, Inbox, AlertCircle, X, Check, Loader2,
+  History, ChevronDown, ChevronUp,
 } from 'lucide-react';
 import { useEmailAccounts, useEmailMessages, sendEmail, emailAction, EmailAccount, EmailMessage } from '@/hooks/useEmailAccounts';
 import { Button } from '@/components/ui/button';
@@ -15,6 +16,50 @@ import { fr } from 'date-fns/locale';
 import gmailLogo from '@/assets/integrations/gmail.png';
 
 type View = 'list' | 'detail' | 'compose' | 'add-account' | 'choose-provider';
+
+// Historique local des échecs d'auto-import Gmail
+const IMPORT_HISTORY_KEY = 'gmail_autoimport_failures';
+const MAX_HISTORY = 20;
+
+interface ImportFailure {
+  timestamp: number;
+  step: 'connexion' | 'synchronisation' | 'verification' | 'inconnue';
+  message: string;
+  code?: string | number | null;
+}
+
+function loadFailureHistory(): ImportFailure[] {
+  try {
+    const raw = localStorage.getItem(IMPORT_HISTORY_KEY);
+    if (!raw) return [];
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveFailure(entry: ImportFailure) {
+  try {
+    const list = loadFailureHistory();
+    const next = [entry, ...list].slice(0, MAX_HISTORY);
+    localStorage.setItem(IMPORT_HISTORY_KEY, JSON.stringify(next));
+  } catch {}
+}
+
+function clearFailureHistory() {
+  try {
+    localStorage.removeItem(IMPORT_HISTORY_KEY);
+  } catch {}
+}
+
+function inferStep(msg: string): ImportFailure['step'] {
+  const m = msg.toLowerCase();
+  if (m.includes('session') || m.includes('auth') || m.includes('token')) return 'connexion';
+  if (m.includes('sync') || m.includes('insert') || m.includes('import')) return 'synchronisation';
+  if (m.includes('check') || m.includes('verif') || m.includes('exist')) return 'verification';
+  return 'inconnue';
+}
 
 export default function EmailHub() {
   const queryClient = useQueryClient();

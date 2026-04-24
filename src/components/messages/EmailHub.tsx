@@ -540,11 +540,13 @@ function NotionMailLayout({
             </Button>
           </div>
 
-          <ConversationView
-            selectedMessage={selectedMessage}
-            allMessages={messages}
-            onMarkRead={onMarkRead}
-          />
+          <div className="flex-1 overflow-y-auto px-8 py-6">
+            <ConversationView
+              selectedMessage={selectedMessage}
+              allMessages={messages}
+              onMarkRead={onMarkRead}
+            />
+          </div>
         </section>
       )}
     </div>

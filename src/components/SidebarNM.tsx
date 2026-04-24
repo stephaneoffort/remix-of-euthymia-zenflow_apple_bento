@@ -1067,7 +1067,6 @@ export default function SidebarNM() {
                   {([
                     { label: "Classiques", keys: ["clubroom", "neutrals", "sapphire", "cinematic", "teal", "ivoireChaud"] as ThemePalette[] },
                     { label: "Bento", keys: ["bento2026", "bentoOcean", "bentoRose", "bentoAmber"] as ThemePalette[] },
-                    { label: "Liquid Glass", keys: ["liquidGlass", "liquidGlassOcean", "liquidGlassAurora", "liquidGlassRose", "liquidGlassAmber", "liquidGlassViolet", "liquidGlassCoral", "liquidGlassSlate", "liquidGlassMidnight"] as ThemePalette[] },
                     { label: "Soft UI", keys: ["nmCloud", "nmMidnight", "nmSand", "nmForest", "nmLavender", "nmDeepForest"] as ThemePalette[] },
                   ]).map((group) => (
                     <div key={group.label} style={{ marginBottom: 6 }}>

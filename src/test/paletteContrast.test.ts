@@ -124,18 +124,85 @@ interface Pair {
 }
 
 const PAIRS: Pair[] = [
-  // Lecture principale — AA 4.5:1
+  // ─── Lecture principale (corps de texte) — AA 4.5:1 ───
   { fg: "--foreground", bg: "--background", threshold: 4.5, label: "body text" },
-  { fg: "--card-foreground", bg: "--card", threshold: 4.5, label: "card" },
-  { fg: "--popover-foreground", bg: "--popover", threshold: 4.5, label: "popover" },
+  { fg: "--card-foreground", bg: "--card", threshold: 4.5, label: "card body" },
+  { fg: "--popover-foreground", bg: "--popover", threshold: 4.5, label: "popover body" },
+  { fg: "--secondary-foreground", bg: "--secondary", threshold: 4.5, label: "secondary body" },
+
+  // ─── Titres (réutilisent foreground sur surfaces) — AA 4.5:1 ───
+  { fg: "--foreground", bg: "--card", threshold: 4.5, label: "heading on card" },
+  { fg: "--foreground", bg: "--popover", threshold: 4.5, label: "heading on popover" },
+  { fg: "--foreground", bg: "--secondary", threshold: 4.5, label: "heading on secondary" },
+  { fg: "--foreground", bg: "--muted", threshold: 4.5, label: "heading on muted" },
+
+  // ─── Boutons / actions — AA 4.5:1 ───
   { fg: "--primary-foreground", bg: "--primary", threshold: 4.5, label: "primary button" },
-  { fg: "--secondary-foreground", bg: "--secondary", threshold: 4.5, label: "secondary" },
-  { fg: "--destructive-foreground", bg: "--destructive", threshold: 4.5, label: "destructive" },
-  // UI / decoratif — AA 3.0:1
-  { fg: "--muted-foreground", bg: "--background", threshold: 3.0, label: "muted text on bg" },
-  { fg: "--muted-foreground", bg: "--muted", threshold: 3.0, label: "muted text on muted" },
-  { fg: "--accent-foreground", bg: "--accent", threshold: 3.0, label: "accent" },
-  { fg: "--sidebar-foreground", bg: "--sidebar-background", threshold: 3.0, label: "sidebar" },
+  { fg: "--destructive-foreground", bg: "--destructive", threshold: 4.5, label: "destructive button" },
+
+  // ─── Liens / accents (primary comme couleur de lien) — AA 4.5:1 ───
+  { fg: "--primary", bg: "--background", threshold: 4.5, label: "link on bg" },
+  { fg: "--primary", bg: "--card", threshold: 4.5, label: "link on card" },
+  { fg: "--primary", bg: "--popover", threshold: 4.5, label: "link on popover" },
+
+  // ─── Labels / texte secondaire — AA 3.0:1 (UI non-essentielle) ───
+  { fg: "--muted-foreground", bg: "--background", threshold: 3.0, label: "label on bg" },
+  { fg: "--muted-foreground", bg: "--card", threshold: 3.0, label: "label on card" },
+  { fg: "--muted-foreground", bg: "--popover", threshold: 3.0, label: "label on popover" },
+  { fg: "--muted-foreground", bg: "--muted", threshold: 3.0, label: "label on muted" },
+  { fg: "--muted-foreground", bg: "--secondary", threshold: 3.0, label: "label on secondary" },
+
+  // ─── États hover (accent = surface hover par défaut) — AA 4.5:1 ───
+  { fg: "--accent-foreground", bg: "--accent", threshold: 4.5, label: "hover surface" },
+  { fg: "--foreground", bg: "--accent", threshold: 3.0, label: "text on hover surface" },
+
+  // ─── Inputs / formulaires — AA 4.5:1 ───
+  { fg: "--foreground", bg: "--input", threshold: 4.5, label: "input text" },
+
+  // ─── Sidebar (navigation) — AA 4.5:1 corps, 3:1 accents ───
+  {
+    fg: "--sidebar-foreground",
+    bg: "--sidebar-background",
+    threshold: 4.5,
+    label: "sidebar text",
+  },
+  {
+    fg: "--sidebar-accent-foreground",
+    bg: "--sidebar-accent",
+    threshold: 4.5,
+    label: "sidebar hover item",
+  },
+  {
+    fg: "--sidebar-primary-foreground",
+    bg: "--sidebar-primary",
+    threshold: 4.5,
+    label: "sidebar active item",
+  },
+  // Variantes alternatives utilisées par les modes neumorphiques / classiques
+  {
+    fg: "--sidebar-fg",
+    bg: "--sidebar-bg",
+    threshold: 4.5,
+    label: "sidebar text (alt)",
+  },
+  {
+    fg: "--sidebar-fg-bright",
+    bg: "--sidebar-bg",
+    threshold: 4.5,
+    label: "sidebar bright text",
+  },
+  {
+    fg: "--sidebar-active-fg",
+    bg: "--sidebar-active",
+    threshold: 4.5,
+    label: "sidebar active (alt)",
+  },
+  {
+    fg: "--sidebar-fg",
+    bg: "--sidebar-hover",
+    threshold: 3.0,
+    label: "sidebar hover (alt)",
+  },
 ];
 
 // ─── Tests ────────────────────────────────────────────────────────────

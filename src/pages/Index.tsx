@@ -574,7 +574,7 @@ export default function Index() {
           className="fixed inset-0 z-50 flex items-start justify-center pt-[20vh] bg-black/40"
           onClick={() => setQuickAddOpen(false)}
         >
-          <div className="w-full max-w-md bg-card rounded-lg border shadow-lg p-4" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-md bg-card rounded-lg border shadow-lg p-4 space-y-3" onClick={(e) => e.stopPropagation()}>
             <input
               autoFocus
               value={quickAddTitle}
@@ -589,19 +589,58 @@ export default function Index() {
               placeholder="Titre de la nouvelle tâche…"
               className="w-full text-sm bg-transparent outline-none placeholder:text-muted-foreground"
             />
-            <div className="flex items-center justify-between mt-3">
+
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1 block">Espace</label>
+                <Select value={quickAddSpaceId} onValueChange={setQuickAddSpaceId}>
+                  <SelectTrigger className="h-9 text-sm">
+                    <SelectValue placeholder="Choisir un espace…" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {spaces.filter(s => !s.isArchived).map(s => (
+                      <SelectItem key={s.id} value={s.id}>{s.icon} {s.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1 block">Projet</label>
+                <Select value={quickAddProjectId} onValueChange={setQuickAddProjectId} disabled={!quickAddSpaceId}>
+                  <SelectTrigger className="h-9 text-sm">
+                    <SelectValue placeholder="Choisir un projet…" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {projects.filter(p => p.spaceId === quickAddSpaceId && !p.isArchived).map(p => (
+                      <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-1">
               <span className="text-xs text-muted-foreground">Entrée pour créer · Échap pour annuler</span>
-              <button
-                onClick={() => {
-                  setQuickAddOpen(false);
-                  setVoiceAddOpen(true);
-                }}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-                title="Dicter une tâche"
-              >
-                <Mic className="w-3.5 h-3.5" />
-                Dicter
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    setQuickAddOpen(false);
+                    setVoiceAddOpen(true);
+                  }}
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                  title="Dicter une tâche"
+                >
+                  <Mic className="w-3.5 h-3.5" />
+                  Dicter
+                </button>
+                <button
+                  onClick={handleQuickAdd}
+                  disabled={!quickAddTitle.trim() || !quickAddProjectId}
+                  className="px-3 py-1.5 rounded-lg text-xs font-medium bg-primary text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-40"
+                >
+                  Créer
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -57,6 +57,7 @@ export default function NumericAudit() {
   const [contextCache, setContextCache] = useState<Record<string, Awaited<ReturnType<typeof loadSourceContext>>>>({});
   const [busyKey, setBusyKey] = useState<string | null>(null);
   const [noteDraft, setNoteDraft] = useState<Record<string, string>>({});
+  const [cleaning, setCleaning] = useState(false);
 
   /* ─── Admin gate ─── */
   useEffect(() => {

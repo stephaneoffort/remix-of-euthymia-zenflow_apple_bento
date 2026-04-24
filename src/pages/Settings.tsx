@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown, Palette, BellRing, HardDrive, CalendarSync } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown, Palette, BellRing, HardDrive, CalendarSync, ShieldCheck } from 'lucide-react';
 import { useThemeMode, PALETTE_META, TYPE_META, type ThemePalette, type TypeVariant } from '@/context/ThemeContext';
 import DataExportImport from '@/components/DataExportImport';
 import InviteMemberDialog from '@/components/InviteMemberDialog';
@@ -61,6 +61,18 @@ export default function Settings() {
         </button>
         <Shield className="w-5 h-5 text-primary" />
         <h1 className="font-display font-bold text-foreground text-lg">Administration</h1>
+        <div className="ml-auto">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/dev/numeric-audit')}
+            className="gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+            title="Audit typographique numérique (admin)"
+          >
+            <ShieldCheck className="w-4 h-4" />
+            <span className="hidden sm:inline">Audit numérique</span>
+          </Button>
+        </div>
       </header>
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6">

@@ -923,6 +923,39 @@ export type Database = {
         }
         Relationships: []
       }
+      numeric_audit_acceptances: {
+        Row: {
+          accepted_at: string
+          accepted_by: string
+          file_path: string
+          id: string
+          line_number: number
+          note: string | null
+          reason: string
+          snippet: string
+        }
+        Insert: {
+          accepted_at?: string
+          accepted_by: string
+          file_path: string
+          id?: string
+          line_number: number
+          note?: string | null
+          reason: string
+          snippet: string
+        }
+        Update: {
+          accepted_at?: string
+          accepted_by?: string
+          file_path?: string
+          id?: string
+          line_number?: number
+          note?: string | null
+          reason?: string
+          snippet?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

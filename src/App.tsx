@@ -25,6 +25,7 @@ const Chat = lazyRetry(() => import("./pages/Chat.tsx"));
 const NotFound = lazyRetry(() => import("./pages/NotFound.tsx"));
 const Install = lazyRetry(() => import("./pages/Install.tsx"));
 const ResetPassword = lazyRetry(() => import("./pages/ResetPassword.tsx"));
+const NumericAudit = lazyRetry(() => import("./pages/NumericAudit.tsx"));
 
 
 const PageLoader = () => (
@@ -113,6 +114,14 @@ const App = () => (
                     <AppProvider>
                       <Settings />
                     </AppProvider>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dev/numeric-audit"
+                element={
+                  <ProtectedRoute>
+                    <NumericAudit />
                   </ProtectedRoute>
                 }
               />

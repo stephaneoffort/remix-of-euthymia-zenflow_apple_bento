@@ -153,7 +153,7 @@ export default function EmailHub() {
     const errCode = err?.code || err?.status || (err?.response?.status) || null;
     const fullError = err?.toString ? err.toString() : JSON.stringify(err, null, 2);
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-4 text-center px-6">
+      <div className="flex flex-col items-center justify-start h-full gap-4 text-center px-6 py-8 overflow-y-auto">
         <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
           <AlertCircle className="w-6 h-6 text-destructive" />
         </div>
@@ -197,6 +197,17 @@ export default function EmailHub() {
             </pre>
           </div>
         </div>
+
+        {/* Historique des échecs */}
+        <FailureHistoryPanel
+          history={failureHistory}
+          open={historyOpen}
+          onToggle={() => setHistoryOpen(o => !o)}
+          onClear={() => {
+            clearFailureHistory();
+            setFailureHistory([]);
+          }}
+        />
       </div>
     );
   }

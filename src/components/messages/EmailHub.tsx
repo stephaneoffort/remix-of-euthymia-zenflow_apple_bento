@@ -71,6 +71,30 @@ export default function EmailHub() {
   const [view, setView] = useState<View>('list');
   const [selectedMessage, setSelectedMessage] = useState<EmailMessage | null>(null);
   const [replyTo, setReplyTo] = useState<EmailMessage | null>(null);
+  const [failureHistory, setFailureHistory] = useState<ImportFailure[]>(() => loadFailureHistory());
+  const [historyOpen, setHistoryOpen] = useState(false);
+
+  // Log chaque nouvel échec d'auto-import dans l'historique local
+  useEffect(() => {
+    if (importLegacyGmail.isError) {
+      const err = importLegacyGmail.error as any;
+      const message = err?.message || 'Erreur inconnue';
+      const code = err?.code || err?.status || err?.response?.status || null;
+      const entry: ImportFailure = {
+        timestamp: Date.now(),
+        step: inferStep(message),
+        message,
+        code,
+      };
+      // Évite de re-logger le même échec à chaque re-render
+      const last = failureHistory[0];
+      if (!last || last.message !== message || Math.abs(last.timestamp - entry.timestamp) > 2000) {
+        saveFailure(entry);
+        setFailureHistory(loadFailureHistory());
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [importLegacyGmail.isError, importLegacyGmail.error]);
 
   // Auto-import legacy Gmail connection on mount (one-shot)
   useEffect(() => {

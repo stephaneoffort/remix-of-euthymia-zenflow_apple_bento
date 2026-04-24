@@ -1086,6 +1086,8 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
             <NMBrevoCampaigns
               campaigns={brevoCampaigns}
               loading={brevoLoading}
+              error={brevoError}
+              onRetry={fetchAll}
             />
           )}
         </div>

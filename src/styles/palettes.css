@@ -1624,6 +1624,20 @@
    Mesh gradients + glass surfaces + shimmer + grain
    ═══════════════════════════════════════════════════════ */
 
+/* ─── Shared keyframes for bento mesh + glass reveal ─── */
+@keyframes liquidMeshMove {
+  0%, 100% { background-position: 0% 0%, 100% 100%, 0% 0%; }
+  50% { background-position: 100% 50%, 0% 50%, 0% 0%; }
+}
+@keyframes liquidMeshMoveDark {
+  0%, 100% { background-position: 0% 0%, 100% 100%, 0% 0%; }
+  50% { background-position: 100% 50%, 0% 50%, 0% 0%; }
+}
+@keyframes liquidGlassReveal {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 /* ─── Mesh Gradient Backgrounds per Classic Palette ─── */
 
 /* BENTO 2026 */

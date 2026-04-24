@@ -53,8 +53,12 @@ export function MembersPanel({ memberProfiles, onDmCreated, onlineTeamMemberIds 
         }
       }
     }
-    const { data: newChannel, error } = await db.from('chat_channels').insert({ name: `dm-${Date.now()}`, type: 'dm', description: null }).select().single();
-    if (error || !newChannel) { toast.error('Impossible de créer la conversation'); return; }
+    const { data: newChannel, error } = await db.from('chat_channels').insert({ name: `dm-${Date.now()}`, type: 'dm', description: null, created_by: user.id }).select().single();
+    if (error || !newChannel) {
+      console.error('[MembersPanel.startDm] create channel failed', error);
+      toast.error(`Impossible de créer la conversation: ${error?.message || 'erreur inconnue'}`);
+      return;
+    }
     await db.from('chat_channel_members').insert([
       { channel_id: newChannel.id, user_id: user.id },
       { channel_id: newChannel.id, user_id: targetUserId },

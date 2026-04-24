@@ -267,6 +267,80 @@ export default function EmailHub() {
   );
 }
 
+function ImportProgress({ currentStep }: { currentStep: number }) {
+  const steps = [
+    { label: 'Connexion', desc: 'Vérification de votre session Gmail' },
+    { label: 'Synchronisation', desc: 'Import du compte autorisé' },
+    { label: 'Vérification', desc: 'Préparation de votre boîte mail' },
+  ];
+  const progress = Math.min(100, ((currentStep + 1) / steps.length) * 100);
+
+  return (
+    <div className="flex flex-col items-center justify-center h-full gap-6 text-center px-6 max-w-md mx-auto">
+      <div className="flex items-center gap-2">
+        <img src={gmailLogo} alt="Gmail" className="w-8 h-8" />
+        <Loader2 className="w-5 h-5 text-primary animate-spin" />
+      </div>
+
+      <div>
+        <p className="text-sm font-semibold text-foreground">Auto-import Gmail en cours</p>
+        <p className="text-xs text-muted-foreground mt-1">
+          Aucune action requise — récupération de votre connexion existante.
+        </p>
+      </div>
+
+      {/* Barre de progression */}
+      <div className="w-full">
+        <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+          <div
+            className="h-full bg-primary transition-all duration-500 ease-out"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Étapes */}
+      <ol className="w-full space-y-2.5 text-left">
+        {steps.map((step, idx) => {
+          const done = idx < currentStep;
+          const active = idx === currentStep;
+          return (
+            <li key={step.label} className="flex items-start gap-3">
+              <div
+                className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-colors ${
+                  done
+                    ? 'bg-primary text-primary-foreground'
+                    : active
+                    ? 'bg-primary/15 text-primary ring-2 ring-primary/40'
+                    : 'bg-muted text-muted-foreground'
+                }`}
+              >
+                {done ? (
+                  <Check className="w-3.5 h-3.5" />
+                ) : active ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  idx + 1
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p
+                  className={`text-sm font-medium ${
+                    done || active ? 'text-foreground' : 'text-muted-foreground'
+                  }`}
+                >
+                  {step.label}
+                </p>
+                <p className="text-xs text-muted-foreground">{step.desc}</p>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+  );
+}
+
 function AddAccountForm({
   onSubmit, onCancel, requireFirst,
 }: {

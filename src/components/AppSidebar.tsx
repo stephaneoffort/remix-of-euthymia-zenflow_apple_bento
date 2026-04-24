@@ -251,6 +251,11 @@ export default function AppSidebar() {
   const [spacesExpanded, setSpacesExpanded] = useState(true);
   const [messagesExpanded, setMessagesExpanded] = useState(() => !window.matchMedia("(max-width: 767px)").matches);
   const [messagesHubOpen, setMessagesHubOpen] = useState(false);
+  const [messagesHubTile, setMessagesHubTile] = useState<'home' | 'mentions' | 'email'>('home');
+  const openMessagesHub = (tile: 'home' | 'mentions' | 'email' = 'home') => {
+    setMessagesHubTile(tile);
+    setMessagesHubOpen(true);
+  };
   const { totalUnread: chatUnreadCount } = useChatNotifications();
   const { totalUnread: emailUnreadCount } = useEmailAccounts();
   const { data: mentionsCount = 0 } = useQuery<number>({

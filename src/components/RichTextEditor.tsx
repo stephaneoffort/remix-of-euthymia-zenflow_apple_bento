@@ -237,25 +237,69 @@ export default function RichTextEditor({
       analyserRef.current = analyser;
 
       const data = new Uint8Array(analyser.frequencyBinCount);
-      const tick = () => {
-        if (!analyserRef.current) return;
-        analyserRef.current.getByteTimeDomainData(data);
-        // RMS sur signal centré (128 = silence)
+
+      // Helper : calcul du RMS courant
+      const computeRms = () => {
+        analyser.getByteTimeDomainData(data);
         let sum = 0;
         for (let i = 0; i < data.length; i++) {
           const v = (data[i] - 128) / 128;
           sum += v * v;
         }
-        const rms = Math.sqrt(sum / data.length);
-        // Boost perceptuel + clamp
-        const level = Math.min(1, rms * 3.5);
-        setAudioLevel(level);
+        return Math.sqrt(sum / data.length);
+      };
+
+      // === Calibration : mesure du bruit ambiant pendant ~600ms ===
+      setIsCalibrating(true);
+      const calibrationSamples: number[] = [];
+      const calibrationStart = performance.now();
+      const CALIBRATION_MS = 600;
+
+      await new Promise<void>((resolve) => {
+        const calibrate = () => {
+          calibrationSamples.push(computeRms());
+          if (performance.now() - calibrationStart < CALIBRATION_MS) {
+            rafRef.current = requestAnimationFrame(calibrate);
+          } else {
+            resolve();
+          }
+        };
+        calibrate();
+      });
+
+      // Plancher = moyenne du bruit ambiant + petite marge
+      const avgNoise =
+        calibrationSamples.reduce((a, b) => a + b, 0) /
+        Math.max(1, calibrationSamples.length);
+      noiseFloorRef.current = Math.max(0.005, avgNoise * 1.4);
+      // Plafond initial = 6× le plancher (sera ajusté dynamiquement aux pics)
+      peakRef.current = Math.max(0.08, noiseFloorRef.current * 6);
+      setIsCalibrating(false);
+
+      // === Boucle de mesure normalisée ===
+      const tick = () => {
+        if (!analyserRef.current) return;
+        const rms = computeRms();
+
+        // Adapte dynamiquement le plafond aux pics de voix (suivi lent en descente)
+        if (rms > peakRef.current) {
+          peakRef.current = rms;
+        } else {
+          peakRef.current = peakRef.current * 0.995 + rms * 0.005;
+          peakRef.current = Math.max(peakRef.current, noiseFloorRef.current * 4);
+        }
+
+        // Normalise : retire le bruit de fond, projette sur [0..1] selon le plafond
+        const range = Math.max(0.01, peakRef.current - noiseFloorRef.current);
+        const normalized = Math.max(0, (rms - noiseFloorRef.current) / range);
+        setAudioLevel(Math.min(1, normalized));
         rafRef.current = requestAnimationFrame(tick);
       };
       tick();
       return true;
     } catch (e) {
       console.error('Audio meter failed:', e);
+      setIsCalibrating(false);
       return false;
     }
   }, []);

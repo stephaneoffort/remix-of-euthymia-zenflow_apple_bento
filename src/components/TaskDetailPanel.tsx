@@ -596,6 +596,9 @@ export default function TaskDetailPanel() {
             </div>
 
 
+            {/* Cross-project links & dependencies */}
+            <TaskLinksSection taskId={task.id} />
+
             {/* Attachments & Links */}
             <div>
               <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1">

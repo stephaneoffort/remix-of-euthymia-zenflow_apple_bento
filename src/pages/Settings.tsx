@@ -581,6 +581,76 @@ function ThemePalettePanel() {
         </CardContent>
       </Card>
 
+      {/* Typographie */}
+      <Card className="border-border bg-card">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-foreground text-base">
+            <span className="font-display text-xl leading-none">Aa</span>
+            Typographie
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">Choisis l'identité typographique de l'interface.</p>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
+            {(Object.entries(TYPE_META) as [TypeVariant, typeof TYPE_META[TypeVariant]][]).map(([key, meta]) => {
+              const active = typeVariant === key;
+              return (
+                <button
+                  key={key}
+                  onClick={() => {
+                    if (active) return;
+                    setTypeVariant(key);
+                    toast.success(`Typographie "${meta.label}" appliquée`);
+                  }}
+                  className={`group relative flex flex-col gap-3 p-5 rounded-xl border-2 transition-all text-left ${
+                    active
+                      ? 'border-primary bg-accent/40 shadow-md'
+                      : 'border-border bg-card hover:border-muted-foreground/30 hover:bg-muted/30'
+                  }`}
+                >
+                  {active && (
+                    <span className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                      <Check className="w-3.5 h-3.5 text-primary-foreground" />
+                    </span>
+                  )}
+                  <div
+                    className="rounded-lg border border-border/50 bg-muted/20 p-4 space-y-2"
+                    style={{
+                      ['--font-display' as any]: meta.display,
+                      ['--font-body' as any]: meta.body,
+                      ['--font-numeric' as any]: meta.numeric,
+                    }}
+                  >
+                    <p
+                      className="text-2xl font-semibold text-foreground leading-tight tracking-tight"
+                      style={{ fontFamily: meta.display }}
+                    >
+                      Bonjour, Stéphane
+                    </p>
+                    <p
+                      className="text-sm text-muted-foreground leading-snug"
+                      style={{ fontFamily: meta.body }}
+                    >
+                      Voici un aperçu de votre typographie corps de texte avec une lecture confortable.
+                    </p>
+                    <p
+                      className="text-3xl font-bold text-primary tabular-nums"
+                      style={{ fontFamily: meta.numeric }}
+                    >
+                      87%
+                    </p>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-sm text-foreground">{meta.label}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{meta.description}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Palettes groupées */}
       {PALETTE_GROUPS.map(group => (
         <Card key={group.title} className="border-border bg-card">

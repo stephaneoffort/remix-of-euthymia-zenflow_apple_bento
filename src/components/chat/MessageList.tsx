@@ -237,7 +237,7 @@ export function MessageList({
                     </div>
                   ) : (
                     <div className="w-10 shrink-0 flex items-center justify-center">
-                      <span className="font-numeric text-[10px] text-transparent group-hover:text-muted-foreground/40 transition-colors tabular-nums">
+                      <span data-numeric className="font-numeric text-[10px] text-transparent group-hover:text-muted-foreground/40 transition-colors tabular-nums">
                         {format(new Date(msg.created_at), 'HH:mm')}
                       </span>
                     </div>
@@ -289,7 +289,7 @@ export function MessageList({
                               }`}
                             >
                               <span>{emoji}</span>
-                              <span className="font-numeric font-semibold tabular-nums">{data.count}</span>
+                              <span data-numeric className="font-numeric font-semibold tabular-nums">{data.count}</span>
                             </motion.button>
                           );
                         })}

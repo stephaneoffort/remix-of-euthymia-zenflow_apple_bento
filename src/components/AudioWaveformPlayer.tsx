@@ -169,7 +169,7 @@ export default function AudioWaveformPlayer({ url }: AudioWaveformPlayerProps) {
           style={{ width: CANVAS_WIDTH, height: CANVAS_HEIGHT, cursor: 'pointer' }}
           onClick={handleCanvasClick}
         />
-        <span className="font-numeric text-label text-muted-foreground tabular-nums leading-none">
+        <span data-numeric className="font-numeric text-label text-muted-foreground tabular-nums leading-none">
           {playing || progress > 0
             ? `${formatTime((audioRef.current?.currentTime) || 0)} / ${formatTime(duration)}`
             : formatTime(duration)

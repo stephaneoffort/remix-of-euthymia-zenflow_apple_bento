@@ -442,7 +442,7 @@ export default function TaskDetailPanel() {
                     }}
                   />
                 </div>
-                <span className="font-numeric text-xs text-foreground/60 tabular-nums">{doneSubtasks.length}/{subtasks.length}</span>
+                <span data-numeric className="font-numeric text-xs text-foreground/60 tabular-nums">{doneSubtasks.length}/{subtasks.length}</span>
               </div>
             )}
 

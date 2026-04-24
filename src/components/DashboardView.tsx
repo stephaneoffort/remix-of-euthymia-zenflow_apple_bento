@@ -69,7 +69,7 @@ function MyTasksCard({
             <Flame className="w-3.5 h-3.5 text-destructive" />
           </div>
           À traiter
-          <span className="font-numeric ml-auto text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
+          <span data-numeric className="font-numeric ml-auto text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
             {tasks.length}
           </span>
         </CardTitle>
@@ -97,6 +97,7 @@ function MyTasksCard({
                 <StatusBadge status={task.status} />
                 {daysLeft !== null ? (
                   <span
+                    data-numeric
                     className={`font-numeric text-[11px] font-semibold shrink-0 tabular-nums ${isOverdue ? "text-destructive" : "text-muted-foreground"}`}
                   >
                     {isOverdue ? `−${Math.abs(daysLeft)}j` : daysLeft === 0 ? "Auj." : `${daysLeft}j`}
@@ -298,7 +299,7 @@ export default function DashboardView() {
                 <CardContent className="p-4 flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-primary/10">{stat.icon}</div>
                   <div>
-                    <p className="font-numeric text-2xl font-bold text-foreground">{stat.value}</p>
+                    <p data-numeric className="font-numeric text-2xl font-bold text-foreground">{stat.value}</p>
                     <p className="text-xs text-muted-foreground">{stat.label}</p>
                   </div>
                 </CardContent>

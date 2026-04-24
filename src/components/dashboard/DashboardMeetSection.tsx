@@ -159,7 +159,7 @@ export default function DashboardMeetSection() {
                 { label: "Ce mois", value: thisMonthCount, color: "text-emerald-500" },
               ].map((s) => (
                 <div key={s.label} className="bg-muted/40 rounded-lg px-3 py-2 text-center">
-                  <p className={`font-numeric text-lg font-bold ${s.color}`}>{s.value}</p>
+                  <p data-numeric className={`font-numeric text-lg font-bold ${s.color}`}>{s.value}</p>
                   <p className="text-[10px] text-muted-foreground font-medium">{s.label}</p>
                 </div>
               ))}

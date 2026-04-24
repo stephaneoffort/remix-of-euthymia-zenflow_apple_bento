@@ -34,6 +34,7 @@ export interface EmailMessage {
   id: string;
   account_id: string;
   external_id: string;
+  thread_id: string | null;
   folder: string;
   from_address: string;
   from_name: string | null;

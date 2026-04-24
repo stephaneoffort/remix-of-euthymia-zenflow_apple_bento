@@ -492,6 +492,7 @@ export default function KanbanBoardNM() {
                     onOpen={setSelectedTaskId}
                     getMemberById={getMemberById}
                     getProjectName={getProjectName}
+                    statusColor={getColorForStatus(task.status)}
                   />
                 ))}
 
@@ -629,6 +630,7 @@ export default function KanbanBoardNM() {
                         onOpen={setSelectedTaskId}
                         getMemberById={getMemberById}
                         getProjectName={getProjectName}
+                        statusColor={getColorForStatus(task.status)}
                       />
                     </div>
                   ))}

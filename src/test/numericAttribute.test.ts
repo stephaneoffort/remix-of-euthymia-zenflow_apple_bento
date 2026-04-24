@@ -78,28 +78,37 @@ function extractJsxTextSegments(src: string): { text: string; offset: number }[]
 /**
  * Find the opening JSX tag that contains the segment at `offset` and return
  * its raw text (e.g. `<span className="...">`).
+ *
+ * `offset` points at the first character of the JSX text segment, i.e. just
+ * after the `>` that closes the parent tag. We walk backwards looking for
+ * the matching `<` of that parent tag, skipping over any nested closed
+ * sibling tags `<X>...</X>` already complete to our left.
  */
 function findEnclosingOpenTag(src: string, offset: number): string | null {
-  // Walk backwards to the nearest `<` that starts a JSX tag (not `</`).
-  let i = offset - 1;
-  let depth = 0;
+  let i = offset - 1; // sits on the `>` that closes the parent tag
+  if (src[i] !== ">") {
+    // segment didn't start right after a `>` — bail
+    return null;
+  }
+  // Now find the matching `<` for this `>`, accounting for nested complete
+  // tags that may appear before us at the same depth.
+  let depth = 1; // we are looking for the `<` matching the current `>`
+  i--;
   while (i > 0) {
     const ch = src[i];
     if (ch === ">") depth++;
     else if (ch === "<") {
+      depth--;
       if (depth === 0) {
-        // Found tag start
         const end = src.indexOf(">", i);
         if (end === -1) return null;
         const tag = src.slice(i, end + 1);
-        // Skip closing tags
         if (tag.startsWith("</")) {
-          // Keep walking
+          // This was a closing tag — keep walking past its opener
+          depth = 1;
         } else {
           return tag;
         }
-      } else {
-        depth--;
       }
     }
     i--;

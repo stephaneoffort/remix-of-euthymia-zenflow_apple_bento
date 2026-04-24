@@ -337,8 +337,8 @@ function analyzeFile(file: string, src: string): Violation[] {
     // Skip if any ancestor (up to 8 levels) carries data-numeric
     if (hasNumericAncestor(masked, offset)) continue;
 
-    // Make sure we are in a real JSX context
-    const found = findEnclosingOpenTag(masked, offset);
+    // Make sure we are in a real JSX context (validate adjacency to `>`)
+    const found = findEnclosingOpenTag(masked, offset, true);
     if (!found) continue;
 
     const line = src.slice(0, offset).split("\n").length;

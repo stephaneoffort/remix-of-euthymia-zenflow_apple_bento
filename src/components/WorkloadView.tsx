@@ -362,7 +362,7 @@ function SummaryCard({ label, value }: { label: string; value: number }) {
   return (
     <Card>
       <CardContent className="pt-4 pb-4 text-center">
-        <p className="text-2xl font-bold text-foreground">{value}</p>
+        <p className="font-numeric text-2xl font-bold text-foreground">{value}</p>
         <p className="text-xs text-muted-foreground mt-1">{label}</p>
       </CardContent>
     </Card>

@@ -427,7 +427,7 @@ export default function TaskDetailPanel() {
                 if (titleDebounceRef.current) clearTimeout(titleDebounceRef.current);
                 if (titleDraft !== task.title) updateTask(task.id, { title: titleDraft });
               }}
-              className={`font-bold text-foreground bg-transparent w-full outline-none border-none ${expanded ? 'text-xl sm:text-2xl' : 'text-base sm:text-lg'}`}
+              className={`font-display font-bold text-foreground bg-transparent w-full outline-none border-none ${expanded ? 'text-xl sm:text-2xl' : 'text-base sm:text-lg'}`}
             />
 
             {/* Progress bar */}
@@ -442,7 +442,7 @@ export default function TaskDetailPanel() {
                     }}
                   />
                 </div>
-                <span className="text-xs text-foreground/60 tabular-nums">{doneSubtasks.length}/{subtasks.length}</span>
+                <span className="font-numeric text-xs text-foreground/60 tabular-nums">{doneSubtasks.length}/{subtasks.length}</span>
               </div>
             )}
 

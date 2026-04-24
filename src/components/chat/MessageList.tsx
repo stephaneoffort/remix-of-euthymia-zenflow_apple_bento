@@ -108,7 +108,7 @@ export function MessageList({
           <MessageCircle className="w-10 h-10 text-primary/40" />
         </motion.div>
         <motion.div initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.15 }} className="text-center">
-          <p className="text-lg font-semibold text-foreground mb-1" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.15)' }}>
+          <p className="font-display text-lg font-semibold text-foreground mb-1" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.15)' }}>
             Bienvenue dans ce canal !
           </p>
           <p className="text-sm text-muted-foreground/70 max-w-xs leading-relaxed">
@@ -237,7 +237,7 @@ export function MessageList({
                     </div>
                   ) : (
                     <div className="w-10 shrink-0 flex items-center justify-center">
-                      <span className="text-[10px] text-transparent group-hover:text-muted-foreground/40 transition-colors tabular-nums">
+                      <span className="font-numeric text-[10px] text-transparent group-hover:text-muted-foreground/40 transition-colors tabular-nums">
                         {format(new Date(msg.created_at), 'HH:mm')}
                       </span>
                     </div>
@@ -289,7 +289,7 @@ export function MessageList({
                               }`}
                             >
                               <span>{emoji}</span>
-                              <span className="font-semibold tabular-nums">{data.count}</span>
+                              <span className="font-numeric font-semibold tabular-nums">{data.count}</span>
                             </motion.button>
                           );
                         })}

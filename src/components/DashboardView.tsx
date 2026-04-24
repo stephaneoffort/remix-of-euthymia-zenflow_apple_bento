@@ -69,7 +69,7 @@ function MyTasksCard({
             <Flame className="w-3.5 h-3.5 text-destructive" />
           </div>
           À traiter
-          <span className="ml-auto text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
+          <span className="font-numeric ml-auto text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
             {tasks.length}
           </span>
         </CardTitle>
@@ -97,7 +97,7 @@ function MyTasksCard({
                 <StatusBadge status={task.status} />
                 {daysLeft !== null ? (
                   <span
-                    className={`text-[11px] font-semibold shrink-0 tabular-nums ${isOverdue ? "text-destructive" : "text-muted-foreground"}`}
+                    className={`font-numeric text-[11px] font-semibold shrink-0 tabular-nums ${isOverdue ? "text-destructive" : "text-muted-foreground"}`}
                   >
                     {isOverdue ? `−${Math.abs(daysLeft)}j` : daysLeft === 0 ? "Auj." : `${daysLeft}j`}
                   </span>
@@ -265,7 +265,7 @@ export default function DashboardView() {
       {/* ═══ GREETING + MY TASKS ═══ */}
       <section>
         <div className="mb-5">
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
             {greeting}, {firstName}
           </h1>
           <p className="text-sm text-muted-foreground mt-1.5 font-medium">
@@ -282,7 +282,7 @@ export default function DashboardView() {
       <section>
         <div className="flex items-center gap-2 mb-4">
           <BarChart3 className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-semibold text-foreground">Vue d'ensemble</h2>
+          <h2 className="font-display text-lg font-semibold text-foreground">Vue d'ensemble</h2>
         </div>
 
         {/* 4 KPI cards */}
@@ -298,7 +298,7 @@ export default function DashboardView() {
                 <CardContent className="p-4 flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-primary/10">{stat.icon}</div>
                   <div>
-                    <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+                    <p className="font-numeric text-2xl font-bold text-foreground">{stat.value}</p>
                     <p className="text-xs text-muted-foreground">{stat.label}</p>
                   </div>
                 </CardContent>
@@ -414,7 +414,7 @@ export default function DashboardView() {
       <section>
         <div className="flex items-center gap-2 mb-4">
           <TrendingUp className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-semibold text-foreground">Analytiques</h2>
+          <h2 className="font-display text-lg font-semibold text-foreground">Analytiques</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">

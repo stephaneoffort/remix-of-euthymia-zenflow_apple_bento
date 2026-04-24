@@ -301,7 +301,7 @@ export default function Index() {
                 <nav className="flex items-center gap-1 min-w-0 text-sm sm:text-lg overflow-hidden">
                   {isMobile ? (
                     // Mobile: only show last breadcrumb to prevent overflow
-                    <h2 className="font-bold text-foreground text-sm truncate min-w-0">
+                    <h2 className="font-display font-bold text-foreground text-sm truncate min-w-0">
                       {breadcrumbs[breadcrumbs.length - 1].color && (
                         <span
                           className="inline-block w-2.5 h-2.5 rounded-sm mr-1.5 align-middle"
@@ -326,7 +326,7 @@ export default function Index() {
                             <span className="truncate">{crumb.label}</span>
                           </button>
                         ) : (
-                          <h2 className="flex items-center gap-1.5 font-bold text-foreground truncate min-w-0">
+                          <h2 className="font-display flex items-center gap-1.5 font-bold text-foreground truncate min-w-0">
                             {crumb.color && (
                               <div className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: crumb.color }} />
                             )}
@@ -339,7 +339,7 @@ export default function Index() {
                   )}
                 </nav>
               ) : (
-                <h2 className="font-bold text-foreground text-sm sm:text-lg truncate min-w-0">{title}</h2>
+                <h2 className="font-display font-bold text-foreground text-sm sm:text-lg truncate min-w-0">{title}</h2>
               )}
 
               {/* Project responsibles */}

@@ -150,7 +150,7 @@ export default function Chat() {
                   {dmPartnerInfo.name[0]?.toUpperCase()}
                 </div>
                 <div className="min-w-0">
-                  <h2 className={`font-semibold text-foreground truncate ${isMobile ? 'text-xs' : 'text-sm'}`} style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                  <h2 className={`font-display font-semibold text-foreground truncate ${isMobile ? 'text-xs' : 'text-sm'}`} style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
                     {dmPartnerInfo.name}
                   </h2>
                   {!isMobile && <p className="text-[11px] text-muted-foreground/60 truncate">Message privé</p>}
@@ -162,7 +162,7 @@ export default function Chat() {
                   <Hash className={`${isMobile ? 'w-3.5 h-3.5' : 'w-4 h-4'} text-primary`} />
                 </div>
                 <div className="min-w-0">
-                  <h2 className={`font-semibold text-foreground truncate ${isMobile ? 'text-xs' : 'text-sm'}`} style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                  <h2 className={`font-display font-semibold text-foreground truncate ${isMobile ? 'text-xs' : 'text-sm'}`} style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
                     {activeChannel?.name || 'Sélectionner un canal'}
                   </h2>
                   {activeChannel?.description && !isMobile && (

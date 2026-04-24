@@ -25,6 +25,9 @@ export default {
       },
       fontFamily: {
         sans: ['"Plus Jakarta Sans"', "system-ui", "ui-sans-serif", "sans-serif"],
+        display: ["var(--font-display)", '"Plus Jakarta Sans"', "system-ui", "sans-serif"],
+        body: ["var(--font-body)", '"Plus Jakarta Sans"', "system-ui", "sans-serif"],
+        numeric: ["var(--font-numeric)", '"Plus Jakarta Sans"', "system-ui", "sans-serif"],
       },
       backdropBlur: {
         xs: "4px",

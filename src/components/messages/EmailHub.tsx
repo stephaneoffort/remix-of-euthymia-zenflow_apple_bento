@@ -70,8 +70,51 @@ export default function EmailHub() {
     } catch {}
   };
 
+  // Auto-import en cours : afficher un loader pendant la récupération du Gmail existant
+  if (isLoading || importLegacyGmail.isPending) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full gap-3 text-center px-6">
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        <div>
+          <p className="text-sm font-medium text-foreground">
+            {importLegacyGmail.isPending ? 'Import du compte Gmail existant…' : 'Chargement des comptes…'}
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            {importLegacyGmail.isPending
+              ? 'Récupération de votre connexion Gmail déjà autorisée.'
+              : 'Veuillez patienter.'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Auto-import a échoué : afficher l'erreur + actions de récupération
+  if (importLegacyGmail.isError && accounts.length === 0) {
+    const errMsg = (importLegacyGmail.error as any)?.message || 'Erreur inconnue';
+    return (
+      <div className="flex flex-col items-center justify-center h-full gap-4 text-center px-6">
+        <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
+          <AlertCircle className="w-6 h-6 text-destructive" />
+        </div>
+        <div className="max-w-sm">
+          <p className="text-sm font-semibold text-foreground">Import Gmail impossible</p>
+          <p className="text-xs text-muted-foreground mt-1 break-words">{errMsg}</p>
+        </div>
+        <div className="flex gap-2">
+          <Button size="sm" variant="outline" onClick={() => importLegacyGmail.mutate()}>
+            <RefreshCw className="w-4 h-4 mr-1.5" /> Réessayer
+          </Button>
+          <Button size="sm" onClick={connectGmail}>
+            <Mail className="w-4 h-4 mr-1.5" /> Reconnecter Gmail
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   // Empty state — show provider chooser instead of a giant IMAP form
-  if (accounts.length === 0 && !isLoading && !importLegacyGmail.isPending) {
+  if (accounts.length === 0) {
     return (
       <ProviderChooser
         onPickGmail={connectGmail}

@@ -562,7 +562,7 @@ export default function RichTextEditor({
         )}
       </div>
 
-      {isDictating && (
+      {(isDictating || isCalibrating) && (
         <div
           role="status"
           aria-live="polite"
@@ -572,23 +572,31 @@ export default function RichTextEditor({
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-priority-urgent opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-priority-urgent" />
           </span>
-          <span className="font-medium shrink-0">Dictée en cours…</span>
+          <span className="font-medium shrink-0">
+            {isCalibrating ? 'Calibrage du micro…' : 'Dictée en cours…'}
+          </span>
 
           {/* Visualiseur de niveau sonore — 5 barres réactives */}
           <div
             className="flex items-end gap-0.5 h-4 shrink-0"
             aria-label={`Niveau sonore : ${Math.round(audioLevel * 100)}%`}
-            title={audioLevel < 0.05 ? 'Aucun son détecté — parlez plus fort' : 'Son détecté'}
+            title={
+              isCalibrating
+                ? 'Mesure du bruit ambiant — restez silencieux'
+                : audioLevel < 0.05
+                ? 'Aucun son détecté — parlez plus fort'
+                : 'Son détecté'
+            }
           >
             {[0.15, 0.35, 0.55, 0.75, 0.9].map((threshold, i) => {
-              const active = audioLevel >= threshold;
+              const active = !isCalibrating && audioLevel >= threshold;
               const heights = ['h-1.5', 'h-2', 'h-2.5', 'h-3', 'h-4'];
               return (
                 <span
                   key={i}
                   className={`w-1 rounded-sm transition-all duration-75 ${heights[i]} ${
                     active ? 'bg-priority-urgent' : 'bg-priority-urgent/20'
-                  }`}
+                  } ${isCalibrating ? 'animate-pulse' : ''}`}
                   style={{
                     transform: active ? `scaleY(${0.6 + audioLevel * 0.6})` : 'scaleY(0.6)',
                     transformOrigin: 'bottom',
@@ -598,16 +606,23 @@ export default function RichTextEditor({
             })}
           </div>
 
-          {interimTranscript && (
+          {isCalibrating && (
+            <span className="italic text-muted-foreground truncate">
+              Restez silencieux pendant l'étalonnage…
+            </span>
+          )}
+          {!isCalibrating && interimTranscript && (
             <span className="italic text-muted-foreground truncate">« {interimTranscript} »</span>
           )}
-          <button
-            type="button"
-            onClick={stopDictation}
-            className="ml-auto px-2 py-0.5 rounded bg-priority-urgent text-white text-[10px] font-semibold hover:opacity-90 shrink-0"
-          >
-            Arrêter
-          </button>
+          {!isCalibrating && (
+            <button
+              type="button"
+              onClick={stopDictation}
+              className="ml-auto px-2 py-0.5 rounded bg-priority-urgent text-white text-[10px] font-semibold hover:opacity-90 shrink-0"
+            >
+              Arrêter
+            </button>
+          )}
         </div>
       )}
 

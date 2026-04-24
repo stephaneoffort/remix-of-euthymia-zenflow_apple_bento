@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
-  Mail, Plus, Trash2, RefreshCw, Send, Reply, Inbox, AlertCircle, X, Check, Loader2
+  Mail, Plus, Trash2, RefreshCw, Send, Reply, Inbox, AlertCircle, X, Check, Loader2,
+  History, ChevronDown, ChevronUp,
 } from 'lucide-react';
 import { useEmailAccounts, useEmailMessages, sendEmail, emailAction, EmailAccount, EmailMessage } from '@/hooks/useEmailAccounts';
 import { Button } from '@/components/ui/button';
@@ -16,6 +17,50 @@ import gmailLogo from '@/assets/integrations/gmail.png';
 
 type View = 'list' | 'detail' | 'compose' | 'add-account' | 'choose-provider';
 
+// Historique local des échecs d'auto-import Gmail
+const IMPORT_HISTORY_KEY = 'gmail_autoimport_failures';
+const MAX_HISTORY = 20;
+
+interface ImportFailure {
+  timestamp: number;
+  step: 'connexion' | 'synchronisation' | 'verification' | 'inconnue';
+  message: string;
+  code?: string | number | null;
+}
+
+function loadFailureHistory(): ImportFailure[] {
+  try {
+    const raw = localStorage.getItem(IMPORT_HISTORY_KEY);
+    if (!raw) return [];
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveFailure(entry: ImportFailure) {
+  try {
+    const list = loadFailureHistory();
+    const next = [entry, ...list].slice(0, MAX_HISTORY);
+    localStorage.setItem(IMPORT_HISTORY_KEY, JSON.stringify(next));
+  } catch {}
+}
+
+function clearFailureHistory() {
+  try {
+    localStorage.removeItem(IMPORT_HISTORY_KEY);
+  } catch {}
+}
+
+function inferStep(msg: string): ImportFailure['step'] {
+  const m = msg.toLowerCase();
+  if (m.includes('session') || m.includes('auth') || m.includes('token')) return 'connexion';
+  if (m.includes('sync') || m.includes('insert') || m.includes('import')) return 'synchronisation';
+  if (m.includes('check') || m.includes('verif') || m.includes('exist')) return 'verification';
+  return 'inconnue';
+}
+
 export default function EmailHub() {
   const queryClient = useQueryClient();
   const {
@@ -26,6 +71,30 @@ export default function EmailHub() {
   const [view, setView] = useState<View>('list');
   const [selectedMessage, setSelectedMessage] = useState<EmailMessage | null>(null);
   const [replyTo, setReplyTo] = useState<EmailMessage | null>(null);
+  const [failureHistory, setFailureHistory] = useState<ImportFailure[]>(() => loadFailureHistory());
+  const [historyOpen, setHistoryOpen] = useState(false);
+
+  // Log chaque nouvel échec d'auto-import dans l'historique local
+  useEffect(() => {
+    if (importLegacyGmail.isError) {
+      const err = importLegacyGmail.error as any;
+      const message = err?.message || 'Erreur inconnue';
+      const code = err?.code || err?.status || err?.response?.status || null;
+      const entry: ImportFailure = {
+        timestamp: Date.now(),
+        step: inferStep(message),
+        message,
+        code,
+      };
+      // Évite de re-logger le même échec à chaque re-render
+      const last = failureHistory[0];
+      if (!last || last.message !== message || Math.abs(last.timestamp - entry.timestamp) > 2000) {
+        saveFailure(entry);
+        setFailureHistory(loadFailureHistory());
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [importLegacyGmail.isError, importLegacyGmail.error]);
 
   // Auto-import legacy Gmail connection on mount (one-shot)
   useEffect(() => {
@@ -84,7 +153,7 @@ export default function EmailHub() {
     const errCode = err?.code || err?.status || (err?.response?.status) || null;
     const fullError = err?.toString ? err.toString() : JSON.stringify(err, null, 2);
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-4 text-center px-6">
+      <div className="flex flex-col items-center justify-start h-full gap-4 text-center px-6 py-8 overflow-y-auto">
         <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
           <AlertCircle className="w-6 h-6 text-destructive" />
         </div>
@@ -128,6 +197,17 @@ export default function EmailHub() {
             </pre>
           </div>
         </div>
+
+        {/* Historique des échecs */}
+        <FailureHistoryPanel
+          history={failureHistory}
+          open={historyOpen}
+          onToggle={() => setHistoryOpen(o => !o)}
+          onClear={() => {
+            clearFailureHistory();
+            setFailureHistory([]);
+          }}
+        />
       </div>
     );
   }
@@ -294,6 +374,88 @@ export default function EmailHub() {
           </button>
         ))}
       </div>
+    </div>
+  );
+}
+
+function FailureHistoryPanel({
+  history, open, onToggle, onClear,
+}: {
+  history: ImportFailure[];
+  open: boolean;
+  onToggle: () => void;
+  onClear: () => void;
+}) {
+  if (history.length === 0) return null;
+
+  const stepLabel: Record<ImportFailure['step'], string> = {
+    connexion: 'Connexion',
+    synchronisation: 'Synchronisation',
+    verification: 'Vérification',
+    inconnue: 'Étape inconnue',
+  };
+
+  return (
+    <div className="w-full max-w-sm text-left">
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-md border border-border bg-muted/30 hover:bg-muted transition-colors"
+      >
+        <div className="flex items-center gap-2 text-foreground">
+          <History className="w-4 h-4 text-muted-foreground" />
+          <span className="text-xs font-semibold">
+            Historique des échecs
+          </span>
+          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-destructive/15 text-destructive font-mono">
+            {history.length}
+          </span>
+        </div>
+        {open ? (
+          <ChevronUp className="w-4 h-4 text-muted-foreground" />
+        ) : (
+          <ChevronDown className="w-4 h-4 text-muted-foreground" />
+        )}
+      </button>
+
+      {open && (
+        <div className="mt-2 rounded-md border border-border bg-card overflow-hidden">
+          <ul className="max-h-64 overflow-y-auto divide-y divide-border">
+            {history.map((f, idx) => (
+              <li key={idx} className="px-3 py-2 hover:bg-muted/40 transition-colors">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <span className="text-[10px] uppercase tracking-wider font-semibold text-destructive">
+                    {stepLabel[f.step]}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground font-mono">
+                    {new Date(f.timestamp).toLocaleString('fr-FR', {
+                      day: '2-digit', month: '2-digit', year: '2-digit',
+                      hour: '2-digit', minute: '2-digit',
+                    })}
+                  </span>
+                </div>
+                {f.code != null && (
+                  <p className="text-[11px] font-mono text-muted-foreground">
+                    Code : <span className="text-foreground">{f.code}</span>
+                  </p>
+                )}
+                <p className="text-xs text-foreground break-words leading-snug">
+                  {f.message}
+                </p>
+              </li>
+            ))}
+          </ul>
+          <div className="px-3 py-2 border-t border-border bg-muted/20 flex justify-end">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClear}
+              className="h-7 text-xs text-muted-foreground hover:text-destructive"
+            >
+              <Trash2 className="w-3 h-3 mr-1" /> Vider l'historique
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

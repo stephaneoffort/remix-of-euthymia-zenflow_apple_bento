@@ -369,7 +369,7 @@ export default function DataExportImport() {
                   ].map(([label, count]) => (
                     <div key={label as string} className="text-xs">
                       <span className="text-muted-foreground">{label} : </span>
-                      <span className="font-medium text-foreground">{count}</span>
+                      <span data-numeric className="font-numeric tabular-nums font-medium text-foreground">{count}</span>
                     </div>
                   ))}
                 </div>

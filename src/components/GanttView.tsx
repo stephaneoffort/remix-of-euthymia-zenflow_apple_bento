@@ -1034,7 +1034,7 @@ function GanttBar({
               className="absolute inset-0 flex items-center px-2 text-[10px] font-medium truncate pointer-events-none"
               style={{ color: progress > 50 ? "hsl(var(--primary-foreground))" : "hsl(var(--foreground))" }}
             >
-              {task.title} {progress > 0 && `${progress}%`}
+              {task.title} {progress > 0 && <span data-numeric className="font-numeric tabular-nums">{progress}%</span>}
             </span>
           )}
           {/* Right resize handle */}
@@ -1056,12 +1056,12 @@ function GanttBar({
       <TooltipContent side="top">
         <div className="text-xs space-y-0.5">
           <div className="font-medium">{task.title}</div>
-          <div>{format(start, "dd/MM/yyyy")} → {format(end, "dd/MM/yyyy")}</div>
-          <div>Durée : {duration} jour(s)</div>
-          <div>Progression : {progress}%</div>
+          <div><span data-numeric className="font-numeric tabular-nums">{format(start, "dd/MM/yyyy")}</span> → <span data-numeric className="font-numeric tabular-nums">{format(end, "dd/MM/yyyy")}</span></div>
+          <div>Durée : <span data-numeric className="font-numeric tabular-nums">{duration}</span> jour(s)</div>
+          <div>Progression : <span data-numeric className="font-numeric tabular-nums">{progress}%</span></div>
           {totalFloat !== undefined && (
             <div className={totalFloat === 0 ? "text-destructive font-medium" : ""}>
-              Marge : {totalFloat} jour(s) {totalFloat === 0 && "⚠️ Chemin critique"}
+              Marge : <span data-numeric className="font-numeric tabular-nums">{totalFloat}</span> jour(s) {totalFloat === 0 && "⚠️ Chemin critique"}
             </div>
           )}
         </div>

@@ -139,7 +139,12 @@ export default function EmailHub() {
   };
 
   const handleQuickDelete = async (msg: EmailMessage) => {
-    if (!confirm('Supprimer cet email ?')) return;
+    const sender = msg.from_name || msg.from_address;
+    const subject = msg.subject || '(sans objet)';
+    const ok = confirm(
+      `Supprimer définitivement cet email ?\n\nDe : ${sender}\nObjet : ${subject}\n\nCette action est irréversible.`
+    );
+    if (!ok) return;
     await handleDelete(msg, { skipConfirm: true, keepView: true });
   };
 

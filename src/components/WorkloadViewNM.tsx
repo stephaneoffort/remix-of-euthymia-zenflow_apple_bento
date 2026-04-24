@@ -2,6 +2,14 @@ import { useMemo, useState } from "react";
 import { useApp } from "@/context/AppContext";
 import { format, parseISO, differenceInDays } from "date-fns";
 import { fr } from "date-fns/locale";
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RTooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, Legend,
+} from "recharts";
+
+const PRIORITY_FULL_LABELS: Record<string, string> = {
+  urgent: "Urgent", high: "Haute", normal: "Normale", low: "Basse",
+};
 
 /* ─── Tokens ─── */
 const BG = "#EDE6DA";

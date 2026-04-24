@@ -103,7 +103,7 @@ function TaskCard({ task, allTasks, onOpen, getMemberById, getProjectName, statu
       style={{
         background: BG, borderRadius: 12, boxShadow: raised,
         padding: 12, cursor: "pointer",
-        borderLeft: `3px solid ${col?.color ?? C.orange}`,
+        borderLeft: `3px solid ${statusColor}`,
         opacity: isDone ? 0.8 : 1,
         transition: "box-shadow .15s",
       }}

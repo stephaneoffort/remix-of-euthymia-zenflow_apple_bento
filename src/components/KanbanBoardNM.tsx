@@ -559,11 +559,24 @@ export default function KanbanBoardNM() {
                     borderRadius: 14, padding: isDropping ? 4 : 0,
                   }}
                 >
-                  {/* Header */}
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 4px" }}>
+                  {/* Header (drag & drop pour réorganiser les colonnes) */}
+                  <div
+                    draggable
+                    onDragStart={e => handleColumnDragStart(e, col.key)}
+                    onDragOver={e => handleColumnDragOver(e, col.key)}
+                    onDrop={e => handleColumnDrop(e, col.key)}
+                    onDragEnd={handleColumnDragEnd}
+                    title="Glissez pour réorganiser les colonnes"
+                    style={{
+                      display: "flex", alignItems: "center", justifyContent: "space-between",
+                      padding: "6px 4px", cursor: "grab",
+                      opacity: draggedColumn === col.key ? 0.5 : 1,
+                      transition: "opacity .15s",
+                    }}
+                  >
                     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                       <button
-                        onClick={() => toggleCollapse(col.key)}
+                        onClick={(e) => { e.stopPropagation(); toggleCollapse(col.key); }}
                         title="Réduire la colonne"
                         style={{
                           background: BG, border: "none", cursor: "pointer", padding: 0,
@@ -595,7 +608,7 @@ export default function KanbanBoardNM() {
                     </div>
                     {col.key !== "done" && col.key !== "blocked" && (
                       <button
-                        onClick={() => setNewTaskStatus(col.key)}
+                        onClick={(e) => { e.stopPropagation(); setNewTaskStatus(col.key); }}
                         style={{
                           width: 22, height: 22, borderRadius: "50%",
                           background: BG, boxShadow: raisedSm,

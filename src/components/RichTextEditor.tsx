@@ -355,16 +355,11 @@ export default function RichTextEditor({
       return;
     }
 
-    // Pré-demande de permission micro (améliore l'UX iOS et Android)
-    if (navigator.mediaDevices?.getUserMedia) {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        // Libère immédiatement — la reconnaissance vocale gère son propre flux
-        stream.getTracks().forEach((t) => t.stop());
-      } catch (e: any) {
-        toast.error("Accès au microphone refusé. Vérifiez les permissions du navigateur.");
-        return;
-      }
+    // Démarre le meter audio (et demande la permission micro en même temps)
+    const meterOk = await startAudioMeter();
+    if (!meterOk) {
+      toast.error("Accès au microphone refusé. Vérifiez les permissions du navigateur.");
+      return;
     }
 
     manualStopRef.current = false;
@@ -373,7 +368,7 @@ export default function RichTextEditor({
     setInterimTranscript('');
     toast.success('🎤 Dictée en cours… Parlez maintenant.');
     startRecognition();
-  }, [editor, isDictating, startRecognition, stopDictation]);
+  }, [editor, isDictating, startRecognition, stopDictation, startAudioMeter]);
 
   useEffect(() => {
     return () => {
@@ -382,8 +377,9 @@ export default function RichTextEditor({
       if (recognitionRef.current) {
         try { recognitionRef.current.stop(); } catch {}
       }
+      stopAudioMeter();
     };
-  }, []);
+  }, [stopAudioMeter]);
 
   if (!editor) return null;
 

@@ -15,15 +15,21 @@ interface MobileBottomNavProps {
 }
 
 export default function MobileBottomNav({ onOpenVoice }: MobileBottomNavProps) {
-  const { setSidebarCollapsed, addTask, selectedProjectId, getListsForProject, projects, spaces, quickFilter } = useApp();
+  const { setSidebarCollapsed, addTask, selectedProjectId, selectedSpaceId, getListsForProject, projects, spaces, quickFilter } = useApp();
   const { teamMemberId } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { totalUnread } = useChatNotifications();
   const [quickAddOpen, setQuickAddOpen] = useState(false);
 
+  const initialSpaceId = (() => {
+    const proj = projects.find(p => p.id === selectedProjectId);
+    return proj?.spaceId || selectedSpaceId || spaces[0]?.id || '';
+  })();
+
   const [newTitle, setNewTitle] = useState('');
   const [newPriority, setNewPriority] = useState<Priority>('normal');
+  const [newSpaceId, setNewSpaceId] = useState<string>(initialSpaceId);
   const [newProjectId, setNewProjectId] = useState<string>(selectedProjectId || '');
 
   const isChat = location.pathname === '/chat';

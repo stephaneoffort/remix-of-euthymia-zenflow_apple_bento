@@ -166,7 +166,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   };
   const [palette, setPaletteState] = useState<ThemePalette>(() => {
     const stored = localStorage.getItem("euthymia-palette");
-    // Migrate away from removed Liquid Glass palettes
+    // Migrate away from removed legacy palettes
     if (stored && stored.startsWith("liquidGlass")) return "sapphire";
     return (stored as ThemePalette) || "sapphire";
   });

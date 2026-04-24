@@ -1624,7 +1624,7 @@
    Mesh gradients + glass surfaces + shimmer + grain
    ═══════════════════════════════════════════════════════ */
 
-/* ─── Shared keyframes for bento mesh + glass reveal ─── */
+/* ─── Shared keyframes for bento mesh + cell reveal ─── */
 @keyframes bentoMeshMove {
   0%, 100% { background-position: 0% 0%, 100% 100%, 0% 0%; }
   50% { background-position: 100% 50%, 0% 50%, 0% 0%; }

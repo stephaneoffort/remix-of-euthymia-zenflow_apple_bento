@@ -347,6 +347,20 @@ export default function RichTextEditor({
           <Highlighter className={iconSize} />
         </ToolbarButton>
 
+        <div className="w-px h-4 bg-border mx-1" />
+
+        <ToolbarButton
+          active={isDictating}
+          onClick={toggleDictation}
+          title={isDictating ? 'Arrêter la dictée' : 'Dicter (microphone)'}
+        >
+          {isDictating ? (
+            <MicOff className={`${iconSize} text-priority-urgent animate-pulse`} />
+          ) : (
+            <Mic className={iconSize} />
+          )}
+        </ToolbarButton>
+
         {!minimal && (
           <>
             <div className="flex-1" />

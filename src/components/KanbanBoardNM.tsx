@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react"; // kanban-nm
+import { useState, useCallback, useEffect, useMemo } from "react"; // kanban-nm
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
@@ -16,14 +16,23 @@ const C = {
   orange: "#7A4518", red: "#7A1E0E", green: "#2A5828", blue: "#1E4878",
 };
 
-/* ─── Statuts ─── */
-const COLUMNS = [
-  { key: "todo",        label: "À faire",  color: "#5A5040" },
-  { key: "in_progress", label: "En cours", color: "#7A4518" },
-  { key: "in_review",   label: "En revue", color: "#2A4878" },
-  { key: "done",        label: "Terminé",  color: "#2A5828" },
-  { key: "blocked",     label: "Bloqué",   color: "#7A1E0E" },
-];
+/* ─── Statuts par défaut (couleurs visuelles) ─── */
+const STATUS_COLORS: Record<string, string> = {
+  todo: "#5A5040",
+  in_progress: "#7A4518",
+  in_review: "#2A4878",
+  done: "#2A5828",
+  blocked: "#7A1E0E",
+};
+/** Hash déterministe pour donner une couleur à un statut personnalisé inconnu. */
+function getColorForStatus(key: string): string {
+  if (STATUS_COLORS[key]) return STATUS_COLORS[key];
+  const palette = ["#5A5040", "#7A4518", "#2A4878", "#2A5828", "#7A1E0E", "#7A5828", "#3A5878", "#5A4878"];
+  let h = 0;
+  for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
+  return palette[h % palette.length];
+}
+const COLUMN_ORDER_KEY = "kanban-nm-column-order";
 
 /* ─── Priority badge ─── */
 const PriorityPill = ({ priority }: { priority: string }) => {

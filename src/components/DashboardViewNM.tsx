@@ -1693,109 +1693,389 @@ function NMAttachmentsDebugPanel({
           </div>
         )}
 
-        {/* Per-project breakdown */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 420, overflowY: "auto", paddingRight: 4 }}>
-          {sortedProjectIds.length === 0 && orphans.length === 0 && (
-            <p style={{ fontSize: 13, color: C.muted, textAlign: "center", padding: "12px 0" }}>
-              Aucun attachement {tab === "drive" ? "Drive" : "Canva"} rattaché à un projet.
-            </p>
-          )}
-          {sortedProjectIds.map((pid) => {
-            const rows = breakdown[pid] ?? [];
-            const counts = { project: 0, task: 0, subtask: 0 } as Record<string, number>;
-            rows.forEach((r) => { counts[r.entity_type] = (counts[r.entity_type] || 0) + 1; });
+        {/* Filters + view switcher */}
+        <div style={{
+          display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", marginBottom: 12,
+          background: BG, boxShadow: barIn, borderRadius: 10, padding: "8px 10px",
+        }}>
+          <span style={{ fontSize: 11, fontWeight: 600, color: C.muted, letterSpacing: 0.4, textTransform: "uppercase" }}>
+            Filtres
+          </span>
+          {/* Type filter */}
+          <div style={{ display: "flex", gap: 4 }}>
+            {(["all", "project", "task", "subtask"] as const).map((t) => {
+              const active = typeFilter === t;
+              const color = t === "all" ? C.text : TYPE_COLOR[t];
+              return (
+                <button
+                  key={t}
+                  onClick={() => setTypeFilter(t)}
+                  style={{
+                    border: "none", cursor: "pointer", borderRadius: 6, padding: "3px 9px",
+                    fontSize: 11, fontWeight: 600, background: BG,
+                    color: active ? color : C.muted,
+                    boxShadow: active ? barIn : pill,
+                  }}
+                >
+                  {t === "all" ? "Tous" : t}
+                </button>
+              );
+            })}
+          </div>
+          <span style={{ width: 1, height: 18, background: C.light, opacity: 0.4 }} />
+          {/* Project filter */}
+          <select
+            value={projectFilter}
+            onChange={(e) => setProjectFilter(e.target.value)}
+            style={{
+              border: "none", borderRadius: 6, padding: "4px 8px",
+              fontSize: 11, fontWeight: 600, background: BG, color: C.text,
+              boxShadow: pill, cursor: "pointer", outline: "none",
+            }}
+          >
+            <option value="all">Tous les projets</option>
+            <option value="__orphans__">Orphelins seulement</option>
+            {sortedProjectIds.map((pid) => (
+              <option key={pid} value={pid}>
+                {projectsById[pid]?.name ?? pid} ({byProject[pid]})
+              </option>
+            ))}
+          </select>
+          {/* Search */}
+          <input
+            placeholder="Filtrer par entity_id…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{
+              flex: "1 1 180px", minWidth: 140, border: "none", borderRadius: 6,
+              padding: "4px 10px", fontSize: 11, background: BG, color: C.text,
+              boxShadow: barIn, outline: "none",
+            }}
+          />
+          <span style={{ width: 1, height: 18, background: C.light, opacity: 0.4 }} />
+          {/* View switcher */}
+          <div style={{ display: "flex", gap: 4 }}>
+            {(["table", "cards"] as const).map((v) => (
+              <button
+                key={v}
+                onClick={() => setView(v)}
+                style={{
+                  border: "none", cursor: "pointer", borderRadius: 6, padding: "3px 9px",
+                  fontSize: 11, fontWeight: 600, background: BG,
+                  color: view === v ? C.text : C.muted,
+                  boxShadow: view === v ? barIn : pill,
+                }}
+              >
+                {v === "table" ? "Table" : "Cartes"}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Build flat filtered rows */}
+        {(() => {
+          type FlatRow = {
+            project_id: string | null;
+            project_name: string;
+            project_color?: string;
+            entity_id: string;
+            entity_type: string;
+          };
+          const allRows: FlatRow[] = [];
+          sortedProjectIds.forEach((pid) => {
             const proj = projectsById[pid];
+            (breakdown[pid] ?? []).forEach((r) => {
+              allRows.push({
+                project_id: pid,
+                project_name: proj?.name ?? pid,
+                project_color: proj?.color,
+                entity_id: r.entity_id,
+                entity_type: r.entity_type,
+              });
+            });
+          });
+          orphans.forEach((r) => {
+            allRows.push({
+              project_id: null,
+              project_name: "(orphelin)",
+              entity_id: r.entity_id,
+              entity_type: r.entity_type,
+            });
+          });
+          const filtered = allRows.filter((r) => {
+            if (typeFilter !== "all" && r.entity_type !== typeFilter) return false;
+            if (projectFilter === "__orphans__" && r.project_id !== null) return false;
+            if (projectFilter !== "all" && projectFilter !== "__orphans__" && r.project_id !== projectFilter) return false;
+            if (search.trim() && !r.entity_id.toLowerCase().includes(search.trim().toLowerCase())) return false;
+            return true;
+          });
+
+          // Comparison: expected vs actual (per current filters)
+          const expectedTotal = projectFilter === "all"
+            ? total
+            : projectFilter === "__orphans__"
+              ? orphans.length
+              : (byProject[projectFilter] ?? 0);
+          // "actual filtered" matches expected only when no type/search filter narrows it
+          const filteredCount = filtered.length;
+
+          if (view === "table") {
             return (
-              <div key={pid} style={{
-                background: BG, borderRadius: 10, boxShadow: barIn, padding: "10px 12px",
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
-                  <span style={{
-                    width: 10, height: 10, borderRadius: 3,
-                    background: proj?.color ?? C.muted,
-                  }} />
-                  <span style={{ fontSize: 13, fontWeight: 600, color: C.text }}>
-                    {proj?.name ?? pid}
+              <>
+                {/* Comparison strip */}
+                <div style={{
+                  display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center",
+                  background: BG, boxShadow: barIn, borderRadius: 10,
+                  padding: "8px 12px", marginBottom: 10,
+                }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: C.muted, letterSpacing: 0.4, textTransform: "uppercase" }}>
+                    Comparaison
                   </span>
-                  <span style={{ fontSize: 11, color: C.light, fontFamily: "monospace" }}>{pid}</span>
-                  <span data-numeric className="font-numeric tabular-nums" style={{
-                    marginLeft: "auto", fontSize: 13, fontWeight: 700, color: C.text,
-                    background: BG, boxShadow: pill, borderRadius: 4, padding: "1px 8px",
-                  }}>
-                    {byProject[pid]}
+                  <span style={{ fontSize: 12, color: C.text }}>
+                    Attendu (DB)&nbsp;:{" "}
+                    <strong data-numeric className="font-numeric tabular-nums" style={{ color: C.text }}>
+                      {expectedTotal}
+                    </strong>
                   </span>
-                </div>
-                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 6 }}>
-                  {(["project", "task", "subtask"] as const).map((t) =>
-                    counts[t] > 0 ? (
-                      <span key={t} style={{
-                        fontSize: 10, fontWeight: 600, color: TYPE_COLOR[t],
-                        background: BG, boxShadow: pill, borderRadius: 4, padding: "2px 6px",
-                      }}>
-                        {t} · {counts[t]}
-                      </span>
-                    ) : null
+                  <span style={{ color: C.light }}>·</span>
+                  <span style={{ fontSize: 12, color: C.text }}>
+                    Lignes affichées&nbsp;:{" "}
+                    <strong data-numeric className="font-numeric tabular-nums" style={{
+                      color: filteredCount === expectedTotal ? C.green : C.orange,
+                    }}>
+                      {filteredCount}
+                    </strong>
+                  </span>
+                  {(typeFilter !== "all" || search.trim()) && (
+                    <span style={{ fontSize: 11, color: C.light, fontStyle: "italic" }}>
+                      (filtres actifs — un nombre inférieur est attendu)
+                    </span>
+                  )}
+                  {filteredCount !== expectedTotal && typeFilter === "all" && !search.trim() && (
+                    <span style={{ fontSize: 11, color: C.red, fontWeight: 600 }}>
+                      ⚠ Écart de {Math.abs(expectedTotal - filteredCount)}
+                    </span>
                   )}
                 </div>
-                <details style={{ fontSize: 11 }}>
-                  <summary style={{ cursor: "pointer", color: C.muted, userSelect: "none" }}>
-                    Voir les {rows.length} entity_id
-                  </summary>
-                  <div style={{
-                    marginTop: 6, fontFamily: "monospace", color: C.light,
-                    display: "flex", flexDirection: "column", gap: 2,
-                  }}>
-                    {rows.map((r, i) => (
-                      <div key={`${r.entity_id}-${i}`} style={{ display: "flex", gap: 6 }}>
-                        <span style={{ color: TYPE_COLOR[r.entity_type] ?? C.muted, minWidth: 56 }}>
-                          {r.entity_type}
-                        </span>
-                        <span>{r.entity_id}</span>
-                      </div>
-                    ))}
-                  </div>
-                </details>
-              </div>
-            );
-          })}
 
-          {orphans.length > 0 && (
-            <div style={{
-              background: BG, borderRadius: 10, boxShadow: barIn, padding: "10px 12px",
-              borderLeft: `3px solid ${C.red}`,
-            }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                <span style={{ fontSize: 13, fontWeight: 600, color: C.red }}>
-                  Orphelins (non rattachables)
-                </span>
-                <span data-numeric className="font-numeric tabular-nums" style={{
-                  marginLeft: "auto", fontSize: 13, fontWeight: 700, color: C.red,
-                  background: BG, boxShadow: pill, borderRadius: 4, padding: "1px 8px",
-                }}>
-                  {orphans.length}
-                </span>
-              </div>
-              <details style={{ fontSize: 11 }}>
-                <summary style={{ cursor: "pointer", color: C.muted, userSelect: "none" }}>
-                  Voir les entity_id
-                </summary>
+                {/* Table */}
                 <div style={{
-                  marginTop: 6, fontFamily: "monospace", color: C.light,
-                  display: "flex", flexDirection: "column", gap: 2,
+                  background: BG, boxShadow: barIn, borderRadius: 10,
+                  maxHeight: 480, overflow: "auto",
                 }}>
-                  {orphans.map((r, i) => (
-                    <div key={`${r.entity_id}-${i}`} style={{ display: "flex", gap: 6 }}>
-                      <span style={{ color: TYPE_COLOR[r.entity_type] ?? C.muted, minWidth: 56 }}>
-                        {r.entity_type}
-                      </span>
-                      <span>{r.entity_id}</span>
-                    </div>
-                  ))}
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                    <thead style={{
+                      position: "sticky", top: 0, background: BG, zIndex: 1,
+                      boxShadow: `0 1px 0 ${C.light}33`,
+                    }}>
+                      <tr>
+                        {["#", "Projet", "Type", "Entity ID"].map((h, i) => (
+                          <th key={h} style={{
+                            textAlign: i === 0 ? "right" : "left",
+                            padding: "8px 12px", fontSize: 10, fontWeight: 700,
+                            color: C.muted, letterSpacing: 0.6, textTransform: "uppercase",
+                          }}>
+                            {h}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filtered.length === 0 && (
+                        <tr>
+                          <td colSpan={4} style={{ padding: 16, textAlign: "center", color: C.muted }}>
+                            Aucune ligne ne correspond aux filtres.
+                          </td>
+                        </tr>
+                      )}
+                      {filtered.map((r, i) => (
+                        <tr key={`${r.entity_id}-${i}`} style={{
+                          borderTop: i === 0 ? "none" : `1px solid ${C.light}22`,
+                        }}>
+                          <td data-numeric className="font-numeric tabular-nums" style={{
+                            padding: "6px 12px", color: C.light, textAlign: "right", fontVariantNumeric: "tabular-nums",
+                          }}>
+                            {i + 1}
+                          </td>
+                          <td style={{ padding: "6px 12px" }}>
+                            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                              <span style={{
+                                width: 8, height: 8, borderRadius: 2,
+                                background: r.project_color ?? (r.project_id === null ? C.red : C.muted),
+                              }} />
+                              <span style={{
+                                color: r.project_id === null ? C.red : C.text,
+                                fontWeight: r.project_id === null ? 600 : 500,
+                              }}>
+                                {r.project_name}
+                              </span>
+                            </span>
+                          </td>
+                          <td style={{ padding: "6px 12px" }}>
+                            <span style={{
+                              fontSize: 10, fontWeight: 600,
+                              color: TYPE_COLOR[r.entity_type] ?? C.muted,
+                              background: BG, boxShadow: pill, borderRadius: 4, padding: "2px 6px",
+                            }}>
+                              {r.entity_type}
+                            </span>
+                          </td>
+                          <td style={{
+                            padding: "6px 12px", fontFamily: "monospace",
+                            fontSize: 11, color: C.light, wordBreak: "break-all",
+                          }}>
+                            {r.entity_id}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-              </details>
+              </>
+            );
+          }
+
+          // Cards view (filtered)
+          const projectsToShow = projectFilter === "__orphans__"
+            ? []
+            : projectFilter === "all"
+              ? sortedProjectIds
+              : [projectFilter];
+
+          return (
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 480, overflowY: "auto", paddingRight: 4 }}>
+              {projectsToShow.length === 0 && projectFilter !== "__orphans__" && (
+                <p style={{ fontSize: 13, color: C.muted, textAlign: "center", padding: "12px 0" }}>
+                  Aucun attachement {tab === "drive" ? "Drive" : "Canva"} rattaché à un projet.
+                </p>
+              )}
+              {projectsToShow.map((pid) => {
+                const allRowsForProject = breakdown[pid] ?? [];
+                const rows = allRowsForProject.filter((r) => {
+                  if (typeFilter !== "all" && r.entity_type !== typeFilter) return false;
+                  if (search.trim() && !r.entity_id.toLowerCase().includes(search.trim().toLowerCase())) return false;
+                  return true;
+                });
+                if (rows.length === 0 && (typeFilter !== "all" || search.trim())) return null;
+                const expected = byProject[pid] ?? 0;
+                const counts = { project: 0, task: 0, subtask: 0 } as Record<string, number>;
+                rows.forEach((r) => { counts[r.entity_type] = (counts[r.entity_type] || 0) + 1; });
+                const proj = projectsById[pid];
+                return (
+                  <div key={pid} style={{
+                    background: BG, borderRadius: 10, boxShadow: barIn, padding: "10px 12px",
+                  }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
+                      <span style={{
+                        width: 10, height: 10, borderRadius: 3,
+                        background: proj?.color ?? C.muted,
+                      }} />
+                      <span style={{ fontSize: 13, fontWeight: 600, color: C.text }}>
+                        {proj?.name ?? pid}
+                      </span>
+                      <span style={{ fontSize: 11, color: C.light, fontFamily: "monospace" }}>{pid}</span>
+                      <span style={{
+                        marginLeft: "auto", display: "flex", alignItems: "center", gap: 6,
+                      }}>
+                        <span style={{ fontSize: 10, color: C.muted }}>attendu</span>
+                        <span data-numeric className="font-numeric tabular-nums" style={{
+                          fontSize: 12, fontWeight: 700, color: C.text,
+                          background: BG, boxShadow: pill, borderRadius: 4, padding: "1px 7px",
+                        }}>
+                          {expected}
+                        </span>
+                        <span style={{ fontSize: 10, color: C.muted }}>·</span>
+                        <span style={{ fontSize: 10, color: C.muted }}>affiché</span>
+                        <span data-numeric className="font-numeric tabular-nums" style={{
+                          fontSize: 12, fontWeight: 700,
+                          color: rows.length === expected ? C.green : C.orange,
+                          background: BG, boxShadow: pill, borderRadius: 4, padding: "1px 7px",
+                        }}>
+                          {rows.length}
+                        </span>
+                      </span>
+                    </div>
+                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 6 }}>
+                      {(["project", "task", "subtask"] as const).map((t) =>
+                        counts[t] > 0 ? (
+                          <span key={t} style={{
+                            fontSize: 10, fontWeight: 600, color: TYPE_COLOR[t],
+                            background: BG, boxShadow: pill, borderRadius: 4, padding: "2px 6px",
+                          }}>
+                            {t} · {counts[t]}
+                          </span>
+                        ) : null
+                      )}
+                    </div>
+                    <details style={{ fontSize: 11 }} open={rows.length <= 8}>
+                      <summary style={{ cursor: "pointer", color: C.muted, userSelect: "none" }}>
+                        Voir les {rows.length} entity_id
+                      </summary>
+                      <div style={{
+                        marginTop: 6, fontFamily: "monospace", color: C.light,
+                        display: "flex", flexDirection: "column", gap: 2,
+                      }}>
+                        {rows.map((r, i) => (
+                          <div key={`${r.entity_id}-${i}`} style={{ display: "flex", gap: 6 }}>
+                            <span style={{ color: TYPE_COLOR[r.entity_type] ?? C.muted, minWidth: 56 }}>
+                              {r.entity_type}
+                            </span>
+                            <span>{r.entity_id}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </details>
+                  </div>
+                );
+              })}
+
+              {(projectFilter === "all" || projectFilter === "__orphans__") && orphans.length > 0 && (() => {
+                const filteredOrphans = orphans.filter((r) => {
+                  if (typeFilter !== "all" && r.entity_type !== typeFilter) return false;
+                  if (search.trim() && !r.entity_id.toLowerCase().includes(search.trim().toLowerCase())) return false;
+                  return true;
+                });
+                if (filteredOrphans.length === 0) return null;
+                return (
+                  <div style={{
+                    background: BG, borderRadius: 10, boxShadow: barIn, padding: "10px 12px",
+                    borderLeft: `3px solid ${C.red}`,
+                  }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: C.red }}>
+                        Orphelins (non rattachables)
+                      </span>
+                      <span data-numeric className="font-numeric tabular-nums" style={{
+                        marginLeft: "auto", fontSize: 13, fontWeight: 700, color: C.red,
+                        background: BG, boxShadow: pill, borderRadius: 4, padding: "1px 8px",
+                      }}>
+                        {filteredOrphans.length}/{orphans.length}
+                      </span>
+                    </div>
+                    <details style={{ fontSize: 11 }} open>
+                      <summary style={{ cursor: "pointer", color: C.muted, userSelect: "none" }}>
+                        Voir les entity_id
+                      </summary>
+                      <div style={{
+                        marginTop: 6, fontFamily: "monospace", color: C.light,
+                        display: "flex", flexDirection: "column", gap: 2,
+                      }}>
+                        {filteredOrphans.map((r, i) => (
+                          <div key={`${r.entity_id}-${i}`} style={{ display: "flex", gap: 6 }}>
+                            <span style={{ color: TYPE_COLOR[r.entity_type] ?? C.muted, minWidth: 56 }}>
+                              {r.entity_type}
+                            </span>
+                            <span>{r.entity_id}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </details>
+                  </div>
+                );
+              })()}
             </div>
-          )}
-        </div>
+          );
+        })()}
       </Tile>
     </div>
   );

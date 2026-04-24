@@ -238,6 +238,45 @@ export default function NumericAudit() {
         <ShieldCheck className="w-5 h-5 text-primary" />
         <h1 className="font-display font-bold text-foreground text-lg">Audit typographique numérique</h1>
         <div className="ml-auto flex items-center gap-2">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={scanning || cleaning || staleAcceptances.length === 0}
+              >
+                <Sparkles className={`w-4 h-4 mr-1.5 ${cleaning ? "animate-pulse" : ""}`} />
+                Nettoyer obsolètes
+                {staleAcceptances.length > 0 && (
+                  <Badge variant="secondary" className="ml-2 h-5 px-1.5">
+                    <span data-numeric className="font-numeric tabular-nums text-xs">
+                      {staleAcceptances.length}
+                    </span>
+                  </Badge>
+                )}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="bg-popover text-popover-foreground">
+              <AlertDialogHeader>
+                <AlertDialogTitle>Nettoyer les acceptations obsolètes ?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Cette action supprimera définitivement{" "}
+                  <span data-numeric className="font-numeric tabular-nums font-semibold text-foreground">
+                    {staleAcceptances.length}
+                  </span>{" "}
+                  acceptation(s) dont la violation correspondante n'apparaît plus dans le scan actuel
+                  (code modifié, supprimé ou refactoré). Les acceptations encore liées à une violation
+                  active ne seront pas touchées.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Annuler</AlertDialogCancel>
+                <AlertDialogAction onClick={cleanupStale}>
+                  Supprimer les obsolètes
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
           <Button variant="outline" size="sm" onClick={refresh} disabled={scanning}>
             <RefreshCw className={`w-4 h-4 mr-1.5 ${scanning ? "animate-spin" : ""}`} />
             Re-scanner

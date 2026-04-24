@@ -61,6 +61,18 @@ export default function Settings() {
         </button>
         <Shield className="w-5 h-5 text-primary" />
         <h1 className="font-display font-bold text-foreground text-lg">Administration</h1>
+        <div className="ml-auto">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/dev/numeric-audit')}
+            className="gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+            title="Audit typographique numérique (admin)"
+          >
+            <ShieldCheck className="w-4 h-4" />
+            <span className="hidden sm:inline">Audit numérique</span>
+          </Button>
+        </div>
       </header>
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6">

@@ -279,7 +279,7 @@ export default function ZoomMeetingsDashboard() {
             <img src={INTEGRATION_CONFIG.zoom.icon} alt="Zoom" className="w-5 h-5" />
             Réunions Zoom
             {meetings.length > 0 && (
-              <span className="text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
+              <span data-numeric className="font-numeric tabular-nums text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
                 {meetings.length}
               </span>
             )}

@@ -148,7 +148,7 @@ export default function WorkloadView() {
           <CardContent className="pt-4 pb-4 space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Progression globale</span>
-              <span className="font-medium text-foreground">{selectedMember.completionRate}%</span>
+              <span data-numeric className="font-numeric tabular-nums font-medium text-foreground">{selectedMember.completionRate}%</span>
             </div>
             <Progress value={selectedMember.completionRate} className="h-2.5" />
             <div className="flex flex-wrap gap-1.5 pt-1">
@@ -317,14 +317,14 @@ export default function WorkloadView() {
                 </div>
                 <div className="min-w-0">
                   <p className="font-semibold text-sm text-foreground truncate">{member.name}</p>
-                  <p className="text-xs text-muted-foreground">{total} tâche{total !== 1 ? 's' : ''} · {done} terminée{done !== 1 ? 's' : ''}</p>
+                  <p data-numeric className="font-numeric tabular-nums text-xs text-muted-foreground">{total} tâche{total !== 1 ? 's' : ''} · {done} terminée{done !== 1 ? 's' : ''}</p>
                 </div>
               </div>
 
               <div className="space-y-1">
                 <div className="flex justify-between text-xs text-muted-foreground">
                   <span>Progression</span>
-                  <span>{completionRate}%</span>
+                  <span data-numeric className="font-numeric tabular-nums">{completionRate}%</span>
                 </div>
                 <Progress value={completionRate} className="h-2" />
               </div>

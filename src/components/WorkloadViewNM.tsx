@@ -176,9 +176,9 @@ export default function WorkloadViewNM() {
                   }}>{initials}</div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 12, fontWeight: 700, color: C.text }}>{m.name}</div>
-                    <div style={{ fontSize: 9, color: C.muted }}>{total} tâches · {m.done} terminées</div>
+                    <div data-numeric className="font-numeric tabular-nums" style={{ fontSize: 9, color: C.muted }}>{total} tâches · {m.done} terminées</div>
                   </div>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: C.green }}>{m.completion}%</div>
+                  <div data-numeric className="font-numeric tabular-nums" style={{ fontSize: 13, fontWeight: 800, color: C.green }}>{m.completion}%</div>
                 </div>
                 {/* Barre empilée priorités */}
                 <div style={{

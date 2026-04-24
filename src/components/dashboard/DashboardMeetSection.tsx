@@ -133,7 +133,7 @@ export default function DashboardMeetSection() {
           <img src={INTEGRATION_CONFIG.google_meet.icon} alt="Google Meet" className="w-5 h-5" />
           Sessions Google Meet
           {events.length > 0 && (
-            <span className="text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
+            <span data-numeric className="font-numeric tabular-nums text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
               {events.length}
             </span>
           )}

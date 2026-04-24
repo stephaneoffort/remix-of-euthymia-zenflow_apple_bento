@@ -19,7 +19,7 @@ export function PinnedMessagesPanel({ messages, memberProfiles, onUnpin, onClose
         <div className="flex items-center gap-2">
           <Pin className="w-4 h-4 text-primary" />
           <h3 className="font-semibold text-sm text-foreground">Messages épinglés</h3>
-          <span className="text-[11px] text-muted-foreground/50">{messages.length}</span>
+          <span data-numeric className="font-numeric tabular-nums text-[11px] text-muted-foreground/50">{messages.length}</span>
         </div>
         <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-muted/40 text-muted-foreground transition-all">
           <X className="w-4 h-4" />

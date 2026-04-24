@@ -914,6 +914,8 @@ export default function SidebarNM() {
                 </svg>
                 Archives
                 <span
+                  data-numeric
+                  className="font-numeric tabular-nums"
                   style={{
                     marginLeft: "auto",
                     fontSize: 10,

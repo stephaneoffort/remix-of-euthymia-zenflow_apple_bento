@@ -401,7 +401,7 @@ export default function TimelineView() {
           Chevauchements
           {overlapCount > 0 && (
             <Badge variant="destructive" className="ml-1 px-1.5 py-0 text-[10px]">
-              {overlapCount}
+              <span data-numeric className="font-numeric tabular-nums">{overlapCount}</span>
             </Badge>
           )}
         </button>
@@ -475,7 +475,7 @@ export default function TimelineView() {
                         <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: group.color }} />
                       )}
                       <span className="text-xs font-semibold text-foreground capitalize">{group.label}</span>
-                      <span className="text-[10px] text-muted-foreground">
+                      <span data-numeric className="font-numeric tabular-nums text-[10px] text-muted-foreground">
                         {group.items.length} tâche{group.items.length > 1 ? "s" : ""}
                       </span>
                     </div>
@@ -612,7 +612,7 @@ export default function TimelineView() {
           <span className="w-4 h-0.5 bg-destructive inline-block" /> Aujourd'hui
         </span>
         {overlapCount > 0 && (
-          <span className="ml-auto text-destructive font-medium">
+          <span data-numeric className="font-numeric tabular-nums ml-auto text-destructive font-medium">
             {overlapCount} tâche{overlapCount > 1 ? "s" : ""} en chevauchement
           </span>
         )}

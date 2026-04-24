@@ -248,7 +248,7 @@ export default function CalendarSyncSettings() {
             <div className="flex items-center justify-between pt-2 border-t border-border">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <CheckCircle className="w-4 h-4 text-green-500" />
-                {syncedCount} tâche(s) synchronisée(s)
+                <span data-numeric className="font-numeric tabular-nums">{syncedCount}</span> tâche(s) synchronisée(s)
               </div>
               <Button
                 variant="outline"

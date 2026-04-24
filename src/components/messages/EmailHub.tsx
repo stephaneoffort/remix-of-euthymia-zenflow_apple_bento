@@ -70,23 +70,11 @@ export default function EmailHub() {
     } catch {}
   };
 
-  // Auto-import en cours : afficher un loader pendant la récupération du Gmail existant
+  // Auto-import en cours : afficher une progression par étapes
   if (isLoading || importLegacyGmail.isPending) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full gap-3 text-center px-6">
-        <Loader2 className="w-8 h-8 text-primary animate-spin" />
-        <div>
-          <p className="text-sm font-medium text-foreground">
-            {importLegacyGmail.isPending ? 'Import du compte Gmail existant…' : 'Chargement des comptes…'}
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">
-            {importLegacyGmail.isPending
-              ? 'Récupération de votre connexion Gmail déjà autorisée.'
-              : 'Veuillez patienter.'}
-          </p>
-        </div>
-      </div>
-    );
+    // Étape courante : 0=connexion, 1=synchronisation, 2=vérification
+    const currentStep = isLoading ? 0 : importLegacyGmail.isPending ? 1 : 2;
+    return <ImportProgress currentStep={currentStep} />;
   }
 
   // Auto-import a échoué : afficher l'erreur + actions de récupération

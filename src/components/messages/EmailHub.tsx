@@ -760,6 +760,11 @@ function ConversationView({
     setExpandedIds(new Set(latest ? [latest.id] : []));
   };
 
+  const totalAttachments = useMemo(
+    () => thread.reduce((sum, m) => sum + getAttachmentList(m).length, 0),
+    [thread]
+  );
+
   return (
     <>
       <h2 className="text-2xl font-semibold tracking-tight text-foreground mb-2 leading-snug">
@@ -767,13 +772,20 @@ function ConversationView({
       </h2>
 
       {isThread && (
-        <div className="flex items-center justify-between gap-2 mb-4 pb-3 border-b border-border">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <div className="flex items-center justify-between gap-2 mb-4 pb-3 border-b border-border flex-wrap">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
             <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-muted/60 border border-border">
               <Mail className="w-3 h-3" />
               <span className="font-medium text-foreground">{thread.length}</span>
               <span>messages dans cette conversation</span>
             </span>
+            {totalAttachments > 0 && (
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-muted/60 border border-border">
+                <Paperclip className="w-3 h-3" />
+                <span className="font-medium text-foreground">{totalAttachments}</span>
+                <span>pièce{totalAttachments > 1 ? 's' : ''} jointe{totalAttachments > 1 ? 's' : ''}</span>
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-1">
             <button

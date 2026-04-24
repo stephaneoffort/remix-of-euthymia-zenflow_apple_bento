@@ -27,6 +27,7 @@ import DriveAttachments from '@/components/drive/DriveAttachments';
 import IntegrationTiles from '@/components/IntegrationTiles';
 import { useIntegrations, INTEGRATION_CONFIG } from '@/hooks/useIntegrations';
 import GoogleCalendarPicker from '@/components/GoogleCalendarPicker';
+import TaskLinksSection from '@/components/TaskLinksSection';
 // Format date for display
 function formatDateDisplay(isoStr: string): string {
   const d = new Date(isoStr);

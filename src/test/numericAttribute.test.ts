@@ -149,6 +149,20 @@ interface Violation {
   reason: string;
 }
 
+function hasNumericAncestor(src: string, offset: number): boolean {
+  let cur = offset;
+  for (let depth = 0; depth < 6; depth++) {
+    const tag = findEnclosingOpenTag(src, cur);
+    if (!tag) return false;
+    if (/\bdata-numeric\b/.test(tag)) return true;
+    // Move offset to just before this tag's `<` to walk up one level
+    const tagStart = src.lastIndexOf(tag, cur);
+    if (tagStart <= 0) return false;
+    cur = tagStart;
+  }
+  return false;
+}
+
 function analyzeFile(file: string, src: string): Violation[] {
   const violations: Violation[] = [];
   const segments = extractJsxTextSegments(src);
@@ -173,26 +187,24 @@ function analyzeFile(file: string, src: string): Violation[] {
     const exprRe = /\{([^{}]+)\}/g;
     let em: RegExpExecArray | null;
     while ((em = exprRe.exec(text)) !== null) {
-      if (isNumericExpression(em[1])) {
-        reasons.push(`numeric expression: {${em[1].trim()}}`);
-        break; // one is enough to flag the segment
+      const inner = em[1];
+      // Skip if expression contains a regex literal (false positives like /^\d{4}/)
+      if (/\/\^?[^/\n]*\\d/.test(inner)) continue;
+      if (isNumericExpression(inner)) {
+        reasons.push(`numeric expression: {${inner.trim()}}`);
+        break;
       }
     }
 
     if (reasons.length === 0) continue;
 
-    // Check enclosing tag for data-numeric
+    // Skip if any ancestor (up to 6 levels) carries data-numeric
+    if (hasNumericAncestor(src, offset)) continue;
+
+    // Make sure we are in a real JSX context
     const tag = findEnclosingOpenTag(src, offset);
-    if (!tag) continue; // not in JSX context (string literal etc.)
-
-    // Skip non-text-rendering tags (containers that wrap children)
-    // We still flag spans, p, div, h*, td, button, label, Badge, etc.
+    if (!tag) continue;
     if (/^<\s*(?:Fragment|>|React\.Fragment)/.test(tag)) continue;
-
-    if (/\bdata-numeric\b/.test(tag)) continue;
-
-    // Also accept if the ancestor span/div in same line uses data-numeric
-    // (rare — keep conservative and report anyway).
 
     const line = src.slice(0, offset).split("\n").length;
     violations.push({

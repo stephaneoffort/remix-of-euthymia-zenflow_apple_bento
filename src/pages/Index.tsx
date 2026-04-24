@@ -298,10 +298,10 @@ export default function Index() {
               )}
               {/* Breadcrumb navigation */}
               {breadcrumbs.length > 0 ? (
-                <nav className="flex items-center gap-1 min-w-0 text-sm sm:text-lg overflow-hidden">
+                <nav className="flex items-center gap-1 min-w-0 text-sm sm:text-lg overflow-hidden py-0.5">
                   {isMobile ? (
                     // Mobile: only show last breadcrumb to prevent overflow
-                    <h2 className="font-display font-bold text-foreground text-sm truncate min-w-0">
+                    <h2 className="font-display font-bold text-foreground text-sm truncate min-w-0 leading-relaxed py-0.5">
                       {breadcrumbs[breadcrumbs.length - 1].color && (
                         <span
                           className="inline-block w-2.5 h-2.5 rounded-sm mr-1.5 align-middle"
@@ -320,13 +320,13 @@ export default function Index() {
                         {crumb.onClick ? (
                           <button
                             onClick={crumb.onClick}
-                            className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors truncate shrink min-w-0"
+                            className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors truncate shrink min-w-0 leading-relaxed py-0.5"
                           >
                             {crumb.icon && <span className="shrink-0">{crumb.icon}</span>}
                             <span className="truncate">{crumb.label}</span>
                           </button>
                         ) : (
-                          <h2 className="font-display flex items-center gap-1.5 font-bold text-foreground truncate min-w-0">
+                          <h2 className="font-display flex items-center gap-1.5 font-bold text-foreground truncate min-w-0 leading-relaxed py-0.5">
                             {crumb.color && (
                               <div className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: crumb.color }} />
                             )}
@@ -339,7 +339,7 @@ export default function Index() {
                   )}
                 </nav>
               ) : (
-                <h2 className="font-display font-bold text-foreground text-sm sm:text-lg truncate min-w-0">{title}</h2>
+                <h2 className="font-display font-bold text-foreground text-sm sm:text-lg truncate min-w-0 leading-relaxed py-0.5">{title}</h2>
               )}
 
               {/* Project responsibles */}

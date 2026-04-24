@@ -97,7 +97,7 @@ function MyTasksCard({
                 <StatusBadge status={task.status} />
                 {daysLeft !== null ? (
                   <span
-                    className={`text-[11px] font-semibold shrink-0 tabular-nums ${isOverdue ? "text-destructive" : "text-muted-foreground"}`}
+                    className={`font-numeric text-[11px] font-semibold shrink-0 tabular-nums ${isOverdue ? "text-destructive" : "text-muted-foreground"}`}
                   >
                     {isOverdue ? `−${Math.abs(daysLeft)}j` : daysLeft === 0 ? "Auj." : `${daysLeft}j`}
                   </span>

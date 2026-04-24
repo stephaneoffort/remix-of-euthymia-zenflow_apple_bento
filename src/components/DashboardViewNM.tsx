@@ -1304,7 +1304,17 @@ function NMResourceCard({
 }
 
 /* ─── Brevo Campaigns detail card – Premium neumorphic ─── */
-function NMBrevoCampaigns({ campaigns, loading }: { campaigns: any[]; loading: boolean }) {
+function NMBrevoCampaigns({
+  campaigns,
+  loading,
+  error,
+  onRetry,
+}: {
+  campaigns: any[];
+  loading: boolean;
+  error?: string | null;
+  onRetry?: () => void;
+}) {
   const [expanded, setExpanded] = useState(false);
   const MAX = 5;
   const visible = expanded ? campaigns : campaigns.slice(0, MAX);
@@ -1322,7 +1332,7 @@ function NMBrevoCampaigns({ campaigns, loading }: { campaigns: any[]; loading: b
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
         <img src={INTEGRATION_CONFIG.brevo.icon} alt="" style={{ width: 18, height: 18 }} />
         <span style={{ fontSize: 14, fontWeight: 600, color: C.text, letterSpacing: 0.3 }}>Campagnes Email</span>
-        {campaigns.length > 0 && (
+        {!loading && !error && campaigns.length > 0 && (
           <span data-numeric className="font-numeric tabular-nums" style={{
             marginLeft: "auto", fontSize: 13, color: C.muted,
             background: BG, borderRadius: 4, boxShadow: pill, padding: "1px 8px",
@@ -1333,7 +1343,53 @@ function NMBrevoCampaigns({ campaigns, loading }: { campaigns: any[]; loading: b
       </div>
 
       {loading ? (
-        <p style={{ fontSize: 13, color: C.muted, textAlign: "center", padding: "16px 0" }}>Chargement…</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }} aria-busy="true" aria-live="polite">
+          {[0, 1, 2].map((i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 6px" }}>
+              <div style={{
+                width: 28, height: 28, borderRadius: 8, background: BG, boxShadow: barIn, flexShrink: 0,
+                opacity: 0.6, animation: "nm-skeleton-pulse 1.4s ease-in-out infinite",
+              }} />
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 5 }}>
+                <div style={{
+                  height: 10, width: `${60 + i * 10}%`, borderRadius: 4, background: BG, boxShadow: barIn,
+                  opacity: 0.6, animation: "nm-skeleton-pulse 1.4s ease-in-out infinite",
+                }} />
+                <div style={{
+                  height: 8, width: "45%", borderRadius: 4, background: BG, boxShadow: barIn,
+                  opacity: 0.5, animation: "nm-skeleton-pulse 1.4s ease-in-out infinite",
+                }} />
+              </div>
+            </div>
+          ))}
+          <style>{`@keyframes nm-skeleton-pulse { 0%,100% { opacity: 0.4 } 50% { opacity: 0.75 } }`}</style>
+        </div>
+      ) : error ? (
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, padding: "16px 8px" }} role="alert">
+          <div style={{
+            width: 38, height: 38, borderRadius: "50%", background: BG, boxShadow: barIn,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            color: C.red, fontSize: 18, fontWeight: 700,
+          }}>!</div>
+          <p style={{ fontSize: 13, color: C.text, textAlign: "center", margin: 0, fontWeight: 600 }}>
+            Chargement impossible
+          </p>
+          <p style={{ fontSize: 11, color: C.muted, textAlign: "center", margin: 0, maxWidth: 260 }}>
+            {error}
+          </p>
+          {onRetry && (
+            <button
+              onClick={onRetry}
+              style={{
+                marginTop: 4, padding: "6px 14px", border: "none", background: BG,
+                boxShadow: pill, borderRadius: 8, cursor: "pointer",
+                fontSize: 12, fontWeight: 600, color: C.orange,
+              }}
+            >
+              Réessayer
+            </button>
+          )}
+        </div>
       ) : campaigns.length === 0 ? (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, padding: "16px 0" }}>
           <div style={{

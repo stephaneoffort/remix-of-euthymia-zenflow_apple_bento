@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import React from "react";
 import { PALETTE_META } from "@/context/ThemeContext";
 
@@ -50,14 +50,18 @@ describe("Renommage Ivoire → Premium dans l'interface", () => {
   });
 
   it("rend « Premium Chaud » dans la liste des palettes (Settings/Sidebar)", () => {
-    render(<PalettePickerHarness />);
-    expect(screen.getByText("Premium Chaud")).toBeInTheDocument();
-    expect(screen.queryByText(/Ivoire Chaud/i)).not.toBeInTheDocument();
+    const { container } = render(<PalettePickerHarness />);
+    const text = container.textContent || "";
+    expect(text).toContain("Premium Chaud");
+    expect(text).not.toMatch(/Ivoire Chaud/i);
   });
 
   it("rend « Premium » dans le switch design mode", () => {
-    render(<PalettePickerHarness />);
-    expect(screen.getByRole("button", { name: /Premium/ })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Ivoire/ })).toBeNull();
+    const { container } = render(<PalettePickerHarness />);
+    const buttons = Array.from(container.querySelectorAll("button")).map(
+      (b) => b.textContent || "",
+    );
+    expect(buttons.some((t) => /Premium/.test(t))).toBe(true);
+    expect(buttons.some((t) => /Ivoire/i.test(t))).toBe(false);
   });
 });

@@ -862,10 +862,14 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
       setBrevoCount(count ?? 0);
 
       setBrevoLoading(true);
+      setBrevoError(null);
       try {
         const data = await brevo.listCampaigns();
         setBrevoCampaigns(Array.isArray(data) ? data : []);
-      } catch { /* silent */ }
+      } catch (e: any) {
+        setBrevoError(e?.message || "Impossible de charger les campagnes Brevo.");
+        setBrevoCampaigns([]);
+      }
       setBrevoLoading(false);
     }
   }, [isActive]);

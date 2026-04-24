@@ -777,6 +777,16 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
         .select("id", { count: "exact", head: true })
         .eq("user_id", user.id);
       setDriveCount(count ?? 0);
+
+      const { data: rows } = await (supabase as any)
+        .from("drive_attachments")
+        .select("entity_id")
+        .eq("entity_type", "project");
+      const counts: Record<string, number> = {};
+      (rows ?? []).forEach((r: any) => {
+        counts[r.entity_id] = (counts[r.entity_id] || 0) + 1;
+      });
+      setDriveByProject(counts);
     }
 
     if (isActive("canva")) {
@@ -785,6 +795,16 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
         .select("id", { count: "exact", head: true })
         .eq("user_id", user.id);
       setCanvaCount(count ?? 0);
+
+      const { data: rows } = await (supabase as any)
+        .from("canva_attachments")
+        .select("entity_id")
+        .eq("entity_type", "project");
+      const counts: Record<string, number> = {};
+      (rows ?? []).forEach((r: any) => {
+        counts[r.entity_id] = (counts[r.entity_id] || 0) + 1;
+      });
+      setCanvaByProject(counts);
     }
 
     if (isActive("brevo")) {
@@ -793,6 +813,13 @@ function NMIntegrations({ isMobile: isMobileProp }: { isMobile?: boolean } = {})
         .select("id", { count: "exact", head: true })
         .eq("user_id", user.id);
       setBrevoCount(count ?? 0);
+
+      setBrevoLoading(true);
+      try {
+        const data = await brevo.listCampaigns();
+        setBrevoCampaigns(Array.isArray(data) ? data : []);
+      } catch { /* silent */ }
+      setBrevoLoading(false);
     }
   }, [isActive]);
 

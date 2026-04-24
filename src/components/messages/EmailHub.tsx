@@ -90,8 +90,18 @@ export default function EmailHub() {
           <p className="text-xs text-muted-foreground mt-1 break-words">{errMsg}</p>
         </div>
         <div className="flex gap-2">
-          <Button size="sm" variant="outline" onClick={() => importLegacyGmail.mutate()}>
-            <RefreshCw className="w-4 h-4 mr-1.5" /> Réessayer
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => importLegacyGmail.mutate()}
+            disabled={importLegacyGmail.isPending}
+          >
+            {importLegacyGmail.isPending ? (
+              <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
+            ) : (
+              <RefreshCw className="w-4 h-4 mr-1.5" />
+            )}
+            Réessayer l'auto-import
           </Button>
           <Button size="sm" onClick={connectGmail}>
             <Mail className="w-4 h-4 mr-1.5" /> Reconnecter Gmail

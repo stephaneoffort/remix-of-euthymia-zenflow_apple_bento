@@ -197,6 +197,42 @@ export default function WorkloadViewNM() {
         ))}
       </div>
 
+      {/* ── Graphiques (BarChart par membre + PieChart priorités) ── */}
+      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 14, marginBottom: 20 }}>
+        <div style={{ background: BG, borderRadius: 16, boxShadow: raised, padding: 16 }}>
+          <Lbl>Charge par membre (par statut)</Lbl>
+          <div style={{ height: 240, marginTop: 10 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={barData} barSize={18}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(140,118,88,0.15)" />
+                <XAxis dataKey="name" tick={{ fontSize: 11, fill: C.muted }} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: C.muted }} />
+                <RTooltip contentStyle={{ background: BG, border: "none", borderRadius: 10, boxShadow: raisedSm, fontSize: 11 }} />
+                <Bar dataKey="À faire"  stackId="a" fill={C.muted} />
+                <Bar dataKey="En cours" stackId="a" fill={C.orange} />
+                <Bar dataKey="En revue" stackId="a" fill={C.blue} />
+                <Bar dataKey="Terminé"  stackId="a" fill={C.green} />
+                <Bar dataKey="Bloqué"   stackId="a" fill={C.red} radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        <div style={{ background: BG, borderRadius: 16, boxShadow: raised, padding: 16 }}>
+          <Lbl>Répartition par priorité</Lbl>
+          <div style={{ height: 240, marginTop: 10 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie data={priorityData} cx="50%" cy="50%" innerRadius={45} outerRadius={75} paddingAngle={3} dataKey="value">
+                  {priorityData.map((e, i) => <Cell key={i} fill={e.color} />)}
+                </Pie>
+                <RTooltip contentStyle={{ background: BG, border: "none", borderRadius: 10, boxShadow: raisedSm, fontSize: 11 }} />
+                <Legend formatter={(v) => <span style={{ fontSize: 10, color: C.muted }}>{v}</span>} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
       {/* ── Charge par membre ── */}
       <div style={{ background: BG, borderRadius: 16, boxShadow: raised, padding: 16, marginBottom: 20 }}>
         <Lbl>Charge par membre</Lbl>

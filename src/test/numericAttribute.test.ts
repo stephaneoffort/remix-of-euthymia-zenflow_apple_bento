@@ -9,18 +9,18 @@ import { join, relative } from "path";
  * Numeric displays MUST carry `data-numeric` so the global CSS rule in
  * `src/index.css` applies the dedicated numeric font + tabular-nums.
  *
- * Detection heuristics on JSX text nodes (between `>` and `<`):
+ * Detection heuristics on JSX text nodes:
  *  - Pure number literal:                    >{42}<
  *  - Member-access count/length/size:        >{xxx.length}<  >{xxx.count}<  >{xxx.size}<
  *  - Variables ending in Count / Total:      >{overdueCount}<  >{filterCount}<
  *  - Percentages:                            >{value}%<  >{value.toFixed(0)}%<
  *  - Ratios:                                 >{a}/{b}<
- *  - Arithmetic / Math expressions:          >{Math.round(x)}<  >{a - b}<
+ *  - Math.* arithmetic:                      >{Math.round(x)}<
  *
- * For each match, we walk back to the enclosing JSX opening tag and
- * verify it contains `data-numeric`. Tags inside the same parent that
- * already carry `data-numeric` are considered safe (CSS inherits via
- * the [data-numeric] attribute selector).
+ * False-positive guards :
+ *  - Skip text segments that are clearly inside a JS expression (template
+ *    literals `${...}`, regex literals `/^...\d{...}.../`).
+ *  - Skip when an ancestor element (up to 8 levels) carries `data-numeric`.
  */
 
 const ROOT = join(process.cwd(), "src");
@@ -32,18 +32,10 @@ const IGNORED_DIRS = new Set([
   "ui",           // shadcn primitives — generic, no numeric semantics
 ]);
 
-// Files we ignore (tests, generated, or pure logic)
+// Files we ignore
 const IGNORED_FILES = new Set<string>([
   "vite-env.d.ts",
 ]);
-
-// Whitelist : known acceptable matches that are NOT user-visible numeric
-// displays (icon size props, style values, keys, conditionals, etc.).
-// Each entry is the exact JSX text capture between `>` and `<`.
-const WHITELIST_SNIPPETS: RegExp[] = [
-  // Empty-ish or layout-only
-  /^\s*$/,
-];
 
 function walk(dir: string, acc: string[] = []): string[] {
   for (const entry of readdirSync(dir)) {
@@ -60,58 +52,186 @@ function walk(dir: string, acc: string[] = []): string[] {
 }
 
 /**
- * Extract JSX text segments between `>` and `<` along with their absolute
- * offset in the source. Returns segments containing JSX expressions `{...}`.
+ * Locate JSX text nodes that contain at least one `{...}` expression and
+ * lie strictly between a real JSX `>` (end of an opening tag) and a real
+ * JSX `<` (start of the next tag).
+ *
+ * We pre-process the source to mask out:
+ *   - string / template literals (so `"a < b"` or `` `${x}` `` cannot
+ *     pollute the angle-bracket scanner),
+ *   - regex literals (so `/^\d{4}/` is invisible to the scanner),
+ *   - block + line comments,
+ *   - JSX attribute values that contain comparison operators.
+ *
+ * The masked source preserves offsets (replaced char-by-char with a
+ * filler char) so we can still report accurate line numbers.
  */
-function extractJsxTextSegments(src: string): { text: string; offset: number }[] {
+function maskNonJsx(src: string): string {
+  const out = src.split("");
+  const FILL = " ";
+  let i = 0;
+  const n = src.length;
+
+  const fill = (start: number, end: number) => {
+    for (let k = start; k < end; k++) {
+      // Preserve newlines so line numbers stay correct
+      if (out[k] !== "\n") out[k] = FILL;
+    }
+  };
+
+  while (i < n) {
+    const ch = src[i];
+    const next = src[i + 1];
+
+    // Line comment
+    if (ch === "/" && next === "/") {
+      let j = i + 2;
+      while (j < n && src[j] !== "\n") j++;
+      fill(i, j);
+      i = j;
+      continue;
+    }
+    // Block comment
+    if (ch === "/" && next === "*") {
+      let j = i + 2;
+      while (j < n - 1 && !(src[j] === "*" && src[j + 1] === "/")) j++;
+      fill(i, Math.min(j + 2, n));
+      i = j + 2;
+      continue;
+    }
+    // String literal "..."
+    if (ch === '"') {
+      let j = i + 1;
+      while (j < n && src[j] !== '"') {
+        if (src[j] === "\\") j++;
+        j++;
+      }
+      fill(i, j + 1);
+      i = j + 1;
+      continue;
+    }
+    // String literal '...'
+    if (ch === "'") {
+      let j = i + 1;
+      while (j < n && src[j] !== "'") {
+        if (src[j] === "\\") j++;
+        j++;
+      }
+      fill(i, j + 1);
+      i = j + 1;
+      continue;
+    }
+    // Template literal `...`  (with nested ${ ... } expressions)
+    if (ch === "`") {
+      let j = i + 1;
+      while (j < n && src[j] !== "`") {
+        if (src[j] === "\\") {
+          j += 2;
+          continue;
+        }
+        if (src[j] === "$" && src[j + 1] === "{") {
+          // skip balanced braces
+          let depth = 1;
+          j += 2;
+          while (j < n && depth > 0) {
+            if (src[j] === "{") depth++;
+            else if (src[j] === "}") depth--;
+            j++;
+          }
+          continue;
+        }
+        j++;
+      }
+      fill(i, j + 1);
+      i = j + 1;
+      continue;
+    }
+    // Regex literal — heuristic: a `/` that follows an operator / `(` / `,` / `=` / `:` / `!` / `&` / `|` / `?` / `;` / `{` / `[` / `\n`
+    if (ch === "/") {
+      // look back to nearest non-space char
+      let p = i - 1;
+      while (p >= 0 && /\s/.test(src[p])) p--;
+      const prev = p >= 0 ? src[p] : "";
+      if ("(,=:!&|?;{[".includes(prev) || prev === "" || prev === "\n") {
+        let j = i + 1;
+        while (j < n && src[j] !== "\n" && src[j] !== "/") {
+          if (src[j] === "\\") {
+            j += 2;
+            continue;
+          }
+          if (src[j] === "[") {
+            // character class, may contain unescaped `/`
+            j++;
+            while (j < n && src[j] !== "]") {
+              if (src[j] === "\\") j++;
+              j++;
+            }
+          }
+          j++;
+        }
+        // include trailing flags
+        let k = j + 1;
+        while (k < n && /[a-z]/.test(src[k])) k++;
+        if (j < n && src[j] === "/") {
+          fill(i, k);
+          i = k;
+          continue;
+        }
+      }
+    }
+    i++;
+  }
+
+  return out.join("");
+}
+
+/**
+ * Extract JSX text segments from the masked source. A segment is the text
+ * between a `>` and a `<` that contains at least one `{...}` expression.
+ */
+function extractJsxTextSegments(masked: string): { text: string; offset: number }[] {
   const out: { text: string; offset: number }[] = [];
-  // Skip imports / comments crudely by working on the full file — false
-  // positives are filtered later by requiring an enclosing JSX tag.
   const re = />([^<>]*\{[^<>]*\}[^<>]*)</g;
   let m: RegExpExecArray | null;
-  while ((m = re.exec(src)) !== null) {
+  while ((m = re.exec(masked)) !== null) {
     out.push({ text: m[1], offset: m.index + 1 });
   }
   return out;
 }
 
 /**
- * Find the opening JSX tag that contains the segment at `offset` and return
- * its raw text (e.g. `<span className="...">`).
- *
- * `offset` points at the first character of the JSX text segment, i.e. just
- * after the `>` that closes the parent tag. We walk backwards looking for
- * the matching `<` of that parent tag, skipping over any nested closed
- * sibling tags `<X>...</X>` already complete to our left.
+ * Find the opening JSX tag that directly encloses the JSX text segment
+ * starting at `offset`. We rely on the masked source so attributes
+ * cannot contain stray `<` or `>` characters.
  */
-function findEnclosingOpenTag(src: string, offset: number): string | null {
-  let i = offset - 1; // sits on the `>` that closes the parent tag
-  if (src[i] !== ">") {
-    // segment didn't start right after a `>` — bail
-    return null;
-  }
-  // Now find the matching `<` for this `>`, accounting for nested complete
-  // tags that may appear before us at the same depth.
-  let depth = 1; // we are looking for the `<` matching the current `>`
-  i--;
-  while (i > 0) {
-    const ch = src[i];
+function findEnclosingOpenTag(masked: string, offset: number): { tag: string; start: number } | null {
+  // Walk back to the `<` that opens our parent. The character right before
+  // `offset` should be the `>` of the parent's opening tag (possibly with
+  // whitespace in-between if we extracted aggressively, so be tolerant).
+  let i = offset - 1;
+  while (i >= 0 && /\s/.test(masked[i])) i--;
+  if (i < 0 || masked[i] !== ">") return null;
+  const closeGt = i;
+
+  // Walk back balancing nested complete sibling tags
+  let depth = 1;
+  let j = closeGt - 1;
+  while (j >= 0) {
+    const ch = masked[j];
     if (ch === ">") depth++;
     else if (ch === "<") {
       depth--;
       if (depth === 0) {
-        const end = src.indexOf(">", i);
-        if (end === -1) return null;
-        const tag = src.slice(i, end + 1);
+        const tag = masked.slice(j, closeGt + 1);
         if (tag.startsWith("</")) {
           // This was a closing tag — keep walking past its opener
           depth = 1;
         } else {
-          return tag;
+          return { tag, start: j };
         }
       }
     }
-    i--;
+    j--;
   }
   return null;
 }
@@ -120,9 +240,8 @@ function isNumericExpression(expr: string): boolean {
   const e = expr.trim();
   if (!e) return false;
 
-  // Strip ternary / fallback wrappers: keep right-most meaningful expr
-  // (we still want to flag `{count > 0 ? count : 0}` style)
-  // -> simple checks first
+  // Skip type assertions / generics / spread / function calls with strings
+  if (e.includes("'") || e.includes('"')) return false;
 
   // Pure integer or float literal
   if (/^-?\d+(\.\d+)?$/.test(e)) return true;
@@ -130,7 +249,7 @@ function isNumericExpression(expr: string): boolean {
   // .length / .count / .size accessor at the end
   if (/\.(length|count|size)\s*$/.test(e)) return true;
 
-  // Identifier ending with Count or Total (e.g. overdueCount, filterCount, totalCount)
+  // Identifier ending with Count or Total (e.g. overdueCount, filterCount)
   if (/^[A-Za-z_][A-Za-z0-9_]*(Count|Total)$/.test(e)) return true;
 
   // Math.* arithmetic that yields a number
@@ -149,28 +268,26 @@ interface Violation {
   reason: string;
 }
 
-function hasNumericAncestor(src: string, offset: number): boolean {
+function hasNumericAncestor(masked: string, offset: number): boolean {
   let cur = offset;
-  for (let depth = 0; depth < 6; depth++) {
-    const tag = findEnclosingOpenTag(src, cur);
-    if (!tag) return false;
-    if (/\bdata-numeric\b/.test(tag)) return true;
-    // Move offset to just before this tag's `<` to walk up one level
-    const tagStart = src.lastIndexOf(tag, cur);
-    if (tagStart <= 0) return false;
-    cur = tagStart;
+  for (let depth = 0; depth < 8; depth++) {
+    const found = findEnclosingOpenTag(masked, cur);
+    if (!found) return false;
+    if (/\bdata-numeric\b/.test(found.tag)) return true;
+    // Move just before the `<` of this tag and continue walking up
+    cur = found.start;
   }
   return false;
 }
 
 function analyzeFile(file: string, src: string): Violation[] {
   const violations: Violation[] = [];
-  const segments = extractJsxTextSegments(src);
+  const masked = maskNonJsx(src);
+  const segments = extractJsxTextSegments(masked);
 
   for (const { text, offset } of segments) {
-    if (WHITELIST_SNIPPETS.some(rx => rx.test(text))) continue;
+    if (!text.trim()) continue;
 
-    // Build numeric reasons for this text segment
     const reasons: string[] = [];
 
     // 1. Percentage: ...{expr}%...
@@ -178,7 +295,7 @@ function analyzeFile(file: string, src: string): Violation[] {
       reasons.push("percentage display");
     }
 
-    // 2. Ratio: ...{a}/{b}... (slash between two JSX expressions)
+    // 2. Ratio: ...{a}/{b}...
     if (/\}\s*\/\s*\{/.test(text)) {
       reasons.push("ratio display (a/b)");
     }
@@ -188,8 +305,6 @@ function analyzeFile(file: string, src: string): Violation[] {
     let em: RegExpExecArray | null;
     while ((em = exprRe.exec(text)) !== null) {
       const inner = em[1];
-      // Skip if expression contains a regex literal (false positives like /^\d{4}/)
-      if (/\/\^?[^/\n]*\\d/.test(inner)) continue;
       if (isNumericExpression(inner)) {
         reasons.push(`numeric expression: {${inner.trim()}}`);
         break;
@@ -198,19 +313,18 @@ function analyzeFile(file: string, src: string): Violation[] {
 
     if (reasons.length === 0) continue;
 
-    // Skip if any ancestor (up to 6 levels) carries data-numeric
-    if (hasNumericAncestor(src, offset)) continue;
+    // Skip if any ancestor (up to 8 levels) carries data-numeric
+    if (hasNumericAncestor(masked, offset)) continue;
 
     // Make sure we are in a real JSX context
-    const tag = findEnclosingOpenTag(src, offset);
-    if (!tag) continue;
-    if (/^<\s*(?:Fragment|>|React\.Fragment)/.test(tag)) continue;
+    const found = findEnclosingOpenTag(masked, offset);
+    if (!found) continue;
 
     const line = src.slice(0, offset).split("\n").length;
     violations.push({
       file,
       line,
-      snippet: text.trim().slice(0, 120),
+      snippet: text.trim().replace(/\s+/g, " ").slice(0, 120),
       reason: reasons.join(", "),
     });
   }

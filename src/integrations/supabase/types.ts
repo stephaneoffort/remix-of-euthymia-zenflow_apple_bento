@@ -847,6 +847,10 @@ export type Database = {
           label: string | null
           last_sync_at: string | null
           last_sync_error: string | null
+          oauth_access_token: string | null
+          oauth_external_user_id: string | null
+          oauth_refresh_token: string | null
+          oauth_token_expiry: string | null
           smtp_host: string | null
           smtp_password: string | null
           smtp_port: number | null
@@ -872,6 +876,10 @@ export type Database = {
           label?: string | null
           last_sync_at?: string | null
           last_sync_error?: string | null
+          oauth_access_token?: string | null
+          oauth_external_user_id?: string | null
+          oauth_refresh_token?: string | null
+          oauth_token_expiry?: string | null
           smtp_host?: string | null
           smtp_password?: string | null
           smtp_port?: number | null
@@ -897,6 +905,10 @@ export type Database = {
           label?: string | null
           last_sync_at?: string | null
           last_sync_error?: string | null
+          oauth_access_token?: string | null
+          oauth_external_user_id?: string | null
+          oauth_refresh_token?: string | null
+          oauth_token_expiry?: string | null
           smtp_host?: string | null
           smtp_password?: string | null
           smtp_port?: number | null

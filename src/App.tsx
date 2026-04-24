@@ -22,6 +22,8 @@ const Auth = lazyRetry(() => import("./pages/Auth.tsx"));
 const SelectTeamMember = lazyRetry(() => import("./pages/SelectTeamMember.tsx"));
 const Settings = lazyRetry(() => import("./pages/Settings.tsx"));
 const Chat = lazyRetry(() => import("./pages/Chat.tsx"));
+const Mentions = lazyRetry(() => import("./pages/Mentions.tsx"));
+const EmailPage = lazyRetry(() => import("./pages/Email.tsx"));
 const NotFound = lazyRetry(() => import("./pages/NotFound.tsx"));
 const Install = lazyRetry(() => import("./pages/Install.tsx"));
 const ResetPassword = lazyRetry(() => import("./pages/ResetPassword.tsx"));

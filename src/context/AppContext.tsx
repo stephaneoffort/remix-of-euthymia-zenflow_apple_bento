@@ -36,6 +36,8 @@ interface AppState {
   sidebarCollapsed: boolean;
   isLoading: boolean;
   advancedFilters: AdvancedFilters;
+  taskDependencies: TaskDependency[];
+  taskLinks: TaskLink[];
 }
 
 interface AppContextType extends AppState {

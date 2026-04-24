@@ -711,11 +711,9 @@ export default function AppSidebar() {
             className="w-full flex items-center justify-between px-2 mb-2"
           >
             <p className="text-xs font-semibold text-sidebar-fg uppercase tracking-wider">Filtres</p>
-            {isMobile && (
-              <ChevronRight
-                className={`w-3.5 h-3.5 text-sidebar-fg transition-transform ${filtersExpanded ? "rotate-90" : ""}`}
-              />
-            )}
+            <ChevronDown
+              className={`w-3.5 h-3.5 text-sidebar-fg transition-transform ${filtersExpanded ? "" : "-rotate-90"}`}
+            />
           </button>
           {filtersExpanded && (
             <>

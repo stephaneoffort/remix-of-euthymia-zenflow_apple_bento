@@ -9,6 +9,7 @@ import { Drawer, DrawerContent, DrawerTrigger, DrawerTitle } from '@/components/
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { SpaceIcon } from '@/components/SpaceIcon';
 
 interface MobileBottomNavProps {
   onOpenVoice?: () => void;
@@ -124,7 +125,12 @@ export default function MobileBottomNav({ onOpenVoice }: MobileBottomNavProps) {
                   </SelectTrigger>
                   <SelectContent>
                     {visibleSpaces.map(s => (
-                      <SelectItem key={s.id} value={s.id}>{s.icon} {s.name}</SelectItem>
+                      <SelectItem key={s.id} value={s.id}>
+                        <span className="inline-flex items-center gap-2">
+                          <SpaceIcon value={s.icon} size="xs" />
+                          {s.name}
+                        </span>
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

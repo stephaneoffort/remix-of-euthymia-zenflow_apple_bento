@@ -177,6 +177,11 @@ export default function IntegrationTiles({ entityType, entityId, taskTitle }: Pr
           <MiroAttachments entityType={entityType} entityId={entityId} compact defaultTitle={taskTitle} />
         </div>
       )}
+      {openTile === 'dropbox' && (
+        <div className="border border-border rounded-lg p-3 bg-background/50">
+          <DropboxAttachments entityType={entityType} entityId={entityId} compact />
+        </div>
+      )}
       {openTile === 'newsletter' && (
         <div className="border border-border rounded-lg p-3 bg-background/50">
           <BrevoNewsletterLinks entityType={entityType} entityId={entityId} compact />

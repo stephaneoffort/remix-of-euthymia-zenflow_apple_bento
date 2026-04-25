@@ -103,7 +103,7 @@ const PROVIDER_CONFIG: Record<string, {
 
 // Mappe le provider vers le préfixe d'env vars (les providers Google partagent les credentials GOOGLE_*)
 function envPrefix(provider: string): string {
-  if (provider === "gmail" || provider === "google_drive" || provider === "google_tasks" || provider === "google_docs") {
+  if (provider === "gmail" || provider === "google_drive" || provider === "google_tasks" || provider === "google_docs" || provider === "google_sheets") {
     return "GOOGLE"
   }
   return provider.toUpperCase()

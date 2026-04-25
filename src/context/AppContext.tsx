@@ -1283,6 +1283,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     archiveSpace,
     archiveProject,
     renameSpace,
+    updateSpaceIcon,
     renameProject,
     moveProject,
     deleteSpace,
@@ -1310,7 +1311,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     addTaskLink,
     removeTaskLink,
     getBlockingDependencies,
-  }), [accessibleSpaces, archivedSpaces, archivedProjects, accessibleProjects, lists, accessibleTasks, teamMembers, customStatuses, allStatuses, spaceMembers, spaceManagers, selectedProjectId, selectedSpaceId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, setSelectedProjectId, setSelectedSpaceId, addTask, updateTask, deleteTask, addAttachment, deleteAttachment, moveTask, addSpace, addProject, duplicateSpace, duplicateProject, duplicateTask, archiveSpace, archiveProject, renameSpace, renameProject, moveProject, deleteSpace, deleteProject, convertTaskToProject, reorderSpaces, reorderProjects, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb, getStatusLabel, canAccessSpace, isSpaceManagerFn, getSpaceManagersFn, refreshSpaceAccess, taskDependencies, taskLinks, addTaskDependency, removeTaskDependency, addTaskLink, removeTaskLink, getBlockingDependencies]);
+  }), [accessibleSpaces, archivedSpaces, archivedProjects, accessibleProjects, lists, accessibleTasks, teamMembers, customStatuses, allStatuses, spaceMembers, spaceManagers, selectedProjectId, selectedSpaceId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, setSelectedProjectId, setSelectedSpaceId, addTask, updateTask, deleteTask, addAttachment, deleteAttachment, moveTask, addSpace, addProject, duplicateSpace, duplicateProject, duplicateTask, archiveSpace, archiveProject, renameSpace, updateSpaceIcon, renameProject, moveProject, deleteSpace, deleteProject, convertTaskToProject, reorderSpaces, reorderProjects, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb, getStatusLabel, canAccessSpace, isSpaceManagerFn, getSpaceManagersFn, refreshSpaceAccess, taskDependencies, taskLinks, addTaskDependency, removeTaskDependency, addTaskLink, removeTaskLink, getBlockingDependencies]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

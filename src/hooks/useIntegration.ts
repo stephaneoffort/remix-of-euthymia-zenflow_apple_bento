@@ -1,21 +1,71 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useIntegrations, type IntegrationKey, type IntegrationStatus } from "@/hooks/useIntegrations";
+import { useIntegrations, type IntegrationKey } from "@/hooks/useIntegrations";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 
+const CONNECTION_TABLE: Record<string, string> = {
+  google_drive: "drive_connections",
+  zoom:         "zoom_connections",
+  canva:        "canva_connections",
+  brevo:        "brevo_connections",
+  gmail:        "gmail_connections",
+  miro:         "miro_connections",
+  dropbox:      "dropbox_connections",
+};
+
+export interface SingleIntegrationStatus {
+  connected: boolean;
+  enabled: boolean;
+  account_id: string | null;
+  updated_at: string | null;
+}
+
 /**
  * Wrapper "single provider" autour de useIntegrations.
- * Expose une API simple pour la page IntegrationsPage.
+ * Expose une API simple { status, loading, working, connect, disconnect } pour IntegrationsPage.
  */
-export function useIntegration(provider: IntegrationKey) {
-  const { integrations, loading, disconnect: disconnectAll } = useIntegrations();
+export function useIntegration(provider: string) {
+  const { integrations, loading: loadingAll, disconnect: disconnectAll } = useIntegrations();
   const [working, setWorking] = useState(false);
+  const [extra, setExtra] = useState<{ account_id: string | null; updated_at: string | null }>({
+    account_id: null,
+    updated_at: null,
+  });
 
-  const status: IntegrationStatus | undefined = useMemo(
-    () => integrations?.[provider],
-    [integrations, provider],
-  );
+  // Récupère account_id / updated_at depuis la table de connexion spécifique au provider.
+  useEffect(() => {
+    let cancelled = false;
+    const table = CONNECTION_TABLE[provider];
+    if (!table) return;
+
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await (supabase as any)
+        .from(table)
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (cancelled) return;
+      setExtra({
+        account_id: data?.account_id ?? data?.email ?? data?.display_name ?? null,
+        updated_at: data?.updated_at ?? data?.created_at ?? null,
+      });
+    })();
+
+    return () => { cancelled = true; };
+  }, [provider, integrations]);
+
+  const status: SingleIntegrationStatus = useMemo(() => {
+    const s = integrations?.[provider as IntegrationKey];
+    return {
+      connected: !!s?.is_connected,
+      enabled:   !!s?.is_enabled,
+      account_id: extra.account_id,
+      updated_at: extra.updated_at ?? s?.connected_at ?? null,
+    };
+  }, [integrations, provider, extra]);
 
   const connect = useCallback(async () => {
     setWorking(true);
@@ -26,26 +76,10 @@ export function useIntegration(provider: IntegrationKey) {
         window.location.href = "/auth";
         return;
       }
-      // Appel direct à l'edge function /authorize qui redirige vers l'OAuth provider.
-      const url = `${SUPABASE_URL}/functions/v1/integration-oauth/authorize?provider=${provider}`;
-      // On utilise un POST via form pour pouvoir transmettre le token Authorization,
-      // mais le plus simple : ouvrir un popup avec le token dans le hash, sinon rediriger.
-      // Ici on fait un fetch pour déclencher l'auth puis on suit la redirection manuellement.
-      const res = await fetch(url, {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-        redirect: "manual",
-      });
-      // Avec redirect:manual, on récupère 0/opaqueredirect : on doit rediriger côté client.
-      // Solution : appel sans redirect manuel pour suivre, OU on construit l'URL directement.
-      if (res.type === "opaqueredirect" || res.status === 0) {
-        // Fallback : on ouvre l'URL dans la fenêtre courante (le serveur renverra un 302 vers le provider OAuth).
-        window.location.href = url + `&access_token=${encodeURIComponent(token)}`;
-      } else if (res.redirected) {
-        window.location.href = res.url;
-      } else {
-        window.location.href = url;
-      }
+      // L'edge function /authorize lit le token Authorization puis renvoie un 302 vers le provider.
+      // Comme un redirect simple ne porte pas le header, on passe par une fenêtre intermédiaire.
+      const url = `${SUPABASE_URL}/functions/v1/integration-oauth/authorize?provider=${provider}&token=${encodeURIComponent(token)}`;
+      window.location.href = url;
     } finally {
       setWorking(false);
     }
@@ -54,11 +88,12 @@ export function useIntegration(provider: IntegrationKey) {
   const disconnect = useCallback(async () => {
     setWorking(true);
     try {
-      await disconnectAll(provider);
+      await disconnectAll(provider as IntegrationKey);
+      setExtra({ account_id: null, updated_at: null });
     } finally {
       setWorking(false);
     }
   }, [provider, disconnectAll]);
 
-  return { status, loading, working, connect, disconnect };
+  return { status, loading: loadingAll, working, connect, disconnect };
 }

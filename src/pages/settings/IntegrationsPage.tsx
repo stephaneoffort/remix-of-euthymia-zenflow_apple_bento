@@ -20,7 +20,7 @@ const CATEGORIES: { label: string; keys: IntegrationKey[] }[] = [
   { label: "Stockage & fichiers", keys: ["google_drive", "dropbox"] },
   { label: "Collaboration",       keys: ["miro", "canva"] },
   { label: "Communication",       keys: ["zoom", "google_meet", "gmail", "brevo"] },
-  { label: "Productivité",        keys: ["notion"] },
+  { label: "Productivité",        keys: ["notion", "google_keep"] },
   { label: "Automatisation",      keys: ["n8n"] },
 ]
 

@@ -119,7 +119,12 @@ function clientSecret(provider: string) { return Deno.env.get(`${envPrefix(provi
 function redirectUri(provider: string)  { return `${SUPABASE_URL}/functions/v1/integration-oauth/callback?provider=${provider}` }
 
 async function getUser(req: Request) {
-  const token = req.headers.get("Authorization")?.replace("Bearer ", "") ?? ""
+  const url = new URL(req.url)
+  const token =
+    req.headers.get("Authorization")?.replace("Bearer ", "") ??
+    url.searchParams.get("token") ??
+    ""
+  if (!token) return null
   const { data: { user } } = await createClient(SUPABASE_URL, SUPABASE_ANON_KEY).auth.getUser(token)
   return user
 }

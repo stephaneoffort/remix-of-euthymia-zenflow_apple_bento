@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown, Palette, BellRing, HardDrive, CalendarSync, ShieldCheck, Sparkles } from 'lucide-react';
 import { useThemeMode, PALETTE_META, TYPE_META, type ThemePalette, type TypeVariant } from '@/context/ThemeContext';
 import DataExportImport from '@/components/DataExportImport';
+import { themePreviewStore } from '@/lib/themePreviewStore';
 import InviteMemberDialog from '@/components/InviteMemberDialog';
 import IntegrationsSettings from '@/components/settings/IntegrationsSettings';
 import AdminIntegrationsPanel from '@/components/settings/AdminIntegrationsPanel';

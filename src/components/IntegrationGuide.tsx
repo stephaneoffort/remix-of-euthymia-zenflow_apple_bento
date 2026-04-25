@@ -15,6 +15,7 @@ const GUIDE_MESSAGES: Record<IntegrationKey, string> = {
   dropbox: 'Connecte ton compte Dropbox dans Settings → Intégrations → Dropbox pour joindre des fichiers',
   n8n: 'Connecte ton instance n8n dans Settings → Intégrations → n8n pour lancer tes workflows',
   notion: 'Connecte ton compte Notion dans Settings → Intégrations → Notion pour joindre des pages',
+  google_keep: 'Aucune connexion requise — colle simplement le lien d\'une note depuis Google Keep (⋮ → Copier le lien)',
 };
 
 interface Props {

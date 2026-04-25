@@ -275,11 +275,9 @@ export default function AppSidebar() {
     enabled: !!teamMemberId,
   });
   const [accessDialogSpace, setAccessDialogSpace] = useState<{ id: string; name: string; isPrivate: boolean } | null>(
-    null
-  );
-  const [iconPickerSpace, setIconPickerSpace] = useState<{ id: string; name: string; icon: string } | null>(null);
     null,
   );
+  const [iconPickerSpace, setIconPickerSpace] = useState<{ id: string; name: string; icon: string } | null>(null);
   const [membersDialogProject, setMembersDialogProject] = useState<{ id: string; name: string } | null>(null);
 
   // Drag & drop state for cross-space project moves and task-to-project drops

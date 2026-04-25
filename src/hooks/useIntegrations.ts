@@ -239,6 +239,7 @@ export function useIntegrations() {
       brevo: 'brevo_connections',
       gmail: 'gmail_connections',
       miro: 'miro_connections',
+      dropbox: 'dropbox_connections',
     };
     const table = tableMap[key];
     if (table) {

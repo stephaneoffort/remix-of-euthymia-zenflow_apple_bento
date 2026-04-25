@@ -8,6 +8,8 @@ import { PriorityBadge, StatusBadge, AvatarGroup, SubtaskProgress, ZenflowBadge,
 import { useTaskMeetings } from '@/hooks/useTaskMeetings';
 import { ChevronRight, ChevronDown, ArrowUpDown, Plus, Repeat } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import UseTemplateButton from '@/components/UseTemplateButton';
+import { useQueryClient } from '@tanstack/react-query';
 
 type SortKey = 'title' | 'priority' | 'dueDate' | 'status';
 

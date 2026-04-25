@@ -257,7 +257,7 @@ export const SPACE_ICON_PRESETS: SpaceIconPreset[] = [
   { id: "rain",      label: "Pluie",     Icon: CloudRain,  ...G.slate,      category: "Nature" },
   { id: "rainbow",   label: "Arc-en-ciel",Icon: Rainbow,   ...G.lavender,   category: "Nature" },
   { id: "globe",     label: "Global",    Icon: Globe,      ...G.forest,     category: "Nature" },
-  { id: "map",       label: "Carte",     Icon: Map,        ...G.sand,       category: "Nature" },
+  { id: "map",       label: "Carte",     Icon: MapIcon,    ...G.sand,       category: "Nature" },
   { id: "mappin",    label: "Lieu",      Icon: MapPin,     ...G.terracotta, category: "Nature" },
   { id: "anchor",    label: "Ancre",     Icon: Anchor,     ...G.navy,       category: "Nature" },
   { id: "plane",     label: "Voyage",    Icon: Plane,      ...G.ocean,      category: "Nature" },

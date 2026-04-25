@@ -28,6 +28,7 @@ interface TileConfig {
 
 const TILES: TileConfig[] = [
   { key: 'drive', integration: 'google_drive', label: 'Drive', icon: INTEGRATION_CONFIG.google_drive.icon },
+  { key: 'dropbox', integration: 'dropbox', label: 'Dropbox', icon: INTEGRATION_CONFIG.dropbox.icon },
   { key: 'canva', integration: 'canva', label: 'Canva', icon: INTEGRATION_CONFIG.canva.icon },
   { key: 'miro', integration: 'miro', label: 'Miro', icon: INTEGRATION_CONFIG.miro.icon },
   { key: 'zoom', integration: 'zoom', label: 'Zoom', icon: INTEGRATION_CONFIG.zoom.icon },

@@ -8,7 +8,8 @@ export type IntegrationKey =
   | 'google_meet'
   | 'gmail'
   | 'brevo'
-  | 'miro';
+  | 'miro'
+  | 'dropbox';
 
 export interface IntegrationStatus {
   key: IntegrationKey;

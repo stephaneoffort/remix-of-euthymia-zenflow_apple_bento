@@ -136,6 +136,12 @@ export const INTEGRATION_CONFIG: Record<IntegrationKey, {
     icon: googleSheetsIcon,
     color: '#0F9D58',
   },
+  figma: {
+    label: 'Figma',
+    description: 'Lier des fichiers et frames Figma à vos tâches avec aperçu',
+    icon: figmaIcon,
+    color: '#F24E1E',
+  },
 };
 
 const defaultStatus = (key: IntegrationKey): IntegrationStatus => ({

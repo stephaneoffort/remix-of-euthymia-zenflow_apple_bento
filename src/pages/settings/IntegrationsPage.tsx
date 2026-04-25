@@ -28,6 +28,7 @@ export default function IntegrationsPage() {
   const navigate = useNavigate()
   const { toast } = useToast()
   const { integrations, loading, toggleEnabled, disconnect, refetch } = useIntegrations()
+  const [n8nDialogOpen, setN8nDialogOpen] = useState(false)
 
   const handleBack = () => {
     if (window.history.length > 1) navigate(-1)
@@ -57,6 +58,11 @@ export default function IntegrationsPage() {
   }, [])
 
   const handleConnect = async (key: IntegrationKey) => {
+    // n8n n'utilise pas OAuth — ouvrir le dialog dédié
+    if (key === "n8n") {
+      setN8nDialogOpen(true)
+      return
+    }
     const { supabase } = await import("@/integrations/supabase/client")
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) return
@@ -65,6 +71,13 @@ export default function IntegrationsPage() {
   }
 
   const handleDisconnect = async (key: IntegrationKey) => {
+    if (key === "n8n") {
+      const { supabase } = await import("@/integrations/supabase/client")
+      await supabase.functions.invoke("n8n-api", { body: { action: "disconnect" } })
+      await refetch()
+      toast({ title: "n8n déconnecté" })
+      return
+    }
     await disconnect(key)
     toast({ title: `${INTEGRATION_CONFIG[key].label} déconnecté` })
   }

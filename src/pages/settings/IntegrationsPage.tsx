@@ -209,6 +209,12 @@ export default function IntegrationsPage() {
           </div>
         </section>
       ))}
+
+      <N8nConnectDialog
+        open={n8nDialogOpen}
+        onOpenChange={setN8nDialogOpen}
+        onConnected={() => refetch()}
+      />
     </div>
   )
 }

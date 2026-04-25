@@ -18,6 +18,7 @@ const GUIDE_MESSAGES: Record<IntegrationKey, string> = {
   google_keep: 'Aucune connexion requise — colle simplement le lien d\'une note depuis Google Keep (⋮ → Copier le lien)',
   google_tasks: 'Connecte ton compte Google dans Settings → Intégrations → Google Tasks pour pousser et importer tes listes',
   google_docs: 'Connecte ton compte Google dans Settings → Intégrations → Google Docs pour lier ou créer des documents',
+  google_sheets: 'Connecte ton compte Google dans Settings → Intégrations → Google Sheets pour lier ou créer des feuilles',
 };
 
 interface Props {

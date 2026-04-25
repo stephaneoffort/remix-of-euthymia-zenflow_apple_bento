@@ -161,7 +161,6 @@ serve(async (req) => {
           next_cursor: data.next_cursor ?? null,
           has_more: !!data.has_more,
         });
-        return json({ pages });
       }
 
       // ──────────────────────────────────────────────────────────────

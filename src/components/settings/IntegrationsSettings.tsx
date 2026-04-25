@@ -14,9 +14,10 @@ const CONNECT_URLS: Partial<Record<IntegrationKey, string>> = {
   canva: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/canva-oauth/authorize',
   gmail: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/gmail-oauth/authorize',
   miro: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/miro-oauth/authorize',
+  dropbox: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/dropbox-oauth/authorize',
 };
 
-const ALL_KEYS: IntegrationKey[] = ['google_drive', 'gmail', 'google_meet', 'zoom', 'canva', 'miro', 'brevo'];
+const ALL_KEYS: IntegrationKey[] = ['google_drive', 'dropbox', 'gmail', 'google_meet', 'zoom', 'canva', 'miro', 'brevo'];
 
 export default function IntegrationsSettings() {
   const { integrations, loading, toggleEnabled, updateConnected, disconnect, refetch } = useIntegrations();
@@ -57,6 +58,10 @@ export default function IntegrationsSettings() {
         .from('miro_connections').select('email, display_name, team_name').eq('user_id', user.id).limit(1);
       if (miroData?.[0]) info.miro = { email: miroData[0].email, display_name: miroData[0].display_name || miroData[0].team_name };
 
+      const { data: dropboxData } = await (supabase as any)
+        .from('dropbox_connections').select('email, display_name').eq('user_id', user.id).limit(1);
+      if (dropboxData?.[0]) info.dropbox = { email: dropboxData[0].email, display_name: dropboxData[0].display_name };
+
       const { data: calData } = await (supabase as any)
         .from('calendar_accounts').select('label, calendar_id').eq('user_id', user.id).eq('provider', 'google').eq('is_active', true).limit(1);
       if (calData?.[0]) {
@@ -75,6 +80,7 @@ export default function IntegrationsSettings() {
       ['canva_connected', 'canva'],
       ['gmail_connected', 'gmail'],
       ['miro_connected', 'miro'],
+      ['dropbox_connected', 'dropbox'],
     ];
     callbacks.forEach(([param, key]) => {
       if (params.get(param) === 'true') {

@@ -10,6 +10,7 @@ import ZoomMeetings from '@/components/zoom/ZoomMeetings';
 import BrevoNewsletterLinks from '@/components/brevo/BrevoNewsletterLinks';
 import GmailCompose from '@/components/gmail/GmailCompose';
 import MiroAttachments from '@/components/miro/MiroAttachments';
+import DropboxAttachments from '@/components/dropbox/DropboxAttachments';
 import { supabase } from '@/integrations/supabase/client';
 
 interface Props {
@@ -27,6 +28,7 @@ interface TileConfig {
 
 const TILES: TileConfig[] = [
   { key: 'drive', integration: 'google_drive', label: 'Drive', icon: INTEGRATION_CONFIG.google_drive.icon },
+  { key: 'dropbox', integration: 'dropbox', label: 'Dropbox', icon: INTEGRATION_CONFIG.dropbox.icon },
   { key: 'canva', integration: 'canva', label: 'Canva', icon: INTEGRATION_CONFIG.canva.icon },
   { key: 'miro', integration: 'miro', label: 'Miro', icon: INTEGRATION_CONFIG.miro.icon },
   { key: 'zoom', integration: 'zoom', label: 'Zoom', icon: INTEGRATION_CONFIG.zoom.icon },
@@ -100,6 +102,17 @@ export default function IntegrationTiles({ entityType, entityId, taskTitle }: Pr
         } catch { newCounts.miro = 0; }
       }
 
+      if (isActive('dropbox')) {
+        try {
+          const { count } = await (supabase as any)
+            .from('dropbox_attachments')
+            .select('*', { count: 'exact', head: true })
+            .eq('entity_type', entityType)
+            .eq('entity_id', entityId);
+          newCounts.dropbox = count || 0;
+        } catch { newCounts.dropbox = 0; }
+      }
+
       newCounts.email = 0; // Email compose has no stored count
       setCounts(newCounts);
     };
@@ -162,6 +175,11 @@ export default function IntegrationTiles({ entityType, entityId, taskTitle }: Pr
       {openTile === 'miro' && (
         <div className="border border-border rounded-lg p-3 bg-background/50">
           <MiroAttachments entityType={entityType} entityId={entityId} compact defaultTitle={taskTitle} />
+        </div>
+      )}
+      {openTile === 'dropbox' && (
+        <div className="border border-border rounded-lg p-3 bg-background/50">
+          <DropboxAttachments entityType={entityType} entityId={entityId} compact />
         </div>
       )}
       {openTile === 'newsletter' && (

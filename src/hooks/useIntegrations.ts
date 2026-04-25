@@ -8,7 +8,8 @@ export type IntegrationKey =
   | 'google_meet'
   | 'gmail'
   | 'brevo'
-  | 'miro';
+  | 'miro'
+  | 'dropbox';
 
 export interface IntegrationStatus {
   key: IntegrationKey;
@@ -19,7 +20,7 @@ export interface IntegrationStatus {
 }
 
 const ALL_INTEGRATIONS: IntegrationKey[] = [
-  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo', 'miro',
+  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo', 'miro', 'dropbox',
 ];
 
 import googleDriveIcon from '@/assets/integrations/google-drive.png';
@@ -29,6 +30,7 @@ import googleMeetIcon from '@/assets/integrations/google-meet.png';
 import gmailIcon from '@/assets/integrations/gmail.png';
 import brevoIcon from '@/assets/integrations/brevo.png';
 import miroIcon from '@/assets/integrations/miro.png';
+import dropboxIcon from '@/assets/integrations/dropbox.png';
 
 export const INTEGRATION_CONFIG: Record<IntegrationKey, {
   label: string;
@@ -78,6 +80,12 @@ export const INTEGRATION_CONFIG: Record<IntegrationKey, {
     icon: miroIcon,
     color: '#FFD02F',
   },
+  dropbox: {
+    label: 'Dropbox',
+    description: 'Joindre des fichiers Dropbox aux tâches et projets',
+    icon: dropboxIcon,
+    color: '#0061FF',
+  },
 };
 
 const defaultStatus = (key: IntegrationKey): IntegrationStatus => ({
@@ -114,6 +122,7 @@ export function useIntegrations() {
       { key: 'brevo', table: 'brevo_connections' },
       { key: 'gmail', table: 'gmail_connections' },
       { key: 'miro', table: 'miro_connections' },
+      { key: 'dropbox', table: 'dropbox_connections' },
     ];
 
     for (const { key, table } of connectionChecks) {
@@ -230,6 +239,7 @@ export function useIntegrations() {
       brevo: 'brevo_connections',
       gmail: 'gmail_connections',
       miro: 'miro_connections',
+      dropbox: 'dropbox_connections',
     };
     const table = tableMap[key];
     if (table) {

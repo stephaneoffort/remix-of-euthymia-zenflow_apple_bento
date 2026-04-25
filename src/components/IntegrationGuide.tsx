@@ -12,6 +12,7 @@ const GUIDE_MESSAGES: Record<IntegrationKey, string> = {
   gmail: 'Connecte ton compte Gmail dans Settings → Intégrations → Gmail pour lire et envoyer des emails',
   brevo: 'Connecte ton compte Brevo dans Settings → Intégrations → Brevo pour gérer tes newsletters',
   miro: 'Connecte ton compte Miro dans Settings → Intégrations → Miro pour lier des boards',
+  dropbox: 'Connecte ton compte Dropbox dans Settings → Intégrations → Dropbox pour joindre des fichiers',
 };
 
 interface Props {

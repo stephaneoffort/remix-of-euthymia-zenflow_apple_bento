@@ -183,6 +183,7 @@ export function useIntegrations() {
       { key: 'google_tasks', table: 'google_tasks_connections' },
       { key: 'google_docs', table: 'google_docs_connections' },
       { key: 'google_sheets', table: 'google_sheets_connections' },
+      { key: 'figma', table: 'figma_connections' },
     ];
 
     for (const { key, table } of connectionChecks) {

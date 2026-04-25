@@ -620,19 +620,28 @@ export default function KanbanBoardNM() {
                       </span>
                     </div>
                     {col.key !== "done" && col.key !== "blocked" && (
-                      <button
-                        onClick={(e) => { e.stopPropagation(); setNewTaskStatus(col.key); }}
-                        style={{
-                          width: 22, height: 22, borderRadius: "50%",
-                          background: BG, boxShadow: raisedSm,
-                          border: "none", cursor: "pointer",
-                          fontSize: 14, fontWeight: 700, color: C.orange,
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                          lineHeight: 1,
-                        }}
-                      >
-                        +
-                      </button>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <UseTemplateButton
+                          listId={selectedProjectId ? (getListsForProject(selectedProjectId)[0]?.id || 'l1') : 'l1'}
+                          assigneeIds={quickFilter === 'my_tasks' && teamMemberId ? [teamMemberId] : []}
+                          onCreated={() => queryClient.invalidateQueries({ queryKey: ['tasks'] })}
+                          variant="icon"
+                          className="p-1 rounded hover:bg-muted transition-colors text-muted-foreground shrink-0"
+                        />
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setNewTaskStatus(col.key); }}
+                          style={{
+                            width: 22, height: 22, borderRadius: "50%",
+                            background: BG, boxShadow: raisedSm,
+                            border: "none", cursor: "pointer",
+                            fontSize: 14, fontWeight: 700, color: C.orange,
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            lineHeight: 1,
+                          }}
+                        >
+                          +
+                        </button>
+                      </div>
                     )}
                   </div>
 

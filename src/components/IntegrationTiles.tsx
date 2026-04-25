@@ -102,6 +102,17 @@ export default function IntegrationTiles({ entityType, entityId, taskTitle }: Pr
         } catch { newCounts.miro = 0; }
       }
 
+      if (isActive('dropbox')) {
+        try {
+          const { count } = await (supabase as any)
+            .from('dropbox_attachments')
+            .select('*', { count: 'exact', head: true })
+            .eq('entity_type', entityType)
+            .eq('entity_id', entityId);
+          newCounts.dropbox = count || 0;
+        } catch { newCounts.dropbox = 0; }
+      }
+
       newCounts.email = 0; // Email compose has no stored count
       setCounts(newCounts);
     };

@@ -44,6 +44,7 @@ import {
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SpaceIcon, SPACE_ICON_PRESETS } from "@/components/SpaceIcon";
+import SpaceIconPickerDialog from "@/components/SpaceIconPickerDialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -143,6 +144,7 @@ export default function AppSidebar() {
     archiveSpace,
     archiveProject,
     renameSpace,
+    updateSpaceIcon,
     renameProject,
     moveProject,
     deleteSpace,
@@ -275,6 +277,7 @@ export default function AppSidebar() {
   const [accessDialogSpace, setAccessDialogSpace] = useState<{ id: string; name: string; isPrivate: boolean } | null>(
     null,
   );
+  const [iconPickerSpace, setIconPickerSpace] = useState<{ id: string; name: string; icon: string } | null>(null);
   const [membersDialogProject, setMembersDialogProject] = useState<{ id: string; name: string } | null>(null);
 
   // Drag & drop state for cross-space project moves and task-to-project drops
@@ -1056,6 +1059,12 @@ export default function AppSidebar() {
                               <Pencil className="w-4 h-4 mr-2" />
                               Renommer
                             </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => setIconPickerSpace({ id: space.id, name: space.name, icon: space.icon })}
+                            >
+                              <Sparkles className="w-4 h-4 mr-2" />
+                              Changer l'icône
+                            </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => duplicateSpace(space.id)}>
                               <Copy className="w-4 h-4 mr-2" />
                               Dupliquer
@@ -1101,6 +1110,12 @@ export default function AppSidebar() {
                       >
                         <Pencil className="w-4 h-4 mr-2" />
                         Renommer
+                      </ContextMenuItem>
+                      <ContextMenuItem
+                        onClick={() => setIconPickerSpace({ id: space.id, name: space.name, icon: space.icon })}
+                      >
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        Changer l'icône
                       </ContextMenuItem>
                       <ContextMenuItem onClick={() => duplicateSpace(space.id)}>
                         <Copy className="w-4 h-4 mr-2" />
@@ -1630,7 +1645,17 @@ export default function AppSidebar() {
           />
         )}
 
-        {/* Project members dialog */}
+        {/* Space icon picker dialog */}
+        {iconPickerSpace && (
+          <SpaceIconPickerDialog
+            open={!!iconPickerSpace}
+            onOpenChange={(open) => { if (!open) setIconPickerSpace(null); }}
+            spaceName={iconPickerSpace.name}
+            currentIcon={iconPickerSpace.icon}
+            onSelect={(iconId) => updateSpaceIcon(iconPickerSpace.id, iconId)}
+          />
+        )}
+
         {membersDialogProject && (
           <ProjectMembersDialog
             open={!!membersDialogProject}

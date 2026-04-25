@@ -61,6 +61,7 @@ interface AppContextType extends AppState {
   archiveSpace: (spaceId: string) => void;
   archiveProject: (projectId: string) => void;
   renameSpace: (id: string, name: string) => void;
+  updateSpaceIcon: (id: string, icon: string) => void;
   renameProject: (id: string, name: string) => void;
   moveProject: (projectId: string, newSpaceId: string) => void;
   deleteSpace: (id: string) => void;
@@ -824,6 +825,31 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     renameSpaceMutation.mutate({ id, name });
   }, [renameSpaceMutation]);
 
+  // Update space icon mutation
+  const updateSpaceIconMutation = useMutation({
+    mutationFn: async ({ id, icon }: { id: string; icon: string }) => {
+      const { error } = await supabase.from('spaces').update({ icon }).eq('id', id);
+      if (error) throw error;
+    },
+    onMutate: async ({ id, icon }) => {
+      await queryClient.cancelQueries({ queryKey: ['spaces'] });
+      const previous = queryClient.getQueryData(['spaces']);
+      queryClient.setQueryData(['spaces'], (old: any) =>
+        old?.map((s: any) => s.id === id ? { ...s, icon } : s)
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      queryClient.setQueryData(['spaces'], context?.previous);
+      toast.error("Erreur lors du changement d'icône");
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['spaces'] }),
+  });
+
+  const updateSpaceIcon = useCallback((id: string, icon: string) => {
+    updateSpaceIconMutation.mutate({ id, icon });
+  }, [updateSpaceIconMutation]);
+
   // Rename project mutation
   const renameProjectMutation = useMutation({
     mutationFn: async ({ id, name }: { id: string; name: string }) => {
@@ -1257,6 +1283,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     archiveSpace,
     archiveProject,
     renameSpace,
+    updateSpaceIcon,
     renameProject,
     moveProject,
     deleteSpace,
@@ -1284,7 +1311,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     addTaskLink,
     removeTaskLink,
     getBlockingDependencies,
-  }), [accessibleSpaces, archivedSpaces, archivedProjects, accessibleProjects, lists, accessibleTasks, teamMembers, customStatuses, allStatuses, spaceMembers, spaceManagers, selectedProjectId, selectedSpaceId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, setSelectedProjectId, setSelectedSpaceId, addTask, updateTask, deleteTask, addAttachment, deleteAttachment, moveTask, addSpace, addProject, duplicateSpace, duplicateProject, duplicateTask, archiveSpace, archiveProject, renameSpace, renameProject, moveProject, deleteSpace, deleteProject, convertTaskToProject, reorderSpaces, reorderProjects, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb, getStatusLabel, canAccessSpace, isSpaceManagerFn, getSpaceManagersFn, refreshSpaceAccess, taskDependencies, taskLinks, addTaskDependency, removeTaskDependency, addTaskLink, removeTaskLink, getBlockingDependencies]);
+  }), [accessibleSpaces, archivedSpaces, archivedProjects, accessibleProjects, lists, accessibleTasks, teamMembers, customStatuses, allStatuses, spaceMembers, spaceManagers, selectedProjectId, selectedSpaceId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, setSelectedProjectId, setSelectedSpaceId, addTask, updateTask, deleteTask, addAttachment, deleteAttachment, moveTask, addSpace, addProject, duplicateSpace, duplicateProject, duplicateTask, archiveSpace, archiveProject, renameSpace, updateSpaceIcon, renameProject, moveProject, deleteSpace, deleteProject, convertTaskToProject, reorderSpaces, reorderProjects, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb, getStatusLabel, canAccessSpace, isSpaceManagerFn, getSpaceManagersFn, refreshSpaceAccess, taskDependencies, taskLinks, addTaskDependency, removeTaskDependency, addTaskLink, removeTaskLink, getBlockingDependencies]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

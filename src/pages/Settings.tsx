@@ -101,6 +101,10 @@ export default function Settings() {
                 <Palette className="w-4 h-4 shrink-0" />
                 <span className="hidden xs:inline sm:inline">Thème</span>
               </TabsTrigger>
+              <TabsTrigger value="templates" className="gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm data-[state=active]:shadow-sm">
+                <FileText className="w-4 h-4 shrink-0" />
+                <span className="hidden xs:inline sm:inline">Modèles</span>
+              </TabsTrigger>
               <TabsTrigger value="integrations" className="gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm data-[state=active]:shadow-sm">
                 <HardDrive className="w-4 h-4 shrink-0" />
                 <span className="hidden xs:inline sm:inline">Intégrations</span>

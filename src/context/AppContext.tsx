@@ -61,6 +61,7 @@ interface AppContextType extends AppState {
   archiveSpace: (spaceId: string) => void;
   archiveProject: (projectId: string) => void;
   renameSpace: (id: string, name: string) => void;
+  updateSpaceIcon: (id: string, icon: string) => void;
   renameProject: (id: string, name: string) => void;
   moveProject: (projectId: string, newSpaceId: string) => void;
   deleteSpace: (id: string) => void;
@@ -823,6 +824,31 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const renameSpace = useCallback((id: string, name: string) => {
     renameSpaceMutation.mutate({ id, name });
   }, [renameSpaceMutation]);
+
+  // Update space icon mutation
+  const updateSpaceIconMutation = useMutation({
+    mutationFn: async ({ id, icon }: { id: string; icon: string }) => {
+      const { error } = await supabase.from('spaces').update({ icon }).eq('id', id);
+      if (error) throw error;
+    },
+    onMutate: async ({ id, icon }) => {
+      await queryClient.cancelQueries({ queryKey: ['spaces'] });
+      const previous = queryClient.getQueryData(['spaces']);
+      queryClient.setQueryData(['spaces'], (old: any) =>
+        old?.map((s: any) => s.id === id ? { ...s, icon } : s)
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      queryClient.setQueryData(['spaces'], context?.previous);
+      toast.error("Erreur lors du changement d'icône");
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['spaces'] }),
+  });
+
+  const updateSpaceIcon = useCallback((id: string, icon: string) => {
+    updateSpaceIconMutation.mutate({ id, icon });
+  }, [updateSpaceIconMutation]);
 
   // Rename project mutation
   const renameProjectMutation = useMutation({

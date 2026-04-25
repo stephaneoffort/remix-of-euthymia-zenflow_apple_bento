@@ -23,8 +23,14 @@ const CATEGORIES: { label: string; keys: IntegrationKey[] }[] = [
 
 export default function IntegrationsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
   const { toast } = useToast()
   const { integrations, loading, toggleEnabled, disconnect, refetch } = useIntegrations()
+
+  const handleBack = () => {
+    if (window.history.length > 1) navigate(-1)
+    else navigate("/settings")
+  }
 
   // Retour après OAuth
   useEffect(() => {

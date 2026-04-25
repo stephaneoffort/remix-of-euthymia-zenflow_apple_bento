@@ -72,6 +72,12 @@ export const INTEGRATION_CONFIG: Record<IntegrationKey, {
     icon: brevoIcon,
     color: '#0092FF',
   },
+  miro: {
+    label: 'Miro',
+    description: 'Lier des boards Miro aux tâches et projets',
+    icon: miroIcon,
+    color: '#FFD02F',
+  },
 };
 
 const defaultStatus = (key: IntegrationKey): IntegrationStatus => ({

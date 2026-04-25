@@ -174,6 +174,7 @@ export function useIntegrations() {
       { key: 'notion', table: 'notion_connections' },
       { key: 'google_tasks', table: 'google_tasks_connections' },
       { key: 'google_docs', table: 'google_docs_connections' },
+      { key: 'google_sheets', table: 'google_sheets_connections' },
     ];
 
     for (const { key, table } of connectionChecks) {

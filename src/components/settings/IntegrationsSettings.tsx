@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useIntegrations, INTEGRATION_CONFIG, type IntegrationKey } from '@/hooks/useIntegrations';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { Loader2, CheckCircle2, Plus, Link2, Unplug } from 'lucide-react';
 import BrevoConnectionForm from '@/components/brevo/BrevoConnectionForm';
 
 const CONNECT_URLS: Partial<Record<IntegrationKey, string>> = {
@@ -14,23 +13,19 @@ const CONNECT_URLS: Partial<Record<IntegrationKey, string>> = {
   zoom: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/zoom-oauth/authorize',
   canva: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/canva-oauth/authorize',
   gmail: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/gmail-oauth/authorize',
+  miro: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/miro-oauth/authorize',
 };
 
-const CONNECTION_TABLES: Partial<Record<IntegrationKey, string>> = {
-  google_drive: 'drive_connections',
-  zoom: 'zoom_connections',
-  canva: 'canva_connections',
-  gmail: 'gmail_connections',
-};
+const ALL_KEYS: IntegrationKey[] = ['google_drive', 'gmail', 'google_meet', 'zoom', 'canva', 'miro', 'brevo'];
 
 export default function IntegrationsSettings() {
   const { integrations, loading, toggleEnabled, updateConnected, disconnect, refetch } = useIntegrations();
   const [connInfo, setConnInfo] = useState<Record<string, { email?: string; display_name?: string }>>({});
-  const [confirmDialog, setConfirmDialog] = useState<{ type: 'connect' | 'disconnect'; key: IntegrationKey } | null>(null);
+  const [selectedKey, setSelectedKey] = useState<IntegrationKey | null>(null);
   const [brevoFormOpen, setBrevoFormOpen] = useState(false);
+  const [confirmDisconnect, setConfirmDisconnect] = useState<IntegrationKey | null>(null);
   const [connInfoVersion, setConnInfoVersion] = useState(0);
 
-  // Fetch connection info for display
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -58,7 +53,10 @@ export default function IntegrationsSettings() {
         .from('gmail_connections').select('email, display_name').eq('user_id', user.id).limit(1);
       if (gmailData?.[0]) info.gmail = { email: gmailData[0].email, display_name: gmailData[0].display_name };
 
-      // Google Calendar / Meet uses calendar_accounts
+      const { data: miroData } = await (supabase as any)
+        .from('miro_connections').select('email, display_name, team_name').eq('user_id', user.id).limit(1);
+      if (miroData?.[0]) info.miro = { email: miroData[0].email, display_name: miroData[0].display_name || miroData[0].team_name };
+
       const { data: calData } = await (supabase as any)
         .from('calendar_accounts').select('label, calendar_id').eq('user_id', user.id).eq('provider', 'google').eq('is_active', true).limit(1);
       if (calData?.[0]) {
@@ -69,13 +67,14 @@ export default function IntegrationsSettings() {
       setConnInfo(info);
     })();
 
-    // Detect OAuth callback params
+    // OAuth callback detection
     const params = new URLSearchParams(window.location.search);
     const callbacks: [string, IntegrationKey][] = [
       ['drive_connected', 'google_drive'],
       ['zoom_connected', 'zoom'],
       ['canva_connected', 'canva'],
       ['gmail_connected', 'gmail'],
+      ['miro_connected', 'miro'],
     ];
     callbacks.forEach(([param, key]) => {
       if (params.get(param) === 'true') {
@@ -92,6 +91,7 @@ export default function IntegrationsSettings() {
       await toggleEnabled('google_meet', true);
       await updateConnected('google_meet', true);
       toast.success('Google Meet activé');
+      setSelectedKey(null);
       return;
     }
 
@@ -107,7 +107,7 @@ export default function IntegrationsSettings() {
     const { data: { session } } = await supabase.auth.getSession();
     if (!user || !session) return;
 
-    if (key === 'zoom' || key === 'gmail') {
+    if (key === 'zoom' || key === 'gmail' || key === 'miro') {
       window.location.href = `${url}?token=${session.access_token}`;
     } else {
       window.location.href = `${url}?user_id=${user.id}`;
@@ -118,30 +118,9 @@ export default function IntegrationsSettings() {
     await disconnect(key);
     setConnInfo(prev => { const n = { ...prev }; delete n[key]; return n; });
     toast.success(`${INTEGRATION_CONFIG[key].label} déconnecté`);
-    setConfirmDialog(null);
+    setConfirmDisconnect(null);
+    setSelectedKey(null);
   };
-
-  const handleToggle = async (key: IntegrationKey, checked: boolean) => {
-    if (checked) {
-      // Enable: ask to connect if not yet connected
-      await toggleEnabled(key, true);
-      if (key !== 'google_meet' && !integrations[key]?.is_connected) {
-        setConfirmDialog({ type: 'connect', key });
-      } else if (key === 'google_meet') {
-        await updateConnected('google_meet', true);
-        toast.success('Google Meet activé');
-      }
-    } else {
-      // Disable: confirm dialog
-      if (integrations[key]?.is_connected) {
-        setConfirmDialog({ type: 'disconnect', key });
-      } else {
-        await toggleEnabled(key, false);
-      }
-    }
-  };
-
-  const allKeys: IntegrationKey[] = ['google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo'];
 
   if (loading) {
     return (
@@ -152,6 +131,11 @@ export default function IntegrationsSettings() {
       </Card>
     );
   }
+
+  const selectedConfig = selectedKey ? INTEGRATION_CONFIG[selectedKey] : null;
+  const selectedStatus = selectedKey ? integrations[selectedKey] : null;
+  const selectedInfo = selectedKey ? connInfo[selectedKey] : null;
+  const selectedConnected = selectedStatus?.is_connected ?? false;
 
   return (
     <>
@@ -166,129 +150,142 @@ export default function IntegrationsSettings() {
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-foreground">Mes intégrations</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Active les outils que tu utilises. Chaque membre gère ses propres connexions.
-          </p>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {allKeys.map(key => {
-            const config = INTEGRATION_CONFIG[key];
-            const status = integrations[key];
-            const info = connInfo[key];
-            const enabled = status?.is_enabled ?? false;
-            const connected = status?.is_connected ?? false;
+      <div className="mb-3">
+        <h2 className="text-base font-semibold text-foreground">Mes intégrations</h2>
+        <p className="text-sm text-muted-foreground">
+          Clique sur une intégration pour la connecter ou voir ses informations.
+        </p>
+      </div>
 
-            return (
-              <div
-                key={key}
-                className={`flex items-center gap-4 p-4 rounded-xl border transition-colors ${
-                  enabled ? 'border-primary/30 bg-primary/5' : 'border-border bg-muted/20'
-                }`}
-              >
-                <img src={config.icon} alt={config.label} className="w-7 h-7 shrink-0 rounded" loading="lazy" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-foreground">{config.label}</p>
-                  {!enabled && (
-                    <p className="text-xs text-muted-foreground">{config.description}</p>
-                  )}
-                  {enabled && connected && (
-                    <p className="text-xs text-green-600 flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                      Connecté{info?.email ? ` · ${info.email}` : ''}{info?.display_name ? ` (${info.display_name})` : ''}
-                    </p>
-                  )}
-                  {enabled && !connected && key !== 'google_meet' && (
-                    <p className="text-xs text-amber-600 flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                      Activée — connexion requise
-                    </p>
-                  )}
-                  {enabled && key === 'google_meet' && (
-                    <p className="text-xs text-green-600 flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                      Utilise ton compte Google Calendar connecté
-                    </p>
-                  )}
-                </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+        {ALL_KEYS.map(key => {
+          const config = INTEGRATION_CONFIG[key];
+          const status = integrations[key];
+          const connected = status?.is_connected ?? false;
 
-                <div className="flex items-center gap-2 shrink-0">
-                  {enabled && !connected && key !== 'google_meet' && (
-                    <Button size="sm" variant="outline" onClick={() => handleConnect(key)} className="text-xs gap-1.5">
-                      Connecter
-                    </Button>
-                  )}
-                  {enabled && connected && key !== 'google_meet' && (
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => setConfirmDialog({ type: 'disconnect', key })}
-                      className="text-xs text-destructive hover:text-destructive"
-                    >
-                      Déconnecter
-                    </Button>
-                  )}
-                  <Switch
-                    checked={enabled}
-                    onCheckedChange={(v) => handleToggle(key, v)}
-                  />
-                </div>
-              </div>
-            );
-          })}
-        </CardContent>
-      </Card>
-
-      {/* Connect Dialog */}
-      <Dialog open={confirmDialog?.type === 'connect'} onOpenChange={(v) => !v && setConfirmDialog(null)}>
-        <DialogContent className="sm:max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              {confirmDialog && <img src={INTEGRATION_CONFIG[confirmDialog.key].icon} alt="" className="w-5 h-5" />}
-              Connexion requise
-            </DialogTitle>
-            <DialogDescription>
-              Pour activer {confirmDialog ? INTEGRATION_CONFIG[confirmDialog.key].label : ''}, connecte ton compte.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex gap-2 pt-2">
-            <Button variant="ghost" onClick={() => setConfirmDialog(null)} className="flex-1">
-              Plus tard
-            </Button>
-            <Button
-              onClick={() => { if (confirmDialog) handleConnect(confirmDialog.key); setConfirmDialog(null); }}
-              className="flex-1"
+          return (
+            <button
+              key={key}
+              onClick={() => setSelectedKey(key)}
+              className={`group relative flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all hover:shadow-md hover:-translate-y-0.5 text-left ${
+                connected
+                  ? 'border-green-500/30 bg-green-500/5 hover:border-green-500/50'
+                  : 'border-border bg-card hover:border-primary/40 hover:bg-primary/5'
+              }`}
             >
-              Connecter maintenant
-            </Button>
-          </div>
+              {connected && (
+                <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center ring-2 ring-background">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                </span>
+              )}
+              <img src={config.icon} alt={config.label} className="w-10 h-10 rounded shrink-0" loading="lazy" />
+              <div className="text-center w-full min-w-0">
+                <p className="text-sm font-semibold text-foreground truncate">{config.label}</p>
+                <p className={`text-[11px] mt-0.5 ${connected ? 'text-green-600' : 'text-muted-foreground'}`}>
+                  {connected ? 'Connecté' : 'Non connecté'}
+                </p>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Detail dialog */}
+      <Dialog open={!!selectedKey && !confirmDisconnect} onOpenChange={(v) => { if (!v) setSelectedKey(null); }}>
+        <DialogContent className="sm:max-w-md">
+          {selectedConfig && selectedKey && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-3">
+                  <img src={selectedConfig.icon} alt={selectedConfig.label} className="w-8 h-8 rounded" />
+                  {selectedConfig.label}
+                  {selectedConnected && (
+                    <span className="ml-auto inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-500/10 px-2 py-0.5 rounded-full">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      Connectée
+                    </span>
+                  )}
+                </DialogTitle>
+                <DialogDescription>{selectedConfig.description}</DialogDescription>
+              </DialogHeader>
+
+              {selectedConnected ? (
+                <div className="space-y-3 py-2">
+                  <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-1.5">
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Compte connecté</p>
+                    {selectedInfo?.email && (
+                      <p className="text-sm text-foreground">📧 {selectedInfo.email}</p>
+                    )}
+                    {selectedInfo?.display_name && (
+                      <p className="text-sm text-foreground">👤 {selectedInfo.display_name}</p>
+                    )}
+                    {!selectedInfo?.email && !selectedInfo?.display_name && (
+                      <p className="text-sm text-muted-foreground">Connexion active</p>
+                    )}
+                  </div>
+                  <div className="flex gap-2 pt-1">
+                    <Button variant="ghost" onClick={() => setSelectedKey(null)} className="flex-1">
+                      Fermer
+                    </Button>
+                    {selectedKey !== 'google_meet' && (
+                      <Button
+                        variant="outline"
+                        onClick={() => setConfirmDisconnect(selectedKey)}
+                        className="flex-1 text-destructive hover:text-destructive hover:bg-destructive/10 gap-1.5"
+                      >
+                        <Unplug className="w-4 h-4" />
+                        Déconnecter
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-3 py-2">
+                  <div className="rounded-lg border border-dashed border-border p-4 text-center">
+                    <Link2 className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                    <p className="text-sm text-foreground font-medium">Pas encore connectée</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Connecte ton compte pour activer cette intégration.
+                    </p>
+                  </div>
+                  <div className="flex gap-2 pt-1">
+                    <Button variant="ghost" onClick={() => setSelectedKey(null)} className="flex-1">
+                      Annuler
+                    </Button>
+                    <Button onClick={() => handleConnect(selectedKey)} className="flex-1 gap-1.5">
+                      <Plus className="w-4 h-4" />
+                      Se connecter
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
         </DialogContent>
       </Dialog>
 
-      {/* Disconnect Dialog */}
-      <Dialog open={confirmDialog?.type === 'disconnect'} onOpenChange={(v) => !v && setConfirmDialog(null)}>
+      {/* Disconnect confirmation */}
+      <Dialog open={!!confirmDisconnect} onOpenChange={(v) => !v && setConfirmDisconnect(null)}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              {confirmDialog && <img src={INTEGRATION_CONFIG[confirmDialog.key].icon} alt="" className="w-5 h-5" />}
-              Désactiver {confirmDialog ? INTEGRATION_CONFIG[confirmDialog.key].label : ''} ?
+              {confirmDisconnect && <img src={INTEGRATION_CONFIG[confirmDisconnect].icon} alt="" className="w-5 h-5" />}
+              Déconnecter {confirmDisconnect ? INTEGRATION_CONFIG[confirmDisconnect].label : ''} ?
             </DialogTitle>
             <DialogDescription>
               Tes données existantes liées à cette intégration seront conservées.
             </DialogDescription>
           </DialogHeader>
           <div className="flex gap-2 pt-2">
-            <Button variant="ghost" onClick={() => setConfirmDialog(null)} className="flex-1">
+            <Button variant="ghost" onClick={() => setConfirmDisconnect(null)} className="flex-1">
               Annuler
             </Button>
             <Button
               variant="destructive"
-              onClick={() => { if (confirmDialog) handleDisconnect(confirmDialog.key); }}
+              onClick={() => { if (confirmDisconnect) handleDisconnect(confirmDisconnect); }}
               className="flex-1"
             >
-              Désactiver
+              Déconnecter
             </Button>
           </div>
         </DialogContent>
@@ -307,6 +304,7 @@ export default function IntegrationsSettings() {
           </DialogHeader>
           <BrevoConnectionForm onConnected={() => {
             setBrevoFormOpen(false);
+            setSelectedKey(null);
             refetch();
             setConnInfoVersion(v => v + 1);
           }} />

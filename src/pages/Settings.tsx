@@ -120,7 +120,7 @@ export default function Settings() {
                   className="w-full justify-center sm:justify-start gap-2.5 px-2 sm:px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-none transition-colors"
                 >
                   <Icon className="w-4 h-4 shrink-0" />
-                  <span>{label}</span>
+                  <span className="hidden sm:inline">{label}</span>
                 </TabsTrigger>
               ))}
             </TabsList>

@@ -810,18 +810,25 @@ function ThemePalettePanel() {
               return (
                 <button
                   key={key}
+                  onMouseEnter={() => setPreviewType(key)}
+                  onMouseLeave={() => setPreviewType(null)}
+                  onFocus={() => setPreviewType(key)}
+                  onBlur={() => setPreviewType(null)}
                   onClick={() => {
+                    setPreviewType(null);
                     if (active) return;
                     setTypeVariant(key);
                     toast.success(`Typographie "${meta.label}" appliquée`);
                   }}
                   className={`group relative flex flex-col gap-3 p-5 rounded-xl border-2 transition-all text-left ${
-                    active
+                    previewType === key && previewType !== typeVariant
+                      ? 'border-amber-500 bg-amber-50/40 dark:bg-amber-900/30 shadow-md ring-2 ring-amber-500/30'
+                      : active
                       ? 'border-primary bg-accent/40 shadow-md ring-1 ring-primary/20'
                       : 'border-border bg-card hover:border-muted-foreground/30 hover:bg-muted/30'
                   }`}
                 >
-                  {active && (
+                  {active && previewType !== key && (
                     <>
                       <span className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
                         <Check className="w-3.5 h-3.5 text-primary-foreground" />
@@ -830,6 +837,11 @@ function ThemePalettePanel() {
                         Actuel
                       </span>
                     </>
+                  )}
+                  {previewType === key && previewType !== typeVariant && (
+                    <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full bg-amber-500 text-[10px] font-bold text-white uppercase tracking-wide">
+                      Aperçu
+                    </span>
                   )}
                   <div
                     className="rounded-lg border border-border/50 bg-muted/20 p-4 space-y-2"

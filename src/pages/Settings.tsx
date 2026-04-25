@@ -84,7 +84,7 @@ export default function Settings() {
       </header>
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6">
-        <Tabs defaultValue="members">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
           <div className="mb-6">
             <TabsList className="flex flex-wrap gap-1.5 h-auto bg-muted/50 p-1.5 rounded-xl">
               <TabsTrigger value="members" className="gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm data-[state=active]:shadow-sm">

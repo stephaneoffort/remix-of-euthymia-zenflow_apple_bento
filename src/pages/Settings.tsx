@@ -540,7 +540,49 @@ function ThemePalettePanel() {
 
   return (
     <div className="space-y-6">
-      {/* Mode clair / sombre / mixte */}
+      {/* ── Thème actuel ── */}
+      <Card className="border-primary/40 bg-accent/20 shadow-sm">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-foreground text-base">
+            <Sparkles className="w-5 h-5 text-primary" />
+            Thème actuel
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Mode */}
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-card">
+              <span className="text-sm">
+                {theme === 'light' ? '☀' : theme === 'dark' ? '☽' : '⊙'}
+              </span>
+              <span className="text-sm font-medium text-foreground">
+                {theme === 'light' ? 'Clair' : theme === 'dark' ? 'Sombre' : 'Mixte'}
+              </span>
+            </div>
+            {/* Design mode */}
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-card">
+              <span className="text-sm">{designMode === 'classic' ? '⊞' : '✦'}</span>
+              <span className="text-sm font-medium text-foreground">
+                {designMode === 'classic' ? 'Classic' : 'Premium'}
+              </span>
+            </div>
+            {/* Typo */}
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-card">
+              <span className="font-display text-sm font-semibold">Aa</span>
+              <span className="text-sm font-medium text-foreground">{TYPE_META[typeVariant].label}</span>
+            </div>
+            {/* Palette */}
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-primary/50 bg-primary/5">
+              <div className="flex gap-1">
+                {PALETTE_META[palette].colors.slice(0, 4).map((c, i) => (
+                  <div key={i} className="w-5 h-5 rounded-md border border-border/60" style={{ backgroundColor: c }} />
+                ))}
+              </div>
+              <span className="text-sm font-semibold text-primary">{PALETTE_META[palette].label}</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
       <Card className="border-border bg-card">
         <CardHeader>
           <CardTitle className="text-base text-foreground">Mode d'affichage</CardTitle>

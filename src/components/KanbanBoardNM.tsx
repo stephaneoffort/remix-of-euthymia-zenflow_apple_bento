@@ -433,18 +433,28 @@ export default function KanbanBoardNM() {
                 style={{ display: "flex", flexDirection: "column", gap: 8 }}
               >
                 {/* Add task button */}
-                <div
-                  onClick={() => setNewTaskStatus(mobileActiveStatus)}
-                  style={{
-                    background: BG, borderRadius: 12, boxShadow: inset,
-                    padding: 10, cursor: "pointer",
-                    display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                    fontSize: 12, color: C.light, fontWeight: 500,
-                    fontFamily: "'DM Sans', sans-serif",
-                  }}
-                >
-                  <span style={{ fontSize: 14, fontWeight: 700 }}>+</span>
-                  Ajouter une tâche
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <div
+                    onClick={() => setNewTaskStatus(mobileActiveStatus)}
+                    style={{
+                      flex: 1,
+                      background: BG, borderRadius: 12, boxShadow: inset,
+                      padding: 10, cursor: "pointer",
+                      display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                      fontSize: 12, color: C.light, fontWeight: 500,
+                      fontFamily: "'DM Sans', sans-serif",
+                    }}
+                  >
+                    <span style={{ fontSize: 14, fontWeight: 700 }}>+</span>
+                    Ajouter une tâche
+                  </div>
+                  <UseTemplateButton
+                    listId={selectedProjectId ? (getListsForProject(selectedProjectId)[0]?.id || 'l1') : 'l1'}
+                    assigneeIds={quickFilter === 'my_tasks' && teamMemberId ? [teamMemberId] : []}
+                    onCreated={() => queryClient.invalidateQueries({ queryKey: ['tasks'] })}
+                    variant="icon"
+                    className="border border-dashed border-border rounded-lg h-[38px] w-[38px] flex items-center justify-center shrink-0"
+                  />
                 </div>
 
                 {/* Inline add task */}

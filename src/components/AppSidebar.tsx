@@ -1823,36 +1823,6 @@ function ThemeSwitcher() {
         <Palette className="w-3.5 h-3.5" />
         Thèmes
       </button>
-      {/* ── Design Mode Switch ── */}
-      <div className="mt-3 pt-3 border-t border-border/30">
-        <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-2 px-1">
-          Interface
-        </div>
-        <div className="flex gap-1 p-1 rounded-lg bg-muted/30">
-          <button
-            onClick={() => setDesignMode("classic")}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs font-medium transition-all ${
-              designMode === "classic"
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <LayoutGrid className="w-3 h-3" />
-            Classic
-          </button>
-          <button
-            onClick={() => setDesignMode("neumorphic")}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs font-medium transition-all ${
-              designMode === "neumorphic"
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Sparkles className="w-3 h-3" />
-            Premium
-          </button>
-        </div>
-      </div>
     </div>
   );
 }

@@ -22,6 +22,7 @@ const CONNECTION_TABLE: Record<string, string> = {
   google_tasks:  "google_tasks_connections",
   google_docs:   "google_docs_connections",
   google_sheets: "google_sheets_connections",
+  figma:         "figma_connections",
 }
 
 // Config OAuth par provider

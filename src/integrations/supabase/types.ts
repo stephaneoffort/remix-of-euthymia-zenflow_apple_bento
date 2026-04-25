@@ -1529,6 +1529,48 @@ export type Database = {
           },
         ]
       }
+      task_templates: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string
+          due_offset_days: number | null
+          id: string
+          name: string
+          priority: string
+          subtasks: Json
+          tags: string[]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          due_offset_days?: number | null
+          id?: string
+          name: string
+          priority?: string
+          subtasks?: Json
+          tags?: string[]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          due_offset_days?: number | null
+          id?: string
+          name?: string
+          priority?: string
+          subtasks?: Json
+          tags?: string[]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       tasks: {
         Row: {
           ai_summary: string | null

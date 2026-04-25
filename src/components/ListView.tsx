@@ -8,6 +8,8 @@ import { PriorityBadge, StatusBadge, AvatarGroup, SubtaskProgress, ZenflowBadge,
 import { useTaskMeetings } from '@/hooks/useTaskMeetings';
 import { ChevronRight, ChevronDown, ArrowUpDown, Plus, Repeat } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import UseTemplateButton from '@/components/UseTemplateButton';
+import { useQueryClient } from '@tanstack/react-query';
 
 type SortKey = 'title' | 'priority' | 'dueDate' | 'status';
 
@@ -16,6 +18,7 @@ const PRIORITY_ORDER: Priority[] = ['urgent', 'high', 'normal', 'low'];
 export default function ListView() {
   const { getFilteredTasks, setSelectedTaskId, getMemberById, tasks, addTask, selectedProjectId, getListsForProject, lists, projects, quickFilter } = useApp();
   const { teamMemberId } = useAuth();
+  const queryClient = useQueryClient();
   const { zoomTaskIds, meetTaskIds } = useTaskMeetings();
   const [sortKey, setSortKey] = useState<SortKey>('priority');
   const [sortAsc, setSortAsc] = useState(true);
@@ -188,13 +191,22 @@ export default function ListView() {
             <button onClick={() => { setIsAdding(false); setNewTaskTitle(''); }} className="px-2 py-1 text-xs text-muted-foreground hover:text-foreground">Annuler</button>
           </div>
         ) : (
-          <button
-            onClick={() => setIsAdding(true)}
-            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg border border-dashed border-border text-sm text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            Ajouter une tâche
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsAdding(true)}
+              className="flex-1 flex items-center gap-2 px-3 py-2 rounded-lg border border-dashed border-border text-sm text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              Ajouter une tâche
+            </button>
+            <UseTemplateButton
+              listId={selectedProjectId ? (getListsForProject(selectedProjectId)[0]?.id || 'l1') : 'l1'}
+              assigneeIds={quickFilter === 'my_tasks' && teamMemberId ? [teamMemberId] : []}
+              onCreated={() => queryClient.invalidateQueries({ queryKey: ['tasks'] })}
+              variant="icon"
+              className="border border-dashed border-border rounded-lg h-[38px] w-[38px] flex items-center justify-center"
+            />
+          </div>
         )}
       </div>
     );
@@ -324,13 +336,21 @@ export default function ListView() {
             ) : (
               <tr>
                 <td colSpan={5} className="py-1 px-3">
-                  <button
-                    onClick={() => setIsAdding(true)}
-                    className="w-full flex items-center gap-2 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Ajouter une tâche
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setIsAdding(true)}
+                      className="flex-1 flex items-center gap-2 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Ajouter une tâche
+                    </button>
+                    <UseTemplateButton
+                      listId={selectedProjectId ? (getListsForProject(selectedProjectId)[0]?.id || 'l1') : 'l1'}
+                      assigneeIds={quickFilter === 'my_tasks' && teamMemberId ? [teamMemberId] : []}
+                      onCreated={() => queryClient.invalidateQueries({ queryKey: ['tasks'] })}
+                      variant="button"
+                    />
+                  </div>
                 </td>
               </tr>
             )}

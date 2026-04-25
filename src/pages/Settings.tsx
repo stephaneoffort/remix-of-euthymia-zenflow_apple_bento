@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown, Palette, BellRing, HardDrive, CalendarSync, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown, Palette, BellRing, HardDrive, CalendarSync, ShieldCheck, Sparkles, FileText } from 'lucide-react';
+import TaskTemplatesPanel from '@/components/settings/TaskTemplatesPanel';
 import { useThemeMode, PALETTE_META, TYPE_META, type ThemePalette, type TypeVariant } from '@/context/ThemeContext';
 import DataExportImport from '@/components/DataExportImport';
 import { themePreviewStore } from '@/lib/themePreviewStore';
@@ -100,6 +101,10 @@ export default function Settings() {
                 <Palette className="w-4 h-4 shrink-0" />
                 <span className="hidden xs:inline sm:inline">Thème</span>
               </TabsTrigger>
+              <TabsTrigger value="templates" className="gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm data-[state=active]:shadow-sm">
+                <FileText className="w-4 h-4 shrink-0" />
+                <span className="hidden xs:inline sm:inline">Modèles</span>
+              </TabsTrigger>
               <TabsTrigger value="integrations" className="gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm data-[state=active]:shadow-sm">
                 <HardDrive className="w-4 h-4 shrink-0" />
                 <span className="hidden xs:inline sm:inline">Intégrations</span>
@@ -130,6 +135,10 @@ export default function Settings() {
 
           <TabsContent value="theme">
             <ThemePalettePanel />
+          </TabsContent>
+
+          <TabsContent value="templates">
+            <TaskTemplatesPanel />
           </TabsContent>
 
           <TabsContent value="integrations">

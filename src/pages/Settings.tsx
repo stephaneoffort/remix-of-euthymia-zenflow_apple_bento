@@ -735,14 +735,19 @@ function ThemePalettePanel() {
                   }}
                   className={`group relative flex flex-col gap-3 p-5 rounded-xl border-2 transition-all text-left ${
                     active
-                      ? 'border-primary bg-accent/40 shadow-md'
+                      ? 'border-primary bg-accent/40 shadow-md ring-1 ring-primary/20'
                       : 'border-border bg-card hover:border-muted-foreground/30 hover:bg-muted/30'
                   }`}
                 >
                   {active && (
-                    <span className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                      <Check className="w-3.5 h-3.5 text-primary-foreground" />
-                    </span>
+                    <>
+                      <span className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                        <Check className="w-3.5 h-3.5 text-primary-foreground" />
+                      </span>
+                      <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full bg-primary text-[10px] font-bold text-primary-foreground uppercase tracking-wide">
+                        Actuel
+                      </span>
+                    </>
                   )}
                   <div
                     className="rounded-lg border border-border/50 bg-muted/20 p-4 space-y-2"

@@ -44,6 +44,7 @@ import {
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SpaceIcon, SPACE_ICON_PRESETS } from "@/components/SpaceIcon";
+import SpaceIconPickerDialog from "@/components/SpaceIconPickerDialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -143,6 +144,7 @@ export default function AppSidebar() {
     archiveSpace,
     archiveProject,
     renameSpace,
+    updateSpaceIcon,
     renameProject,
     moveProject,
     deleteSpace,
@@ -273,6 +275,9 @@ export default function AppSidebar() {
     enabled: !!teamMemberId,
   });
   const [accessDialogSpace, setAccessDialogSpace] = useState<{ id: string; name: string; isPrivate: boolean } | null>(
+    null
+  );
+  const [iconPickerSpace, setIconPickerSpace] = useState<{ id: string; name: string; icon: string } | null>(null);
     null,
   );
   const [membersDialogProject, setMembersDialogProject] = useState<{ id: string; name: string } | null>(null);

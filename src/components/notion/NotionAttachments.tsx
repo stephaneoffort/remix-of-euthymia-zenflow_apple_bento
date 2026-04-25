@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from "react"
-import { Loader2, Plus, X, Search, Link as LinkIcon, ExternalLink } from "lucide-react"
+import { useState, useEffect, useCallback, useRef, useMemo } from "react"
+import { Loader2, Plus, X, Search, Link as LinkIcon, ExternalLink, Clock, ChevronDown } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -25,6 +25,8 @@ interface PickedPage {
   url: string
   title: string
   icon: string | null
+  last_edited_time?: string
+  parent_type?: string | null
 }
 
 interface Props {
@@ -179,38 +181,125 @@ interface PickerProps {
   onPick: (page: PickedPage) => void
 }
 
+function highlightMatch(text: string, query: string): React.ReactNode {
+  const q = query.trim()
+  if (!q) return text
+  const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+  const regex = new RegExp(`(${escaped})`, "ig")
+  const parts = text.split(regex)
+  return parts.map((part, i) =>
+    regex.test(part)
+      ? <mark key={i} className="bg-amber-200/60 dark:bg-amber-500/30 text-foreground rounded px-0.5">{part}</mark>
+      : <span key={i}>{part}</span>,
+  )
+}
+
+function formatRelativeDate(iso?: string): string | null {
+  if (!iso) return null
+  const date = new Date(iso)
+  const diff = (Date.now() - date.getTime()) / 1000
+  if (diff < 60) return "à l'instant"
+  if (diff < 3600) return `il y a ${Math.floor(diff / 60)} min`
+  if (diff < 86400) return `il y a ${Math.floor(diff / 3600)} h`
+  if (diff < 604800) return `il y a ${Math.floor(diff / 86400)} j`
+  return date.toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })
+}
+
+const PAGE_SIZE = 20
+const DEBOUNCE_MS = 200
+
 function NotionPagePicker({ open, onOpenChange, onPick }: PickerProps) {
   const { toast } = useToast()
   const [tab, setTab] = useState<"search" | "url">("search")
 
-  // Search
+  // Search state
   const [query, setQuery] = useState("")
   const [results, setResults] = useState<PickedPage[]>([])
   const [searching, setSearching] = useState(false)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [nextCursor, setNextCursor] = useState<string | null>(null)
+  const [hasMore, setHasMore] = useState(false)
+  const [activeIndex, setActiveIndex] = useState(0)
 
-  // URL
+  // URL state
   const [urlInput, setUrlInput] = useState("")
   const [resolving, setResolving] = useState(false)
 
+  // Concurrence : on garde le numéro de la dernière requête pour ignorer les anciennes
+  const requestIdRef = useRef(0)
+  const listRef = useRef<HTMLDivElement>(null)
+  const itemRefs = useRef<(HTMLButtonElement | null)[]>([])
+
+  // Reset à l'ouverture/fermeture
   useEffect(() => {
     if (!open) {
       setQuery(""); setResults([]); setUrlInput("")
+      setNextCursor(null); setHasMore(false); setActiveIndex(0)
     }
   }, [open])
 
-  // Recherche debounced
+  // Recherche initiale (au changement de query) — debounced + concurrence
   useEffect(() => {
     if (tab !== "search" || !open) return
+    const myRequestId = ++requestIdRef.current
     const timeout = setTimeout(async () => {
       setSearching(true)
       const { data, error } = await supabase.functions.invoke("notion-api", {
-        body: { action: "search_pages", query },
+        body: { action: "search_pages", query, page_size: PAGE_SIZE },
       })
-      if (!error && data?.pages) setResults(data.pages)
+      // Ignore si une requête plus récente est partie entre-temps
+      if (myRequestId !== requestIdRef.current) return
+      if (!error && data?.pages) {
+        setResults(data.pages)
+        setNextCursor(data.next_cursor ?? null)
+        setHasMore(!!data.has_more)
+        setActiveIndex(0)
+      } else {
+        setResults([])
+        setNextCursor(null)
+        setHasMore(false)
+      }
       setSearching(false)
-    }, 300)
+    }, DEBOUNCE_MS)
     return () => clearTimeout(timeout)
   }, [query, tab, open])
+
+  const handleLoadMore = useCallback(async () => {
+    if (!nextCursor || loadingMore) return
+    setLoadingMore(true)
+    const myRequestId = requestIdRef.current
+    const { data, error } = await supabase.functions.invoke("notion-api", {
+      body: { action: "search_pages", query, page_size: PAGE_SIZE, start_cursor: nextCursor },
+    })
+    if (myRequestId !== requestIdRef.current) { setLoadingMore(false); return }
+    if (!error && data?.pages) {
+      setResults(prev => [...prev, ...data.pages])
+      setNextCursor(data.next_cursor ?? null)
+      setHasMore(!!data.has_more)
+    }
+    setLoadingMore(false)
+  }, [nextCursor, loadingMore, query])
+
+  // Auto-scroll de l'élément actif
+  useEffect(() => {
+    const el = itemRefs.current[activeIndex]
+    if (el) el.scrollIntoView({ block: "nearest" })
+  }, [activeIndex])
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (results.length === 0) return
+    if (e.key === "ArrowDown") {
+      e.preventDefault()
+      setActiveIndex(i => Math.min(i + 1, results.length - 1))
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault()
+      setActiveIndex(i => Math.max(i - 1, 0))
+    } else if (e.key === "Enter") {
+      e.preventDefault()
+      const page = results[activeIndex]
+      if (page) onPick(page)
+    }
+  }
 
   const handleResolveUrl = async () => {
     if (!urlInput.trim()) return
@@ -229,6 +318,12 @@ function NotionPagePicker({ open, onOpenChange, onPick }: PickerProps) {
     }
     onPick(data.page)
   }
+
+  const resultsCountLabel = useMemo(() => {
+    if (searching) return "Recherche…"
+    if (results.length === 0) return null
+    return hasMore ? `${results.length}+ résultats` : `${results.length} résultat${results.length > 1 ? "s" : ""}`
+  }, [searching, results.length, hasMore])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -253,33 +348,103 @@ function NotionPagePicker({ open, onOpenChange, onPick }: PickerProps) {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="search" className="space-y-3">
-            <Input
-              autoFocus
-              placeholder="Rechercher dans votre workspace…"
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-            />
-            <div className="max-h-80 overflow-y-auto space-y-1">
-              {searching ? (
-                <div className="flex items-center justify-center py-6">
+          <TabsContent value="search" className="space-y-2">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
+              <Input
+                autoFocus
+                placeholder="Rechercher dans votre workspace…"
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="pl-8 pr-8"
+                aria-label="Rechercher une page Notion"
+                aria-autocomplete="list"
+                aria-controls="notion-results-list"
+                aria-activedescendant={results[activeIndex] ? `notion-page-${results[activeIndex].id}` : undefined}
+              />
+              {searching && (
+                <Loader2 className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 animate-spin text-muted-foreground" />
+              )}
+            </div>
+
+            <div className="flex items-center justify-between text-[11px] text-muted-foreground px-1 h-4">
+              <span>{resultsCountLabel}</span>
+              {results.length > 0 && (
+                <span className="hidden sm:inline">
+                  <kbd className="px-1 py-0.5 bg-muted rounded text-[10px]">↑</kbd>
+                  <kbd className="px-1 py-0.5 bg-muted rounded text-[10px] ml-0.5">↓</kbd>
+                  {" naviguer · "}
+                  <kbd className="px-1 py-0.5 bg-muted rounded text-[10px]">↵</kbd>
+                  {" sélectionner"}
+                </span>
+              )}
+            </div>
+
+            <div
+              ref={listRef}
+              id="notion-results-list"
+              role="listbox"
+              className="max-h-80 overflow-y-auto space-y-0.5 -mx-1 px-1"
+            >
+              {searching && results.length === 0 ? (
+                <div className="flex items-center justify-center py-8">
                   <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
                 </div>
               ) : results.length === 0 ? (
-                <p className="text-xs text-muted-foreground text-center py-6">
-                  {query ? "Aucun résultat." : "Tapez pour rechercher."}
+                <p className="text-xs text-muted-foreground text-center py-8">
+                  {query ? "Aucun résultat pour cette recherche." : "Tapez pour rechercher dans votre workspace."}
                 </p>
               ) : (
-                results.map(page => (
-                  <button
-                    key={page.id}
-                    onClick={() => onPick(page)}
-                    className="w-full flex items-center gap-2 px-2 py-2 rounded-md hover:bg-accent transition-colors text-left"
-                  >
-                    <PageIcon icon={page.icon} />
-                    <span className="flex-1 min-w-0 text-sm truncate">{page.title}</span>
-                  </button>
-                ))
+                <>
+                  {results.map((page, i) => {
+                    const isActive = i === activeIndex
+                    const relDate = formatRelativeDate(page.last_edited_time)
+                    return (
+                      <button
+                        key={page.id}
+                        id={`notion-page-${page.id}`}
+                        ref={el => { itemRefs.current[i] = el }}
+                        role="option"
+                        aria-selected={isActive}
+                        onClick={() => onPick(page)}
+                        onMouseEnter={() => setActiveIndex(i)}
+                        className={cn(
+                          "w-full flex items-center gap-2.5 px-2 py-2 rounded-md text-left transition-colors",
+                          isActive ? "bg-accent" : "hover:bg-accent/50",
+                        )}
+                      >
+                        <PageIcon icon={page.icon} />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm truncate">
+                            {highlightMatch(page.title, query)}
+                          </p>
+                          {relDate && (
+                            <p className="text-[11px] text-muted-foreground flex items-center gap-1 mt-0.5">
+                              <Clock className="w-2.5 h-2.5" />
+                              {relDate}
+                            </p>
+                          )}
+                        </div>
+                      </button>
+                    )
+                  })}
+
+                  {hasMore && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleLoadMore}
+                      disabled={loadingMore}
+                      className="w-full mt-1 h-8 text-xs gap-1.5 text-muted-foreground"
+                    >
+                      {loadingMore
+                        ? <Loader2 className="w-3 h-3 animate-spin" />
+                        : <ChevronDown className="w-3 h-3" />}
+                      Charger plus
+                    </Button>
+                  )}
+                </>
               )}
             </div>
           </TabsContent>

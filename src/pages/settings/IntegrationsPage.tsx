@@ -106,6 +106,13 @@ export default function IntegrationsPage() {
       toast({ title: "Google Keep désactivé" })
       return
     }
+    if (key === "google_tasks") {
+      const { supabase } = await import("@/integrations/supabase/client")
+      await supabase.functions.invoke("google-tasks-api", { body: { action: "disconnect" } })
+      await refetch()
+      toast({ title: "Google Tasks déconnecté" })
+      return
+    }
     await disconnect(key)
     toast({ title: `${INTEGRATION_CONFIG[key].label} déconnecté` })
   }

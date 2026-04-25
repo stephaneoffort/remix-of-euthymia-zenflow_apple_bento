@@ -188,7 +188,7 @@ serve(async (req) => {
         .limit(20)
       // Dédoublonne par file_key
       const seen = new Set<string>()
-      const uniques = (data ?? []).filter(d => {
+      const uniques = (data ?? []).filter((d: any) => {
         if (seen.has(d.file_key)) return false
         seen.add(d.file_key)
         return true

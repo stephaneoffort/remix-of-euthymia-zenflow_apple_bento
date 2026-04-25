@@ -69,11 +69,22 @@ export default function IntegrationsPage() {
 
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold">Intégrations</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Connectez vos outils externes pour enrichir votre espace.
-        </p>
+      <div className="flex items-start gap-3">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleBack}
+          className="shrink-0 -ml-2 mt-0.5"
+          aria-label="Retour"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </Button>
+        <div className="min-w-0">
+          <h1 className="text-2xl font-semibold">Intégrations</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Connectez vos outils externes pour enrichir votre espace.
+          </p>
+        </div>
       </div>
 
       {CATEGORIES.map(({ label, keys }) => (

@@ -706,6 +706,17 @@ export default function TaskDetailPanel() {
             {isActive('google_keep') && (
               <KeepAttachments entityType="task" entityId={task.id} />
             )}
+
+            {/* Google Tasks — push manuel vers une liste Google */}
+            {isActive('google_tasks') && (
+              <GoogleTaskSync task={{
+                id: task.id,
+                title: task.title,
+                description: task.description,
+                dueDate: task.dueDate,
+                status: task.status,
+              }} />
+            )}
             {!isActive('google_drive') && !isActive('canva') && !isActive('zoom') && !isActive('brevo') && !isActive('gmail') && (
               <a
                 href="/settings"

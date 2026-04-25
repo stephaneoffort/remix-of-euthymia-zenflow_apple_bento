@@ -28,7 +28,15 @@ interface CustomStatus {
 export default function Settings() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const [activeTab, setActiveTab] = useState(() => {
+    const fromState = (location.state as any)?.settingsTab;
+    if (fromState && typeof fromState === 'string') return fromState;
+    const hash = window.location.hash.replace('#', '');
+    if (hash) return hash;
+    return 'members';
+  });
 
   useEffect(() => {
     if (!user) return;

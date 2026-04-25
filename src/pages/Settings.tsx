@@ -571,6 +571,16 @@ function ThemePalettePanel() {
     };
   }, [previewType, typeVariant]);
 
+  // Sync preview state to global store so the top-bar ThemeIndicator can mirror it
+  useEffect(() => {
+    themePreviewStore.set({ palette: previewPalette, theme: previewTheme, type: previewType });
+  }, [previewPalette, previewTheme, previewType]);
+
+  // Reset global preview when leaving the Settings page
+  useEffect(() => {
+    return () => themePreviewStore.reset();
+  }, []);
+
   // Effective values for the "Thème actuel" indicator card
   const effectivePalette = previewPalette ?? palette;
   const effectiveTheme = previewTheme ?? theme;

@@ -80,6 +80,7 @@ export default function IntegrationsSettings() {
       ['canva_connected', 'canva'],
       ['gmail_connected', 'gmail'],
       ['miro_connected', 'miro'],
+      ['dropbox_connected', 'dropbox'],
     ];
     callbacks.forEach(([param, key]) => {
       if (params.get(param) === 'true') {

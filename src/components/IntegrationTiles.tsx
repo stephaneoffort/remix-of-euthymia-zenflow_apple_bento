@@ -159,6 +159,11 @@ export default function IntegrationTiles({ entityType, entityId, taskTitle }: Pr
           <ZoomMeetings entityType={entityType} entityId={entityId} compact defaultTitle={taskTitle} />
         </div>
       )}
+      {openTile === 'miro' && (
+        <div className="border border-border rounded-lg p-3 bg-background/50">
+          <MiroAttachments entityType={entityType} entityId={entityId} compact defaultTitle={taskTitle} />
+        </div>
+      )}
       {openTile === 'newsletter' && (
         <div className="border border-border rounded-lg p-3 bg-background/50">
           <BrevoNewsletterLinks entityType={entityType} entityId={entityId} compact />

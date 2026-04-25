@@ -28,6 +28,7 @@ import KeepAttachments from '@/components/keep/KeepAttachments';
 import GoogleTaskSync from '@/components/google-tasks/GoogleTaskSync';
 import GoogleDocsAttachments from '@/components/google-docs/GoogleDocsAttachments';
 import GoogleSheetsAttachments from '@/components/google-sheets/GoogleSheetsAttachments';
+import FigmaAttachments from '@/components/figma/FigmaAttachments';
 import IntegrationTiles from '@/components/IntegrationTiles';
 import { useIntegrations, INTEGRATION_CONFIG } from '@/hooks/useIntegrations';
 import GoogleCalendarPicker from '@/components/GoogleCalendarPicker';
@@ -727,6 +728,10 @@ export default function TaskDetailPanel() {
             {/* Google Sheets — lier ou créer une feuille */}
             {isActive('google_sheets') && (
               <GoogleSheetsAttachments taskId={task.id} taskTitle={task.title} />
+            )}
+            {/* Figma — lier des fichiers et frames */}
+            {isActive('figma') && (
+              <FigmaAttachments taskId={task.id} />
             )}
             {!isActive('google_drive') && !isActive('canva') && !isActive('zoom') && !isActive('brevo') && !isActive('gmail') && (
               <a

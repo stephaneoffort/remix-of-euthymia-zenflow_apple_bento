@@ -19,6 +19,7 @@ const GUIDE_MESSAGES: Record<IntegrationKey, string> = {
   google_tasks: 'Connecte ton compte Google dans Settings → Intégrations → Google Tasks pour pousser et importer tes listes',
   google_docs: 'Connecte ton compte Google dans Settings → Intégrations → Google Docs pour lier ou créer des documents',
   google_sheets: 'Connecte ton compte Google dans Settings → Intégrations → Google Sheets pour lier ou créer des feuilles',
+  figma: 'Connecte ton compte Figma dans Settings → Intégrations → Figma pour lier des fichiers et frames',
 };
 
 interface Props {

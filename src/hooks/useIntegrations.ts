@@ -15,7 +15,8 @@ export type IntegrationKey =
   | 'google_keep'
   | 'google_tasks'
   | 'google_docs'
-  | 'google_sheets';
+  | 'google_sheets'
+  | 'figma';
 
 export interface IntegrationStatus {
   key: IntegrationKey;
@@ -26,7 +27,7 @@ export interface IntegrationStatus {
 }
 
 const ALL_INTEGRATIONS: IntegrationKey[] = [
-  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo', 'miro', 'dropbox', 'n8n', 'notion', 'google_keep', 'google_tasks', 'google_docs', 'google_sheets',
+  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo', 'miro', 'dropbox', 'n8n', 'notion', 'google_keep', 'google_tasks', 'google_docs', 'google_sheets', 'figma',
 ];
 
 import googleDriveIcon from '@/assets/integrations/google-drive.png';
@@ -43,6 +44,7 @@ import googleKeepIcon from '@/assets/integrations/google-keep.png';
 import googleTasksIcon from '@/assets/integrations/google-tasks.png';
 import googleDocsIcon from '@/assets/integrations/google-docs.png';
 import googleSheetsIcon from '@/assets/integrations/google-sheets.png';
+import figmaIcon from '@/assets/integrations/figma.png';
 
 export const INTEGRATION_CONFIG: Record<IntegrationKey, {
   label: string;
@@ -134,6 +136,12 @@ export const INTEGRATION_CONFIG: Record<IntegrationKey, {
     icon: googleSheetsIcon,
     color: '#0F9D58',
   },
+  figma: {
+    label: 'Figma',
+    description: 'Lier des fichiers et frames Figma à vos tâches avec aperçu',
+    icon: figmaIcon,
+    color: '#F24E1E',
+  },
 };
 
 const defaultStatus = (key: IntegrationKey): IntegrationStatus => ({
@@ -175,6 +183,7 @@ export function useIntegrations() {
       { key: 'google_tasks', table: 'google_tasks_connections' },
       { key: 'google_docs', table: 'google_docs_connections' },
       { key: 'google_sheets', table: 'google_sheets_connections' },
+      { key: 'figma', table: 'figma_connections' },
     ];
 
     for (const { key, table } of connectionChecks) {

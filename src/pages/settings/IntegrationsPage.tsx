@@ -18,7 +18,7 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string
 
 const CATEGORIES: { label: string; keys: IntegrationKey[] }[] = [
   { label: "Stockage & fichiers", keys: ["google_drive", "dropbox"] },
-  { label: "Collaboration",       keys: ["miro", "canva"] },
+  { label: "Collaboration",       keys: ["miro", "canva", "figma"] },
   { label: "Communication",       keys: ["zoom", "google_meet", "gmail", "brevo"] },
   { label: "Productivité",        keys: ["notion", "google_keep", "google_tasks", "google_docs", "google_sheets"] },
   { label: "Automatisation",      keys: ["n8n"] },
@@ -125,6 +125,13 @@ export default function IntegrationsPage() {
       await supabase.functions.invoke("google-sheets-api", { body: { action: "disconnect" } })
       await refetch()
       toast({ title: "Google Sheets déconnecté" })
+      return
+    }
+    if (key === "figma") {
+      const { supabase } = await import("@/integrations/supabase/client")
+      await supabase.functions.invoke("figma-api", { body: { action: "disconnect" } })
+      await refetch()
+      toast({ title: "Figma déconnecté" })
       return
     }
     await disconnect(key)

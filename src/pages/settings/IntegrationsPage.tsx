@@ -64,6 +64,13 @@ export default function IntegrationsPage() {
       setN8nDialogOpen(true)
       return
     }
+    // Google Keep : pas d'OAuth (Keep n'a pas d'API publique).
+    // L'activation suffit, l'utilisateur colle juste des liens dans le picker.
+    if (key === "google_keep") {
+      await toggleEnabled(key, true)
+      toast({ title: "Google Keep activé", description: "Collez les liens de vos notes Keep depuis le panneau d'une tâche." })
+      return
+    }
     const { supabase } = await import("@/integrations/supabase/client")
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) return
@@ -92,6 +99,11 @@ export default function IntegrationsPage() {
       await supabase.functions.invoke("notion-api", { body: { action: "disconnect" } })
       await refetch()
       toast({ title: "Notion déconnecté" })
+      return
+    }
+    if (key === "google_keep") {
+      await toggleEnabled(key, false)
+      toast({ title: "Google Keep désactivé" })
       return
     }
     await disconnect(key)

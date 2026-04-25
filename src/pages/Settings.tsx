@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown, Palette, BellRing, HardDrive, CalendarSync, ShieldCheck, Sparkles } from 'lucide-react';
 import { useThemeMode, PALETTE_META, TYPE_META, type ThemePalette, type TypeVariant } from '@/context/ThemeContext';
 import DataExportImport from '@/components/DataExportImport';
+import { themePreviewStore } from '@/lib/themePreviewStore';
 import InviteMemberDialog from '@/components/InviteMemberDialog';
 import IntegrationsSettings from '@/components/settings/IntegrationsSettings';
 import AdminIntegrationsPanel from '@/components/settings/AdminIntegrationsPanel';
@@ -569,6 +570,16 @@ function ThemePalettePanel() {
       root.style.setProperty('--font-numeric', restore.numeric);
     };
   }, [previewType, typeVariant]);
+
+  // Sync preview state to global store so the top-bar ThemeIndicator can mirror it
+  useEffect(() => {
+    themePreviewStore.set({ palette: previewPalette, theme: previewTheme, type: previewType });
+  }, [previewPalette, previewTheme, previewType]);
+
+  // Reset global preview when leaving the Settings page
+  useEffect(() => {
+    return () => themePreviewStore.reset();
+  }, []);
 
   // Effective values for the "Thème actuel" indicator card
   const effectivePalette = previewPalette ?? palette;

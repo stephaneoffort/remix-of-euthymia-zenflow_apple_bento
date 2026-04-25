@@ -147,6 +147,23 @@ export default function Settings() {
             </TabsContent>
 
             <TabsContent value="integrations" className="mt-0">
+              <div className="mb-4 flex items-center justify-between gap-3 p-3 rounded-lg border border-border bg-muted/30">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium">Page complète des intégrations</p>
+                  <p className="text-xs text-muted-foreground">
+                    Connectez vos comptes externes (Drive, Zoom, Gmail…) depuis l'écran dédié.
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="gap-1.5 shrink-0"
+                  onClick={() => navigate('/settings/integrations')}
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  Ouvrir
+                </Button>
+              </div>
               <IntegrationsSettings />
               <div className="mt-6">
                 <AdminIntegrationsPanel />

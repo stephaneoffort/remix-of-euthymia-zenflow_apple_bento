@@ -64,7 +64,7 @@ async function refreshFigmaToken(refreshToken: string) {
   return await res.json() as { access_token: string; expires_in: number }
 }
 
-async function getValidAccessToken(db: ReturnType<typeof createClient>, userId: string) {
+async function getValidAccessToken(db: any, userId: string) {
   const { data: conn } = await db
     .from("figma_connections")
     .select("*")

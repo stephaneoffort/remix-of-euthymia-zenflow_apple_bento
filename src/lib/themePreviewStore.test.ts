@@ -27,23 +27,14 @@ describe("themePreviewStore", () => {
     expect(count).toBe(0);
   });
 
-  it("useThemePreview ne re-render PAS si la même référence est renvoyée (set identique)", () => {
-    const { result, rerender } = renderHook(() => {
-      const v = useThemePreview();
-      // tag d'identité
-      (rerender as any).__lastValue = v;
-      return v;
-    });
-
-    const initial = result.current;
-    // Comme set crée toujours un nouvel objet, on vérifie l'égalité de contenu pas de référence
-    expect(initial).toEqual({ palette: null, theme: null, type: null });
+  it("useThemePreview renvoie la valeur courante du store", () => {
+    const { result } = renderHook(() => useThemePreview());
+    expect(result.current).toEqual({ palette: null, theme: null, type: null });
 
     act(() => {
-      themePreviewStore.set({ palette: null, theme: null, type: null });
+      themePreviewStore.set({ theme: "dark" });
     });
-    // Nouvelle référence, mais valeurs identiques
-    expect(result.current).toEqual({ palette: null, theme: null, type: null });
+    expect(result.current).toEqual({ palette: null, theme: "dark", type: null });
   });
 
   it("propage un changement de preview en moins de 5ms pour 100 updates rapides", () => {

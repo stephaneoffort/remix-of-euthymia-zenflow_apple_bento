@@ -658,15 +658,21 @@ function ThemePalettePanel() {
             ]).map(({ key, label }) => (
               <button
                 key={key}
-                onClick={() => { setTheme(key); toast.success(`Mode ${label} activé`); }}
+                onMouseEnter={() => setPreviewTheme(key)}
+                onMouseLeave={() => setPreviewTheme(null)}
+                onFocus={() => setPreviewTheme(key)}
+                onBlur={() => setPreviewTheme(null)}
+                onClick={() => { setPreviewTheme(null); setTheme(key); toast.success(`Mode ${label} activé`); }}
                 className={`relative flex items-center gap-2 px-5 py-3 rounded-xl border-2 transition-all text-sm font-medium ${
-                  theme === key
+                  previewTheme === key && previewTheme !== theme
+                    ? 'border-amber-500 bg-amber-50/40 dark:bg-amber-900/30 text-foreground shadow-md ring-2 ring-amber-500/30'
+                    : theme === key
                     ? 'border-primary bg-accent/40 text-foreground shadow-md ring-1 ring-primary/20'
                     : 'border-border bg-card text-muted-foreground hover:border-muted-foreground/30 hover:bg-muted/30'
                 }`}
               >
                 {label}
-                {theme === key && (
+                {theme === key && previewTheme !== key && (
                   <>
                     <span className="ml-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
                       <Check className="w-3 h-3 text-primary-foreground" />
@@ -675,6 +681,11 @@ function ThemePalettePanel() {
                       Actif
                     </span>
                   </>
+                )}
+                {previewTheme === key && previewTheme !== theme && (
+                  <span className="absolute -top-2 -right-2 px-1.5 py-0.5 rounded-full bg-amber-500 text-[9px] font-bold text-white uppercase tracking-wide">
+                    Aperçu
+                  </span>
                 )}
               </button>
             ))}

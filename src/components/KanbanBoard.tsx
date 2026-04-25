@@ -7,6 +7,8 @@ import { PriorityBadge, AvatarGroup, SubtaskProgress, ZenflowBadge, ZoomSessionB
 import { useTaskMeetings } from '@/hooks/useTaskMeetings';
 import { Plus, GripVertical, GripHorizontal, ChevronRight, ChevronsLeftRight, ChevronsRightLeft, Repeat, ArrowRightLeft } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import UseTemplateButton from '@/components/UseTemplateButton';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   Popover,
   PopoverContent,

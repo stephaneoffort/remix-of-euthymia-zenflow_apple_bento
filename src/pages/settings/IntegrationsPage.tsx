@@ -127,6 +127,13 @@ export default function IntegrationsPage() {
       toast({ title: "Google Sheets déconnecté" })
       return
     }
+    if (key === "figma") {
+      const { supabase } = await import("@/integrations/supabase/client")
+      await supabase.functions.invoke("figma-api", { body: { action: "disconnect" } })
+      await refetch()
+      toast({ title: "Figma déconnecté" })
+      return
+    }
     await disconnect(key)
     toast({ title: `${INTEGRATION_CONFIG[key].label} déconnecté` })
   }

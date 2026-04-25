@@ -42,7 +42,7 @@ import {
   Bell,
   Pin,
   MapPin,
-  Map,
+  Map as MapIcon,
   Plane,
   Ship,
   Bike,

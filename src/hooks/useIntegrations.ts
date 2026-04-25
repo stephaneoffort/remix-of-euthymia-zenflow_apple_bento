@@ -44,6 +44,7 @@ import googleKeepIcon from '@/assets/integrations/google-keep.png';
 import googleTasksIcon from '@/assets/integrations/google-tasks.png';
 import googleDocsIcon from '@/assets/integrations/google-docs.png';
 import googleSheetsIcon from '@/assets/integrations/google-sheets.png';
+import figmaIcon from '@/assets/integrations/figma.png';
 
 export const INTEGRATION_CONFIG: Record<IntegrationKey, {
   label: string;

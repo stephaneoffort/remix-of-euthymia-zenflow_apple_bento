@@ -526,7 +526,58 @@ function ThemePalettePanel() {
   const palettes = Object.entries(PALETTE_META) as [ThemePalette, typeof PALETTE_META[ThemePalette]][];
   const isBento = palette.startsWith("bento");
 
+  // ── Preview state (hover) ─────────────────────────────────────────
+  const [previewPalette, setPreviewPalette] = useState<ThemePalette | null>(null);
+  const [previewTheme, setPreviewTheme] = useState<'light' | 'dark' | 'mixed' | null>(null);
+  const [previewType, setPreviewType] = useState<TypeVariant | null>(null);
+
+  // Apply palette preview via root.dataset.palette without touching localStorage
+  useEffect(() => {
+    const root = document.documentElement;
+    if (previewPalette) {
+      root.dataset.palette = previewPalette;
+      root.classList.add('palette-transitioning');
+    } else {
+      root.dataset.palette = palette;
+    }
+    return () => { root.dataset.palette = palette; };
+  }, [previewPalette, palette]);
+
+  // Apply theme preview by toggling root classes
+  useEffect(() => {
+    const root = document.documentElement;
+    const apply = (t: 'light' | 'dark' | 'mixed') => {
+      root.classList.remove('light', 'dark', 'mixed');
+      root.classList.add(t === 'mixed' ? 'mixed' : t);
+    };
+    if (previewTheme) apply(previewTheme);
+    else apply(theme);
+    return () => apply(theme);
+  }, [previewTheme, theme]);
+
+  // Apply typo preview via CSS vars
+  useEffect(() => {
+    const root = document.documentElement;
+    const meta = TYPE_META[previewType ?? typeVariant];
+    root.style.setProperty('--font-display', meta.display);
+    root.style.setProperty('--font-body', meta.body);
+    root.style.setProperty('--font-numeric', meta.numeric);
+    return () => {
+      const restore = TYPE_META[typeVariant];
+      root.style.setProperty('--font-display', restore.display);
+      root.style.setProperty('--font-body', restore.body);
+      root.style.setProperty('--font-numeric', restore.numeric);
+    };
+  }, [previewType, typeVariant]);
+
+  // Effective values for the "Thème actuel" indicator card
+  const effectivePalette = previewPalette ?? palette;
+  const effectiveTheme = previewTheme ?? theme;
+  const effectiveType = previewType ?? typeVariant;
+  const isPreviewing = previewPalette !== null || previewTheme !== null || previewType !== null;
+
   const handleSelect = (key: ThemePalette) => {
+    setPreviewPalette(null);
     if (key === palette) return;
     setPalette(key);
     toast.success(`Palette "${PALETTE_META[key].label}" appliquée`);

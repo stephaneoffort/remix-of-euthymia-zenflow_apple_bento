@@ -40,6 +40,7 @@ import {
   AtSign,
   Mail,
   MessagesSquare,
+  Palette,
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {

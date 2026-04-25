@@ -1255,6 +1255,39 @@ export type Database = {
         }
         Relationships: []
       }
+      n8n_connections: {
+        Row: {
+          api_key: string
+          created_at: string
+          display_name: string | null
+          id: string
+          instance_url: string
+          is_active: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          api_key: string
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          instance_url: string
+          is_active?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          api_key?: string
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          instance_url?: string
+          is_active?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       numeric_audit_acceptances: {
         Row: {
           accepted_at: string

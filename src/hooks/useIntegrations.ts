@@ -9,7 +9,8 @@ export type IntegrationKey =
   | 'gmail'
   | 'brevo'
   | 'miro'
-  | 'dropbox';
+  | 'dropbox'
+  | 'n8n';
 
 export interface IntegrationStatus {
   key: IntegrationKey;

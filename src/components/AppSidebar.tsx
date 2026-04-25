@@ -1645,7 +1645,17 @@ export default function AppSidebar() {
           />
         )}
 
-        {/* Project members dialog */}
+        {/* Space icon picker dialog */}
+        {iconPickerSpace && (
+          <SpaceIconPickerDialog
+            open={!!iconPickerSpace}
+            onOpenChange={(open) => { if (!open) setIconPickerSpace(null); }}
+            spaceName={iconPickerSpace.name}
+            currentIcon={iconPickerSpace.icon}
+            onSelect={(iconId) => updateSpaceIcon(iconPickerSpace.id, iconId)}
+          />
+        )}
+
         {membersDialogProject && (
           <ProjectMembersDialog
             open={!!membersDialogProject}

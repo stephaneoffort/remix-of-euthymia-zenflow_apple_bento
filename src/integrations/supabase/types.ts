@@ -1084,6 +1084,95 @@ export type Database = {
           },
         ]
       }
+      figma_connections: {
+        Row: {
+          access_token: string
+          created_at: string
+          figma_email: string | null
+          figma_handle: string | null
+          figma_user_id: string | null
+          id: string
+          refresh_token: string | null
+          token_expiry: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          created_at?: string
+          figma_email?: string | null
+          figma_handle?: string | null
+          figma_user_id?: string | null
+          id?: string
+          refresh_token?: string | null
+          token_expiry?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          created_at?: string
+          figma_email?: string | null
+          figma_handle?: string | null
+          figma_user_id?: string | null
+          id?: string
+          refresh_token?: string | null
+          token_expiry?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      figma_links: {
+        Row: {
+          created_at: string
+          file_key: string
+          file_name: string | null
+          id: string
+          last_modified: string | null
+          node_id: string | null
+          preview_image_url: string | null
+          task_id: string
+          thumbnail_url: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_key: string
+          file_name?: string | null
+          id?: string
+          last_modified?: string | null
+          node_id?: string | null
+          preview_image_url?: string | null
+          task_id: string
+          thumbnail_url?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          file_key?: string
+          file_name?: string | null
+          id?: string
+          last_modified?: string | null
+          node_id?: string | null
+          preview_image_url?: string | null
+          task_id?: string
+          thumbnail_url?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "figma_links_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       filter_presets: {
         Row: {
           created_at: string

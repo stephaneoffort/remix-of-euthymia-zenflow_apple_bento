@@ -33,21 +33,23 @@ interface Connection {
   token_expiry: string | null
 }
 
-async function getValidAccessToken(db: ReturnType<typeof createClient>, userId: string): Promise<string | null> {
+// deno-lint-ignore no-explicit-any
+async function getValidAccessToken(db: any, userId: string): Promise<string | null> {
   const { data: conn } = await db
     .from("google_docs_connections")
     .select("id, access_token, refresh_token, token_expiry")
     .eq("user_id", userId)
-    .maybeSingle<Connection>()
+    .maybeSingle()
 
   if (!conn) return null
+  const c = conn as Connection
 
   const now = Date.now()
-  const expiresAt = conn.token_expiry ? new Date(conn.token_expiry).getTime() : 0
+  const expiresAt = c.token_expiry ? new Date(c.token_expiry).getTime() : 0
   // Renouveler 60s avant expiration
-  if (expiresAt - 60_000 > now) return conn.access_token
+  if (expiresAt - 60_000 > now) return c.access_token
 
-  if (!conn.refresh_token) return conn.access_token
+  if (!c.refresh_token) return c.access_token
 
   const refreshRes = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
@@ -55,13 +57,13 @@ async function getValidAccessToken(db: ReturnType<typeof createClient>, userId: 
     body: new URLSearchParams({
       client_id:     GOOGLE_CLIENT_ID,
       client_secret: GOOGLE_CLIENT_SECRET,
-      refresh_token: conn.refresh_token,
+      refresh_token: c.refresh_token,
       grant_type:    "refresh_token",
     }),
   })
   const refreshed = await refreshRes.json()
   if (!refreshRes.ok || !refreshed.access_token) {
-    return conn.access_token
+    return c.access_token
   }
 
   const newExpiry = refreshed.expires_in
@@ -71,7 +73,7 @@ async function getValidAccessToken(db: ReturnType<typeof createClient>, userId: 
   await db.from("google_docs_connections").update({
     access_token: refreshed.access_token,
     token_expiry: newExpiry,
-  }).eq("id", conn.id)
+  }).eq("id", c.id)
 
   return refreshed.access_token
 }

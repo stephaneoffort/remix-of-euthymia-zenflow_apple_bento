@@ -199,6 +199,7 @@ export default function KanbanBoardNM() {
   } = useApp();
   const { teamMemberId } = useAuth();
   const isMobile = useIsMobile();
+  const queryClient = useQueryClient();
 
   const [search, setSearch] = useState("");
   const [newTaskStatus, setNewTaskStatus] = useState<string | null>(null);

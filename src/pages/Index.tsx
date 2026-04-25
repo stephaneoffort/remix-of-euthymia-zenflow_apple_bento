@@ -31,6 +31,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { Drawer, DrawerContent, DrawerTrigger, DrawerTitle } from "@/components/ui/drawer";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useThemeMode, PALETTE_META } from "@/context/ThemeContext";
+import { useThemePreview } from "@/lib/themePreviewStore";
 
 import {
   Sparkles,

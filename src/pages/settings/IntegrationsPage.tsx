@@ -142,13 +142,16 @@ export default function IntegrationsPage() {
               const status = integrations[key]
               const connected = status?.is_connected ?? false
               const enabled = status?.is_enabled ?? false
+              const isKeep = key === "google_keep"
+              // Pour Keep, "actif" = "activé" (pas d'OAuth, donc pas de notion de connexion)
+              const isActive = isKeep ? enabled : connected
 
               return (
                 <Card
                   key={key}
                   className={cn(
                     "transition-all duration-200",
-                    connected && "border-emerald-200/60 dark:border-emerald-800/40",
+                    isActive && "border-emerald-200/60 dark:border-emerald-800/40",
                   )}
                 >
                   <CardContent className="p-4">
@@ -173,6 +176,14 @@ export default function IntegrationsPage() {
 
                       {loading ? (
                         <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                      ) : isKeep ? (
+                        <Badge
+                          variant="outline"
+                          className="gap-1.5 text-xs text-amber-700 border-amber-200 bg-amber-50 dark:text-amber-400 dark:border-amber-800 dark:bg-amber-950/30"
+                        >
+                          <CheckCircle2 className="h-3 w-3" />
+                          {enabled ? "Activé" : "Disponible"}
+                        </Badge>
                       ) : connected ? (
                         <Badge
                           variant="outline"
@@ -195,7 +206,19 @@ export default function IntegrationsPage() {
                     {/* Footer */}
                     {!loading && (
                       <div className="mt-3 pt-3 border-t flex items-center gap-2">
-                        {connected ? (
+                        {isKeep ? (
+                          <>
+                            <span className="flex-1 text-xs text-muted-foreground">
+                              {enabled
+                                ? "Collez les liens Keep depuis le panneau d'une tâche."
+                                : "Aucune connexion requise — activez pour commencer."}
+                            </span>
+                            <Switch
+                              checked={enabled}
+                              onCheckedChange={(v) => toggleEnabled(key, v)}
+                            />
+                          </>
+                        ) : connected ? (
                           <>
                             <span className="flex-1 text-xs text-muted-foreground">
                               Activer dans l'application

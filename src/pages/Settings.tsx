@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown, Palette, BellRing, HardDrive, CalendarSync, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown, Palette, BellRing, HardDrive, CalendarSync, ShieldCheck, Sparkles } from 'lucide-react';
 import { useThemeMode, PALETTE_META, TYPE_META, type ThemePalette, type TypeVariant } from '@/context/ThemeContext';
 import DataExportImport from '@/components/DataExportImport';
 import InviteMemberDialog from '@/components/InviteMemberDialog';
@@ -540,7 +540,49 @@ function ThemePalettePanel() {
 
   return (
     <div className="space-y-6">
-      {/* Mode clair / sombre / mixte */}
+      {/* ── Thème actuel ── */}
+      <Card className="border-primary/40 bg-accent/20 shadow-sm">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-foreground text-base">
+            <Sparkles className="w-5 h-5 text-primary" />
+            Thème actuel
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Mode */}
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-card">
+              <span className="text-sm">
+                {theme === 'light' ? '☀' : theme === 'dark' ? '☽' : '⊙'}
+              </span>
+              <span className="text-sm font-medium text-foreground">
+                {theme === 'light' ? 'Clair' : theme === 'dark' ? 'Sombre' : 'Mixte'}
+              </span>
+            </div>
+            {/* Design mode */}
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-card">
+              <span className="text-sm">{designMode === 'classic' ? '⊞' : '✦'}</span>
+              <span className="text-sm font-medium text-foreground">
+                {designMode === 'classic' ? 'Classic' : 'Premium'}
+              </span>
+            </div>
+            {/* Typo */}
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-card">
+              <span className="font-display text-sm font-semibold">Aa</span>
+              <span className="text-sm font-medium text-foreground">{TYPE_META[typeVariant].label}</span>
+            </div>
+            {/* Palette */}
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-primary/50 bg-primary/5">
+              <div className="flex gap-1">
+                {PALETTE_META[palette].colors.slice(0, 4).map((c, i) => (
+                  <div key={i} className="w-5 h-5 rounded-md border border-border/60" style={{ backgroundColor: c }} />
+                ))}
+              </div>
+              <span className="text-sm font-semibold text-primary">{PALETTE_META[palette].label}</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
       <Card className="border-border bg-card">
         <CardHeader>
           <CardTitle className="text-base text-foreground">Mode d'affichage</CardTitle>
@@ -556,17 +598,22 @@ function ThemePalettePanel() {
               <button
                 key={key}
                 onClick={() => { setTheme(key); toast.success(`Mode ${label} activé`); }}
-                className={`flex items-center gap-2 px-5 py-3 rounded-xl border-2 transition-all text-sm font-medium ${
+                className={`relative flex items-center gap-2 px-5 py-3 rounded-xl border-2 transition-all text-sm font-medium ${
                   theme === key
-                    ? 'border-primary bg-accent/40 text-foreground shadow-md'
+                    ? 'border-primary bg-accent/40 text-foreground shadow-md ring-1 ring-primary/20'
                     : 'border-border bg-card text-muted-foreground hover:border-muted-foreground/30 hover:bg-muted/30'
                 }`}
               >
                 {label}
                 {theme === key && (
-                  <span className="ml-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                    <Check className="w-3 h-3 text-primary-foreground" />
-                  </span>
+                  <>
+                    <span className="ml-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                      <Check className="w-3 h-3 text-primary-foreground" />
+                    </span>
+                    <span className="absolute -top-2 -right-2 px-1.5 py-0.5 rounded-full bg-primary text-[9px] font-bold text-primary-foreground uppercase tracking-wide">
+                      Actif
+                    </span>
+                  </>
                 )}
               </button>
             ))}
@@ -652,17 +699,22 @@ function ThemePalettePanel() {
               <button
                 key={key}
                 onClick={() => { setDesignMode(key); toast.success(`Mode ${label} activé`); }}
-                className={`flex items-center gap-2 px-5 py-3 rounded-xl border-2 transition-all text-sm font-medium ${
+                className={`relative flex items-center gap-2 px-5 py-3 rounded-xl border-2 transition-all text-sm font-medium ${
                   designMode === key
-                    ? 'border-primary bg-accent/40 text-foreground shadow-md'
+                    ? 'border-primary bg-accent/40 text-foreground shadow-md ring-1 ring-primary/20'
                     : 'border-border bg-card text-muted-foreground hover:border-muted-foreground/30 hover:bg-muted/30'
                 }`}
               >
                 {label}
                 {designMode === key && (
-                  <span className="ml-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                    <Check className="w-3 h-3 text-primary-foreground" />
-                  </span>
+                  <>
+                    <span className="ml-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                      <Check className="w-3 h-3 text-primary-foreground" />
+                    </span>
+                    <span className="absolute -top-2 -right-2 px-1.5 py-0.5 rounded-full bg-primary text-[9px] font-bold text-primary-foreground uppercase tracking-wide">
+                      Actif
+                    </span>
+                  </>
                 )}
               </button>
             ))}
@@ -693,14 +745,19 @@ function ThemePalettePanel() {
                   }}
                   className={`group relative flex flex-col gap-3 p-5 rounded-xl border-2 transition-all text-left ${
                     active
-                      ? 'border-primary bg-accent/40 shadow-md'
+                      ? 'border-primary bg-accent/40 shadow-md ring-1 ring-primary/20'
                       : 'border-border bg-card hover:border-muted-foreground/30 hover:bg-muted/30'
                   }`}
                 >
                   {active && (
-                    <span className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                      <Check className="w-3.5 h-3.5 text-primary-foreground" />
-                    </span>
+                    <>
+                      <span className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                        <Check className="w-3.5 h-3.5 text-primary-foreground" />
+                      </span>
+                      <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full bg-primary text-[10px] font-bold text-primary-foreground uppercase tracking-wide">
+                        Actuel
+                      </span>
+                    </>
                   )}
                   <div
                     className="rounded-lg border border-border/50 bg-muted/20 p-4 space-y-2"
@@ -760,14 +817,19 @@ function ThemePalettePanel() {
                     onClick={() => handleSelect(key)}
                     className={`group relative flex flex-col gap-3 p-5 rounded-xl border-2 transition-all text-left ${
                       active
-                        ? 'border-primary bg-accent/40 shadow-md'
+                        ? 'border-primary bg-accent/40 shadow-md ring-1 ring-primary/20'
                         : 'border-border bg-card hover:border-muted-foreground/30 hover:bg-muted/30'
                     }`}
                   >
                     {active && (
-                      <span className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                        <Check className="w-3.5 h-3.5 text-primary-foreground" />
-                      </span>
+                      <>
+                        <span className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                          <Check className="w-3.5 h-3.5 text-primary-foreground" />
+                        </span>
+                        <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full bg-primary text-[10px] font-bold text-primary-foreground uppercase tracking-wide">
+                          Actuel
+                        </span>
+                      </>
                     )}
                     <div className="flex gap-1.5">
                       {meta.colors.map((c, i) => (

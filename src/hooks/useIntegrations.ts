@@ -80,6 +80,12 @@ export const INTEGRATION_CONFIG: Record<IntegrationKey, {
     icon: miroIcon,
     color: '#FFD02F',
   },
+  dropbox: {
+    label: 'Dropbox',
+    description: 'Joindre des fichiers Dropbox aux tâches et projets',
+    icon: dropboxIcon,
+    color: '#0061FF',
+  },
 };
 
 const defaultStatus = (key: IntegrationKey): IntegrationStatus => ({

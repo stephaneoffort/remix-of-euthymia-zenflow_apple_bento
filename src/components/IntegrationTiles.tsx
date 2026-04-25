@@ -89,6 +89,17 @@ export default function IntegrationTiles({ entityType, entityId, taskTitle }: Pr
         } catch { newCounts.newsletter = 0; }
       }
 
+      if (isActive('miro')) {
+        try {
+          const { count } = await (supabase as any)
+            .from('miro_attachments')
+            .select('*', { count: 'exact', head: true })
+            .eq('entity_type', entityType)
+            .eq('entity_id', entityId);
+          newCounts.miro = count || 0;
+        } catch { newCounts.miro = 0; }
+      }
+
       newCounts.email = 0; // Email compose has no stored count
       setCounts(newCounts);
     };

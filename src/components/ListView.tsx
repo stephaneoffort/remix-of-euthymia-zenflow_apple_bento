@@ -191,13 +191,22 @@ export default function ListView() {
             <button onClick={() => { setIsAdding(false); setNewTaskTitle(''); }} className="px-2 py-1 text-xs text-muted-foreground hover:text-foreground">Annuler</button>
           </div>
         ) : (
-          <button
-            onClick={() => setIsAdding(true)}
-            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg border border-dashed border-border text-sm text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            Ajouter une tâche
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsAdding(true)}
+              className="flex-1 flex items-center gap-2 px-3 py-2 rounded-lg border border-dashed border-border text-sm text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              Ajouter une tâche
+            </button>
+            <UseTemplateButton
+              listId={selectedProjectId ? (getListsForProject(selectedProjectId)[0]?.id || 'l1') : 'l1'}
+              assigneeIds={quickFilter === 'my_tasks' && teamMemberId ? [teamMemberId] : []}
+              onCreated={() => queryClient.invalidateQueries({ queryKey: ['tasks'] })}
+              variant="icon"
+              className="border border-dashed border-border rounded-lg h-[38px] w-[38px] flex items-center justify-center"
+            />
+          </div>
         )}
       </div>
     );

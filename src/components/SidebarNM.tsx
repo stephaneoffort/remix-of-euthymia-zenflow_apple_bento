@@ -1053,56 +1053,43 @@ export default function SidebarNM() {
                   ))}
                 </div>
 
-                {/* Palette picker */}
-                <div
-                  style={{
-                    padding: 8,
-                    borderRadius: 10,
-                    background: BG,
-                    boxShadow: inset,
-                    maxHeight: 160,
-                    overflowY: "auto",
-                  }}
-                >
-                  {([
-                    { label: "Classiques", keys: ["clubroom", "neutrals", "sapphire", "cinematic", "teal", "ivoireChaud"] as ThemePalette[] },
-                    { label: "Bento", keys: ["bento2026", "bentoOcean", "bentoRose", "bentoAmber"] as ThemePalette[] },
-                    { label: "Soft UI", keys: ["nmCloud", "nmMidnight", "nmSand", "nmForest", "nmLavender", "nmDeepForest"] as ThemePalette[] },
-                  ]).map((group) => (
-                    <div key={group.label} style={{ marginBottom: 6 }}>
-                      <div style={{ fontSize: 10, fontWeight: 700, color: NC.text, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3, paddingLeft: 2, opacity: 0.55 }}>
-                        {group.label}
-                      </div>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 2 }}>
-                        {group.keys.map((key) => {
-                          const meta = PALETTE_META[key];
-                          const active = palette === key;
-                          return (
-                            <button
-                              key={key}
-                              title={meta.label}
-                              onClick={() => setPalette(key)}
-                              style={{
-                                display: "flex",
-                                gap: 2,
-                                padding: 3,
-                                borderRadius: 8,
-                                border: active ? `2px solid ${NC.orange}` : "2px solid transparent",
-                                background: BG,
-                                boxShadow: active ? raised : raisedSm,
-                                cursor: "pointer",
-                                transition: "box-shadow 0.18s, border-color 0.18s",
-                              }}
-                            >
-                              {meta.colors.slice(0, 2).map((c, i) => (
-                                <span key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: c, display: "block", border: "1px solid rgba(0,0,0,0.15)" }} />
-                              ))}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ))}
+                {/* Bouton Thèmes */}
+                <div>
+                  <button
+                    onClick={() => { navigate("/settings", { state: { settingsTab: "theme" } }); closeMobile(); }}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 6,
+                      width: "100%",
+                      padding: "7px 10px",
+                      borderRadius: 8,
+                      border: "none",
+                      background: BG,
+                      boxShadow: raisedSm,
+                      cursor: "pointer",
+                      color: NC.orange,
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: 12,
+                      fontWeight: 600,
+                      transition: "all 0.18s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLElement).style.background = "rgba(122,69,24,0.06)";
+                      (e.currentTarget as HTMLElement).style.boxShadow = raised;
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLElement).style.background = BG;
+                      (e.currentTarget as HTMLElement).style.boxShadow = raisedSm;
+                    }}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <circle cx="7" cy="7" r="3" stroke="currentColor" strokeWidth="1.2" />
+                      <path d="M7 1V3M7 11V13M1 7H3M11 7H13" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" />
+                    </svg>
+                    Thèmes
+                  </button>
                 </div>
 
                 {/* Switch Classic / Premium */}

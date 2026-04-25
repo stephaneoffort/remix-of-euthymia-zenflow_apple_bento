@@ -1,51 +1,67 @@
 import { TaskTemplate } from '@/hooks/useTaskTemplates';
-import { Task } from '@/types';
-
-type AddTaskFn = (task: Omit<Task, 'id' | 'createdAt' | 'order'>) => void;
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 /**
- * Instantiate a template as a real task (and optional subtasks) in a given list.
- * Subtasks are created with the parent task's eventual id deferred to the backend layer:
- * since addTask is fire-and-forget here, we create subtasks without parentTaskId
- * unless the AppContext exposes a richer API. For now, we create the parent task only
- * with subtasks ignored at this layer if no link is possible.
- *
- * To preserve subtasks, we create the parent first, then subtasks with parentTaskId
- * set to a temporary marker — but since AppContext.addTask doesn't return the id,
- * we keep it simple: create parent with description listing subtasks if any unsupported,
- * OR leverage `addTask` calls sequentially. The current AppContext returns void, so we
- * encode subtasks into a checklist-ish list of separate sibling tasks would not respect
- * hierarchy. Therefore we only create the parent here and rely on a future extension
- * for subtasks if addTask exposes the created id.
+ * Instantiates a template by creating the parent task + its subtasks in the database.
+ * Returns the created parent task id (or null on failure).
  */
-export function instantiateTemplate(
+export async function instantiateTemplate(
   template: TaskTemplate,
   listId: string,
-  addTask: AddTaskFn,
   assigneeIds: string[] = [],
-) {
+): Promise<string | null> {
   const dueDate =
     template.due_offset_days !== null && template.due_offset_days !== undefined
-      ? new Date(Date.now() + template.due_offset_days * 86400000)
-          .toISOString()
-          .split('T')[0]
+      ? new Date(Date.now() + template.due_offset_days * 86400000).toISOString()
       : null;
 
-  addTask({
+  const parentPayload = {
     title: template.title,
     description: template.description,
     status: 'todo',
     priority: template.priority,
-    dueDate,
-    startDate: null,
-    assigneeIds,
+    due_date: dueDate,
+    start_date: null,
+    parent_task_id: null,
+    list_id: listId,
     tags: template.tags,
-    parentTaskId: null,
-    listId,
-    comments: [],
-    attachments: [],
-    timeEstimate: null,
-    timeLogged: null,
-    aiSummary: null,
-  });
+    sort_order: 0,
+  };
+
+  const { data: parent, error } = await supabase
+    .from('tasks')
+    .insert(parentPayload)
+    .select()
+    .single();
+
+  if (error || !parent) {
+    console.error('Failed to instantiate template parent', error);
+    toast.error('Échec de la création depuis le modèle');
+    return null;
+  }
+
+  if (assigneeIds.length > 0) {
+    await supabase
+      .from('task_assignees')
+      .insert(assigneeIds.map((mid) => ({ task_id: parent.id, member_id: mid })));
+  }
+
+  if (template.subtasks && template.subtasks.length > 0) {
+    const subtaskRows = template.subtasks.map((st, idx) => ({
+      title: st.title,
+      description: '',
+      status: 'todo',
+      priority: st.priority || template.priority,
+      parent_task_id: parent.id,
+      list_id: listId,
+      tags: [],
+      sort_order: idx,
+    }));
+    const { error: subErr } = await supabase.from('tasks').insert(subtaskRows);
+    if (subErr) console.error('Failed to insert subtasks', subErr);
+  }
+
+  toast.success(`Tâche créée depuis « ${template.name} »`);
+  return parent.id;
 }

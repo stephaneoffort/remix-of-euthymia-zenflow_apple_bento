@@ -9,7 +9,8 @@ export type IntegrationKey =
   | 'gmail'
   | 'brevo'
   | 'miro'
-  | 'dropbox';
+  | 'dropbox'
+  | 'n8n';
 
 export interface IntegrationStatus {
   key: IntegrationKey;
@@ -20,7 +21,7 @@ export interface IntegrationStatus {
 }
 
 const ALL_INTEGRATIONS: IntegrationKey[] = [
-  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo', 'miro', 'dropbox',
+  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo', 'miro', 'dropbox', 'n8n',
 ];
 
 import googleDriveIcon from '@/assets/integrations/google-drive.png';
@@ -31,6 +32,7 @@ import gmailIcon from '@/assets/integrations/gmail.png';
 import brevoIcon from '@/assets/integrations/brevo.png';
 import miroIcon from '@/assets/integrations/miro.png';
 import dropboxIcon from '@/assets/integrations/dropbox.png';
+import n8nIcon from '@/assets/integrations/n8n.png';
 
 export const INTEGRATION_CONFIG: Record<IntegrationKey, {
   label: string;
@@ -85,6 +87,12 @@ export const INTEGRATION_CONFIG: Record<IntegrationKey, {
     description: 'Joindre des fichiers Dropbox aux tâches et projets',
     icon: dropboxIcon,
     color: '#0061FF',
+  },
+  n8n: {
+    label: 'n8n',
+    description: 'Lancez vos workflows d\'automatisation depuis l\'application',
+    icon: n8nIcon,
+    color: '#EA4B71',
   },
 };
 

@@ -139,6 +139,7 @@ export function useIntegrations() {
       { key: 'gmail', table: 'gmail_connections' },
       { key: 'miro', table: 'miro_connections' },
       { key: 'dropbox', table: 'dropbox_connections' },
+      { key: 'notion', table: 'notion_connections' },
     ];
 
     for (const { key, table } of connectionChecks) {

@@ -9,6 +9,7 @@ import CanvaAttachments from '@/components/canva/CanvaAttachments';
 import ZoomMeetings from '@/components/zoom/ZoomMeetings';
 import BrevoNewsletterLinks from '@/components/brevo/BrevoNewsletterLinks';
 import GmailCompose from '@/components/gmail/GmailCompose';
+import MiroAttachments from '@/components/miro/MiroAttachments';
 import { supabase } from '@/integrations/supabase/client';
 
 interface Props {

@@ -12,7 +12,7 @@ interface MemberIntegrations {
   integrations: Record<string, { is_enabled: boolean; is_connected: boolean }>;
 }
 
-const DISPLAY_KEYS: IntegrationKey[] = ['google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo'];
+const DISPLAY_KEYS: IntegrationKey[] = ['google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo', 'miro'];
 
 export default function AdminIntegrationsPanel() {
   const [data, setData] = useState<MemberIntegrations[]>([]);

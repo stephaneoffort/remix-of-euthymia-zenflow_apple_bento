@@ -13,12 +13,13 @@ const CORS = {
 
 // Table de connexion par provider (correspond à useIntegrations.ts)
 const CONNECTION_TABLE: Record<string, string> = {
-  dropbox:      "dropbox_connections",
-  miro:         "miro_connections",
-  zoom:         "zoom_connections",
-  google_drive: "drive_connections",
-  canva:        "canva_connections",
-  gmail:        "gmail_connections",
+  dropbox:       "dropbox_connections",
+  miro:          "miro_connections",
+  zoom:          "zoom_connections",
+  google_drive:  "drive_connections",
+  canva:         "canva_connections",
+  gmail:         "gmail_connections",
+  google_tasks:  "google_tasks_connections",
 }
 
 // Config OAuth par provider
@@ -63,10 +64,28 @@ const PROVIDER_CONFIG: Record<string, {
     scopes:   ["https://www.googleapis.com/auth/gmail.modify"],
     extraParams: { access_type: "offline", prompt: "consent" },
   },
+  google_tasks: {
+    authUrl:  "https://accounts.google.com/o/oauth2/v2/auth",
+    tokenUrl: "https://oauth2.googleapis.com/token",
+    scopes:   [
+      "https://www.googleapis.com/auth/tasks",
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/userinfo.profile",
+      "openid",
+    ],
+    extraParams: { access_type: "offline", prompt: "consent" },
+  },
 }
 
-function clientId(provider: string)     { return Deno.env.get(`${provider.toUpperCase()}_CLIENT_ID`) ?? "" }
-function clientSecret(provider: string) { return Deno.env.get(`${provider.toUpperCase()}_CLIENT_SECRET`) ?? "" }
+// Mappe le provider vers le préfixe d'env vars (les providers Google partagent les credentials GOOGLE_*)
+function envPrefix(provider: string): string {
+  if (provider === "gmail" || provider === "google_drive" || provider === "google_tasks") {
+    return "GOOGLE"
+  }
+  return provider.toUpperCase()
+}
+function clientId(provider: string)     { return Deno.env.get(`${envPrefix(provider)}_CLIENT_ID`) ?? Deno.env.get(`${provider.toUpperCase()}_CLIENT_ID`) ?? "" }
+function clientSecret(provider: string) { return Deno.env.get(`${envPrefix(provider)}_CLIENT_SECRET`) ?? Deno.env.get(`${provider.toUpperCase()}_CLIENT_SECRET`) ?? "" }
 function redirectUri(provider: string)  { return `${SUPABASE_URL}/functions/v1/integration-oauth/callback?provider=${provider}` }
 
 async function getUser(req: Request) {

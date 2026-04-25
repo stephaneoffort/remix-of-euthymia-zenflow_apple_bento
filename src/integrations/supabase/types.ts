@@ -1141,6 +1141,75 @@ export type Database = {
         }
         Relationships: []
       }
+      google_tasklist_links: {
+        Row: {
+          app_task_id: string
+          created_at: string
+          direction: string
+          google_task_id: string
+          google_tasklist_id: string
+          id: string
+          last_synced_at: string
+          user_id: string
+        }
+        Insert: {
+          app_task_id: string
+          created_at?: string
+          direction?: string
+          google_task_id: string
+          google_tasklist_id: string
+          id?: string
+          last_synced_at?: string
+          user_id: string
+        }
+        Update: {
+          app_task_id?: string
+          created_at?: string
+          direction?: string
+          google_task_id?: string
+          google_tasklist_id?: string
+          id?: string
+          last_synced_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      google_tasks_connections: {
+        Row: {
+          access_token: string
+          created_at: string
+          display_name: string | null
+          email: string | null
+          id: string
+          refresh_token: string | null
+          token_expiry: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          refresh_token?: string | null
+          token_expiry?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          refresh_token?: string | null
+          token_expiry?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       keep_attachments: {
         Row: {
           created_at: string

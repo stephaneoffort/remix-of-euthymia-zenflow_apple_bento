@@ -12,7 +12,8 @@ export type IntegrationKey =
   | 'dropbox'
   | 'n8n'
   | 'notion'
-  | 'google_keep';
+  | 'google_keep'
+  | 'google_tasks';
 
 export interface IntegrationStatus {
   key: IntegrationKey;
@@ -23,7 +24,7 @@ export interface IntegrationStatus {
 }
 
 const ALL_INTEGRATIONS: IntegrationKey[] = [
-  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo', 'miro', 'dropbox', 'n8n', 'notion', 'google_keep',
+  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo', 'miro', 'dropbox', 'n8n', 'notion', 'google_keep', 'google_tasks',
 ];
 
 import googleDriveIcon from '@/assets/integrations/google-drive.png';
@@ -37,6 +38,7 @@ import dropboxIcon from '@/assets/integrations/dropbox.png';
 import n8nIcon from '@/assets/integrations/n8n.png';
 import notionIcon from '@/assets/integrations/notion.png';
 import googleKeepIcon from '@/assets/integrations/google-keep.png';
+import googleTasksIcon from '@/assets/integrations/google-tasks.png';
 
 export const INTEGRATION_CONFIG: Record<IntegrationKey, {
   label: string;
@@ -110,6 +112,12 @@ export const INTEGRATION_CONFIG: Record<IntegrationKey, {
     icon: googleKeepIcon,
     color: '#FBBC04',
   },
+  google_tasks: {
+    label: 'Google Tasks',
+    description: 'Pousser des tâches vers Google Tasks et importer vos listes',
+    icon: googleTasksIcon,
+    color: '#4285F4',
+  },
 };
 
 const defaultStatus = (key: IntegrationKey): IntegrationStatus => ({
@@ -148,6 +156,7 @@ export function useIntegrations() {
       { key: 'miro', table: 'miro_connections' },
       { key: 'dropbox', table: 'dropbox_connections' },
       { key: 'notion', table: 'notion_connections' },
+      { key: 'google_tasks', table: 'google_tasks_connections' },
     ];
 
     for (const { key, table } of connectionChecks) {

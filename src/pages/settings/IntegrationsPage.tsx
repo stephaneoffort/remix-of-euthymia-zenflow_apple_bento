@@ -20,7 +20,7 @@ const CATEGORIES: { label: string; keys: IntegrationKey[] }[] = [
   { label: "Stockage & fichiers", keys: ["google_drive", "dropbox"] },
   { label: "Collaboration",       keys: ["miro", "canva"] },
   { label: "Communication",       keys: ["zoom", "google_meet", "gmail", "brevo"] },
-  { label: "Productivité",        keys: ["notion", "google_keep"] },
+  { label: "Productivité",        keys: ["notion", "google_keep", "google_tasks"] },
   { label: "Automatisation",      keys: ["n8n"] },
 ]
 
@@ -104,6 +104,13 @@ export default function IntegrationsPage() {
     if (key === "google_keep") {
       await toggleEnabled(key, false)
       toast({ title: "Google Keep désactivé" })
+      return
+    }
+    if (key === "google_tasks") {
+      const { supabase } = await import("@/integrations/supabase/client")
+      await supabase.functions.invoke("google-tasks-api", { body: { action: "disconnect" } })
+      await refetch()
+      toast({ title: "Google Tasks déconnecté" })
       return
     }
     await disconnect(key)

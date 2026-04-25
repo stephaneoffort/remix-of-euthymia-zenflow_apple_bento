@@ -88,6 +88,17 @@ const PROVIDER_CONFIG: Record<string, {
     ],
     extraParams: { access_type: "offline", prompt: "consent" },
   },
+  google_sheets: {
+    authUrl:  "https://accounts.google.com/o/oauth2/v2/auth",
+    tokenUrl: "https://oauth2.googleapis.com/token",
+    scopes:   [
+      "https://www.googleapis.com/auth/spreadsheets",
+      "https://www.googleapis.com/auth/drive.file",
+      "https://www.googleapis.com/auth/userinfo.email",
+      "openid",
+    ],
+    extraParams: { access_type: "offline", prompt: "consent" },
+  },
 }
 
 // Mappe le provider vers le préfixe d'env vars (les providers Google partagent les credentials GOOGLE_*)

@@ -123,20 +123,27 @@ serve(async (req) => {
 
       // ──────────────────────────────────────────────────────────────
       // SEARCH_PAGES : recherche par titre via /v1/search
+      // Supporte pagination : page_size + start_cursor → next_cursor / has_more
       // ──────────────────────────────────────────────────────────────
       case "search_pages": {
         const conn = await getConnection();
         if (!conn) return json({ error: "Notion non connecté" }, 404);
 
         const query = (body.query as string) ?? "";
+        const pageSize = Math.min(Math.max(Number(body.page_size) || 20, 1), 50);
+        const startCursor = (body.start_cursor as string | undefined) || undefined;
+
+        const searchBody: Record<string, unknown> = {
+          query,
+          filter: { property: "object", value: "page" },
+          page_size: pageSize,
+          sort: { direction: "descending", timestamp: "last_edited_time" },
+        };
+        if (startCursor) searchBody.start_cursor = startCursor;
+
         const res = await notionFetch(conn.access_token, "/search", {
           method: "POST",
-          body: JSON.stringify({
-            query,
-            filter: { property: "object", value: "page" },
-            page_size: 25,
-            sort: { direction: "descending", timestamp: "last_edited_time" },
-          }),
+          body: JSON.stringify(searchBody),
         });
         const data = await res.json();
         if (!res.ok) return json({ error: data?.message ?? "Erreur Notion", status: res.status }, res.status);
@@ -147,8 +154,13 @@ serve(async (req) => {
           title: pageTitleFromObject(p),
           icon: pageIconFromObject(p),
           last_edited_time: p.last_edited_time,
+          parent_type: p.parent?.type ?? null,
         }));
-        return json({ pages });
+        return json({
+          pages,
+          next_cursor: data.next_cursor ?? null,
+          has_more: !!data.has_more,
+        });
       }
 
       // ──────────────────────────────────────────────────────────────

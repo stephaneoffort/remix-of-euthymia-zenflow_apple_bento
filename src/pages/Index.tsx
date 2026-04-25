@@ -108,6 +108,45 @@ const QUICK_FILTER_TITLES: Record<string, string> = {
   overdue: "Tâches en retard",
 };
 
+function ThemeIndicator() {
+  const { palette, theme, designMode } = useThemeMode();
+  const meta = PALETTE_META[palette];
+  const label = meta?.label ?? palette;
+  const colors = meta?.colors ?? ["#ccc"];
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          onClick={() => { window.location.hash = "#theme"; window.dispatchEvent(new HashChangeEvent("hashchange")); }}
+          className="relative inline-flex items-center gap-1 px-1.5 py-1 rounded-md border border-border bg-muted/30 hover:bg-muted hover:text-foreground transition-colors shrink-0"
+          style={{ borderColor: `${colors[0]}40` }}
+        >
+          <div className="flex -space-x-0.5">
+            {colors.slice(0, 3).map((c, i) => (
+              <span
+                key={i}
+                className="inline-block w-2.5 h-2.5 rounded-full border border-white/40"
+                style={{ backgroundColor: c }}
+              />
+            ))}
+          </div>
+          <span className="hidden md:inline text-[10px] font-medium text-muted-foreground tracking-tight">
+            {label.length > 12 ? label.slice(0, 12) + "…" : label}
+          </span>
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="bottom" className="text-xs">
+        <div className="space-y-1">
+          <p className="font-semibold">{label}</p>
+          <p className="text-muted-foreground text-[10px]">
+            {theme === "light" ? "☀ Clair" : theme === "dark" ? "☽ Sombre" : "⊙ Mixte"} · {designMode === "classic" ? "⊞ Classic" : "✦ Premium"}
+          </p>
+        </div>
+      </TooltipContent>
+    </Tooltip>
+  );
+}
+
 export default function Index() {
   const {
     selectedProjectId,

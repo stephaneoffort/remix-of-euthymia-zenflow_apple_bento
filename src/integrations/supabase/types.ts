@@ -1141,6 +1141,75 @@ export type Database = {
         }
         Relationships: []
       }
+      google_docs_connections: {
+        Row: {
+          access_token: string
+          created_at: string
+          id: string
+          refresh_token: string | null
+          token_expiry: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          created_at?: string
+          id?: string
+          refresh_token?: string | null
+          token_expiry?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          created_at?: string
+          id?: string
+          refresh_token?: string | null
+          token_expiry?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      google_docs_links: {
+        Row: {
+          app_task_id: string
+          created_at: string
+          google_doc_id: string
+          id: string
+          preview_text: string | null
+          preview_updated_at: string | null
+          title: string | null
+          updated_at: string
+          user_id: string
+          web_view_link: string | null
+        }
+        Insert: {
+          app_task_id: string
+          created_at?: string
+          google_doc_id: string
+          id?: string
+          preview_text?: string | null
+          preview_updated_at?: string | null
+          title?: string | null
+          updated_at?: string
+          user_id: string
+          web_view_link?: string | null
+        }
+        Update: {
+          app_task_id?: string
+          created_at?: string
+          google_doc_id?: string
+          id?: string
+          preview_text?: string | null
+          preview_updated_at?: string | null
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+          web_view_link?: string | null
+        }
+        Relationships: []
+      }
       google_tasklist_links: {
         Row: {
           app_task_id: string

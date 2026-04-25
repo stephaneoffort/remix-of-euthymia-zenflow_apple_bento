@@ -1111,6 +1111,12 @@ export default function AppSidebar() {
                         <Pencil className="w-4 h-4 mr-2" />
                         Renommer
                       </ContextMenuItem>
+                      <ContextMenuItem
+                        onClick={() => setIconPickerSpace({ id: space.id, name: space.name, icon: space.icon })}
+                      >
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        Changer l'icône
+                      </ContextMenuItem>
                       <ContextMenuItem onClick={() => duplicateSpace(space.id)}>
                         <Copy className="w-4 h-4 mr-2" />
                         Dupliquer

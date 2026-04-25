@@ -28,6 +28,7 @@ import canvaIcon from '@/assets/integrations/canva.png';
 import googleMeetIcon from '@/assets/integrations/google-meet.png';
 import gmailIcon from '@/assets/integrations/gmail.png';
 import brevoIcon from '@/assets/integrations/brevo.png';
+import miroIcon from '@/assets/integrations/miro.png';
 
 export const INTEGRATION_CONFIG: Record<IntegrationKey, {
   label: string;

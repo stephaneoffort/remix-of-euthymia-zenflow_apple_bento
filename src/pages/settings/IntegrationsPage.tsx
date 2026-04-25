@@ -120,6 +120,13 @@ export default function IntegrationsPage() {
       toast({ title: "Google Docs déconnecté" })
       return
     }
+    if (key === "google_sheets") {
+      const { supabase } = await import("@/integrations/supabase/client")
+      await supabase.functions.invoke("google-sheets-api", { body: { action: "disconnect" } })
+      await refetch()
+      toast({ title: "Google Sheets déconnecté" })
+      return
+    }
     await disconnect(key)
     toast({ title: `${INTEGRATION_CONFIG[key].label} déconnecté` })
   }

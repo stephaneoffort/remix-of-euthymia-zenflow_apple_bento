@@ -1059,6 +1059,12 @@ export default function AppSidebar() {
                               <Pencil className="w-4 h-4 mr-2" />
                               Renommer
                             </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => setIconPickerSpace({ id: space.id, name: space.name, icon: space.icon })}
+                            >
+                              <Sparkles className="w-4 h-4 mr-2" />
+                              Changer l'icône
+                            </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => duplicateSpace(space.id)}>
                               <Copy className="w-4 h-4 mr-2" />
                               Dupliquer

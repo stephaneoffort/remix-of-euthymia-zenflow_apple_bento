@@ -592,22 +592,27 @@ function ThemePalettePanel() {
   return (
     <div className="space-y-6">
       {/* ── Thème actuel ── */}
-      <Card className="border-primary/40 bg-accent/20 shadow-sm">
-        <CardHeader>
+      <Card className={`shadow-sm transition-all sticky top-2 z-10 ${isPreviewing ? 'border-amber-500/60 bg-amber-50/30 dark:bg-amber-900/20' : 'border-primary/40 bg-accent/20'}`}>
+        <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-foreground text-base">
-            <Sparkles className="w-5 h-5 text-primary" />
-            Thème actuel
+            <Sparkles className={`w-5 h-5 ${isPreviewing ? 'text-amber-500 animate-pulse' : 'text-primary'}`} />
+            {isPreviewing ? 'Aperçu (survol)' : 'Thème actuel'}
+            {isPreviewing && (
+              <span className="ml-auto px-2 py-0.5 rounded-full bg-amber-500 text-[10px] font-bold text-white uppercase tracking-wide">
+                Prévisualisation
+              </span>
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap items-center gap-3">
             {/* Mode */}
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-card">
+            <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border bg-card transition-all ${previewTheme ? 'border-amber-500 ring-1 ring-amber-500/30' : 'border-border'}`}>
               <span className="text-sm">
-                {theme === 'light' ? '☀' : theme === 'dark' ? '☽' : '⊙'}
+                {effectiveTheme === 'light' ? '☀' : effectiveTheme === 'dark' ? '☽' : '⊙'}
               </span>
               <span className="text-sm font-medium text-foreground">
-                {theme === 'light' ? 'Clair' : theme === 'dark' ? 'Sombre' : 'Mixte'}
+                {effectiveTheme === 'light' ? 'Clair' : effectiveTheme === 'dark' ? 'Sombre' : 'Mixte'}
               </span>
             </div>
             {/* Design mode */}
@@ -618,20 +623,25 @@ function ThemePalettePanel() {
               </span>
             </div>
             {/* Typo */}
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-card">
-              <span className="font-display text-sm font-semibold">Aa</span>
-              <span className="text-sm font-medium text-foreground">{TYPE_META[typeVariant].label}</span>
+            <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border bg-card transition-all ${previewType ? 'border-amber-500 ring-1 ring-amber-500/30' : 'border-border'}`}>
+              <span className="font-display text-sm font-semibold" style={{ fontFamily: TYPE_META[effectiveType].display }}>Aa</span>
+              <span className="text-sm font-medium text-foreground">{TYPE_META[effectiveType].label}</span>
             </div>
             {/* Palette */}
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-primary/50 bg-primary/5">
+            <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-all ${previewPalette ? 'border-amber-500 ring-1 ring-amber-500/30 bg-amber-50/40 dark:bg-amber-900/20' : 'border-primary/50 bg-primary/5'}`}>
               <div className="flex gap-1">
-                {PALETTE_META[palette].colors.slice(0, 4).map((c, i) => (
-                  <div key={i} className="w-5 h-5 rounded-md border border-border/60" style={{ backgroundColor: c }} />
+                {PALETTE_META[effectivePalette].colors.slice(0, 4).map((c, i) => (
+                  <div key={i} className="w-5 h-5 rounded-md border border-border/60 transition-colors" style={{ backgroundColor: c }} />
                 ))}
               </div>
-              <span className="text-sm font-semibold text-primary">{PALETTE_META[palette].label}</span>
+              <span className={`text-sm font-semibold ${previewPalette ? 'text-amber-700 dark:text-amber-400' : 'text-primary'}`}>{PALETTE_META[effectivePalette].label}</span>
             </div>
           </div>
+          {isPreviewing && (
+            <p className="text-xs text-muted-foreground mt-3 italic">
+              💡 Cliquez pour appliquer · déplacez la souris ailleurs pour annuler
+            </p>
+          )}
         </CardContent>
       </Card>
       <Card className="border-border bg-card">

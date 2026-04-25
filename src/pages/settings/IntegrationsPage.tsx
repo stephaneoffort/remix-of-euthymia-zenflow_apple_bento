@@ -20,7 +20,7 @@ const CATEGORIES: { label: string; keys: IntegrationKey[] }[] = [
   { label: "Stockage & fichiers", keys: ["google_drive", "dropbox"] },
   { label: "Collaboration",       keys: ["miro", "canva"] },
   { label: "Communication",       keys: ["zoom", "google_meet", "gmail", "brevo"] },
-  { label: "Productivité",        keys: ["notion", "google_keep", "google_tasks", "google_docs"] },
+  { label: "Productivité",        keys: ["notion", "google_keep", "google_tasks", "google_docs", "google_sheets"] },
   { label: "Automatisation",      keys: ["n8n"] },
 ]
 
@@ -118,6 +118,13 @@ export default function IntegrationsPage() {
       await supabase.functions.invoke("google-docs-api", { body: { action: "disconnect" } })
       await refetch()
       toast({ title: "Google Docs déconnecté" })
+      return
+    }
+    if (key === "google_sheets") {
+      const { supabase } = await import("@/integrations/supabase/client")
+      await supabase.functions.invoke("google-sheets-api", { body: { action: "disconnect" } })
+      await refetch()
+      toast({ title: "Google Sheets déconnecté" })
       return
     }
     await disconnect(key)

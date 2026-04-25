@@ -21,6 +21,7 @@ const CONNECTION_TABLE: Record<string, string> = {
   gmail:         "gmail_connections",
   google_tasks:  "google_tasks_connections",
   google_docs:   "google_docs_connections",
+  google_sheets: "google_sheets_connections",
 }
 
 // Config OAuth par provider
@@ -87,11 +88,22 @@ const PROVIDER_CONFIG: Record<string, {
     ],
     extraParams: { access_type: "offline", prompt: "consent" },
   },
+  google_sheets: {
+    authUrl:  "https://accounts.google.com/o/oauth2/v2/auth",
+    tokenUrl: "https://oauth2.googleapis.com/token",
+    scopes:   [
+      "https://www.googleapis.com/auth/spreadsheets",
+      "https://www.googleapis.com/auth/drive.file",
+      "https://www.googleapis.com/auth/userinfo.email",
+      "openid",
+    ],
+    extraParams: { access_type: "offline", prompt: "consent" },
+  },
 }
 
 // Mappe le provider vers le préfixe d'env vars (les providers Google partagent les credentials GOOGLE_*)
 function envPrefix(provider: string): string {
-  if (provider === "gmail" || provider === "google_drive" || provider === "google_tasks" || provider === "google_docs") {
+  if (provider === "gmail" || provider === "google_drive" || provider === "google_tasks" || provider === "google_docs" || provider === "google_sheets") {
     return "GOOGLE"
   }
   return provider.toUpperCase()

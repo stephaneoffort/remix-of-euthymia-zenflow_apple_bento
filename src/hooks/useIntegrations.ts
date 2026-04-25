@@ -14,7 +14,8 @@ export type IntegrationKey =
   | 'notion'
   | 'google_keep'
   | 'google_tasks'
-  | 'google_docs';
+  | 'google_docs'
+  | 'google_sheets';
 
 export interface IntegrationStatus {
   key: IntegrationKey;
@@ -25,7 +26,7 @@ export interface IntegrationStatus {
 }
 
 const ALL_INTEGRATIONS: IntegrationKey[] = [
-  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo', 'miro', 'dropbox', 'n8n', 'notion', 'google_keep', 'google_tasks', 'google_docs',
+  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo', 'miro', 'dropbox', 'n8n', 'notion', 'google_keep', 'google_tasks', 'google_docs', 'google_sheets',
 ];
 
 import googleDriveIcon from '@/assets/integrations/google-drive.png';
@@ -41,6 +42,7 @@ import notionIcon from '@/assets/integrations/notion.png';
 import googleKeepIcon from '@/assets/integrations/google-keep.png';
 import googleTasksIcon from '@/assets/integrations/google-tasks.png';
 import googleDocsIcon from '@/assets/integrations/google-docs.png';
+import googleSheetsIcon from '@/assets/integrations/google-sheets.png';
 
 export const INTEGRATION_CONFIG: Record<IntegrationKey, {
   label: string;
@@ -126,6 +128,12 @@ export const INTEGRATION_CONFIG: Record<IntegrationKey, {
     icon: googleDocsIcon,
     color: '#4285F4',
   },
+  google_sheets: {
+    label: 'Google Sheets',
+    description: 'Lier ou créer des feuilles Google Sheets depuis vos tâches',
+    icon: googleSheetsIcon,
+    color: '#0F9D58',
+  },
 };
 
 const defaultStatus = (key: IntegrationKey): IntegrationStatus => ({
@@ -166,6 +174,7 @@ export function useIntegrations() {
       { key: 'notion', table: 'notion_connections' },
       { key: 'google_tasks', table: 'google_tasks_connections' },
       { key: 'google_docs', table: 'google_docs_connections' },
+      { key: 'google_sheets', table: 'google_sheets_connections' },
     ];
 
     for (const { key, table } of connectionChecks) {

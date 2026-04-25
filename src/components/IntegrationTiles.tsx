@@ -10,6 +10,7 @@ import ZoomMeetings from '@/components/zoom/ZoomMeetings';
 import BrevoNewsletterLinks from '@/components/brevo/BrevoNewsletterLinks';
 import GmailCompose from '@/components/gmail/GmailCompose';
 import MiroAttachments from '@/components/miro/MiroAttachments';
+import DropboxAttachments from '@/components/dropbox/DropboxAttachments';
 import { supabase } from '@/integrations/supabase/client';
 
 interface Props {

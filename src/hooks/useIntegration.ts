@@ -70,7 +70,11 @@ export function useIntegration(provider: string) {
   const connect = useCallback(async () => {
     setWorking(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      let { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        const { data: refreshed } = await supabase.auth.refreshSession();
+        session = refreshed.session ?? null;
+      }
       const token = session?.access_token;
       if (!token) {
         window.location.href = "/auth";

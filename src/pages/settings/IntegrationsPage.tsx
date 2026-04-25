@@ -72,8 +72,21 @@ export default function IntegrationsPage() {
       return
     }
     const { supabase } = await import("@/integrations/supabase/client")
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) return
+    // Force un refresh de la session avant l'OAuth pour éviter les tokens expirés
+    let { data: { session } } = await supabase.auth.getSession()
+    if (!session?.access_token) {
+      const { data: refreshed } = await supabase.auth.refreshSession()
+      session = refreshed.session ?? null
+    }
+    if (!session?.access_token) {
+      toast({
+        title: "Session expirée",
+        description: "Veuillez vous reconnecter pour lier vos intégrations.",
+        variant: "destructive",
+      })
+      navigate("/auth")
+      return
+    }
 
     // Notion : edge function dédiée (avec user_id en query)
     if (key === "notion") {

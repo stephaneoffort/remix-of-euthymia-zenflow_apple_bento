@@ -11,7 +11,8 @@ export type IntegrationKey =
   | 'miro'
   | 'dropbox'
   | 'n8n'
-  | 'notion';
+  | 'notion'
+  | 'google_keep';
 
 export interface IntegrationStatus {
   key: IntegrationKey;
@@ -22,7 +23,7 @@ export interface IntegrationStatus {
 }
 
 const ALL_INTEGRATIONS: IntegrationKey[] = [
-  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo', 'miro', 'dropbox', 'n8n', 'notion',
+  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo', 'miro', 'dropbox', 'n8n', 'notion', 'google_keep',
 ];
 
 import googleDriveIcon from '@/assets/integrations/google-drive.png';
@@ -35,6 +36,7 @@ import miroIcon from '@/assets/integrations/miro.png';
 import dropboxIcon from '@/assets/integrations/dropbox.png';
 import n8nIcon from '@/assets/integrations/n8n.png';
 import notionIcon from '@/assets/integrations/notion.png';
+import googleKeepIcon from '@/assets/integrations/google-keep.png';
 
 export const INTEGRATION_CONFIG: Record<IntegrationKey, {
   label: string;
@@ -101,6 +103,12 @@ export const INTEGRATION_CONFIG: Record<IntegrationKey, {
     description: 'Joindre des pages Notion aux tâches et projets',
     icon: notionIcon,
     color: '#000000',
+  },
+  google_keep: {
+    label: 'Google Keep',
+    description: 'Joindre des notes Google Keep aux tâches et projets',
+    icon: googleKeepIcon,
+    color: '#FBBC04',
   },
 };
 

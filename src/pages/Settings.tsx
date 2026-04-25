@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown, Palette, BellRing, HardDrive, CalendarSync, ShieldCheck, Sparkles, FileText } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown, Palette, BellRing, HardDrive, CalendarSync, ShieldCheck, Sparkles, FileText, ExternalLink } from 'lucide-react';
 import TaskTemplatesPanel from '@/components/settings/TaskTemplatesPanel';
 import { useThemeMode, PALETTE_META, TYPE_META, type ThemePalette, type TypeVariant } from '@/context/ThemeContext';
 import DataExportImport from '@/components/DataExportImport';
@@ -147,6 +147,23 @@ export default function Settings() {
             </TabsContent>
 
             <TabsContent value="integrations" className="mt-0">
+              <div className="mb-4 flex items-center justify-between gap-3 p-3 rounded-lg border border-border bg-muted/30">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium">Page complète des intégrations</p>
+                  <p className="text-xs text-muted-foreground">
+                    Connectez vos comptes externes (Drive, Zoom, Gmail…) depuis l'écran dédié.
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="gap-1.5 shrink-0"
+                  onClick={() => navigate('/settings/integrations')}
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  Ouvrir
+                </Button>
+              </div>
               <IntegrationsSettings />
               <div className="mt-6">
                 <AdminIntegrationsPanel />

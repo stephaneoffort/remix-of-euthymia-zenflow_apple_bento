@@ -113,6 +113,7 @@ export function useIntegrations() {
       { key: 'canva', table: 'canva_connections' },
       { key: 'brevo', table: 'brevo_connections' },
       { key: 'gmail', table: 'gmail_connections' },
+      { key: 'miro', table: 'miro_connections' },
     ];
 
     for (const { key, table } of connectionChecks) {

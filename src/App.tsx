@@ -131,6 +131,16 @@ const App = () => (
                 }
               />
               <Route
+                path="/settings/integrations"
+                element={
+                  <ProtectedRoute>
+                    <AppProvider>
+                      <SettingsIntegrationsPage />
+                    </AppProvider>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/settings"
                 element={
                   <ProtectedRoute>

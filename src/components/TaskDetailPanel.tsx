@@ -724,6 +724,10 @@ export default function TaskDetailPanel() {
             {isActive('google_docs') && (
               <GoogleDocsAttachments taskId={task.id} taskTitle={task.title} />
             )}
+            {/* Google Sheets — lier ou créer une feuille */}
+            {isActive('google_sheets') && (
+              <GoogleSheetsAttachments taskId={task.id} taskTitle={task.title} />
+            )}
             {!isActive('google_drive') && !isActive('canva') && !isActive('zoom') && !isActive('brevo') && !isActive('gmail') && (
               <a
                 href="/settings"

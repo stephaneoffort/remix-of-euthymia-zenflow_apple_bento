@@ -58,6 +58,10 @@ export default function IntegrationsSettings() {
         .from('miro_connections').select('email, display_name, team_name').eq('user_id', user.id).limit(1);
       if (miroData?.[0]) info.miro = { email: miroData[0].email, display_name: miroData[0].display_name || miroData[0].team_name };
 
+      const { data: dropboxData } = await (supabase as any)
+        .from('dropbox_connections').select('email, display_name').eq('user_id', user.id).limit(1);
+      if (dropboxData?.[0]) info.dropbox = { email: dropboxData[0].email, display_name: dropboxData[0].display_name };
+
       const { data: calData } = await (supabase as any)
         .from('calendar_accounts').select('label, calendar_id').eq('user_id', user.id).eq('provider', 'google').eq('is_active', true).limit(1);
       if (calData?.[0]) {

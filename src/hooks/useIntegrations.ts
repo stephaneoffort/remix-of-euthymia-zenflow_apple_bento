@@ -26,7 +26,7 @@ export interface IntegrationStatus {
 }
 
 const ALL_INTEGRATIONS: IntegrationKey[] = [
-  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo', 'miro', 'dropbox', 'n8n', 'notion', 'google_keep', 'google_tasks', 'google_docs',
+  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo', 'miro', 'dropbox', 'n8n', 'notion', 'google_keep', 'google_tasks', 'google_docs', 'google_sheets',
 ];
 
 import googleDriveIcon from '@/assets/integrations/google-drive.png';

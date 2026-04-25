@@ -14,7 +14,8 @@ export type IntegrationKey =
   | 'notion'
   | 'google_keep'
   | 'google_tasks'
-  | 'google_docs';
+  | 'google_docs'
+  | 'google_sheets';
 
 export interface IntegrationStatus {
   key: IntegrationKey;

@@ -66,6 +66,7 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove, SortableContext, horizontalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { SpaceIcon } from "@/components/SpaceIcon";
 
 const DEFAULT_VIEW_OPTIONS: { key: ViewType; label: string; icon: React.ReactNode }[] = [
   { key: "dashboard", label: "Dashboard", icon: <LayoutDashboard className="w-4 h-4" /> },

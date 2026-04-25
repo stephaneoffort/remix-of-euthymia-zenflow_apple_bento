@@ -14,6 +14,7 @@ const CONNECT_URLS: Partial<Record<IntegrationKey, string>> = {
   zoom: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/zoom-oauth/authorize',
   canva: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/canva-oauth/authorize',
   gmail: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/gmail-oauth/authorize',
+  miro: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/miro-oauth/authorize',
 };
 
 const CONNECTION_TABLES: Partial<Record<IntegrationKey, string>> = {
@@ -21,6 +22,7 @@ const CONNECTION_TABLES: Partial<Record<IntegrationKey, string>> = {
   zoom: 'zoom_connections',
   canva: 'canva_connections',
   gmail: 'gmail_connections',
+  miro: 'miro_connections',
 };
 
 export default function IntegrationsSettings() {
@@ -58,6 +60,10 @@ export default function IntegrationsSettings() {
         .from('gmail_connections').select('email, display_name').eq('user_id', user.id).limit(1);
       if (gmailData?.[0]) info.gmail = { email: gmailData[0].email, display_name: gmailData[0].display_name };
 
+      const { data: miroData } = await (supabase as any)
+        .from('miro_connections').select('email, display_name').eq('user_id', user.id).limit(1);
+      if (miroData?.[0]) info.miro = { email: miroData[0].email, display_name: miroData[0].display_name };
+
       // Google Calendar / Meet uses calendar_accounts
       const { data: calData } = await (supabase as any)
         .from('calendar_accounts').select('label, calendar_id').eq('user_id', user.id).eq('provider', 'google').eq('is_active', true).limit(1);
@@ -76,6 +82,7 @@ export default function IntegrationsSettings() {
       ['zoom_connected', 'zoom'],
       ['canva_connected', 'canva'],
       ['gmail_connected', 'gmail'],
+      ['miro_connected', 'miro'],
     ];
     callbacks.forEach(([param, key]) => {
       if (params.get(param) === 'true') {
@@ -107,7 +114,7 @@ export default function IntegrationsSettings() {
     const { data: { session } } = await supabase.auth.getSession();
     if (!user || !session) return;
 
-    if (key === 'zoom' || key === 'gmail') {
+    if (key === 'zoom' || key === 'gmail' || key === 'miro') {
       window.location.href = `${url}?token=${session.access_token}`;
     } else {
       window.location.href = `${url}?user_id=${user.id}`;
@@ -141,7 +148,7 @@ export default function IntegrationsSettings() {
     }
   };
 
-  const allKeys: IntegrationKey[] = ['google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo'];
+  const allKeys: IntegrationKey[] = ['google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo', 'miro'];
 
   if (loading) {
     return (

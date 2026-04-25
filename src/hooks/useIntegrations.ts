@@ -32,6 +32,7 @@ import gmailIcon from '@/assets/integrations/gmail.png';
 import brevoIcon from '@/assets/integrations/brevo.png';
 import miroIcon from '@/assets/integrations/miro.png';
 import dropboxIcon from '@/assets/integrations/dropbox.png';
+import n8nIcon from '@/assets/integrations/n8n.png';
 
 export const INTEGRATION_CONFIG: Record<IntegrationKey, {
   label: string;

@@ -61,7 +61,7 @@ async function importVapidKey(base64urlKey: string): Promise<CryptoKey> {
   const rawKey = b64urlToUint8Array(base64urlKey);
   return await crypto.subtle.importKey(
     "pkcs8",
-    buildPkcs8FromRaw(rawKey),
+    buildPkcs8FromRaw(rawKey).buffer as ArrayBuffer,
     { name: "ECDSA", namedCurve: "P-256" },
     false,
     ["sign"]

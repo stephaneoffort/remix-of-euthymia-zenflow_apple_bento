@@ -77,8 +77,15 @@ const PROVIDER_CONFIG: Record<string, {
   },
 }
 
-function clientId(provider: string)     { return Deno.env.get(`${provider.toUpperCase()}_CLIENT_ID`) ?? "" }
-function clientSecret(provider: string) { return Deno.env.get(`${provider.toUpperCase()}_CLIENT_SECRET`) ?? "" }
+// Mappe le provider vers le préfixe d'env vars (les providers Google partagent les credentials GOOGLE_*)
+function envPrefix(provider: string): string {
+  if (provider === "gmail" || provider === "google_drive" || provider === "google_tasks") {
+    return "GOOGLE"
+  }
+  return provider.toUpperCase()
+}
+function clientId(provider: string)     { return Deno.env.get(`${envPrefix(provider)}_CLIENT_ID`) ?? Deno.env.get(`${provider.toUpperCase()}_CLIENT_ID`) ?? "" }
+function clientSecret(provider: string) { return Deno.env.get(`${envPrefix(provider)}_CLIENT_SECRET`) ?? Deno.env.get(`${provider.toUpperCase()}_CLIENT_SECRET`) ?? "" }
 function redirectUri(provider: string)  { return `${SUPABASE_URL}/functions/v1/integration-oauth/callback?provider=${provider}` }
 
 async function getUser(req: Request) {

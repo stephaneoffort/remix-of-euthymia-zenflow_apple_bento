@@ -66,6 +66,7 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove, SortableContext, horizontalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { SpaceIcon } from "@/components/SpaceIcon";
 
 const DEFAULT_VIEW_OPTIONS: { key: ViewType; label: string; icon: React.ReactNode }[] = [
   { key: "dashboard", label: "Dashboard", icon: <LayoutDashboard className="w-4 h-4" /> },
@@ -394,7 +395,7 @@ export default function Index() {
                         />
                       )}
                       {breadcrumbs[breadcrumbs.length - 1].icon && (
-                        <span className="mr-1">{breadcrumbs[breadcrumbs.length - 1].icon}</span>
+                        <span className="mr-1 inline-flex align-middle"><SpaceIcon value={breadcrumbs[breadcrumbs.length - 1].icon} size="xs" /></span>
                       )}
                       <span className="truncate">{breadcrumbs[breadcrumbs.length - 1].label}</span>
                     </h2>
@@ -407,7 +408,7 @@ export default function Index() {
                             onClick={crumb.onClick}
                             className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors truncate shrink min-w-0 leading-relaxed py-0.5"
                           >
-                            {crumb.icon && <span className="shrink-0">{crumb.icon}</span>}
+                            {crumb.icon && <SpaceIcon value={crumb.icon} size="xs" className="shrink-0" />}
                             <span className="truncate">{crumb.label}</span>
                           </button>
                         ) : (
@@ -415,7 +416,7 @@ export default function Index() {
                             {crumb.color && (
                               <div className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: crumb.color }} />
                             )}
-                            {crumb.icon && <span className="shrink-0">{crumb.icon}</span>}
+                            {crumb.icon && <SpaceIcon value={crumb.icon} size="xs" className="shrink-0" />}
                             <span className="truncate">{crumb.label}</span>
                           </h2>
                         )}
@@ -662,7 +663,7 @@ export default function Index() {
                   </SelectTrigger>
                   <SelectContent>
                     {spaces.filter(s => !s.isArchived).map(s => (
-                      <SelectItem key={s.id} value={s.id}>{s.icon} {s.name}</SelectItem>
+                      <SelectItem key={s.id} value={s.id}><span className="inline-flex items-center gap-2"><SpaceIcon value={s.icon} size="xs" /> {s.name}</span></SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

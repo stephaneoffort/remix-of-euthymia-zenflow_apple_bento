@@ -43,6 +43,7 @@ import {
   Palette,
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { SpaceIcon, SPACE_ICON_PRESETS } from "@/components/SpaceIcon";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -114,7 +115,7 @@ const QUICK_FILTERS: { key: QuickFilter; label: string; icon: React.ReactNode }[
   { key: "overdue", label: "En retard", icon: <AlertCircle className="w-4 h-4" /> },
 ];
 
-const SPACE_ICONS = ["📁", "🚀", "💡", "🎯", "📊", "🛠️", "📚", "🌟", "🧘", "🎨"];
+// Premium icon presets are defined in SpaceIcon.tsx
 const PROJECT_COLORS = ["#C9A84C", "#E2D08A", "#F5EFE0", "#D4915C", "#4A6FA5", "#3D8B7A", "#C47B7B", "#7B68AE"];
 
 export default function AppSidebar() {
@@ -235,7 +236,7 @@ export default function AppSidebar() {
   });
   const [addingSpace, setAddingSpace] = useState(false);
   const [newSpaceName, setNewSpaceName] = useState("");
-  const [newSpaceIcon, setNewSpaceIcon] = useState("📁");
+  const [newSpaceIcon, setNewSpaceIcon] = useState("folder");
   const [newSpacePrivate, setNewSpacePrivate] = useState(false);
   const [addingProjectForSpace, setAddingProjectForSpace] = useState<string | null>(null);
   const [newProjectName, setNewProjectName] = useState("");
@@ -612,7 +613,7 @@ export default function AppSidebar() {
                             : "text-sidebar-fg hover:bg-sidebar-hover"
                         }`}
                       >
-                        {space.icon}
+                        <SpaceIcon value={space.icon} size="sm" />
                       </button>
                     </TooltipTrigger>
                     <TooltipContent side="right">{space.name}</TooltipContent>
@@ -878,16 +879,19 @@ export default function AppSidebar() {
           {/* Add space form */}
           {addingSpace && (
             <div className="mb-2 mx-2 bg-sidebar-hover rounded-md p-2 space-y-2">
-              <div className="flex gap-1 flex-wrap">
-                {SPACE_ICONS.map((icon) => (
+              <div className="grid grid-cols-8 gap-1.5">
+                {SPACE_ICON_PRESETS.map((preset) => (
                   <button
-                    key={icon}
-                    onClick={() => setNewSpaceIcon(icon)}
-                    className={`w-9 h-9 rounded text-sm flex items-center justify-center transition-colors ${
-                      newSpaceIcon === icon ? "bg-sidebar-active ring-1 ring-primary" : "hover:bg-sidebar-bg"
+                    key={preset.id}
+                    onClick={() => setNewSpaceIcon(preset.id)}
+                    title={preset.label}
+                    className={`w-8 h-8 rounded-md flex items-center justify-center transition-all ${
+                      newSpaceIcon === preset.id
+                        ? "ring-2 ring-primary ring-offset-1 ring-offset-sidebar-hover scale-105"
+                        : "opacity-70 hover:opacity-100 hover:scale-105"
                     }`}
                   >
-                    {icon}
+                    <SpaceIcon value={preset.id} size="md" />
                   </button>
                 ))}
               </div>
@@ -971,7 +975,7 @@ export default function AppSidebar() {
                           ) : (
                             <ChevronRight className="w-3.5 h-3.5" />
                           )}
-                          <span>{space.icon}</span>
+                          <SpaceIcon value={space.icon} size="xs" />
                           {editingSpaceId === space.id ? (
                             <input
                               autoFocus
@@ -1691,7 +1695,7 @@ function ArchivesSection() {
               key={space.id}
               className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg group"
             >
-              <span>{space.icon}</span>
+              <SpaceIcon value={space.icon} size="xs" className="opacity-60" />
               <span className="flex-1 truncate opacity-60">{space.name}</span>
               <Tooltip>
                 <TooltipTrigger asChild>

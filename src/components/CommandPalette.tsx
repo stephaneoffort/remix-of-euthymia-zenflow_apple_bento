@@ -80,7 +80,7 @@ export default function CommandPalette({ externalOpen, onExternalOpenChange }: C
           type: 'space',
           id: space.id,
           title: space.name,
-          subtitle: `${space.icon} Espace`,
+          subtitle: `Espace`,
         });
       }
     }

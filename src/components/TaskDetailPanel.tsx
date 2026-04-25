@@ -28,6 +28,7 @@ import IntegrationTiles from '@/components/IntegrationTiles';
 import { useIntegrations, INTEGRATION_CONFIG } from '@/hooks/useIntegrations';
 import GoogleCalendarPicker from '@/components/GoogleCalendarPicker';
 import TaskLinksSection from '@/components/TaskLinksSection';
+import { SpaceIcon } from '@/components/SpaceIcon';
 // Format date for display
 function formatDateDisplay(isoStr: string): string {
   const d = new Date(isoStr);
@@ -383,7 +384,7 @@ export default function TaskDetailPanel() {
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground min-w-0 overflow-x-auto flex-wrap">
                   {space && (
                     <>
-                      <span className="whitespace-nowrap">{space.icon} {space.name}</span>
+                      <span className="whitespace-nowrap inline-flex items-center gap-1.5"><SpaceIcon value={space.icon} size="xs" /> {space.name}</span>
                       <ChevronRight className="w-3 h-3 shrink-0" />
                     </>
                   )}

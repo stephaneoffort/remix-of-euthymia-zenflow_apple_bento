@@ -709,18 +709,28 @@ export default function KanbanBoardNM() {
                     </div>
                   ) : (
                     col.key !== "done" && col.key !== "blocked" && (
-                      <div
-                        onClick={() => setNewTaskStatus(col.key)}
-                        style={{
-                          background: BG, borderRadius: 12, boxShadow: inset,
-                          padding: 10, cursor: "pointer",
-                          display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                          fontSize: 12, color: C.light, fontWeight: 500,
-                          fontFamily: "'DM Sans', sans-serif",
-                        }}
-                      >
-                        <span style={{ fontSize: 14, fontWeight: 700 }}>+</span>
-                        Ajouter
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <div
+                          onClick={() => setNewTaskStatus(col.key)}
+                          style={{
+                            flex: 1,
+                            background: BG, borderRadius: 12, boxShadow: inset,
+                            padding: 10, cursor: "pointer",
+                            display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                            fontSize: 12, color: C.light, fontWeight: 500,
+                            fontFamily: "'DM Sans', sans-serif",
+                          }}
+                        >
+                          <span style={{ fontSize: 14, fontWeight: 700 }}>+</span>
+                          Ajouter
+                        </div>
+                        <UseTemplateButton
+                          listId={selectedProjectId ? (getListsForProject(selectedProjectId)[0]?.id || 'l1') : 'l1'}
+                          assigneeIds={quickFilter === 'my_tasks' && teamMemberId ? [teamMemberId] : []}
+                          onCreated={() => queryClient.invalidateQueries({ queryKey: ['tasks'] })}
+                          variant="icon"
+                          className="border border-dashed border-border rounded-lg h-[38px] w-[38px] flex items-center justify-center shrink-0"
+                        />
                       </div>
                     )
                   )}

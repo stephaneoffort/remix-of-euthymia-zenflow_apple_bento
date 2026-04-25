@@ -40,6 +40,7 @@ import {
   AtSign,
   Mail,
   MessagesSquare,
+  Palette,
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
@@ -1760,30 +1761,12 @@ function ChatLink({ handleNavClick }: { handleNavClick: () => void }) {
   );
 }
 function ThemeSwitcher() {
-  const { theme, setTheme, palette, setPalette, designMode, setDesignMode } = useThemeMode();
+  const { theme, setTheme, designMode, setDesignMode } = useThemeMode();
+  const navigate = useNavigate();
   const options: { key: "light" | "dark" | "mixed"; label: string; title: string; icon: React.ReactNode }[] = [
     { key: "light", label: "Clair", title: "Thème clair", icon: <Sun className="w-3.5 h-3.5" /> },
     { key: "dark", label: "Sombre", title: "Thème sombre", icon: <Moon className="w-3.5 h-3.5" /> },
     { key: "mixed", label: "Mixte", title: "Sidebar sombre, contenu clair", icon: <SunMoon className="w-3.5 h-3.5" /> },
-  ];
-
-  const palettes: { key: typeof palette; label: string; colors: string[] }[] = [
-    { key: "clubroom", label: "Obsidian & Gold", colors: ["#1A1924", "#C9A84C"] },
-    { key: "neutrals", label: "Sable & Pierre", colors: ["#1E1C19", "#A08868"] },
-    { key: "sapphire", label: "Sapphire Depth", colors: ["#111620", "#2DD4BF"] },
-    { key: "cinematic", label: "Cinematic Glow", colors: ["#7C5CED", "#EC4899"] },
-    { key: "teal", label: "Ocean Teal", colors: ["#0F1C20", "#14B8A6"] },
-    { key: "bento2026", label: "Bento 2026", colors: ["#2d3a2e", "#a8d5b5"] },
-    { key: "bentoOcean", label: "Bento Ocean", colors: ["#1e3a5f", "#f0846a"] },
-    { key: "bentoRose", label: "Bento Rose", colors: ["#5c2434", "#e8a0b0"] },
-    { key: "bentoAmber", label: "Bento Amber", colors: ["#2e2a26", "#d4a04a"] },
-    { key: "nmCloud", label: "Cloud", colors: ["#C5C9CC", "#4A7FA5"] },
-    { key: "nmMidnight", label: "Midnight", colors: ["#1E2028", "#6B9BC0"] },
-    { key: "nmSand", label: "Sand", colors: ["#CAC5C0", "#A07840"] },
-    { key: "nmForest", label: "Forest", colors: ["#C3CAC5", "#4E7A45"] },
-    { key: "nmLavender", label: "Lavender", colors: ["#CAC5CD", "#7B5EA7"] },
-    { key: "nmDeepForest", label: "Deep Forest", colors: ["#1A1F1A", "#5A9A6A"] },
-    { key: "ivoireChaud", label: "Premium Chaud", colors: ["#c27838", "#3a2a1a"] },
   ];
 
   return (
@@ -1803,27 +1786,14 @@ function ThemeSwitcher() {
           </button>
         ))}
       </div>
-      <div className="flex flex-wrap items-center gap-1 px-1 py-1 rounded-md bg-sidebar-hover/50">
-        {palettes.map((p) => (
-          <Tooltip key={p.key}>
-            <TooltipTrigger asChild>
-              <button
-                onClick={() => setPalette(p.key)}
-                className={`flex-1 flex items-center justify-center gap-1 py-1 rounded transition-all ${
-                  palette === p.key ? "ring-1 ring-primary bg-sidebar-active/60" : "hover:bg-sidebar-hover"
-                }`}
-              >
-                {p.colors.map((c, i) => (
-                  <div key={i} className="w-3 h-3 rounded-full border border-white/10" style={{ backgroundColor: c }} />
-                ))}
-              </button>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="text-xs">
-              {p.label}
-            </TooltipContent>
-          </Tooltip>
-        ))}
-      </div>
+      <button
+        onClick={() => navigate("/settings", { state: { settingsTab: "theme" } })}
+        className="w-full flex items-center justify-center gap-2 px-2 py-1.5 rounded-md text-xs font-medium bg-sidebar-hover/50 text-sidebar-fg hover:text-sidebar-fg-bright hover:bg-sidebar-hover transition-colors"
+        title="Ouvrir la sélection des thèmes"
+      >
+        <Palette className="w-3.5 h-3.5" />
+        Thèmes
+      </button>
       {/* ── Design Mode Switch ── */}
       <div className="mt-3 pt-3 border-t border-border/30">
         <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-2 px-1">

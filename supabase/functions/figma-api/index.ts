@@ -145,7 +145,7 @@ serve(async (req) => {
     const action = body?.action as string | undefined
     if (!action) return json({ error: "missing_action" }, 400)
 
-    const db = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+    const db: any = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
     // ── disconnect ─────────────────────────────────────────────────────────
     if (action === "disconnect") {

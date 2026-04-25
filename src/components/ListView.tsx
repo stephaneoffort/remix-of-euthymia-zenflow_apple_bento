@@ -336,13 +336,21 @@ export default function ListView() {
             ) : (
               <tr>
                 <td colSpan={5} className="py-1 px-3">
-                  <button
-                    onClick={() => setIsAdding(true)}
-                    className="w-full flex items-center gap-2 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Ajouter une tâche
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setIsAdding(true)}
+                      className="flex-1 flex items-center gap-2 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Ajouter une tâche
+                    </button>
+                    <UseTemplateButton
+                      listId={selectedProjectId ? (getListsForProject(selectedProjectId)[0]?.id || 'l1') : 'l1'}
+                      assigneeIds={quickFilter === 'my_tasks' && teamMemberId ? [teamMemberId] : []}
+                      onCreated={() => queryClient.invalidateQueries({ queryKey: ['tasks'] })}
+                      variant="button"
+                    />
+                  </div>
                 </td>
               </tr>
             )}

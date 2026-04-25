@@ -17,6 +17,7 @@ const GUIDE_MESSAGES: Record<IntegrationKey, string> = {
   notion: 'Connecte ton compte Notion dans Settings → Intégrations → Notion pour joindre des pages',
   google_keep: 'Aucune connexion requise — colle simplement le lien d\'une note depuis Google Keep (⋮ → Copier le lien)',
   google_tasks: 'Connecte ton compte Google dans Settings → Intégrations → Google Tasks pour pousser et importer tes listes',
+  google_docs: 'Connecte ton compte Google dans Settings → Intégrations → Google Docs pour lier ou créer des documents',
 };
 
 interface Props {

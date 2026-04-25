@@ -13,7 +13,8 @@ export type IntegrationKey =
   | 'n8n'
   | 'notion'
   | 'google_keep'
-  | 'google_tasks';
+  | 'google_tasks'
+  | 'google_docs';
 
 export interface IntegrationStatus {
   key: IntegrationKey;
@@ -24,7 +25,7 @@ export interface IntegrationStatus {
 }
 
 const ALL_INTEGRATIONS: IntegrationKey[] = [
-  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo', 'miro', 'dropbox', 'n8n', 'notion', 'google_keep', 'google_tasks',
+  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo', 'miro', 'dropbox', 'n8n', 'notion', 'google_keep', 'google_tasks', 'google_docs',
 ];
 
 import googleDriveIcon from '@/assets/integrations/google-drive.png';
@@ -39,6 +40,7 @@ import n8nIcon from '@/assets/integrations/n8n.png';
 import notionIcon from '@/assets/integrations/notion.png';
 import googleKeepIcon from '@/assets/integrations/google-keep.png';
 import googleTasksIcon from '@/assets/integrations/google-tasks.png';
+import googleDocsIcon from '@/assets/integrations/google-docs.png';
 
 export const INTEGRATION_CONFIG: Record<IntegrationKey, {
   label: string;
@@ -118,6 +120,12 @@ export const INTEGRATION_CONFIG: Record<IntegrationKey, {
     icon: googleTasksIcon,
     color: '#4285F4',
   },
+  google_docs: {
+    label: 'Google Docs',
+    description: 'Lier ou créer des documents Google Docs depuis vos tâches',
+    icon: googleDocsIcon,
+    color: '#4285F4',
+  },
 };
 
 const defaultStatus = (key: IntegrationKey): IntegrationStatus => ({
@@ -157,6 +165,7 @@ export function useIntegrations() {
       { key: 'dropbox', table: 'dropbox_connections' },
       { key: 'notion', table: 'notion_connections' },
       { key: 'google_tasks', table: 'google_tasks_connections' },
+      { key: 'google_docs', table: 'google_docs_connections' },
     ];
 
     for (const { key, table } of connectionChecks) {

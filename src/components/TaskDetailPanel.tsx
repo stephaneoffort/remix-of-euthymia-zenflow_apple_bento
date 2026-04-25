@@ -26,6 +26,7 @@ import TaskReminderInline from '@/components/TaskReminderInline';
 import DriveAttachments from '@/components/drive/DriveAttachments';
 import KeepAttachments from '@/components/keep/KeepAttachments';
 import GoogleTaskSync from '@/components/google-tasks/GoogleTaskSync';
+import GoogleDocsAttachments from '@/components/google-docs/GoogleDocsAttachments';
 import IntegrationTiles from '@/components/IntegrationTiles';
 import { useIntegrations, INTEGRATION_CONFIG } from '@/hooks/useIntegrations';
 import GoogleCalendarPicker from '@/components/GoogleCalendarPicker';
@@ -716,6 +717,11 @@ export default function TaskDetailPanel() {
                 dueDate: task.dueDate,
                 status: task.status,
               }} />
+            )}
+
+            {/* Google Docs — lier ou créer un document */}
+            {isActive('google_docs') && (
+              <GoogleDocsAttachments taskId={task.id} taskTitle={task.title} />
             )}
             {!isActive('google_drive') && !isActive('canva') && !isActive('zoom') && !isActive('brevo') && !isActive('gmail') && (
               <a

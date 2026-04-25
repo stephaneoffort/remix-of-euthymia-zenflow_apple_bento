@@ -383,7 +383,7 @@ export default function TaskDetailPanel() {
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground min-w-0 overflow-x-auto flex-wrap">
                   {space && (
                     <>
-                      <span className="whitespace-nowrap">{space.icon} {space.name}</span>
+                      <span className="whitespace-nowrap inline-flex items-center gap-1.5"><SpaceIcon value={space.icon} size="xs" /> {space.name}</span>
                       <ChevronRight className="w-3 h-3 shrink-0" />
                     </>
                   )}

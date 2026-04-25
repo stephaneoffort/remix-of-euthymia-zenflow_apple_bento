@@ -258,6 +258,13 @@ export default function KanbanBoard() {
             <div className={`w-2.5 h-2.5 rounded-full ${getStatusColor(status)}`} />
             <h3 className="font-semibold text-xs sm:text-sm text-foreground select-none truncate">{getStatusLabel(status)}</h3>
             <span data-numeric className="font-numeric tabular-nums text-xs text-muted-foreground ml-auto shrink-0">{count}/{filteredTasks.length}</span>
+            <UseTemplateButton
+              listId={selectedProjectId ? (getListsForProject(selectedProjectId)[0]?.id || 'l1') : 'l1'}
+              assigneeIds={quickFilter === 'my_tasks' && teamMemberId ? [teamMemberId] : []}
+              onCreated={() => queryClient.invalidateQueries({ queryKey: ['tasks'] })}
+              variant="icon"
+              className="p-1 rounded hover:bg-muted transition-colors text-muted-foreground shrink-0"
+            />
             <button
               onClick={() => setNewTaskStatus(status)}
               className="p-1 rounded hover:bg-muted transition-colors text-muted-foreground shrink-0"

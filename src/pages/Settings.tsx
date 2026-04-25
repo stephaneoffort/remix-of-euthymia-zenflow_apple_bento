@@ -63,6 +63,19 @@ export default function Settings() {
   if (!user) return <Navigate to="/auth" replace />;
   if (!isAdmin) return <Navigate to="/" replace />;
 
+  const navItems: { value: string; label: string; icon: React.ComponentType<any> }[] = [
+    { value: 'members', label: 'Membres', icon: Users },
+    { value: 'theme', label: 'Thèmes', icon: Palette },
+    { value: 'templates', label: 'Modèles', icon: FileText },
+    { value: 'integrations', label: 'Intégrations', icon: HardDrive },
+    { value: 'calendar', label: 'Calendrier', icon: CalendarSync },
+    { value: 'data', label: 'Données', icon: DatabaseBackup },
+    { value: 'statuses', label: 'Avancements', icon: ListChecks },
+    { value: 'push', label: 'Push', icon: BellRing },
+  ];
+
+  const activeLabel = navItems.find(i => i.value === activeTab)?.label ?? '';
+
   return (
     <div className="min-h-screen bg-background">
       <header className="h-14 border-b border-border flex items-center gap-3 px-6 bg-card">
@@ -71,6 +84,12 @@ export default function Settings() {
         </button>
         <Shield className="w-5 h-5 text-primary" />
         <h1 className="font-display font-bold text-foreground text-lg">Administration</h1>
+        {activeLabel && (
+          <>
+            <span className="text-muted-foreground/50 hidden sm:inline">/</span>
+            <span className="text-sm text-muted-foreground hidden sm:inline">{activeLabel}</span>
+          </>
+        )}
         <div className="ml-auto">
           <Button
             variant="ghost"
@@ -85,82 +104,68 @@ export default function Settings() {
         </div>
       </header>
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6">
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <div className="mb-6">
-            <TabsList className="flex flex-wrap gap-1.5 h-auto bg-muted/50 p-1.5 rounded-xl">
-              <TabsTrigger value="members" className="gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm data-[state=active]:shadow-sm">
-                <Users className="w-4 h-4 shrink-0" />
-                <span className="hidden xs:inline sm:inline">Membres</span>
-              </TabsTrigger>
-              <TabsTrigger value="statuses" className="gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm data-[state=active]:shadow-sm">
-                <ListChecks className="w-4 h-4 shrink-0" />
-                <span className="hidden xs:inline sm:inline">Avancements</span>
-              </TabsTrigger>
-              <TabsTrigger value="theme" className="gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm data-[state=active]:shadow-sm">
-                <Palette className="w-4 h-4 shrink-0" />
-                <span className="hidden xs:inline sm:inline">Thème</span>
-              </TabsTrigger>
-              <TabsTrigger value="templates" className="gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm data-[state=active]:shadow-sm">
-                <FileText className="w-4 h-4 shrink-0" />
-                <span className="hidden xs:inline sm:inline">Modèles</span>
-              </TabsTrigger>
-              <TabsTrigger value="integrations" className="gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm data-[state=active]:shadow-sm">
-                <HardDrive className="w-4 h-4 shrink-0" />
-                <span className="hidden xs:inline sm:inline">Intégrations</span>
-              </TabsTrigger>
-              <TabsTrigger value="calendar" className="gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm data-[state=active]:shadow-sm">
-                <CalendarSync className="w-4 h-4 shrink-0" />
-                <span className="hidden xs:inline sm:inline">Calendrier</span>
-              </TabsTrigger>
-              <TabsTrigger value="data" className="gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm data-[state=active]:shadow-sm">
-                <DatabaseBackup className="w-4 h-4 shrink-0" />
-                <span className="hidden xs:inline sm:inline">Données</span>
-              </TabsTrigger>
-              <TabsTrigger value="push" className="gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm data-[state=active]:shadow-sm">
-                <BellRing className="w-4 h-4 shrink-0" />
-                <span className="hidden xs:inline sm:inline">Push</span>
-              </TabsTrigger>
+      <Tabs value={activeTab} onValueChange={setActiveTab} orientation="vertical" className="flex flex-col md:flex-row min-h-[calc(100vh-3.5rem)]">
+        {/* Sidebar */}
+        <aside className="md:w-60 md:shrink-0 md:border-r md:border-border md:bg-card/40 md:min-h-[calc(100vh-3.5rem)]">
+          <nav className="p-3 md:p-4 md:sticky md:top-0">
+            <p className="hidden md:block text-[11px] uppercase tracking-wider text-muted-foreground/70 font-semibold px-2 mb-2">
+              Réglages
+            </p>
+            <TabsList className="flex md:flex-col flex-row gap-1 h-auto bg-transparent p-0 w-full overflow-x-auto md:overflow-visible">
+              {navItems.map(({ value, label, icon: Icon }) => (
+                <TabsTrigger
+                  key={value}
+                  value={value}
+                  className="w-full md:justify-start justify-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-none transition-colors shrink-0"
+                >
+                  <Icon className="w-4 h-4 shrink-0" />
+                  <span>{label}</span>
+                </TabsTrigger>
+              ))}
             </TabsList>
+          </nav>
+        </aside>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6">
+            <TabsContent value="members" className="mt-0">
+              <MembersPanel />
+            </TabsContent>
+
+            <TabsContent value="statuses" className="mt-0">
+              <StatusesPanel />
+            </TabsContent>
+
+            <TabsContent value="theme" className="mt-0">
+              <ThemePalettePanel />
+            </TabsContent>
+
+            <TabsContent value="templates" className="mt-0">
+              <TaskTemplatesPanel />
+            </TabsContent>
+
+            <TabsContent value="integrations" className="mt-0">
+              <IntegrationsSettings />
+              <div className="mt-6">
+                <AdminIntegrationsPanel />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="calendar" className="mt-0">
+              <CalendarSyncSettingsPanel />
+            </TabsContent>
+
+            <TabsContent value="data" className="mt-0">
+              <DataExportImport />
+            </TabsContent>
+
+            <TabsContent value="push" className="mt-0">
+              <PushDebugPanel />
+            </TabsContent>
           </div>
-
-          <TabsContent value="members">
-            <MembersPanel />
-          </TabsContent>
-
-          <TabsContent value="statuses">
-            <StatusesPanel />
-          </TabsContent>
-
-
-          <TabsContent value="theme">
-            <ThemePalettePanel />
-          </TabsContent>
-
-          <TabsContent value="templates">
-            <TaskTemplatesPanel />
-          </TabsContent>
-
-          <TabsContent value="integrations">
-            <IntegrationsSettings />
-            <div className="mt-6">
-              <AdminIntegrationsPanel />
-            </div>
-          </TabsContent>
-
-          <TabsContent value="calendar">
-            <CalendarSyncSettingsPanel />
-          </TabsContent>
-
-          <TabsContent value="data">
-            <DataExportImport />
-          </TabsContent>
-
-          <TabsContent value="push">
-            <PushDebugPanel />
-          </TabsContent>
-        </Tabs>
-      </div>
+        </div>
+      </Tabs>
     </div>
   );
 }

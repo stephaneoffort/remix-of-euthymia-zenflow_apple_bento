@@ -13,12 +13,13 @@ const CORS = {
 
 // Table de connexion par provider (correspond à useIntegrations.ts)
 const CONNECTION_TABLE: Record<string, string> = {
-  dropbox:      "dropbox_connections",
-  miro:         "miro_connections",
-  zoom:         "zoom_connections",
-  google_drive: "drive_connections",
-  canva:        "canva_connections",
-  gmail:        "gmail_connections",
+  dropbox:       "dropbox_connections",
+  miro:          "miro_connections",
+  zoom:          "zoom_connections",
+  google_drive:  "drive_connections",
+  canva:         "canva_connections",
+  gmail:         "gmail_connections",
+  google_tasks:  "google_tasks_connections",
 }
 
 // Config OAuth par provider
@@ -61,6 +62,17 @@ const PROVIDER_CONFIG: Record<string, {
     authUrl:  "https://accounts.google.com/o/oauth2/v2/auth",
     tokenUrl: "https://oauth2.googleapis.com/token",
     scopes:   ["https://www.googleapis.com/auth/gmail.modify"],
+    extraParams: { access_type: "offline", prompt: "consent" },
+  },
+  google_tasks: {
+    authUrl:  "https://accounts.google.com/o/oauth2/v2/auth",
+    tokenUrl: "https://oauth2.googleapis.com/token",
+    scopes:   [
+      "https://www.googleapis.com/auth/tasks",
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/userinfo.profile",
+      "openid",
+    ],
     extraParams: { access_type: "offline", prompt: "consent" },
   },
 }

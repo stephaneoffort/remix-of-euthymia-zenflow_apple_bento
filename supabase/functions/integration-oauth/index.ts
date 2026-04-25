@@ -100,6 +100,11 @@ const PROVIDER_CONFIG: Record<string, {
     ],
     extraParams: { access_type: "offline", prompt: "consent" },
   },
+  figma: {
+    authUrl:  "https://www.figma.com/oauth",
+    tokenUrl: "https://api.figma.com/v1/oauth/token",
+    scopes:   ["files:read"],
+  },
 }
 
 // Mappe le provider vers le préfixe d'env vars (les providers Google partagent les credentials GOOGLE_*)

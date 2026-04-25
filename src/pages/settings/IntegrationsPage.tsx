@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useSearchParams, useNavigate } from "react-router-dom"
 import { Loader2, CheckCircle2, Circle, Unlink, ArrowLeft } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
@@ -12,6 +12,7 @@ import {
   INTEGRATION_CONFIG,
   type IntegrationKey,
 } from "@/hooks/useIntegrations"
+import N8nConnectDialog from "@/components/integrations/N8nConnectDialog"
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string
 
@@ -19,6 +20,7 @@ const CATEGORIES: { label: string; keys: IntegrationKey[] }[] = [
   { label: "Stockage & fichiers", keys: ["google_drive", "dropbox"] },
   { label: "Collaboration",       keys: ["miro", "canva"] },
   { label: "Communication",       keys: ["zoom", "google_meet", "gmail", "brevo"] },
+  { label: "Automatisation",      keys: ["n8n"] },
 ]
 
 export default function IntegrationsPage() {

@@ -830,6 +830,90 @@ export type Database = {
         }
         Relationships: []
       }
+      dropbox_attachments: {
+        Row: {
+          created_at: string | null
+          entity_id: string
+          entity_type: string
+          file_id: string
+          file_name: string
+          file_path: string
+          file_size: number | null
+          file_url: string | null
+          id: string
+          is_folder: boolean | null
+          mime_type: string | null
+          thumbnail_url: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          entity_id: string
+          entity_type: string
+          file_id: string
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          file_url?: string | null
+          id?: string
+          is_folder?: boolean | null
+          mime_type?: string | null
+          thumbnail_url?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          entity_id?: string
+          entity_type?: string
+          file_id?: string
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          file_url?: string | null
+          id?: string
+          is_folder?: boolean | null
+          mime_type?: string | null
+          thumbnail_url?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      dropbox_connections: {
+        Row: {
+          access_token: string
+          account_id: string | null
+          created_at: string | null
+          display_name: string | null
+          email: string | null
+          id: string
+          refresh_token: string
+          token_expiry: string
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          account_id?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          refresh_token: string
+          token_expiry: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          account_id?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          refresh_token?: string
+          token_expiry?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       email_accounts: {
         Row: {
           account_type: string

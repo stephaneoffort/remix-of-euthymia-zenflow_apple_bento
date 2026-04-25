@@ -81,7 +81,6 @@ export default function CommandPalette({ externalOpen, onExternalOpenChange }: C
           id: space.id,
           title: space.name,
           subtitle: `Espace`,
-          spaceIconValue: space.icon,
         });
       }
     }

@@ -28,6 +28,7 @@ const NotFound = lazyRetry(() => import("./pages/NotFound.tsx"));
 const Install = lazyRetry(() => import("./pages/Install.tsx"));
 const ResetPassword = lazyRetry(() => import("./pages/ResetPassword.tsx"));
 const NumericAudit = lazyRetry(() => import("./pages/NumericAudit.tsx"));
+const SettingsIntegrationsPage = lazyRetry(() => import("./pages/settings/IntegrationsPage.tsx"));
 
 
 const PageLoader = () => (

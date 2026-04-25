@@ -24,6 +24,7 @@ import { Switch } from '@/components/ui/switch';
 import TaskReminders from '@/components/TaskReminders';
 import TaskReminderInline from '@/components/TaskReminderInline';
 import DriveAttachments from '@/components/drive/DriveAttachments';
+import KeepAttachments from '@/components/keep/KeepAttachments';
 import IntegrationTiles from '@/components/IntegrationTiles';
 import { useIntegrations, INTEGRATION_CONFIG } from '@/hooks/useIntegrations';
 import GoogleCalendarPicker from '@/components/GoogleCalendarPicker';
@@ -699,6 +700,11 @@ export default function TaskDetailPanel() {
 
             {/* Integrations */}
             <IntegrationTiles entityType="task" entityId={task.id} taskTitle={task.title} />
+
+            {/* Google Keep — liens manuels (pas d'OAuth) */}
+            {isActive('google_keep') && (
+              <KeepAttachments entityType="task" entityId={task.id} />
+            )}
             {!isActive('google_drive') && !isActive('canva') && !isActive('zoom') && !isActive('brevo') && !isActive('gmail') && (
               <a
                 href="/settings"

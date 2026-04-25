@@ -10,7 +10,8 @@ export type IntegrationKey =
   | 'brevo'
   | 'miro'
   | 'dropbox'
-  | 'n8n';
+  | 'n8n'
+  | 'notion';
 
 export interface IntegrationStatus {
   key: IntegrationKey;
@@ -21,7 +22,7 @@ export interface IntegrationStatus {
 }
 
 const ALL_INTEGRATIONS: IntegrationKey[] = [
-  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo', 'miro', 'dropbox', 'n8n',
+  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo', 'miro', 'dropbox', 'n8n', 'notion',
 ];
 
 import googleDriveIcon from '@/assets/integrations/google-drive.png';
@@ -33,6 +34,7 @@ import brevoIcon from '@/assets/integrations/brevo.png';
 import miroIcon from '@/assets/integrations/miro.png';
 import dropboxIcon from '@/assets/integrations/dropbox.png';
 import n8nIcon from '@/assets/integrations/n8n.png';
+import notionIcon from '@/assets/integrations/notion.png';
 
 export const INTEGRATION_CONFIG: Record<IntegrationKey, {
   label: string;
@@ -94,6 +96,12 @@ export const INTEGRATION_CONFIG: Record<IntegrationKey, {
     icon: n8nIcon,
     color: '#EA4B71',
   },
+  notion: {
+    label: 'Notion',
+    description: 'Joindre des pages Notion aux tâches et projets',
+    icon: notionIcon,
+    color: '#000000',
+  },
 };
 
 const defaultStatus = (key: IntegrationKey): IntegrationStatus => ({
@@ -131,6 +139,7 @@ export function useIntegrations() {
       { key: 'gmail', table: 'gmail_connections' },
       { key: 'miro', table: 'miro_connections' },
       { key: 'dropbox', table: 'dropbox_connections' },
+      { key: 'notion', table: 'notion_connections' },
     ];
 
     for (const { key, table } of connectionChecks) {

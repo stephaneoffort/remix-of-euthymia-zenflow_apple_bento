@@ -20,6 +20,7 @@ const CATEGORIES: { label: string; keys: IntegrationKey[] }[] = [
   { label: "Stockage & fichiers", keys: ["google_drive", "dropbox"] },
   { label: "Collaboration",       keys: ["miro", "canva"] },
   { label: "Communication",       keys: ["zoom", "google_meet", "gmail", "brevo"] },
+  { label: "Productivité",        keys: ["notion"] },
   { label: "Automatisation",      keys: ["n8n"] },
 ]
 
@@ -66,6 +67,14 @@ export default function IntegrationsPage() {
     const { supabase } = await import("@/integrations/supabase/client")
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) return
+
+    // Notion : edge function dédiée (avec user_id en query)
+    if (key === "notion") {
+      window.location.href =
+        `${SUPABASE_URL}/functions/v1/notion-oauth/authorize?user_id=${session.user.id}`
+      return
+    }
+
     window.location.href =
       `${SUPABASE_URL}/functions/v1/integration-oauth/authorize?provider=${key}`
   }
@@ -76,6 +85,13 @@ export default function IntegrationsPage() {
       await supabase.functions.invoke("n8n-api", { body: { action: "disconnect" } })
       await refetch()
       toast({ title: "n8n déconnecté" })
+      return
+    }
+    if (key === "notion") {
+      const { supabase } = await import("@/integrations/supabase/client")
+      await supabase.functions.invoke("notion-api", { body: { action: "disconnect" } })
+      await refetch()
+      toast({ title: "Notion déconnecté" })
       return
     }
     await disconnect(key)

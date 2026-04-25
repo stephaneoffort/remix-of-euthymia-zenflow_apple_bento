@@ -42,6 +42,7 @@ import notionIcon from '@/assets/integrations/notion.png';
 import googleKeepIcon from '@/assets/integrations/google-keep.png';
 import googleTasksIcon from '@/assets/integrations/google-tasks.png';
 import googleDocsIcon from '@/assets/integrations/google-docs.png';
+import googleSheetsIcon from '@/assets/integrations/google-sheets.png';
 
 export const INTEGRATION_CONFIG: Record<IntegrationKey, {
   label: string;

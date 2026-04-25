@@ -14,9 +14,10 @@ const CONNECT_URLS: Partial<Record<IntegrationKey, string>> = {
   canva: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/canva-oauth/authorize',
   gmail: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/gmail-oauth/authorize',
   miro: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/miro-oauth/authorize',
+  dropbox: 'https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/dropbox-oauth/authorize',
 };
 
-const ALL_KEYS: IntegrationKey[] = ['google_drive', 'gmail', 'google_meet', 'zoom', 'canva', 'miro', 'brevo'];
+const ALL_KEYS: IntegrationKey[] = ['google_drive', 'dropbox', 'gmail', 'google_meet', 'zoom', 'canva', 'miro', 'brevo'];
 
 export default function IntegrationsSettings() {
   const { integrations, loading, toggleEnabled, updateConnected, disconnect, refetch } = useIntegrations();

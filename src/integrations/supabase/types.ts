@@ -1093,6 +1093,84 @@ export type Database = {
         }
         Relationships: []
       }
+      miro_attachments: {
+        Row: {
+          board_description: string | null
+          board_id: string
+          board_name: string
+          board_url: string
+          created_at: string | null
+          entity_id: string
+          entity_type: string
+          id: string
+          thumbnail_url: string | null
+          user_id: string
+        }
+        Insert: {
+          board_description?: string | null
+          board_id: string
+          board_name: string
+          board_url: string
+          created_at?: string | null
+          entity_id: string
+          entity_type: string
+          id?: string
+          thumbnail_url?: string | null
+          user_id: string
+        }
+        Update: {
+          board_description?: string | null
+          board_id?: string
+          board_name?: string
+          board_url?: string
+          created_at?: string | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          thumbnail_url?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      miro_connections: {
+        Row: {
+          access_token: string
+          created_at: string | null
+          display_name: string | null
+          email: string | null
+          id: string
+          refresh_token: string
+          team_id: string | null
+          team_name: string | null
+          token_expiry: string
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          created_at?: string | null
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          refresh_token: string
+          team_id?: string | null
+          team_name?: string | null
+          token_expiry: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          created_at?: string | null
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          refresh_token?: string
+          team_id?: string | null
+          team_name?: string | null
+          token_expiry?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       numeric_audit_acceptances: {
         Row: {
           accepted_at: string

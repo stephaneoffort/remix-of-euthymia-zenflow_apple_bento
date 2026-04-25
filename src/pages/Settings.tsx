@@ -104,22 +104,23 @@ export default function Settings() {
         </div>
       </header>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} orientation="vertical" className="flex flex-col md:flex-row min-h-[calc(100vh-3.5rem)]">
-        {/* Sidebar */}
-        <aside className="md:w-60 md:shrink-0 md:border-r md:border-border md:bg-card/40 md:min-h-[calc(100vh-3.5rem)]">
-          <nav className="p-3 md:p-4 md:sticky md:top-0">
-            <p className="hidden md:block text-[11px] uppercase tracking-wider text-muted-foreground/70 font-semibold px-2 mb-2">
+      <Tabs value={activeTab} onValueChange={setActiveTab} orientation="vertical" className="flex flex-row min-h-[calc(100vh-3.5rem)]">
+        {/* Sidebar verticale */}
+        <aside className="w-16 sm:w-60 shrink-0 border-r border-border bg-card/40 min-h-[calc(100vh-3.5rem)]">
+          <nav className="p-2 sm:p-4 sticky top-0">
+            <p className="hidden sm:block text-[11px] uppercase tracking-wider text-muted-foreground/70 font-semibold px-2 mb-2">
               Réglages
             </p>
-            <TabsList className="flex md:flex-col flex-row gap-1 h-auto bg-transparent p-0 w-full overflow-x-auto md:overflow-visible">
+            <TabsList className="flex flex-col gap-1 h-auto bg-transparent p-0 w-full">
               {navItems.map(({ value, label, icon: Icon }) => (
                 <TabsTrigger
                   key={value}
                   value={value}
-                  className="w-full md:justify-start justify-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-none transition-colors shrink-0"
+                  title={label}
+                  className="w-full justify-center sm:justify-start gap-2.5 px-2 sm:px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-none transition-colors"
                 >
                   <Icon className="w-4 h-4 shrink-0" />
-                  <span>{label}</span>
+                  <span className="hidden sm:inline">{label}</span>
                 </TabsTrigger>
               ))}
             </TabsList>

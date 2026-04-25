@@ -88,6 +88,12 @@ export const INTEGRATION_CONFIG: Record<IntegrationKey, {
     icon: dropboxIcon,
     color: '#0061FF',
   },
+  n8n: {
+    label: 'n8n',
+    description: 'Lancez vos workflows d\'automatisation depuis l\'application',
+    icon: n8nIcon,
+    color: '#EA4B71',
+  },
 };
 
 const defaultStatus = (key: IntegrationKey): IntegrationStatus => ({

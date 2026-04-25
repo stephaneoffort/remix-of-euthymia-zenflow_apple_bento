@@ -5,6 +5,8 @@ import { useAuth } from "@/context/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { differenceInDays, parseISO, format } from "date-fns";
 import { fr } from "date-fns/locale";
+import UseTemplateButton from "@/components/UseTemplateButton";
+import { useQueryClient } from "@tanstack/react-query";
 
 /* ─── Tokens ─── */
 const BG = "#EDE6DA";
@@ -197,6 +199,7 @@ export default function KanbanBoardNM() {
   } = useApp();
   const { teamMemberId } = useAuth();
   const isMobile = useIsMobile();
+  const queryClient = useQueryClient();
 
   const [search, setSearch] = useState("");
   const [newTaskStatus, setNewTaskStatus] = useState<string | null>(null);
@@ -430,18 +433,28 @@ export default function KanbanBoardNM() {
                 style={{ display: "flex", flexDirection: "column", gap: 8 }}
               >
                 {/* Add task button */}
-                <div
-                  onClick={() => setNewTaskStatus(mobileActiveStatus)}
-                  style={{
-                    background: BG, borderRadius: 12, boxShadow: inset,
-                    padding: 10, cursor: "pointer",
-                    display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                    fontSize: 12, color: C.light, fontWeight: 500,
-                    fontFamily: "'DM Sans', sans-serif",
-                  }}
-                >
-                  <span style={{ fontSize: 14, fontWeight: 700 }}>+</span>
-                  Ajouter une tâche
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <div
+                    onClick={() => setNewTaskStatus(mobileActiveStatus)}
+                    style={{
+                      flex: 1,
+                      background: BG, borderRadius: 12, boxShadow: inset,
+                      padding: 10, cursor: "pointer",
+                      display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                      fontSize: 12, color: C.light, fontWeight: 500,
+                      fontFamily: "'DM Sans', sans-serif",
+                    }}
+                  >
+                    <span style={{ fontSize: 14, fontWeight: 700 }}>+</span>
+                    Ajouter une tâche
+                  </div>
+                  <UseTemplateButton
+                    listId={selectedProjectId ? (getListsForProject(selectedProjectId)[0]?.id || 'l1') : 'l1'}
+                    assigneeIds={quickFilter === 'my_tasks' && teamMemberId ? [teamMemberId] : []}
+                    onCreated={() => queryClient.invalidateQueries({ queryKey: ['tasks'] })}
+                    variant="icon"
+                    className="border border-dashed border-border rounded-lg h-[38px] w-[38px] flex items-center justify-center shrink-0"
+                  />
                 </div>
 
                 {/* Inline add task */}
@@ -607,19 +620,28 @@ export default function KanbanBoardNM() {
                       </span>
                     </div>
                     {col.key !== "done" && col.key !== "blocked" && (
-                      <button
-                        onClick={(e) => { e.stopPropagation(); setNewTaskStatus(col.key); }}
-                        style={{
-                          width: 22, height: 22, borderRadius: "50%",
-                          background: BG, boxShadow: raisedSm,
-                          border: "none", cursor: "pointer",
-                          fontSize: 14, fontWeight: 700, color: C.orange,
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                          lineHeight: 1,
-                        }}
-                      >
-                        +
-                      </button>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <UseTemplateButton
+                          listId={selectedProjectId ? (getListsForProject(selectedProjectId)[0]?.id || 'l1') : 'l1'}
+                          assigneeIds={quickFilter === 'my_tasks' && teamMemberId ? [teamMemberId] : []}
+                          onCreated={() => queryClient.invalidateQueries({ queryKey: ['tasks'] })}
+                          variant="icon"
+                          className="p-1 rounded hover:bg-muted transition-colors text-muted-foreground shrink-0"
+                        />
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setNewTaskStatus(col.key); }}
+                          style={{
+                            width: 22, height: 22, borderRadius: "50%",
+                            background: BG, boxShadow: raisedSm,
+                            border: "none", cursor: "pointer",
+                            fontSize: 14, fontWeight: 700, color: C.orange,
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            lineHeight: 1,
+                          }}
+                        >
+                          +
+                        </button>
+                      </div>
                     )}
                   </div>
 
@@ -687,18 +709,28 @@ export default function KanbanBoardNM() {
                     </div>
                   ) : (
                     col.key !== "done" && col.key !== "blocked" && (
-                      <div
-                        onClick={() => setNewTaskStatus(col.key)}
-                        style={{
-                          background: BG, borderRadius: 12, boxShadow: inset,
-                          padding: 10, cursor: "pointer",
-                          display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                          fontSize: 12, color: C.light, fontWeight: 500,
-                          fontFamily: "'DM Sans', sans-serif",
-                        }}
-                      >
-                        <span style={{ fontSize: 14, fontWeight: 700 }}>+</span>
-                        Ajouter
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <div
+                          onClick={() => setNewTaskStatus(col.key)}
+                          style={{
+                            flex: 1,
+                            background: BG, borderRadius: 12, boxShadow: inset,
+                            padding: 10, cursor: "pointer",
+                            display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                            fontSize: 12, color: C.light, fontWeight: 500,
+                            fontFamily: "'DM Sans', sans-serif",
+                          }}
+                        >
+                          <span style={{ fontSize: 14, fontWeight: 700 }}>+</span>
+                          Ajouter
+                        </div>
+                        <UseTemplateButton
+                          listId={selectedProjectId ? (getListsForProject(selectedProjectId)[0]?.id || 'l1') : 'l1'}
+                          assigneeIds={quickFilter === 'my_tasks' && teamMemberId ? [teamMemberId] : []}
+                          onCreated={() => queryClient.invalidateQueries({ queryKey: ['tasks'] })}
+                          variant="icon"
+                          className="border border-dashed border-border rounded-lg h-[38px] w-[38px] flex items-center justify-center shrink-0"
+                        />
                       </div>
                     )
                   )}

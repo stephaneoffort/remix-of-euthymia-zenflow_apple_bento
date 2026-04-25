@@ -7,6 +7,8 @@ import { PriorityBadge, AvatarGroup, SubtaskProgress, ZenflowBadge, ZoomSessionB
 import { useTaskMeetings } from '@/hooks/useTaskMeetings';
 import { Plus, GripVertical, GripHorizontal, ChevronRight, ChevronsLeftRight, ChevronsRightLeft, Repeat, ArrowRightLeft } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import UseTemplateButton from '@/components/UseTemplateButton';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   Popover,
   PopoverContent,
@@ -25,6 +27,7 @@ export default function KanbanBoard() {
   const { getFilteredTasks, moveTask, setSelectedTaskId, getMemberById, addTask, selectedProjectId, selectedSpaceId, getListsForProject, tasks, allStatuses, getStatusLabel, getTasksForProject, projects, lists, quickFilter } = useApp();
   const { teamMemberId } = useAuth();
   const { zoomTaskIds, meetTaskIds } = useTaskMeetings();
+  const queryClient = useQueryClient();
 
   const getProjectName = useCallback((listId: string) => {
     const list = lists.find(l => l.id === listId);
@@ -255,6 +258,13 @@ export default function KanbanBoard() {
             <div className={`w-2.5 h-2.5 rounded-full ${getStatusColor(status)}`} />
             <h3 className="font-semibold text-xs sm:text-sm text-foreground select-none truncate">{getStatusLabel(status)}</h3>
             <span data-numeric className="font-numeric tabular-nums text-xs text-muted-foreground ml-auto shrink-0">{count}/{filteredTasks.length}</span>
+            <UseTemplateButton
+              listId={selectedProjectId ? (getListsForProject(selectedProjectId)[0]?.id || 'l1') : 'l1'}
+              assigneeIds={quickFilter === 'my_tasks' && teamMemberId ? [teamMemberId] : []}
+              onCreated={() => queryClient.invalidateQueries({ queryKey: ['tasks'] })}
+              variant="icon"
+              className="p-1 rounded hover:bg-muted transition-colors text-muted-foreground shrink-0"
+            />
             <button
               onClick={() => setNewTaskStatus(status)}
               className="p-1 rounded hover:bg-muted transition-colors text-muted-foreground shrink-0"
@@ -440,13 +450,22 @@ export default function KanbanBoard() {
                 className="space-y-2"
               >
                 {/* Add task button */}
-                <button
-                  onClick={() => setNewTaskStatus(mobileActiveStatus)}
-                  className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-lg border border-dashed border-border text-muted-foreground text-xs font-medium hover:bg-muted/40 transition-colors"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  Ajouter une tâche
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setNewTaskStatus(mobileActiveStatus)}
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg border border-dashed border-border text-muted-foreground text-xs font-medium hover:bg-muted/40 transition-colors"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    Ajouter une tâche
+                  </button>
+                  <UseTemplateButton
+                    listId={selectedProjectId ? (getListsForProject(selectedProjectId)[0]?.id || 'l1') : 'l1'}
+                    assigneeIds={quickFilter === 'my_tasks' && teamMemberId ? [teamMemberId] : []}
+                    onCreated={() => queryClient.invalidateQueries({ queryKey: ['tasks'] })}
+                    variant="icon"
+                    className="border border-dashed border-border rounded-lg h-[38px] w-[38px] flex items-center justify-center shrink-0"
+                  />
+                </div>
 
                 {/* Inline add task */}
                 {newTaskStatus === mobileActiveStatus && (

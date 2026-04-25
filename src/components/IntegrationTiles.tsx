@@ -9,6 +9,7 @@ import CanvaAttachments from '@/components/canva/CanvaAttachments';
 import ZoomMeetings from '@/components/zoom/ZoomMeetings';
 import BrevoNewsletterLinks from '@/components/brevo/BrevoNewsletterLinks';
 import GmailCompose from '@/components/gmail/GmailCompose';
+import MiroBoardAttachments from '@/components/miro/MiroBoardAttachments';
 import { supabase } from '@/integrations/supabase/client';
 
 interface Props {
@@ -30,6 +31,7 @@ const TILES: TileConfig[] = [
   { key: 'zoom', integration: 'zoom', label: 'Zoom', icon: INTEGRATION_CONFIG.zoom.icon },
   { key: 'newsletter', integration: 'brevo', label: 'Newsletter', icon: INTEGRATION_CONFIG.brevo.icon },
   { key: 'email', integration: 'gmail', label: 'Email', icon: INTEGRATION_CONFIG.brevo.icon },
+  { key: 'miro', integration: 'miro', label: 'Miro', icon: INTEGRATION_CONFIG.miro.icon },
 ];
 
 export default function IntegrationTiles({ entityType, entityId, taskTitle }: Props) {
@@ -85,6 +87,17 @@ export default function IntegrationTiles({ entityType, entityId, taskTitle }: Pr
             .eq('entity_id', entityId);
           newCounts.newsletter = count || 0;
         } catch { newCounts.newsletter = 0; }
+      }
+
+      if (isActive('miro')) {
+        try {
+          const { count } = await (supabase as any)
+            .from('miro_attachments')
+            .select('*', { count: 'exact', head: true })
+            .eq('entity_type', entityType)
+            .eq('entity_id', entityId);
+          newCounts.miro = count || 0;
+        } catch { newCounts.miro = 0; }
       }
 
       newCounts.email = 0; // Email compose has no stored count
@@ -154,6 +167,11 @@ export default function IntegrationTiles({ entityType, entityId, taskTitle }: Pr
       {openTile === 'email' && (
         <div className="border border-border rounded-lg p-3 bg-background/50">
           <GmailCompose entityType={entityType} entityId={entityId} defaultSubject={taskTitle} compact />
+        </div>
+      )}
+      {openTile === 'miro' && (
+        <div className="border border-border rounded-lg p-3 bg-background/50">
+          <MiroBoardAttachments entityType={entityType} entityId={entityId} defaultName={taskTitle} />
         </div>
       )}
     </div>

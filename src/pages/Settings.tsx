@@ -526,7 +526,58 @@ function ThemePalettePanel() {
   const palettes = Object.entries(PALETTE_META) as [ThemePalette, typeof PALETTE_META[ThemePalette]][];
   const isBento = palette.startsWith("bento");
 
+  // ── Preview state (hover) ─────────────────────────────────────────
+  const [previewPalette, setPreviewPalette] = useState<ThemePalette | null>(null);
+  const [previewTheme, setPreviewTheme] = useState<'light' | 'dark' | 'mixed' | null>(null);
+  const [previewType, setPreviewType] = useState<TypeVariant | null>(null);
+
+  // Apply palette preview via root.dataset.palette without touching localStorage
+  useEffect(() => {
+    const root = document.documentElement;
+    if (previewPalette) {
+      root.dataset.palette = previewPalette;
+      root.classList.add('palette-transitioning');
+    } else {
+      root.dataset.palette = palette;
+    }
+    return () => { root.dataset.palette = palette; };
+  }, [previewPalette, palette]);
+
+  // Apply theme preview by toggling root classes
+  useEffect(() => {
+    const root = document.documentElement;
+    const apply = (t: 'light' | 'dark' | 'mixed') => {
+      root.classList.remove('light', 'dark', 'mixed');
+      root.classList.add(t === 'mixed' ? 'mixed' : t);
+    };
+    if (previewTheme) apply(previewTheme);
+    else apply(theme);
+    return () => apply(theme);
+  }, [previewTheme, theme]);
+
+  // Apply typo preview via CSS vars
+  useEffect(() => {
+    const root = document.documentElement;
+    const meta = TYPE_META[previewType ?? typeVariant];
+    root.style.setProperty('--font-display', meta.display);
+    root.style.setProperty('--font-body', meta.body);
+    root.style.setProperty('--font-numeric', meta.numeric);
+    return () => {
+      const restore = TYPE_META[typeVariant];
+      root.style.setProperty('--font-display', restore.display);
+      root.style.setProperty('--font-body', restore.body);
+      root.style.setProperty('--font-numeric', restore.numeric);
+    };
+  }, [previewType, typeVariant]);
+
+  // Effective values for the "Thème actuel" indicator card
+  const effectivePalette = previewPalette ?? palette;
+  const effectiveTheme = previewTheme ?? theme;
+  const effectiveType = previewType ?? typeVariant;
+  const isPreviewing = previewPalette !== null || previewTheme !== null || previewType !== null;
+
   const handleSelect = (key: ThemePalette) => {
+    setPreviewPalette(null);
     if (key === palette) return;
     setPalette(key);
     toast.success(`Palette "${PALETTE_META[key].label}" appliquée`);
@@ -541,22 +592,27 @@ function ThemePalettePanel() {
   return (
     <div className="space-y-6">
       {/* ── Thème actuel ── */}
-      <Card className="border-primary/40 bg-accent/20 shadow-sm">
-        <CardHeader>
+      <Card className={`shadow-sm transition-all sticky top-2 z-10 ${isPreviewing ? 'border-amber-500/60 bg-amber-50/30 dark:bg-amber-900/20' : 'border-primary/40 bg-accent/20'}`}>
+        <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-foreground text-base">
-            <Sparkles className="w-5 h-5 text-primary" />
-            Thème actuel
+            <Sparkles className={`w-5 h-5 ${isPreviewing ? 'text-amber-500 animate-pulse' : 'text-primary'}`} />
+            {isPreviewing ? 'Aperçu (survol)' : 'Thème actuel'}
+            {isPreviewing && (
+              <span className="ml-auto px-2 py-0.5 rounded-full bg-amber-500 text-[10px] font-bold text-white uppercase tracking-wide">
+                Prévisualisation
+              </span>
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap items-center gap-3">
             {/* Mode */}
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-card">
+            <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border bg-card transition-all ${previewTheme ? 'border-amber-500 ring-1 ring-amber-500/30' : 'border-border'}`}>
               <span className="text-sm">
-                {theme === 'light' ? '☀' : theme === 'dark' ? '☽' : '⊙'}
+                {effectiveTheme === 'light' ? '☀' : effectiveTheme === 'dark' ? '☽' : '⊙'}
               </span>
               <span className="text-sm font-medium text-foreground">
-                {theme === 'light' ? 'Clair' : theme === 'dark' ? 'Sombre' : 'Mixte'}
+                {effectiveTheme === 'light' ? 'Clair' : effectiveTheme === 'dark' ? 'Sombre' : 'Mixte'}
               </span>
             </div>
             {/* Design mode */}
@@ -567,20 +623,25 @@ function ThemePalettePanel() {
               </span>
             </div>
             {/* Typo */}
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-card">
-              <span className="font-display text-sm font-semibold">Aa</span>
-              <span className="text-sm font-medium text-foreground">{TYPE_META[typeVariant].label}</span>
+            <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border bg-card transition-all ${previewType ? 'border-amber-500 ring-1 ring-amber-500/30' : 'border-border'}`}>
+              <span className="font-display text-sm font-semibold" style={{ fontFamily: TYPE_META[effectiveType].display }}>Aa</span>
+              <span className="text-sm font-medium text-foreground">{TYPE_META[effectiveType].label}</span>
             </div>
             {/* Palette */}
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-primary/50 bg-primary/5">
+            <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-all ${previewPalette ? 'border-amber-500 ring-1 ring-amber-500/30 bg-amber-50/40 dark:bg-amber-900/20' : 'border-primary/50 bg-primary/5'}`}>
               <div className="flex gap-1">
-                {PALETTE_META[palette].colors.slice(0, 4).map((c, i) => (
-                  <div key={i} className="w-5 h-5 rounded-md border border-border/60" style={{ backgroundColor: c }} />
+                {PALETTE_META[effectivePalette].colors.slice(0, 4).map((c, i) => (
+                  <div key={i} className="w-5 h-5 rounded-md border border-border/60 transition-colors" style={{ backgroundColor: c }} />
                 ))}
               </div>
-              <span className="text-sm font-semibold text-primary">{PALETTE_META[palette].label}</span>
+              <span className={`text-sm font-semibold ${previewPalette ? 'text-amber-700 dark:text-amber-400' : 'text-primary'}`}>{PALETTE_META[effectivePalette].label}</span>
             </div>
           </div>
+          {isPreviewing && (
+            <p className="text-xs text-muted-foreground mt-3 italic">
+              💡 Cliquez pour appliquer · déplacez la souris ailleurs pour annuler
+            </p>
+          )}
         </CardContent>
       </Card>
       <Card className="border-border bg-card">
@@ -597,15 +658,21 @@ function ThemePalettePanel() {
             ]).map(({ key, label }) => (
               <button
                 key={key}
-                onClick={() => { setTheme(key); toast.success(`Mode ${label} activé`); }}
+                onMouseEnter={() => setPreviewTheme(key)}
+                onMouseLeave={() => setPreviewTheme(null)}
+                onFocus={() => setPreviewTheme(key)}
+                onBlur={() => setPreviewTheme(null)}
+                onClick={() => { setPreviewTheme(null); setTheme(key); toast.success(`Mode ${label} activé`); }}
                 className={`relative flex items-center gap-2 px-5 py-3 rounded-xl border-2 transition-all text-sm font-medium ${
-                  theme === key
+                  previewTheme === key && previewTheme !== theme
+                    ? 'border-amber-500 bg-amber-50/40 dark:bg-amber-900/30 text-foreground shadow-md ring-2 ring-amber-500/30'
+                    : theme === key
                     ? 'border-primary bg-accent/40 text-foreground shadow-md ring-1 ring-primary/20'
                     : 'border-border bg-card text-muted-foreground hover:border-muted-foreground/30 hover:bg-muted/30'
                 }`}
               >
                 {label}
-                {theme === key && (
+                {theme === key && previewTheme !== key && (
                   <>
                     <span className="ml-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
                       <Check className="w-3 h-3 text-primary-foreground" />
@@ -614,6 +681,11 @@ function ThemePalettePanel() {
                       Actif
                     </span>
                   </>
+                )}
+                {previewTheme === key && previewTheme !== theme && (
+                  <span className="absolute -top-2 -right-2 px-1.5 py-0.5 rounded-full bg-amber-500 text-[9px] font-bold text-white uppercase tracking-wide">
+                    Aperçu
+                  </span>
                 )}
               </button>
             ))}
@@ -738,18 +810,25 @@ function ThemePalettePanel() {
               return (
                 <button
                   key={key}
+                  onMouseEnter={() => setPreviewType(key)}
+                  onMouseLeave={() => setPreviewType(null)}
+                  onFocus={() => setPreviewType(key)}
+                  onBlur={() => setPreviewType(null)}
                   onClick={() => {
+                    setPreviewType(null);
                     if (active) return;
                     setTypeVariant(key);
                     toast.success(`Typographie "${meta.label}" appliquée`);
                   }}
                   className={`group relative flex flex-col gap-3 p-5 rounded-xl border-2 transition-all text-left ${
-                    active
+                    previewType === key && previewType !== typeVariant
+                      ? 'border-amber-500 bg-amber-50/40 dark:bg-amber-900/30 shadow-md ring-2 ring-amber-500/30'
+                      : active
                       ? 'border-primary bg-accent/40 shadow-md ring-1 ring-primary/20'
                       : 'border-border bg-card hover:border-muted-foreground/30 hover:bg-muted/30'
                   }`}
                 >
-                  {active && (
+                  {active && previewType !== key && (
                     <>
                       <span className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
                         <Check className="w-3.5 h-3.5 text-primary-foreground" />
@@ -758,6 +837,11 @@ function ThemePalettePanel() {
                         Actuel
                       </span>
                     </>
+                  )}
+                  {previewType === key && previewType !== typeVariant && (
+                    <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full bg-amber-500 text-[10px] font-bold text-white uppercase tracking-wide">
+                      Aperçu
+                    </span>
                   )}
                   <div
                     className="rounded-lg border border-border/50 bg-muted/20 p-4 space-y-2"
@@ -814,14 +898,20 @@ function ThemePalettePanel() {
                 return (
                   <button
                     key={key}
+                    onMouseEnter={() => setPreviewPalette(key)}
+                    onMouseLeave={() => setPreviewPalette(null)}
+                    onFocus={() => setPreviewPalette(key)}
+                    onBlur={() => setPreviewPalette(null)}
                     onClick={() => handleSelect(key)}
                     className={`group relative flex flex-col gap-3 p-5 rounded-xl border-2 transition-all text-left ${
-                      active
+                      previewPalette === key && previewPalette !== palette
+                        ? 'border-amber-500 bg-amber-50/40 dark:bg-amber-900/30 shadow-md ring-2 ring-amber-500/30'
+                        : active
                         ? 'border-primary bg-accent/40 shadow-md ring-1 ring-primary/20'
                         : 'border-border bg-card hover:border-muted-foreground/30 hover:bg-muted/30'
                     }`}
                   >
-                    {active && (
+                    {active && previewPalette !== key && (
                       <>
                         <span className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
                           <Check className="w-3.5 h-3.5 text-primary-foreground" />
@@ -830,6 +920,11 @@ function ThemePalettePanel() {
                           Actuel
                         </span>
                       </>
+                    )}
+                    {previewPalette === key && previewPalette !== palette && (
+                      <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full bg-amber-500 text-[10px] font-bold text-white uppercase tracking-wide">
+                        Aperçu
+                      </span>
                     )}
                     <div className="flex gap-1.5">
                       {meta.colors.map((c, i) => (

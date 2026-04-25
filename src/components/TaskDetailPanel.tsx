@@ -729,6 +729,10 @@ export default function TaskDetailPanel() {
             {isActive('google_sheets') && (
               <GoogleSheetsAttachments taskId={task.id} taskTitle={task.title} />
             )}
+            {/* Figma — lier des fichiers et frames */}
+            {isActive('figma') && (
+              <FigmaAttachments taskId={task.id} />
+            )}
             {!isActive('google_drive') && !isActive('canva') && !isActive('zoom') && !isActive('brevo') && !isActive('gmail') && (
               <a
                 href="/settings"

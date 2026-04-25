@@ -137,6 +137,10 @@ export default function Settings() {
             <ThemePalettePanel />
           </TabsContent>
 
+          <TabsContent value="templates">
+            <TaskTemplatesPanel />
+          </TabsContent>
+
           <TabsContent value="integrations">
             <IntegrationsSettings />
             <div className="mt-6">

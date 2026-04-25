@@ -5,6 +5,8 @@ import { useAuth } from "@/context/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { differenceInDays, parseISO, format } from "date-fns";
 import { fr } from "date-fns/locale";
+import UseTemplateButton from "@/components/UseTemplateButton";
+import { useQueryClient } from "@tanstack/react-query";
 
 /* ─── Tokens ─── */
 const BG = "#EDE6DA";

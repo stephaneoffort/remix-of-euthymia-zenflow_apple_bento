@@ -27,6 +27,7 @@ import DriveAttachments from '@/components/drive/DriveAttachments';
 import KeepAttachments from '@/components/keep/KeepAttachments';
 import GoogleTaskSync from '@/components/google-tasks/GoogleTaskSync';
 import GoogleDocsAttachments from '@/components/google-docs/GoogleDocsAttachments';
+import GoogleSheetsAttachments from '@/components/google-sheets/GoogleSheetsAttachments';
 import IntegrationTiles from '@/components/IntegrationTiles';
 import { useIntegrations, INTEGRATION_CONFIG } from '@/hooks/useIntegrations';
 import GoogleCalendarPicker from '@/components/GoogleCalendarPicker';

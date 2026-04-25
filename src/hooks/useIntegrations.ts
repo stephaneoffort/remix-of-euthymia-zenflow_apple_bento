@@ -128,6 +128,12 @@ export const INTEGRATION_CONFIG: Record<IntegrationKey, {
     icon: googleDocsIcon,
     color: '#4285F4',
   },
+  google_sheets: {
+    label: 'Google Sheets',
+    description: 'Lier ou créer des feuilles Google Sheets depuis vos tâches',
+    icon: googleSheetsIcon,
+    color: '#0F9D58',
+  },
 };
 
 const defaultStatus = (key: IntegrationKey): IntegrationStatus => ({

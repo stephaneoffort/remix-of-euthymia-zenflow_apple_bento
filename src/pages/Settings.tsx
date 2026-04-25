@@ -598,17 +598,22 @@ function ThemePalettePanel() {
               <button
                 key={key}
                 onClick={() => { setTheme(key); toast.success(`Mode ${label} activé`); }}
-                className={`flex items-center gap-2 px-5 py-3 rounded-xl border-2 transition-all text-sm font-medium ${
+                className={`relative flex items-center gap-2 px-5 py-3 rounded-xl border-2 transition-all text-sm font-medium ${
                   theme === key
-                    ? 'border-primary bg-accent/40 text-foreground shadow-md'
+                    ? 'border-primary bg-accent/40 text-foreground shadow-md ring-1 ring-primary/20'
                     : 'border-border bg-card text-muted-foreground hover:border-muted-foreground/30 hover:bg-muted/30'
                 }`}
               >
                 {label}
                 {theme === key && (
-                  <span className="ml-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                    <Check className="w-3 h-3 text-primary-foreground" />
-                  </span>
+                  <>
+                    <span className="ml-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                      <Check className="w-3 h-3 text-primary-foreground" />
+                    </span>
+                    <span className="absolute -top-2 -right-2 px-1.5 py-0.5 rounded-full bg-primary text-[9px] font-bold text-primary-foreground uppercase tracking-wide">
+                      Actif
+                    </span>
+                  </>
                 )}
               </button>
             ))}

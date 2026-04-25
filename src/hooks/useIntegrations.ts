@@ -7,7 +7,8 @@ export type IntegrationKey =
   | 'canva'
   | 'google_meet'
   | 'gmail'
-  | 'brevo';
+  | 'brevo'
+  | 'miro';
 
 export interface IntegrationStatus {
   key: IntegrationKey;
@@ -18,7 +19,7 @@ export interface IntegrationStatus {
 }
 
 const ALL_INTEGRATIONS: IntegrationKey[] = [
-  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo',
+  'google_drive', 'zoom', 'canva', 'google_meet', 'gmail', 'brevo', 'miro',
 ];
 
 import googleDriveIcon from '@/assets/integrations/google-drive.png';
@@ -27,6 +28,7 @@ import canvaIcon from '@/assets/integrations/canva.png';
 import googleMeetIcon from '@/assets/integrations/google-meet.png';
 import gmailIcon from '@/assets/integrations/gmail.png';
 import brevoIcon from '@/assets/integrations/brevo.png';
+import miroIcon from '@/assets/integrations/miro.png';
 
 export const INTEGRATION_CONFIG: Record<IntegrationKey, {
   label: string;
@@ -70,6 +72,12 @@ export const INTEGRATION_CONFIG: Record<IntegrationKey, {
     icon: brevoIcon,
     color: '#0092FF',
   },
+  miro: {
+    label: 'Miro',
+    description: 'Lier des boards Miro aux tâches et projets',
+    icon: miroIcon,
+    color: '#FFD02F',
+  },
 };
 
 const defaultStatus = (key: IntegrationKey): IntegrationStatus => ({
@@ -105,6 +113,7 @@ export function useIntegrations() {
       { key: 'canva', table: 'canva_connections' },
       { key: 'brevo', table: 'brevo_connections' },
       { key: 'gmail', table: 'gmail_connections' },
+      { key: 'miro', table: 'miro_connections' },
     ];
 
     for (const { key, table } of connectionChecks) {
@@ -220,6 +229,7 @@ export function useIntegrations() {
       canva: 'canva_connections',
       brevo: 'brevo_connections',
       gmail: 'gmail_connections',
+      miro: 'miro_connections',
     };
     const table = tableMap[key];
     if (table) {

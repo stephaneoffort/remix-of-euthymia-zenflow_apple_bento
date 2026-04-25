@@ -27,6 +27,7 @@ export default function KanbanBoard() {
   const { getFilteredTasks, moveTask, setSelectedTaskId, getMemberById, addTask, selectedProjectId, selectedSpaceId, getListsForProject, tasks, allStatuses, getStatusLabel, getTasksForProject, projects, lists, quickFilter } = useApp();
   const { teamMemberId } = useAuth();
   const { zoomTaskIds, meetTaskIds } = useTaskMeetings();
+  const queryClient = useQueryClient();
 
   const getProjectName = useCallback((listId: string) => {
     const list = lists.find(l => l.id === listId);

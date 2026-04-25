@@ -109,38 +109,60 @@ const QUICK_FILTER_TITLES: Record<string, string> = {
 };
 
 function ThemeIndicator() {
-  const { palette, theme, designMode } = useThemeMode();
-  const meta = PALETTE_META[palette];
-  const label = meta?.label ?? palette;
+  const { palette, theme, designMode, typeVariant } = useThemeMode();
+  const preview = useThemePreview();
+  const effectivePalette = preview.palette ?? palette;
+  const effectiveTheme = preview.theme ?? theme;
+  const effectiveType = preview.type ?? typeVariant;
+  const isPreviewing = preview.palette !== null || preview.theme !== null || preview.type !== null;
+  const meta = PALETTE_META[effectivePalette];
+  const label = meta?.label ?? effectivePalette;
   const colors = meta?.colors ?? ["#ccc"];
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <button
           onClick={() => { window.location.hash = "#theme"; window.dispatchEvent(new HashChangeEvent("hashchange")); }}
-          className="relative inline-flex items-center gap-1 px-1.5 py-1 rounded-md border border-border bg-muted/30 hover:bg-muted hover:text-foreground transition-colors shrink-0"
-          style={{ borderColor: `${colors[0]}40` }}
+          className={`relative inline-flex items-center gap-1 px-1.5 py-1 rounded-md border transition-all shrink-0 ${
+            isPreviewing
+              ? 'border-amber-500 bg-amber-50/40 dark:bg-amber-900/30 ring-1 ring-amber-500/40 animate-pulse'
+              : 'border-border bg-muted/30 hover:bg-muted hover:text-foreground'
+          }`}
+          style={isPreviewing ? undefined : { borderColor: `${colors[0]}40` }}
         >
           <div className="flex -space-x-0.5">
             {colors.slice(0, 3).map((c, i) => (
               <span
                 key={i}
-                className="inline-block w-2.5 h-2.5 rounded-full border border-white/40"
+                className="inline-block w-2.5 h-2.5 rounded-full border border-white/40 transition-colors"
                 style={{ backgroundColor: c }}
               />
             ))}
           </div>
-          <span className="hidden md:inline text-[10px] font-medium text-muted-foreground tracking-tight">
+          <span className={`hidden md:inline text-[10px] font-medium tracking-tight ${isPreviewing ? 'text-amber-700 dark:text-amber-300' : 'text-muted-foreground'}`}>
             {label.length > 12 ? label.slice(0, 12) + "…" : label}
           </span>
+          {isPreviewing && (
+            <span className="absolute -top-1.5 -right-1.5 px-1 py-0.5 rounded-full bg-amber-500 text-[8px] font-bold text-white uppercase tracking-wide leading-none">
+              Aperçu
+            </span>
+          )}
         </button>
       </TooltipTrigger>
       <TooltipContent side="bottom" className="text-xs">
         <div className="space-y-1">
-          <p className="font-semibold">{label}</p>
-          <p className="text-muted-foreground text-[10px]">
-            {theme === "light" ? "☀ Clair" : theme === "dark" ? "☽ Sombre" : "⊙ Mixte"} · {designMode === "classic" ? "⊞ Classic" : "✦ Premium"}
+          <p className="font-semibold flex items-center gap-1.5">
+            {label}
+            {isPreviewing && <span className="text-amber-600 dark:text-amber-400 text-[9px] uppercase">· Aperçu</span>}
           </p>
+          <p className="text-muted-foreground text-[10px]">
+            {effectiveTheme === "light" ? "☀ Clair" : effectiveTheme === "dark" ? "☽ Sombre" : "⊙ Mixte"} · {designMode === "classic" ? "⊞ Classic" : "✦ Premium"} · {effectiveType}
+          </p>
+          {isPreviewing && (
+            <p className="text-[9px] text-amber-700 dark:text-amber-400 italic">
+              Cliquez sur l'option pour appliquer
+            </p>
+          )}
         </div>
       </TooltipContent>
     </Tooltip>

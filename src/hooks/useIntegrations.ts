@@ -156,6 +156,7 @@ export function useIntegrations() {
       { key: 'miro', table: 'miro_connections' },
       { key: 'dropbox', table: 'dropbox_connections' },
       { key: 'notion', table: 'notion_connections' },
+      { key: 'google_tasks', table: 'google_tasks_connections' },
     ];
 
     for (const { key, table } of connectionChecks) {

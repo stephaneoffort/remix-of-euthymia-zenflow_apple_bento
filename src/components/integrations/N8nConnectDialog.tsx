@@ -212,7 +212,7 @@ export default function N8nConnectDialog({
               </AlertDescription>
             </Alert>
           )}
-          {testStatus && !testStatus.ok && (
+          {testStatus && testStatus.ok === false && (
             <Alert variant="destructive">
               <AlertDescription className="text-sm">
                 {testStatus.message}

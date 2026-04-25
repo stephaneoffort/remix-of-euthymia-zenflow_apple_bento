@@ -1288,6 +1288,84 @@ export type Database = {
         }
         Relationships: []
       }
+      notion_attachments: {
+        Row: {
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          page_icon: string | null
+          page_id: string
+          page_title: string | null
+          page_url: string
+          parent_type: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          page_icon?: string | null
+          page_id: string
+          page_title?: string | null
+          page_url: string
+          parent_type?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          page_icon?: string | null
+          page_id?: string
+          page_title?: string | null
+          page_url?: string
+          parent_type?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notion_connections: {
+        Row: {
+          access_token: string
+          bot_id: string | null
+          created_at: string
+          id: string
+          owner: Json | null
+          updated_at: string
+          user_id: string
+          workspace_icon: string | null
+          workspace_id: string
+          workspace_name: string | null
+        }
+        Insert: {
+          access_token: string
+          bot_id?: string | null
+          created_at?: string
+          id?: string
+          owner?: Json | null
+          updated_at?: string
+          user_id: string
+          workspace_icon?: string | null
+          workspace_id: string
+          workspace_name?: string | null
+        }
+        Update: {
+          access_token?: string
+          bot_id?: string | null
+          created_at?: string
+          id?: string
+          owner?: Json | null
+          updated_at?: string
+          user_id?: string
+          workspace_icon?: string | null
+          workspace_id?: string
+          workspace_name?: string | null
+        }
+        Relationships: []
+      }
       numeric_audit_acceptances: {
         Row: {
           accepted_at: string

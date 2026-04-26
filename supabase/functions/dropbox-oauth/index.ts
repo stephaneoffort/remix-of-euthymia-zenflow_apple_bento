@@ -14,7 +14,7 @@ const supabase = createClient(
 
 const DROPBOX_CLIENT_ID = Deno.env.get("DROPBOX_CLIENT_ID") ?? ""
 const DROPBOX_CLIENT_SECRET = Deno.env.get("DROPBOX_CLIENT_SECRET") ?? ""
-const REDIRECT_URI = "https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/dropbox-oauth/callback"
+const REDIRECT_URI = (Deno.env.get("SUPABASE_URL") ?? "") + "/functions/v1/dropbox-oauth/callback"
 const APP_URL = Deno.env.get("APP_URL") ?? "https://euthymia-zenflow-bento.lovable.app"
 
 serve(async (req: Request) => {
@@ -98,7 +98,7 @@ serve(async (req: Request) => {
     const { error: insertError } = await supabase.from("dropbox_connections").insert({
       user_id: state,
       access_token: tokens.access_token,
-      refresh_token: tokens.refresh_token ?? "",
+      refresh_token: tokens.refresh_token ?? null,
       token_expiry: expiry.toISOString(),
       account_id: accountId,
       email,

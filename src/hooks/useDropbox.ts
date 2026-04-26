@@ -49,7 +49,14 @@ export function useDropbox() {
     setLoading(false);
   }, []);
 
-  useEffect(() => { checkConnection(); }, [checkConnection]);
+  useEffect(() => {
+    checkConnection();
+    if (window.location.search.includes("dropbox_connected=true")) {
+      setIsConnected(true);
+      checkConnection();
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, [checkConnection]);
 
   const connect = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();

@@ -19,16 +19,13 @@ async function authenticateUser(req: Request): Promise<string> {
   const authHeader = req.headers.get("Authorization")
   if (!authHeader?.startsWith("Bearer ")) throw new Error("UNAUTHORIZED")
 
-  const supabaseUser = createClient(
+  const token = authHeader.replace("Bearer ", "")
+  const { data: { user }, error } = await createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
     Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-    { global: { headers: { Authorization: authHeader } } }
-  )
-
-  const token = authHeader.replace("Bearer ", "")
-  const { data, error } = await supabaseUser.auth.getClaims(token)
-  if (error || !data?.claims) throw new Error("UNAUTHORIZED")
-  return data.claims.sub as string
+  ).auth.getUser(token)
+  if (error || !user) throw new Error("UNAUTHORIZED")
+  return user.id
 }
 
 async function getValidToken(userId: string): Promise<string> {

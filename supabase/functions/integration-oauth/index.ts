@@ -23,6 +23,7 @@ const CONNECTION_TABLE: Record<string, string> = {
   google_docs:   "google_docs_connections",
   google_sheets: "google_sheets_connections",
   figma:         "figma_connections",
+  notion:        "notion_connections",
 }
 
 // Config OAuth par provider
@@ -105,6 +106,12 @@ const PROVIDER_CONFIG: Record<string, {
     tokenUrl: "https://api.figma.com/v1/oauth/token",
     scopes:   ["files:read"],
   },
+  notion: {
+    authUrl:  "https://api.notion.com/v1/oauth/authorize",
+    tokenUrl: "https://api.notion.com/v1/oauth/token",
+    scopes:   [],
+    extraParams: { owner: "user" },
+  },
 }
 
 // Mappe le provider vers le préfixe d'env vars (les providers Google partagent les credentials GOOGLE_*)
@@ -182,20 +189,38 @@ serve(async (req) => {
     }
 
     // Échange du code contre les tokens
+    // Notion exige Basic Auth (client_id:client_secret en base64) au lieu de body params
+    const isNotion = resolvedProvider === "notion"
+    const tokenHeaders: Record<string, string> = { "Content-Type": "application/x-www-form-urlencoded" }
+    const tokenBody = new URLSearchParams({
+      code,
+      grant_type:   "authorization_code",
+      redirect_uri: redirectUri(resolvedProvider),
+    })
+    if (isNotion) {
+      tokenHeaders["Authorization"] = `Basic ${btoa(`${clientId(resolvedProvider)}:${clientSecret(resolvedProvider)}`)}`
+      tokenHeaders["Content-Type"]  = "application/json"
+      tokenHeaders["Accept"]        = "application/json"
+    } else {
+      tokenBody.set("client_id",     clientId(resolvedProvider))
+      tokenBody.set("client_secret", clientSecret(resolvedProvider))
+    }
+
     const tokenRes = await fetch(resolvedCfg.tokenUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        code,
-        grant_type:    "authorization_code",
-        client_id:     clientId(resolvedProvider),
-        client_secret: clientSecret(resolvedProvider),
-        redirect_uri:  redirectUri(resolvedProvider),
-      }),
+      method:  "POST",
+      headers: tokenHeaders,
+      body:    isNotion
+        ? JSON.stringify({
+            grant_type:   "authorization_code",
+            code,
+            redirect_uri: redirectUri(resolvedProvider),
+          })
+        : tokenBody,
     })
     const tokens = await tokenRes.json()
 
     if (!tokenRes.ok) {
+      console.error(`[oauth] ${resolvedProvider} token exchange failed:`, tokens)
       return Response.redirect(
         `${APP_URL}/settings/integrations?provider=${resolvedProvider}&status=error&reason=token`,
         302,
@@ -211,20 +236,34 @@ serve(async (req) => {
     const db = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
     // Construit le payload selon les colonnes de la table cible.
-    // Toutes les tables *_connections utilisent token_expiry (pas expires_at).
     const tokenExpiry = tokens.expires_in
       ? new Date(Date.now() + tokens.expires_in * 1000).toISOString()
       : null
 
-    const connectionPayload: Record<string, unknown> = {
-      user_id:       userId,
-      access_token:  tokens.access_token,
-      refresh_token: tokens.refresh_token ?? null,
-      token_expiry:  tokenExpiry,
-    }
-    // dropbox_connections est la seule à exposer account_id
-    if (resolvedProvider === "dropbox" && accountId) {
-      connectionPayload.account_id = accountId
+    let connectionPayload: Record<string, unknown>
+    if (isNotion) {
+      // notion_connections: workspace_id (NOT NULL), workspace_name, workspace_icon, bot_id, owner
+      connectionPayload = {
+        user_id:        userId,
+        access_token:   tokens.access_token,
+        workspace_id:   tokens.workspace_id ?? "",
+        workspace_name: tokens.workspace_name ?? null,
+        workspace_icon: tokens.workspace_icon ?? null,
+        bot_id:         tokens.bot_id ?? null,
+        owner:          tokens.owner ?? null,
+      }
+    } else {
+      // Toutes les autres tables *_connections utilisent token_expiry (pas expires_at).
+      connectionPayload = {
+        user_id:       userId,
+        access_token:  tokens.access_token,
+        refresh_token: tokens.refresh_token ?? null,
+        token_expiry:  tokenExpiry,
+      }
+      // dropbox_connections est la seule à exposer account_id
+      if (resolvedProvider === "dropbox" && accountId) {
+        connectionPayload.account_id = accountId
+      }
     }
 
     // Upsert manuel : pas de contrainte UNIQUE sur user_id dans ces tables.

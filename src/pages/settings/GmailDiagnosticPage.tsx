@@ -118,6 +118,24 @@ export default function GmailDiagnosticPage() {
 
         {data && (
           <>
+            {/* Verdict immédiat */}
+            {verdict === "oauth_error_page" && (
+              <Card className="p-6 border-destructive bg-destructive/10 space-y-2">
+                <div className="flex items-center gap-2 text-destructive">
+                  <AlertTriangle className="w-5 h-5" />
+                  <span className="font-semibold">
+                    Cause détectée : redirect_uri_mismatch
+                  </span>
+                </div>
+                <p className="text-sm text-foreground">
+                  Google rejette la requête car l'URI ci-dessous n'est{" "}
+                  <strong>pas enregistrée</strong> dans les "Authorized redirect
+                  URIs" de votre client OAuth. Copiez-la et ajoutez-la dans la
+                  console Google Cloud (étape 1 plus bas).
+                </p>
+              </Card>
+            )}
+
             {/* Configuration serveur */}
             <Card className="p-6 space-y-4">
               <div className="flex items-center justify-between">

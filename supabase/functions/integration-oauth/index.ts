@@ -23,6 +23,7 @@ const CONNECTION_TABLE: Record<string, string> = {
   google_docs:   "google_docs_connections",
   google_sheets: "google_sheets_connections",
   figma:         "figma_connections",
+  notion:        "notion_connections",
 }
 
 // Config OAuth par provider

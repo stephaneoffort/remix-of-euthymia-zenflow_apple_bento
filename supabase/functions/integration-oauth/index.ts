@@ -106,6 +106,12 @@ const PROVIDER_CONFIG: Record<string, {
     tokenUrl: "https://api.figma.com/v1/oauth/token",
     scopes:   ["files:read"],
   },
+  notion: {
+    authUrl:  "https://api.notion.com/v1/oauth/authorize",
+    tokenUrl: "https://api.notion.com/v1/oauth/token",
+    scopes:   [],
+    extraParams: { owner: "user" },
+  },
 }
 
 // Mappe le provider vers le préfixe d'env vars (les providers Google partagent les credentials GOOGLE_*)

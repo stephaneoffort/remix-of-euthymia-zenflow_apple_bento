@@ -127,15 +127,21 @@ function clientSecret(provider: string) { return Deno.env.get(`${envPrefix(provi
 // without query params. The provider is already encoded in the state parameter.
 function redirectUri(_provider: string) { return `${SUPABASE_URL}/functions/v1/integration-oauth/callback` }
 
-async function getUser(req: Request) {
+async function getUserId(req: Request): Promise<string | null> {
   const url = new URL(req.url)
+
+  // Priorité 1 : user_id passé directement en query param (pattern utilisé par toutes les fonctions OAuth)
+  const directUserId = url.searchParams.get("user_id")
+  if (directUserId) return directUserId
+
+  // Priorité 2 : JWT dans ?token= ou Authorization header (fallback)
   const token =
     req.headers.get("Authorization")?.replace("Bearer ", "") ??
     url.searchParams.get("token") ??
     ""
   if (!token) return null
   const { data: { user } } = await createClient(SUPABASE_URL, SUPABASE_ANON_KEY).auth.getUser(token)
-  return user
+  return user?.id ?? null
 }
 
 serve(async (req) => {
@@ -150,10 +156,10 @@ serve(async (req) => {
   if (path.endsWith("/authorize")) {
     if (!cfg) return new Response(`Provider inconnu : ${provider}`, { status: 400, headers: CORS })
 
-    const user  = await getUser(req)
-    if (!user) return new Response("Unauthorized", { status: 401, headers: CORS })
+    const userId = await getUserId(req)
+    if (!userId) return new Response("Unauthorized", { status: 401, headers: CORS })
 
-    const state = btoa(JSON.stringify({ provider, user_id: user.id }))
+    const state = btoa(JSON.stringify({ provider, user_id: userId }))
 
     const authUrl = new URL(cfg.authUrl)
     authUrl.searchParams.set("client_id",     clientId(provider))

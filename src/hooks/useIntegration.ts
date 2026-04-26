@@ -80,9 +80,9 @@ export function useIntegration(provider: string) {
         window.location.href = "/auth";
         return;
       }
-      // L'edge function /authorize lit le token Authorization puis renvoie un 302 vers le provider.
-      // Comme un redirect simple ne porte pas le header, on passe par une fenêtre intermédiaire.
-      const url = `${SUPABASE_URL}/functions/v1/integration-oauth/authorize?provider=${provider}&token=${encodeURIComponent(token)}`;
+      const userId = session?.user?.id
+      if (!userId) { window.location.href = "/auth"; return; }
+      const url = `${SUPABASE_URL}/functions/v1/integration-oauth/authorize?provider=${provider}&user_id=${encodeURIComponent(userId)}`;
       window.location.href = url;
     } finally {
       setWorking(false);

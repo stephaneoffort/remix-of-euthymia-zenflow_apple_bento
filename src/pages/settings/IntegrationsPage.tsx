@@ -96,7 +96,7 @@ export default function IntegrationsPage() {
     }
 
     window.location.href =
-      `${SUPABASE_URL}/functions/v1/integration-oauth/authorize?provider=${key}&token=${encodeURIComponent(session.access_token)}`
+      `${SUPABASE_URL}/functions/v1/integration-oauth/authorize?provider=${key}&user_id=${encodeURIComponent(session.user.id)}`
   }
 
   const handleDisconnect = async (key: IntegrationKey) => {

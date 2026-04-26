@@ -6,7 +6,7 @@ type PushSubscriptionResult = {
   reason?: 'unsupported' | 'permission_denied' | 'db_error' | 'unknown_error';
 };
 
-const VAPID_PUBLIC_KEY = 'BFl-X7dNVfMkGjlUJCes-O4IbVfdJrxkNJ91375nwCufXggVCNYMOIcw2_rRNEP1Bu3ZYjSz4PlK8cKIr_tsJ4Y';
+const VAPID_PUBLIC_KEY = 'BD7wqSTbNC8yULUsIwiTEuehBwx7eLNam9TUhC1gB6-52CO9VgHy6fUefiCbrlDMyryowy3LToAqWa52wbGCsrQ';
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);

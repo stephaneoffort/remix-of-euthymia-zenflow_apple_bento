@@ -32,14 +32,14 @@ interface Connection {
   id: string
   access_token: string
   refresh_token: string | null
-  token_expiry: string | null
+  token_expires_at: string | null
 }
 
 // deno-lint-ignore no-explicit-any
 async function getValidAccessToken(db: any, userId: string): Promise<string | null> {
   const { data: conn } = await db
     .from("google_sheets_connections")
-    .select("id, access_token, refresh_token, token_expiry")
+    .select("id, access_token, refresh_token, token_expires_at")
     .eq("user_id", userId)
     .maybeSingle()
 
@@ -47,7 +47,7 @@ async function getValidAccessToken(db: any, userId: string): Promise<string | nu
   const c = conn as Connection
 
   const now = Date.now()
-  const expiresAt = c.token_expiry ? new Date(c.token_expiry).getTime() : 0
+  const expiresAt = c.token_expires_at ? new Date(c.token_expires_at).getTime() : 0
   if (expiresAt - 60_000 > now) return c.access_token
 
   if (!c.refresh_token) return c.access_token
@@ -71,7 +71,7 @@ async function getValidAccessToken(db: any, userId: string): Promise<string | nu
 
   await db.from("google_sheets_connections").update({
     access_token: refreshed.access_token,
-    token_expiry: newExpiry,
+    token_expires_at: newExpiry,
   }).eq("id", c.id)
 
   return refreshed.access_token

@@ -15,7 +15,7 @@ const supabaseAdmin = createClient(
 
 const REDIRECT_URI =
   "https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/gmail-account-oauth/callback";
-const APP_URL = "https://euthymia-zenflow-bento.lovable.app";
+const APP_URL = Deno.env.get("APP_URL") ?? "https://www.euthymiazenflow.life";
 
 serve(async (req: Request) => {
   if (req.method === "OPTIONS") {

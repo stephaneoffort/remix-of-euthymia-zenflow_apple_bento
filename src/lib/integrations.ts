@@ -70,7 +70,7 @@ export const INTEGRATIONS: IntegrationConfig[] = [
     authUrl: "https://api.notion.com/v1/oauth/authorize",
     scopes: [],
     extraParams: { response_type: "code", owner: "user" },
-    enabled: false,
+    enabled: true,
     iconBg: "#F6F6F6",
     iconSvg: `<svg viewBox="0 0 24 24" width="22" height="22" fill="none">
       <rect width="24" height="24" rx="4" fill="#191919"/>

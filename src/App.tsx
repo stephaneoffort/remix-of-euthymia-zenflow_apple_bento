@@ -142,6 +142,14 @@ const App = () => (
                 }
               />
               <Route
+                path="/settings/gmail-diagnostic"
+                element={
+                  <ProtectedRoute>
+                    <GmailDiagnosticPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/settings"
                 element={
                   <ProtectedRoute>

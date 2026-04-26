@@ -29,6 +29,7 @@ const Install = lazyRetry(() => import("./pages/Install.tsx"));
 const ResetPassword = lazyRetry(() => import("./pages/ResetPassword.tsx"));
 const NumericAudit = lazyRetry(() => import("./pages/NumericAudit.tsx"));
 const SettingsIntegrationsPage = lazyRetry(() => import("./pages/settings/IntegrationsPage.tsx"));
+const GmailDiagnosticPage = lazyRetry(() => import("./pages/settings/GmailDiagnosticPage.tsx"));
 
 
 const PageLoader = () => (
@@ -137,6 +138,14 @@ const App = () => (
                     <AppProvider>
                       <SettingsIntegrationsPage />
                     </AppProvider>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/settings/gmail-diagnostic"
+                element={
+                  <ProtectedRoute>
+                    <GmailDiagnosticPage />
                   </ProtectedRoute>
                 }
               />

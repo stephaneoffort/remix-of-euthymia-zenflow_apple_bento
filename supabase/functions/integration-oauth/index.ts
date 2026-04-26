@@ -123,7 +123,9 @@ function envPrefix(provider: string): string {
 }
 function clientId(provider: string)     { return Deno.env.get(`${envPrefix(provider)}_CLIENT_ID`) ?? Deno.env.get(`${provider.toUpperCase()}_CLIENT_ID`) ?? "" }
 function clientSecret(provider: string) { return Deno.env.get(`${envPrefix(provider)}_CLIENT_SECRET`) ?? Deno.env.get(`${provider.toUpperCase()}_CLIENT_SECRET`) ?? "" }
-function redirectUri(provider: string)  { return `${SUPABASE_URL}/functions/v1/integration-oauth/callback?provider=${provider}` }
+// No ?provider= in the redirect URI: Dropbox (and some others) require exact match
+// without query params. The provider is already encoded in the state parameter.
+function redirectUri(_provider: string) { return `${SUPABASE_URL}/functions/v1/integration-oauth/callback` }
 
 async function getUser(req: Request) {
   const url = new URL(req.url)
@@ -240,6 +242,22 @@ serve(async (req) => {
       ? new Date(Date.now() + tokens.expires_in * 1000).toISOString()
       : null
 
+    // Fetch Google user profile once for all Google providers
+    let googleEmail: string | null = null
+    let googleName:  string | null = null
+    if (["google_drive", "google_tasks", "google_docs", "google_sheets", "gmail"].includes(resolvedProvider)) {
+      try {
+        const profileRes = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
+          headers: { Authorization: `Bearer ${tokens.access_token}` },
+        })
+        if (profileRes.ok) {
+          const p = await profileRes.json()
+          googleEmail = p.email ?? null
+          googleName  = p.name  ?? null
+        }
+      } catch { /* ignore */ }
+    }
+
     let connectionPayload: Record<string, unknown>
     if (isNotion) {
       // notion_connections: workspace_id (NOT NULL), workspace_name, workspace_icon, bot_id, owner
@@ -252,17 +270,33 @@ serve(async (req) => {
         bot_id:         tokens.bot_id ?? null,
         owner:          tokens.owner ?? null,
       }
+    } else if (resolvedProvider === "google_sheets") {
+      // google_sheets_connections uses token_expires_at (not token_expiry) and google_email
+      connectionPayload = {
+        user_id:          userId,
+        access_token:     tokens.access_token,
+        refresh_token:    tokens.refresh_token ?? null,
+        token_expires_at: tokenExpiry,
+        google_email:     googleEmail,
+        scopes:           resolvedCfg.scopes.join(" "),
+      }
     } else {
-      // Toutes les autres tables *_connections utilisent token_expiry (pas expires_at).
+      // All other *_connections use token_expiry
       connectionPayload = {
         user_id:       userId,
         access_token:  tokens.access_token,
         refresh_token: tokens.refresh_token ?? null,
         token_expiry:  tokenExpiry,
       }
-      // dropbox_connections est la seule à exposer account_id
       if (resolvedProvider === "dropbox" && accountId) {
         connectionPayload.account_id = accountId
+      }
+      if (resolvedProvider === "google_tasks") {
+        connectionPayload.email        = googleEmail
+        connectionPayload.display_name = googleName
+      }
+      if (resolvedProvider === "google_drive") {
+        connectionPayload.email = googleEmail
       }
     }
 

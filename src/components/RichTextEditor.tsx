@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useRef, useState, forwardRef } from 'react';
+import React, { useEffect, useCallback, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
@@ -66,7 +66,11 @@ const ToolbarButton = forwardRef<HTMLButtonElement, {
 
 ToolbarButton.displayName = 'ToolbarButton';
 
-export default function RichTextEditor({
+export interface RichTextEditorHandle {
+  insertContent: (text: string) => void;
+}
+
+const RichTextEditor = forwardRef<RichTextEditorHandle, RichTextEditorProps>(function RichTextEditor({
   content,
   onChange,
   onBlur,
@@ -76,7 +80,7 @@ export default function RichTextEditor({
   minimal = false,
   onSubmit,
   autofocus = false,
-}: RichTextEditorProps) {
+}: RichTextEditorProps, ref) {
   const lastSyncedContentRef = useRef(content);
 
   const editor = useEditor({
@@ -432,6 +436,12 @@ export default function RichTextEditor({
     };
   }, [stopAudioMeter]);
 
+  useImperativeHandle(ref, () => ({
+    insertContent: (text: string) => {
+      editor?.chain().focus().insertContent(text).run();
+    },
+  }), [editor]);
+
   if (!editor) return null;
 
   const iconSize = 'w-3.5 h-3.5';
@@ -631,7 +641,9 @@ export default function RichTextEditor({
       <EditorContent editor={editor} className="px-3 py-2 min-h-[60px] max-h-64 overflow-y-auto scrollbar-thin" />
     </div>
   );
-}
+});
+
+export default RichTextEditor;
 
 export function RichTextDisplay({ content, className = '' }: { content: string; className?: string }) {
   if (!content || content === '<p></p>') return null;

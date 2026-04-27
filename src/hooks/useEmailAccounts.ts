@@ -245,6 +245,12 @@ export async function sendEmail(payload: {
   body: string;
   html?: string;
   in_reply_to?: string;
+  attachments?: Array<{
+    filename: string;
+    content: string;
+    contentType: string;
+    encoding: 'base64';
+  }>;
 }) {
   const { data: { session } } = await supabase.auth.getSession();
   const res = await fetch(

@@ -1,16 +1,17 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import {
   Mail, Plus, Trash2, RefreshCw, Send, Reply, Inbox, AlertCircle, X, Check, Loader2,
   History, ChevronDown, ChevronUp, Search, Star, Archive, Clock, Tag, AtSign, Newspaper,
-  CornerUpLeft, MoreHorizontal, Paperclip, Download, ArrowLeft, Menu,
+  CornerUpLeft, MoreHorizontal, Paperclip, Download, ArrowLeft, Menu, Smile,
 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useEmailAccounts, useEmailMessages, sendEmail, emailAction, EmailAccount, EmailMessage } from '@/hooks/useEmailAccounts';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import RichTextEditor, { RichTextEditorHandle } from '@/components/RichTextEditor';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
@@ -1411,6 +1412,15 @@ function AddAccountForm({
   );
 }
 
+const COMPOSE_EMOJIS = [
+  '😀','😂','😊','😍','🤔','😎','😢','😅','🤗','🥳',
+  '👍','👎','👏','🙏','🤝','✌️','💪','👋','🤞','☝️',
+  '❤️','🧡','💛','💚','💙','💜','🖤','💔','💕','❣️',
+  '✅','❌','⭐','🔥','💯','⚡','🎯','🚀','💡','🎉',
+  '📎','📧','💼','📅','📊','📝','💻','📱','📞','🔔',
+  '🍕','🍔','☕','🍺','🥂','🎂','🎁','🎈','🌸','🌍',
+];
+
 function ComposeView({
   account, replyTo, onCancel, onSent,
 }: {
@@ -1421,15 +1431,38 @@ function ComposeView({
 }) {
   const [to, setTo] = useState(replyTo?.from_address || '');
   const [cc, setCc] = useState('');
+  const [showCc, setShowCc] = useState(!!replyTo?.cc_addresses?.length);
   const [subject, setSubject] = useState(
     replyTo ? `Re: ${replyTo.subject?.replace(/^Re:\s*/i, '') || ''}` : ''
   );
-  const [body, setBody] = useState(
-    replyTo
-      ? `\n\n---\nLe ${new Date(replyTo.received_at).toLocaleString('fr-FR')}, ${replyTo.from_address} a écrit :\n${(replyTo.body_text || '').split('\n').map(l => `> ${l}`).join('\n')}`
-      : ''
-  );
+  const [bodyHtml, setBodyHtml] = useState<string>(() => {
+    if (!replyTo) return '';
+    const date = new Date(replyTo.received_at).toLocaleString('fr-FR');
+    const quotedLines = (replyTo.body_text || '')
+      .split('\n')
+      .map(l => `<p>${l || '<br>'}</p>`)
+      .join('');
+    return `<p></p><p></p><hr><p>Le ${date}, ${replyTo.from_address} a écrit&nbsp;:</p><blockquote>${quotedLines}</blockquote>`;
+  });
+  const [attachments, setAttachments] = useState<File[]>([]);
   const [sending, setSending] = useState(false);
+
+  const editorRef = useRef<RichTextEditorHandle>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAddFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length) setAttachments(prev => [...prev, ...files]);
+    e.target.value = '';
+  };
+
+  const fileToBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve((reader.result as string).split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
 
   const handleSend = async () => {
     if (!to || !subject) {
@@ -1438,13 +1471,23 @@ function ComposeView({
     }
     setSending(true);
     try {
+      const attachmentData = await Promise.all(
+        attachments.map(async (file) => ({
+          filename: file.name,
+          content: await fileToBase64(file),
+          contentType: file.type || 'application/octet-stream',
+          encoding: 'base64' as const,
+        }))
+      );
       await sendEmail({
         account_id: account.id,
         to: to.split(',').map(s => s.trim()).filter(Boolean),
         cc: cc ? cc.split(',').map(s => s.trim()).filter(Boolean) : undefined,
         subject,
-        body,
+        body: bodyHtml.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim(),
+        html: bodyHtml,
         in_reply_to: replyTo?.external_id,
+        ...(attachmentData.length > 0 && { attachments: attachmentData }),
       });
       onSent();
     } catch (e: any) {
@@ -1456,39 +1499,129 @@ function ComposeView({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="px-4 py-3 border-b border-border flex items-center gap-2">
+      {/* Header */}
+      <div className="px-4 py-3 border-b border-border flex items-center gap-2 flex-wrap">
         <Button variant="ghost" size="sm" onClick={onCancel}>
           <X className="w-4 h-4 mr-1" /> Annuler
         </Button>
-        <span className="text-sm text-muted-foreground">depuis {account.email_address}</span>
+        <span className="text-xs text-muted-foreground truncate max-w-[160px]">depuis {account.email_address}</span>
         <div className="flex-1" />
+
+        {/* Pièce jointe */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => fileInputRef.current?.click()}
+          title="Joindre un fichier"
+          className="relative"
+        >
+          <Paperclip className="w-4 h-4" />
+          {attachments.length > 0 && (
+            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center">
+              {attachments.length}
+            </span>
+          )}
+        </Button>
+
+        {/* Emoji */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" size="sm" title="Insérer un emoji">
+              <Smile className="w-4 h-4" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-64 p-2" align="end">
+            <div className="grid grid-cols-10 gap-0.5">
+              {COMPOSE_EMOJIS.map((emoji) => (
+                <button
+                  key={emoji}
+                  type="button"
+                  className="text-base hover:bg-muted rounded p-0.5 leading-none transition-colors"
+                  onClick={() => editorRef.current?.insertContent(emoji)}
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+          </PopoverContent>
+        </Popover>
+
         <Button size="sm" onClick={handleSend} disabled={sending}>
           {sending ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Send className="w-4 h-4 mr-1.5" />}
           Envoyer
         </Button>
       </div>
-      <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
+
+      {/* Champs */}
+      <div className="overflow-y-auto px-6 py-4 space-y-3 flex-1 flex flex-col">
         <div>
           <Label>À</Label>
           <Input value={to} onChange={(e) => setTo(e.target.value)} placeholder="destinataire@example.com (séparez par des virgules)" />
         </div>
-        <div>
-          <Label>Cc (optionnel)</Label>
-          <Input value={cc} onChange={(e) => setCc(e.target.value)} />
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors underline-offset-2 hover:underline"
+            onClick={() => setShowCc(!showCc)}
+          >
+            {showCc ? 'Masquer Cc' : 'Ajouter Cc'}
+          </button>
         </div>
+
+        {showCc && (
+          <div>
+            <Label>Cc</Label>
+            <Input value={cc} onChange={(e) => setCc(e.target.value)} placeholder="cc@example.com" />
+          </div>
+        )}
+
         <div>
           <Label>Sujet</Label>
           <Input value={subject} onChange={(e) => setSubject(e.target.value)} />
         </div>
-        <div className="flex-1">
-          <Label>Message</Label>
-          <Textarea
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
-            rows={14}
-            className="font-sans"
+
+        {/* Éditeur riche */}
+        <div className="flex-1 flex flex-col min-h-0">
+          <Label className="mb-1">Message</Label>
+          <RichTextEditor
+            ref={editorRef}
+            content={bodyHtml}
+            onChange={setBodyHtml}
+            placeholder="Votre message…"
+            editorClassName="min-h-[180px]"
+            className="flex-1"
           />
         </div>
+
+        {/* Liste des pièces jointes */}
+        {attachments.length > 0 && (
+          <div className="flex flex-wrap gap-2 pt-1">
+            {attachments.map((file, i) => (
+              <div key={i} className="flex items-center gap-1.5 bg-muted rounded-md px-2 py-1 text-xs max-w-[200px]">
+                <Paperclip className="w-3 h-3 text-muted-foreground shrink-0" />
+                <span className="truncate">{file.name}</span>
+                <span className="text-muted-foreground shrink-0">{formatFileSize(file.size)}</span>
+                <button
+                  type="button"
+                  onClick={() => setAttachments(prev => prev.filter((_, idx) => idx !== i))}
+                  className="text-muted-foreground hover:text-destructive transition-colors shrink-0"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Input fichier caché */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          className="hidden"
+          onChange={handleAddFiles}
+        />
       </div>
     </div>
   );

@@ -113,84 +113,81 @@ const App = () => (
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/select-member" element={<SelectTeamMember />} />
               <Route path="/reset-password" element={<ResetPassword />} />
-              <Route
-                path="/chat"
-                element={
-                  <ProtectedRoute>
-                    <AppProvider>
-                      <Chat />
-                    </AppProvider>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/mentions"
-                element={
-                  <ProtectedRoute>
-                    <AppProvider>
-                      <Mentions />
-                    </AppProvider>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/email"
-                element={
-                  <ProtectedRoute>
-                    <AppProvider>
-                      <EmailPage />
-                    </AppProvider>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/settings/integrations"
-                element={
-                  <ProtectedRoute>
-                    <AppProvider>
-                      <SettingsIntegrationsPage />
-                    </AppProvider>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/settings/gmail-diagnostic"
-                element={
-                  <ProtectedRoute>
-                    <GmailDiagnosticPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/settings"
-                element={
-                  <ProtectedRoute>
-                    <AppProvider>
-                      <Settings />
-                    </AppProvider>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/dev/numeric-audit"
-                element={
-                  <ProtectedRoute>
-                    <NumericAudit />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/"
-                element={
-                  <ProtectedRoute>
-                    <AppProvider>
-                      <Index />
-                    </AppProvider>
-                  </ProtectedRoute>
-                }
-              />
               <Route path="/install" element={<Install />} />
-              <Route path="*" element={<NotFound />} />
+              <Route
+                path="/*"
+                element={
+                  <AppProvider>
+                    <Routes>
+                      <Route
+                        path="/chat"
+                        element={
+                          <ProtectedRoute>
+                            <Chat />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/mentions"
+                        element={
+                          <ProtectedRoute>
+                            <Mentions />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/email"
+                        element={
+                          <ProtectedRoute>
+                            <EmailPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/settings/integrations"
+                        element={
+                          <ProtectedRoute>
+                            <SettingsIntegrationsPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/settings/gmail-diagnostic"
+                        element={
+                          <ProtectedRoute>
+                            <GmailDiagnosticPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/settings"
+                        element={
+                          <ProtectedRoute>
+                            <Settings />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/dev/numeric-audit"
+                        element={
+                          <ProtectedRoute>
+                            <NumericAudit />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/"
+                        element={
+                          <ProtectedRoute>
+                            <Index />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </AppProvider>
+                }
+              />
             </Routes>
           </Suspense>
         </BrowserRouter>

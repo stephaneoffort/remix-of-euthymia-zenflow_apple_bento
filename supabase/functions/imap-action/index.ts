@@ -156,6 +156,7 @@ Deno.serve(async (req) => {
     }
 
     // ===== IMAP path =====
+    const { ImapFlow } = await import("https://esm.sh/imapflow@1.0.164");
     const client = new ImapFlow({
       host: account.imap_host,
       port: account.imap_port || 993,

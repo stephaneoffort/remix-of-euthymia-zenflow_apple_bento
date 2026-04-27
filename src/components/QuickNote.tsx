@@ -134,7 +134,9 @@ export function QuickNote() {
 
   // ── Load data on open ──────────────────────────────────────────────────────
   useEffect(() => {
-    if (!open || !user) return;
+    if (!open) return;
+    setSavedNotes(loadSavedNotes());
+    if (!user) return;
     Promise.all([
       db.from('team_members').select('id, name'),
       db.from('chat_channels').select('id, name, type').eq('is_archived', false).order('position'),
@@ -143,6 +145,24 @@ export function QuickNote() {
       setChannels(c || []);
     });
   }, [open, user]);
+
+  const refreshNotes = () => setSavedNotes(loadSavedNotes());
+
+  const deleteNote = (id: string) => {
+    const next = loadSavedNotes().filter(n => n.id !== id);
+    localStorage.setItem('quick_notes', JSON.stringify(next));
+    setSavedNotes(next);
+    toast.success('Note supprimée');
+  };
+
+  const copyNote = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success('Note copiée');
+    } catch {
+      toast.error('Impossible de copier');
+    }
+  };
 
   const intent = text.trim() ? parseIntent(text, members, channels) : null;
 

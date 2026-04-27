@@ -1,8 +1,9 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import {
-  Mic, Square, Play, Pause, Send, NotebookPen, X, Trash2, Clock, Copy, FileText,
+  Mic, Square, Play, Pause, Send, NotebookPen, X, Trash2, Clock, Copy, FileText, Activity,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -149,6 +150,12 @@ export function QuickNote() {
   const recordMimeRef = useRef<string>('');
   const [transcribing, setTranscribing] = useState(false);
 
+  // Diagnostic data refs — updated during each recording session.
+  const constraintsOptimizedRef = useRef<boolean>(true);
+  const blobSizeRef             = useRef<number>(0);
+  const confidenceScoresRef     = useRef<number[]>([]);
+  const lastRecordSecsRef       = useRef<number>(0);
+
   // Web Speech API is unreliable on mobile (iOS Safari, Firefox Android, etc.)
   // We force server-side transcription on mobile for consistency.
   const hasWebSpeech =
@@ -158,6 +165,31 @@ export function QuickNote() {
     typeof navigator !== 'undefined' &&
     /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
   const useServerTranscription = !hasWebSpeech || isMobile;
+
+  const navigate = useNavigate();
+
+  const saveDiagnostics = (method: 'web-speech' | 'server', transcriptLen: number) => {
+    const scores = confidenceScoresRef.current;
+    const avgConf = scores.length > 0
+      ? scores.reduce((a, b) => a + b, 0) / scores.length
+      : null;
+    const diag = {
+      timestamp: new Date().toISOString(),
+      duration: lastRecordSecsRef.current,
+      fileSizeBytes: blobSizeRef.current,
+      mimeType: recordMimeRef.current,
+      constraintsOptimized: constraintsOptimizedRef.current,
+      transcriptionMethod: method,
+      confidence: method === 'web-speech' ? avgConf : null,
+      transcriptLength: transcriptLen,
+      platform: {
+        isMobile,
+        hasWebSpeech,
+        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
+      },
+    };
+    try { localStorage.setItem('audio_diagnostics', JSON.stringify(diag)); } catch {}
+  };
 
   // ── Keyboard shortcut Ctrl/⌘+Shift+N + custom event ──────────────────────
   useEffect(() => {
@@ -218,10 +250,14 @@ export function QuickNote() {
       let stream: MediaStream;
       try {
         stream = await navigator.mediaDevices.getUserMedia({ audio: buildAudioConstraints() });
+        constraintsOptimizedRef.current = true;
       } catch {
         stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        constraintsOptimizedRef.current = false;
       }
       streamRef.current = stream;
+      confidenceScoresRef.current = [];
+      lastRecordSecsRef.current = 0;
 
       const mime = bestMimeType();
       recordMimeRef.current = mime || 'audio/webm';
@@ -238,6 +274,7 @@ export function QuickNote() {
       recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
       recorder.onstop = async () => {
         const blob = new Blob(chunksRef.current, { type: recordMimeRef.current });
+        blobSizeRef.current = blob.size;
         setAudioUrl(URL.createObjectURL(blob));
         stream.getTracks().forEach(t => t.stop());
         streamRef.current = null;
@@ -251,7 +288,10 @@ export function QuickNote() {
       recorder.start(200);
       setIsRecording(true);
       setRecordSecs(0);
-      timerRef.current = setInterval(() => setRecordSecs(s => s + 1), 1000);
+      timerRef.current = setInterval(() => setRecordSecs(s => {
+        lastRecordSecsRef.current = s + 1;
+        return s + 1;
+      }), 1000);
 
       // Only attempt Web Speech on desktop. On mobile we rely on server transcription
       // (Web Speech is missing on iOS Safari / Firefox Android, and silently fails
@@ -284,12 +324,13 @@ export function QuickNote() {
       });
 
       if (error) throw error;
-      const transcript = (data as any)?.transcript?.trim?.() || '';
+      const transcript = (data as any)?.transcript?.trim?.() || ‘’;
+      saveDiagnostics(‘server’, transcript.length);
       if (transcript) {
-        setText(prev => (prev ? prev + ' ' : '') + transcript);
-        toast.success('Transcription terminée');
+        setText(prev => (prev ? prev + ‘ ‘ : ‘’) + transcript);
+        toast.success(‘Transcription terminée’);
       } else {
-        toast.warning('Aucun texte détecté dans l’audio');
+        toast.warning(‘Aucun texte détecté dans l’audio’);
       }
     } catch (e: any) {
       console.error('Transcription failed:', e);
@@ -322,8 +363,13 @@ export function QuickNote() {
       let interim = '';
       for (let i = ev.resultIndex; i < ev.results.length; i++) {
         const t = ev.results[i][0].transcript;
-        if (ev.results[i].isFinal) finalTranscriptRef.current += t + ' ';
-        else interim = t;
+        if (ev.results[i].isFinal) {
+          const c = ev.results[i][0].confidence;
+          if (typeof c === 'number' && !isNaN(c)) confidenceScoresRef.current.push(c);
+          finalTranscriptRef.current += t + ' ';
+        } else {
+          interim = t;
+        }
       }
       setLiveTranscript(finalTranscriptRef.current + interim);
     };
@@ -334,6 +380,7 @@ export function QuickNote() {
     };
     r.onend = () => {
       const final = finalTranscriptRef.current.trim();
+      saveDiagnostics('web-speech', final.length);
       if (final) {
         setText(prev => (prev ? prev + ' ' : '') + final);
         setLiveTranscript('');
@@ -459,12 +506,22 @@ export function QuickNote() {
                   Ctrl+Maj+N
                 </span>
               </SheetTitle>
-              <button
-                onClick={handleClose}
-                className="p-1 rounded hover:bg-muted text-muted-foreground transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => { handleClose(); navigate('/settings/audio-diagnostic'); }}
+                  title="Diagnostic audio"
+                  className="p-1 rounded hover:bg-muted text-muted-foreground transition-colors"
+                  aria-label="Diagnostic audio"
+                >
+                  <Activity className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={handleClose}
+                  className="p-1 rounded hover:bg-muted text-muted-foreground transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
             </div>
             {/* Tabs */}
             <div className="flex gap-1 -mb-px">

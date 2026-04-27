@@ -78,11 +78,41 @@ function fmt(s: number) {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 }
 
+// Choose the best supported MIME type per platform.
+// Order is platform-aware: iOS Safari only supports mp4/aac, Android/desktop prefer opus.
 function bestMimeType(): string {
-  for (const t of ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus', 'audio/mp4']) {
-    if (MediaRecorder.isTypeSupported(t)) return t;
+  const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
+  const isIOS = /iPhone|iPad|iPod/i.test(ua);
+
+  const candidates = isIOS
+    ? ['audio/mp4;codecs=mp4a.40.2', 'audio/mp4', 'audio/aac', 'audio/webm;codecs=opus', 'audio/webm']
+    : ['audio/webm;codecs=opus', 'audio/ogg;codecs=opus', 'audio/webm', 'audio/mp4;codecs=mp4a.40.2', 'audio/mp4'];
+
+  for (const t of candidates) {
+    if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(t)) return t;
   }
   return '';
+}
+
+// Build optimal audio constraints for transcription quality.
+// 16 kHz mono is the sweet spot for speech-to-text models (Whisper/Gemini downsample to this).
+// We enable echo/noise/AGC by default — these dramatically improve recognition in noisy mobile environments.
+function buildAudioConstraints(): MediaTrackConstraints {
+  return {
+    channelCount: { ideal: 1 },
+    sampleRate: { ideal: 16000 },
+    sampleSize: { ideal: 16 },
+    echoCancellation: { ideal: true },
+    noiseSuppression: { ideal: true },
+    autoGainControl: { ideal: true },
+  };
+}
+
+// Bitrate target — 32 kbps is plenty for mono speech with Opus and keeps payloads small for mobile uploads.
+function bestAudioBitrate(mime: string): number {
+  if (/opus|webm|ogg/i.test(mime)) return 32_000;     // Opus mono speech
+  if (/mp4|aac/i.test(mime))      return 64_000;      // AAC needs a bit more
+  return 64_000;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -183,11 +213,23 @@ export function QuickNote() {
   // ── Recording ──────────────────────────────────────────────────────────────
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Try optimized constraints first (mono + 16 kHz + DSP). Some mobile browsers reject
+      // exact sample rates → we fall back to plain `audio: true` to guarantee a stream.
+      let stream: MediaStream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: buildAudioConstraints() });
+      } catch {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      }
       streamRef.current = stream;
+
       const mime = bestMimeType();
       recordMimeRef.current = mime || 'audio/webm';
-      const recorder = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
+      const bitrate = bestAudioBitrate(recordMimeRef.current);
+      const recorder = new MediaRecorder(
+        stream,
+        mime ? { mimeType: mime, audioBitsPerSecond: bitrate } : { audioBitsPerSecond: bitrate },
+      );
       recorderRef.current = recorder;
       chunksRef.current = [];
       finalTranscriptRef.current = '';

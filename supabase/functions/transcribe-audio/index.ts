@@ -52,11 +52,11 @@ serve(async (req) => {
                   type: "input_audio",
                   input_audio: {
                     data: audio,
-                    format: mt.includes("mp4")
+                    format: /mp4|aac|m4a/i.test(mt)
                       ? "mp4"
-                      : mt.includes("ogg")
+                      : /ogg/i.test(mt)
                       ? "ogg"
-                      : mt.includes("wav")
+                      : /wav/i.test(mt)
                       ? "wav"
                       : "webm",
                   },

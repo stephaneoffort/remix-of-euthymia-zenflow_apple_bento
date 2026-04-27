@@ -267,10 +267,18 @@ export function QuickNote() {
         });
       } else {
         // Save to localStorage (max 50 notes)
-        const all = JSON.parse(localStorage.getItem('quick_notes') || '[]');
-        all.unshift({ id: String(Date.now()), text: text.trim(), createdAt: new Date().toISOString() });
-        localStorage.setItem('quick_notes', JSON.stringify(all.slice(0, 50)));
+        const all = loadSavedNotes();
+        const next = [{ id: String(Date.now()), text: text.trim(), createdAt: new Date().toISOString() }, ...all].slice(0, 50);
+        localStorage.setItem('quick_notes', JSON.stringify(next));
+        setSavedNotes(next);
         toast.success('Note sauvegardée');
+        setText('');
+        setAudioUrl(null);
+        setLiveTranscript('');
+        setRecordSecs(0);
+        setTab('list');
+        setSaving(false);
+        return;
       }
       handleClose();
     } catch (e: any) {

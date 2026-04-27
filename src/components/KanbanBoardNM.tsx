@@ -206,13 +206,21 @@ export default function KanbanBoardNM() {
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
   const [dropTarget, setDropTarget] = useState<string | null>(null);
-  const [collapsedColumns, setCollapsedColumns] = useState<Set<string>>(new Set());
+  const [collapsedColumns, setCollapsedColumns] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem('euthymia:kanban:collapsedColumns');
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch {
+      return new Set();
+    }
+  });
   const [mobileActiveStatus, setMobileActiveStatus] = useState<string>(allStatuses[0] || "todo");
 
   const toggleCollapse = (key: string) => {
     setCollapsedColumns(prev => {
       const next = new Set(prev);
       next.has(key) ? next.delete(key) : next.add(key);
+      localStorage.setItem('euthymia:kanban:collapsedColumns', JSON.stringify([...next]));
       return next;
     });
   };

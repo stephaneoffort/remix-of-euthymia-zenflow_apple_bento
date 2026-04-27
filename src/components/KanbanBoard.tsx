@@ -42,7 +42,14 @@ export default function KanbanBoard() {
   const [dropTargetTask, setDropTargetTask] = useState<string | null>(null);
   const [newTaskStatus, setNewTaskStatus] = useState<string | null>(null);
   const [newTaskTitle, setNewTaskTitle] = useState('');
-  const [collapsedColumns, setCollapsedColumns] = useState<Set<string>>(new Set());
+  const [collapsedColumns, setCollapsedColumns] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem('euthymia:kanban:collapsedColumns');
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch {
+      return new Set();
+    }
+  });
   const [mobileActiveStatus, setMobileActiveStatus] = useState<string>(allStatuses[0] || 'todo');
   const isMobile = useIsMobile();
 
@@ -50,6 +57,7 @@ export default function KanbanBoard() {
     setCollapsedColumns(prev => {
       const next = new Set(prev);
       next.has(status) ? next.delete(status) : next.add(status);
+      localStorage.setItem('euthymia:kanban:collapsedColumns', JSON.stringify([...next]));
       return next;
     });
   };
@@ -161,11 +169,9 @@ export default function KanbanBoard() {
   const allExpanded = collapsedStatuses.length === 0;
 
   const toggleAll = () => {
-    if (allExpanded) {
-      setCollapsedColumns(new Set(columnOrder));
-    } else {
-      setCollapsedColumns(new Set());
-    }
+    const next = allExpanded ? new Set(columnOrder) : new Set<string>();
+    localStorage.setItem('euthymia:kanban:collapsedColumns', JSON.stringify([...next]));
+    setCollapsedColumns(next);
   };
 
   const renderCollapsedColumn = (status: string) => {

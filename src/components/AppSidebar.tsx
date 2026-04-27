@@ -41,6 +41,7 @@ import {
   Mail,
   MessagesSquare,
   Palette,
+  NotebookPen,
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SpaceIcon, SPACE_ICON_PRESETS } from "@/components/SpaceIcon";
@@ -1438,6 +1439,18 @@ export default function AppSidebar() {
             </SortableContext>
           </DndContext>
           </>)}
+        </div>
+
+        {/* Quick Note */}
+        <div className="px-3 py-2 border-t border-sidebar-border-color">
+          <button
+            onClick={() => window.dispatchEvent(new Event('quicknote:open'))}
+            className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sidebar-fg hover:bg-sidebar-hover transition-colors text-xs"
+          >
+            <NotebookPen className="w-3.5 h-3.5 shrink-0" />
+            <span>Note rapide</span>
+            <span className="ml-auto text-[10px] text-muted-foreground">⌃⇧N</span>
+          </button>
         </div>
 
         {/* Archives */}

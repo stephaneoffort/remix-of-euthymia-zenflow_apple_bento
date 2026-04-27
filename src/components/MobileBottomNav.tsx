@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { MessageCircle, Menu, Plus, Home, Mic } from 'lucide-react';
+import { MessageCircle, Menu, Plus, Home, Mic, NotebookPen } from 'lucide-react';
 import { Priority, PRIORITY_LABELS } from '@/types';
 import { useChatNotifications } from '@/hooks/useChatNotifications';
 import { Drawer, DrawerContent, DrawerTrigger, DrawerTitle } from '@/components/ui/drawer';
@@ -200,10 +200,19 @@ export default function MobileBottomNav({ onOpenVoice }: MobileBottomNavProps) {
           <span className="text-[10px] font-medium">Chat</span>
         </button>
 
+        {/* Quick Note */}
+        <button
+          onClick={() => window.dispatchEvent(new Event('quicknote:open'))}
+          className="flex flex-col items-center justify-center gap-0.5 min-w-[44px] py-1 text-muted-foreground active:text-foreground transition-colors"
+        >
+          <NotebookPen className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Notes</span>
+        </button>
+
         {/* Menu / Sidebar */}
         <button
           onClick={() => setSidebarCollapsed(false)}
-          className="flex flex-col items-center justify-center gap-0.5 min-w-[56px] py-1 text-muted-foreground active:text-foreground transition-colors"
+          className="flex flex-col items-center justify-center gap-0.5 min-w-[44px] py-1 text-muted-foreground active:text-foreground transition-colors"
         >
           <Menu className="w-5 h-5" />
           <span className="text-[10px] font-medium">Menu</span>

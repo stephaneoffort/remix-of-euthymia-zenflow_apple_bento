@@ -1,9 +1,12 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
+import { useOnlineStatus } from '@/hooks/useOnlineStatus';
+import { transcribeAudio } from '@/lib/transcribeAudio';
+import { enqueueAudio } from '@/lib/audioQueue';
 import {
-  Mic, Square, Play, Pause, Send, NotebookPen, X, Trash2, Clock, Copy, FileText, Activity,
+  Mic, Square, Play, Pause, Send, NotebookPen, X, Trash2, Clock, Copy, FileText,
+  Activity, WifiOff,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -166,7 +169,7 @@ export function QuickNote() {
     /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
   const useServerTranscription = !hasWebSpeech || isMobile;
 
-  const navigate = useNavigate();
+  const isOnline = useOnlineStatus();
 
   const saveDiagnostics = (method: 'web-speech' | 'server', transcriptLen: number) => {
     const scores = confidenceScoresRef.current;
@@ -280,8 +283,21 @@ export function QuickNote() {
         streamRef.current = null;
 
         // If Web Speech didn't run (mobile / unsupported), transcribe server-side.
+        // If offline, save to the audio queue for later processing instead.
         if (!usedWebSpeechRef.current && blob.size > 0) {
-          await transcribeBlobOnServer(blob, recordMimeRef.current);
+          if (!navigator.onLine) {
+            try {
+              await enqueueAudio(blob, recordMimeRef.current);
+              toast.warning(
+                'Hors-ligne — enregistrement sauvegardé, transcription automatique à la reconnexion',
+                { duration: 6000 },
+              );
+            } catch {
+              toast.error("Impossible de sauvegarder l'enregistrement hors-ligne");
+            }
+          } else {
+            await transcribeBlobOnServer(blob, recordMimeRef.current);
+          }
         }
       };
 
@@ -307,24 +323,7 @@ export function QuickNote() {
   const transcribeBlobOnServer = async (blob: Blob, mime: string) => {
     setTranscribing(true);
     try {
-      const base64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const result = reader.result as string;
-          // strip "data:audio/...;base64," prefix
-          const idx = result.indexOf(',');
-          resolve(idx >= 0 ? result.slice(idx + 1) : result);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-      });
-
-      const { data, error } = await supabase.functions.invoke('transcribe-audio', {
-        body: { audio: base64, mimeType: mime, language: 'français' },
-      });
-
-      if (error) throw error;
-      const transcript = (data as any)?.transcript?.trim?.() || ‘’;
+      const transcript = await transcribeAudio(blob, mime);
       saveDiagnostics(‘server’, transcript.length);
       if (transcript) {
         setText(prev => (prev ? prev + ‘ ‘ : ‘’) + transcript);
@@ -333,8 +332,8 @@ export function QuickNote() {
         toast.warning(‘Aucun texte détecté dans l’audio’);
       }
     } catch (e: any) {
-      console.error('Transcription failed:', e);
-      toast.error(e?.message || 'Échec de la transcription audio');
+      console.error(‘Transcription failed:’, e);
+      toast.error(e?.message || ‘Échec de la transcription audio’);
     } finally {
       setTranscribing(false);
     }
@@ -508,7 +507,7 @@ export function QuickNote() {
               </SheetTitle>
               <div className="flex items-center gap-1">
                 <button
-                  onClick={() => { handleClose(); navigate('/settings/audio-diagnostic'); }}
+                  onClick={() => { handleClose(); window.location.assign('/settings/audio-diagnostic'); }}
                   title="Diagnostic audio"
                   className="p-1 rounded hover:bg-muted text-muted-foreground transition-colors"
                   aria-label="Diagnostic audio"
@@ -578,13 +577,18 @@ export function QuickNote() {
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive opacity-70" />
                       <span className="relative inline-flex h-2 w-2 rounded-full bg-destructive" />
                     </span>
-                    <span className="italic">
+                    <span className="italic flex-1">
                       {liveTranscript
                         ? liveTranscript
                         : useServerTranscription
-                          ? 'Enregistrement… (transcription après l’arrêt)'
-                          : 'Enregistrement…'}
+                          ? (!isOnline
+                              ? ‘Enregistrement hors-ligne — sauvegardé localement, transcription automatique à la reconnexion’
+                              : ‘Enregistrement… (transcription après l’arrêt)’)
+                          : ‘Enregistrement…’}
                     </span>
+                    {!isOnline && isRecording && (
+                      <WifiOff className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                    )}
                   </div>
                 )}
                 {transcribing && (

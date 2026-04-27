@@ -114,6 +114,20 @@ export function QuickNote() {
   const recognRef     = useRef<any>(null);
   const streamRef     = useRef<MediaStream | null>(null);
   const timerRef      = useRef<ReturnType<typeof setInterval> | null>(null);
+  const finalTranscriptRef = useRef<string>('');
+  const usedWebSpeechRef = useRef<boolean>(false);
+  const recordMimeRef = useRef<string>('');
+  const [transcribing, setTranscribing] = useState(false);
+
+  // Web Speech API is unreliable on mobile (iOS Safari, Firefox Android, etc.)
+  // We force server-side transcription on mobile for consistency.
+  const hasWebSpeech =
+    typeof window !== 'undefined' &&
+    !!((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition);
+  const isMobile =
+    typeof navigator !== 'undefined' &&
+    /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  const useServerTranscription = !hasWebSpeech || isMobile;
 
   // ── Keyboard shortcut Ctrl/⌘+Shift+N + custom event ──────────────────────
   useEffect(() => {

@@ -29,6 +29,7 @@ const EmailPage = lazyRetry(() => import("./pages/Email.tsx"));
 const NotFound = lazyRetry(() => import("./pages/NotFound.tsx"));
 const Install = lazyRetry(() => import("./pages/Install.tsx"));
 const ResetPassword = lazyRetry(() => import("./pages/ResetPassword.tsx"));
+const AuthCallback = lazyRetry(() => import("./pages/AuthCallback.tsx"));
 const NumericAudit = lazyRetry(() => import("./pages/NumericAudit.tsx"));
 const SettingsIntegrationsPage = lazyRetry(() => import("./pages/settings/IntegrationsPage.tsx"));
 const GmailDiagnosticPage = lazyRetry(() => import("./pages/settings/GmailDiagnosticPage.tsx"));
@@ -109,6 +110,7 @@ const App = () => (
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/auth" element={<Auth />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/select-member" element={<SelectTeamMember />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route

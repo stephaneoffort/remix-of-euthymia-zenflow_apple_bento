@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
-import { Sparkles } from 'lucide-react';
+import { MailCheck } from 'lucide-react';
 import { lovable } from '@/integrations/lovable/index';
 
 export default function Auth() {
@@ -22,6 +22,7 @@ export default function Auth() {
   const [submitting, setSubmitting] = useState(false);
   const [forgotMode, setForgotMode] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
+  const [signupPending, setSignupPending] = useState(false);
   const { signIn, signUp } = useAuth();
 
   if (loading) {
@@ -77,7 +78,7 @@ export default function Auth() {
     try {
       const { error: signUpError } = await signUp(signupEmail, signupPassword);
       if (signUpError) throw signUpError;
-      toast.success('Vérifiez votre email pour confirmer votre inscription.');
+      setSignupPending(true);
     } catch (err: any) {
       toast.error(err.message || "Erreur lors de l'inscription");
     } finally {
@@ -150,35 +151,58 @@ export default function Auth() {
             </TabsContent>
 
             <TabsContent value="signup">
-              <form onSubmit={handleSignup} className="space-y-4 mt-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
-                  <Input id="signup-email" type="email" inputMode="email" autoComplete="email" enterKeyHint="next" required value={signupEmail} onChange={e => setSignupEmail(e.target.value)} placeholder="email@exemple.com" />
+              {signupPending ? (
+                <div className="text-center space-y-4 mt-6 px-2">
+                  <MailCheck className="w-12 h-12 text-primary mx-auto" />
+                  <div className="space-y-1">
+                    <p className="font-semibold text-foreground">Vérifiez votre email</p>
+                    <p className="text-sm text-muted-foreground">
+                      Un lien de confirmation a été envoyé à{' '}
+                      <strong className="text-foreground">{signupEmail}</strong>.
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Cliquez sur le lien dans l'email pour activer votre compte.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSignupPending(false)}
+                    className="text-xs text-primary hover:underline"
+                  >
+                    Retour au formulaire
+                  </button>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">Mot de passe</Label>
-                  <Input id="signup-password" type="password" autoComplete="new-password" enterKeyHint="next" required value={signupPassword} onChange={e => setSignupPassword(e.target.value)} placeholder="6 caractères minimum" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-confirm">Confirmer le mot de passe</Label>
-                  <Input id="signup-confirm" type="password" autoComplete="new-password" enterKeyHint="go" required value={signupConfirm} onChange={e => setSignupConfirm(e.target.value)} placeholder="••••••" />
-                </div>
+              ) : (
+                <form onSubmit={handleSignup} className="space-y-4 mt-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-email">Email</Label>
+                    <Input id="signup-email" type="email" inputMode="email" autoComplete="email" enterKeyHint="next" required value={signupEmail} onChange={e => setSignupEmail(e.target.value)} placeholder="email@exemple.com" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-password">Mot de passe</Label>
+                    <Input id="signup-password" type="password" autoComplete="new-password" enterKeyHint="next" required value={signupPassword} onChange={e => setSignupPassword(e.target.value)} placeholder="6 caractères minimum" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-confirm">Confirmer le mot de passe</Label>
+                    <Input id="signup-confirm" type="password" autoComplete="new-password" enterKeyHint="go" required value={signupConfirm} onChange={e => setSignupConfirm(e.target.value)} placeholder="••••••" />
+                  </div>
 
-                <Button type="submit" className="w-full" disabled={submitting}>
-                  {submitting ? 'Inscription...' : "S'inscrire"}
-                </Button>
+                  <Button type="submit" className="w-full" disabled={submitting}>
+                    {submitting ? 'Inscription...' : "S'inscrire"}
+                  </Button>
 
-                <p className="text-xs text-muted-foreground text-center">
-                  Après vérification de votre email, vous pourrez compléter votre profil.
-                </p>
+                  <p className="text-xs text-muted-foreground text-center">
+                    Après vérification de votre email, vous pourrez compléter votre profil.
+                  </p>
 
-                <div className="relative my-2">
-                  <Separator />
-                  <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">ou</span>
-                </div>
+                  <div className="relative my-2">
+                    <Separator />
+                    <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">ou</span>
+                  </div>
 
-                <OAuthButtons />
-              </form>
+                  <OAuthButtons />
+                </form>
+              )}
             </TabsContent>
           </Tabs>
         </CardContent>

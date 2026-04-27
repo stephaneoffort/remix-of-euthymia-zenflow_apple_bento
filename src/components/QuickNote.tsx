@@ -114,6 +114,20 @@ export function QuickNote() {
   const recognRef     = useRef<any>(null);
   const streamRef     = useRef<MediaStream | null>(null);
   const timerRef      = useRef<ReturnType<typeof setInterval> | null>(null);
+  const finalTranscriptRef = useRef<string>('');
+  const usedWebSpeechRef = useRef<boolean>(false);
+  const recordMimeRef = useRef<string>('');
+  const [transcribing, setTranscribing] = useState(false);
+
+  // Web Speech API is unreliable on mobile (iOS Safari, Firefox Android, etc.)
+  // We force server-side transcription on mobile for consistency.
+  const hasWebSpeech =
+    typeof window !== 'undefined' &&
+    !!((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition);
+  const isMobile =
+    typeof navigator !== 'undefined' &&
+    /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  const useServerTranscription = !hasWebSpeech || isMobile;
 
   // ── Keyboard shortcut Ctrl/⌘+Shift+N + custom event ──────────────────────
   useEffect(() => {
@@ -172,16 +186,24 @@ export function QuickNote() {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
       const mime = bestMimeType();
+      recordMimeRef.current = mime || 'audio/webm';
       const recorder = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
       recorderRef.current = recorder;
       chunksRef.current = [];
+      finalTranscriptRef.current = '';
+      usedWebSpeechRef.current = false;
 
       recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
-      recorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: mime || 'audio/webm' });
+      recorder.onstop = async () => {
+        const blob = new Blob(chunksRef.current, { type: recordMimeRef.current });
         setAudioUrl(URL.createObjectURL(blob));
         stream.getTracks().forEach(t => t.stop());
         streamRef.current = null;
+
+        // If Web Speech didn't run (mobile / unsupported), transcribe server-side.
+        if (!usedWebSpeechRef.current && blob.size > 0) {
+          await transcribeBlobOnServer(blob, recordMimeRef.current);
+        }
       };
 
       recorder.start(200);
@@ -189,9 +211,49 @@ export function QuickNote() {
       setRecordSecs(0);
       timerRef.current = setInterval(() => setRecordSecs(s => s + 1), 1000);
 
-      startRecognition();
+      // Only attempt Web Speech on desktop. On mobile we rely on server transcription
+      // (Web Speech is missing on iOS Safari / Firefox Android, and silently fails
+      // on Chrome Android when called after an `await` — gesture context is lost).
+      if (!useServerTranscription) {
+        startRecognition();
+      }
     } catch {
       toast.error("Impossible d'accéder au microphone");
+    }
+  };
+
+  const transcribeBlobOnServer = async (blob: Blob, mime: string) => {
+    setTranscribing(true);
+    try {
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const result = reader.result as string;
+          // strip "data:audio/...;base64," prefix
+          const idx = result.indexOf(',');
+          resolve(idx >= 0 ? result.slice(idx + 1) : result);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+
+      const { data, error } = await supabase.functions.invoke('transcribe-audio', {
+        body: { audio: base64, mimeType: mime, language: 'français' },
+      });
+
+      if (error) throw error;
+      const transcript = (data as any)?.transcript?.trim?.() || '';
+      if (transcript) {
+        setText(prev => (prev ? prev + ' ' : '') + transcript);
+        toast.success('Transcription terminée');
+      } else {
+        toast.warning('Aucun texte détecté dans l’audio');
+      }
+    } catch (e: any) {
+      console.error('Transcription failed:', e);
+      toast.error(e?.message || 'Échec de la transcription audio');
+    } finally {
+      setTranscribing(false);
     }
   };
 
@@ -211,24 +273,32 @@ export function QuickNote() {
     r.continuous = true;
     r.interimResults = true;
     recognRef.current = r;
+    usedWebSpeechRef.current = true;
+    finalTranscriptRef.current = '';
 
-    let final = '';
     r.onresult = (ev: any) => {
       let interim = '';
       for (let i = ev.resultIndex; i < ev.results.length; i++) {
         const t = ev.results[i][0].transcript;
-        if (ev.results[i].isFinal) final += t + ' ';
+        if (ev.results[i].isFinal) finalTranscriptRef.current += t + ' ';
         else interim = t;
       }
-      setLiveTranscript(final + interim);
+      setLiveTranscript(finalTranscriptRef.current + interim);
+    };
+    r.onerror = (ev: any) => {
+      // network / not-allowed / aborted etc. — fall back silently to server transcription on stop
+      console.warn('SpeechRecognition error:', ev?.error);
+      usedWebSpeechRef.current = false;
     };
     r.onend = () => {
-      if (final.trim()) {
-        setText(prev => (prev ? prev + ' ' : '') + final.trim());
+      const final = finalTranscriptRef.current.trim();
+      if (final) {
+        setText(prev => (prev ? prev + ' ' : '') + final);
         setLiveTranscript('');
+        finalTranscriptRef.current = '';
       }
     };
-    try { r.start(); } catch {}
+    try { r.start(); } catch { usedWebSpeechRef.current = false; }
   };
 
   // ── Playback ───────────────────────────────────────────────────────────────
@@ -402,14 +472,26 @@ export function QuickNote() {
                   autoFocus
                 />
 
-                {/* Live transcript */}
+                {/* Live transcript / recording / transcribing */}
                 {(liveTranscript || isRecording) && (
                   <div className="flex items-start gap-2 bg-destructive/10 text-destructive rounded-lg px-3 py-2 text-xs">
                     <span className="relative flex h-2 w-2 mt-0.5 shrink-0">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive opacity-70" />
                       <span className="relative inline-flex h-2 w-2 rounded-full bg-destructive" />
                     </span>
-                    <span className="italic">{liveTranscript || 'Enregistrement…'}</span>
+                    <span className="italic">
+                      {liveTranscript
+                        ? liveTranscript
+                        : useServerTranscription
+                          ? 'Enregistrement… (transcription après l’arrêt)'
+                          : 'Enregistrement…'}
+                    </span>
+                  </div>
+                )}
+                {transcribing && (
+                  <div className="flex items-center gap-2 bg-primary/10 text-primary rounded-lg px-3 py-2 text-xs">
+                    <span className="inline-block h-3 w-3 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+                    <span className="italic">Transcription audio en cours…</span>
                   </div>
                 )}
 

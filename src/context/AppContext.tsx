@@ -12,9 +12,10 @@ export interface AdvancedFilters {
   priorities: string[];
   assigneeIds: string[];
   tags: string[];
+  spaceIds: string[];
 }
 
-const EMPTY_FILTERS: AdvancedFilters = { statuses: [], priorities: [], assigneeIds: [], tags: [] };
+const EMPTY_FILTERS: AdvancedFilters = { statuses: [], priorities: [], assigneeIds: [], tags: [], spaceIds: [] };
 
 interface AppState {
   spaces: Space[];
@@ -1179,6 +1180,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
     if (advancedFilters.tags.length > 0) {
       filtered = filtered.filter(t => t.tags.some(tag => advancedFilters.tags.includes(tag)));
+    }
+    if ((advancedFilters.spaceIds ?? []).length > 0) {
+      const spaceProjectIds = new Set(
+        projects.filter(p => advancedFilters.spaceIds.includes(p.spaceId)).map(p => p.id)
+      );
+      const spaceListIds = new Set(lists.filter(l => spaceProjectIds.has(l.projectId)).map(l => l.id));
+      filtered = filtered.filter(t => spaceListIds.has(t.listId));
     }
 
     return filtered;

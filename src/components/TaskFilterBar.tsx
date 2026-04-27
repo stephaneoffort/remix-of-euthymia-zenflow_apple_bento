@@ -6,13 +6,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { Priority, PRIORITY_LABELS } from '@/types';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { SpaceIcon } from '@/components/SpaceIcon';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
 
-type FilterType = 'status' | 'priority' | 'assignee' | 'tag';
+type FilterType = 'status' | 'priority' | 'assignee' | 'tag' | 'space';
 
 interface FilterPreset {
   id: string;
@@ -23,7 +24,7 @@ interface FilterPreset {
 }
 
 export default function TaskFilterBar() {
-  const { advancedFilters, setAdvancedFilters, teamMembers, tasks, allStatuses, getStatusLabel } = useApp();
+  const { advancedFilters, setAdvancedFilters, teamMembers, tasks, allStatuses, getStatusLabel, spaces } = useApp();
   const { teamMemberId } = useAuth();
   const queryClient = useQueryClient();
   const [openFilter, setOpenFilter] = useState<FilterType | null>(null);
@@ -34,11 +35,14 @@ export default function TaskFilterBar() {
   const allPriorities: Priority[] = ['urgent', 'high', 'normal', 'low'];
   const allTags = Array.from(new Set(tasks.flatMap(t => t.tags))).sort();
 
+  const visibleSpaces = spaces.filter(s => !s.isArchived);
+
   const hasFilters =
     advancedFilters.statuses.length > 0 ||
     advancedFilters.priorities.length > 0 ||
     advancedFilters.assigneeIds.length > 0 ||
-    advancedFilters.tags.length > 0;
+    advancedFilters.tags.length > 0 ||
+    (advancedFilters.spaceIds ?? []).length > 0;
 
   // Fetch presets
   const { data: presets = [] } = useQuery<FilterPreset[]>({
@@ -51,7 +55,7 @@ export default function TaskFilterBar() {
       if (error) throw error;
       return (data || []).map((p: any) => ({
         ...p,
-        filters: p.filters as AdvancedFilters,
+        filters: { spaceIds: [], ...(p.filters as AdvancedFilters) },
       }));
     },
   });
@@ -96,7 +100,7 @@ export default function TaskFilterBar() {
   };
 
   const clearAll = () => {
-    setAdvancedFilters({ statuses: [], priorities: [], assigneeIds: [], tags: [] });
+    setAdvancedFilters({ statuses: [], priorities: [], assigneeIds: [], tags: [], spaceIds: [] });
   };
 
   const applyPreset = (preset: FilterPreset) => {
@@ -116,7 +120,8 @@ export default function TaskFilterBar() {
       JSON.stringify(f.statuses?.sort()) === JSON.stringify([...advancedFilters.statuses].sort()) &&
       JSON.stringify(f.priorities?.sort()) === JSON.stringify([...advancedFilters.priorities].sort()) &&
       JSON.stringify(f.assigneeIds?.sort()) === JSON.stringify([...advancedFilters.assigneeIds].sort()) &&
-      JSON.stringify(f.tags?.sort()) === JSON.stringify([...advancedFilters.tags].sort())
+      JSON.stringify(f.tags?.sort()) === JSON.stringify([...advancedFilters.tags].sort()) &&
+      JSON.stringify((f.spaceIds ?? []).sort()) === JSON.stringify([...(advancedFilters.spaceIds ?? [])].sort())
     );
   };
 
@@ -198,6 +203,23 @@ export default function TaskFilterBar() {
         </PopoverContent>
       </Popover>
 
+      {visibleSpaces.length > 1 && (
+        <SpaceFilterDropdown
+          open={openFilter === 'space'}
+          onOpenChange={(o) => setOpenFilter(o ? 'space' : null)}
+          spaces={visibleSpaces}
+          selected={advancedFilters.spaceIds ?? []}
+          onToggle={(id) => {
+            const cur = advancedFilters.spaceIds ?? [];
+            setAdvancedFilters({
+              ...advancedFilters,
+              spaceIds: cur.includes(id) ? cur.filter(v => v !== id) : [...cur, id],
+            });
+          }}
+          onClear={() => setAdvancedFilters({ ...advancedFilters, spaceIds: [] })}
+        />
+      )}
+
       <FilterDropdown
         label="Avancement"
         open={openFilter === 'status'}
@@ -266,6 +288,84 @@ interface FilterDropdownProps {
   selectedLabels: string[];
   onToggle: (value: string) => void;
   onClear: () => void;
+}
+
+interface SpaceFilterDropdownProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  spaces: { id: string; name: string; icon?: string }[];
+  selected: string[];
+  onToggle: (id: string) => void;
+  onClear: () => void;
+}
+
+function SpaceFilterDropdown({ open, onOpenChange, spaces, selected, onToggle, onClear }: SpaceFilterDropdownProps) {
+  const hasSelection = selected.length > 0;
+  const selectedNames = selected.map(id => spaces.find(s => s.id === id)?.name ?? id);
+
+  return (
+    <Popover open={open} onOpenChange={onOpenChange}>
+      <PopoverTrigger asChild>
+        <button
+          className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium border transition-colors max-w-[280px] ${
+            hasSelection
+              ? 'border-primary/30 bg-primary/5 text-primary'
+              : 'border-border bg-card text-muted-foreground hover:text-foreground hover:border-foreground/20'
+          }`}
+        >
+          <Filter className="w-3 h-3 shrink-0" />
+          {hasSelection ? (
+            <>
+              <span className="shrink-0">Espace ·</span>
+              <span className="truncate">{selectedNames.join(', ')}</span>
+            </>
+          ) : (
+            <span>Espace</span>
+          )}
+          {hasSelection ? (
+            <span
+              role="button"
+              className="shrink-0 ml-0.5 hover:bg-primary/20 rounded-full p-0.5 transition-colors"
+              onClick={(e) => { e.stopPropagation(); onClear(); }}
+            >
+              <X className="w-3 h-3" />
+            </span>
+          ) : (
+            <ChevronDown className="w-3 h-3 shrink-0" />
+          )}
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-52 p-1" align="start">
+        <div className="max-h-56 overflow-y-auto">
+          {spaces.map(space => (
+            <button
+              key={space.id}
+              onClick={() => onToggle(space.id)}
+              className={`w-full text-left flex items-center gap-2 px-2.5 py-1.5 rounded-md text-sm transition-colors ${
+                selected.includes(space.id)
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-foreground hover:bg-muted'
+              }`}
+            >
+              <div
+                className={`w-3.5 h-3.5 rounded border flex items-center justify-center shrink-0 transition-colors ${
+                  selected.includes(space.id) ? 'bg-primary border-primary' : 'border-border'
+                }`}
+              >
+                {selected.includes(space.id) && (
+                  <svg className="w-2.5 h-2.5 text-primary-foreground" viewBox="0 0 12 12" fill="none">
+                    <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
+              </div>
+              <SpaceIcon value={space.icon} size="xs" className="shrink-0" />
+              <span className="truncate">{space.name}</span>
+            </button>
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
 }
 
 function FilterDropdown({ label, open, onOpenChange, options, selected, selectedLabels, onToggle, onClear }: FilterDropdownProps) {

@@ -1,6 +1,8 @@
 // Edge function: actions sur emails IMAP (mark read, delete, move)
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { ImapFlow } from "https://esm.sh/imapflow@1.0.164";
+// NOTE: ImapFlow est importé dynamiquement plus bas (branche IMAP uniquement)
+// car le module est lourd et casse le boot de l'edge runtime quand
+// l'action concerne un compte Gmail (OAuth, sans IMAP).
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",

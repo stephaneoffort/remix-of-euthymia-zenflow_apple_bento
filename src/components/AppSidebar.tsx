@@ -1442,14 +1442,14 @@ export default function AppSidebar() {
         </div>
 
         {/* Quick Note */}
-        <div className="px-3 py-2 border-t border-sidebar-border-color">
+        <div className="px-3 py-3 border-t border-sidebar-border-color">
           <button
             onClick={() => window.dispatchEvent(new Event('quicknote:open'))}
-            className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sidebar-fg hover:bg-sidebar-hover transition-colors text-xs"
+            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-md text-sidebar-fg hover:bg-sidebar-hover transition-colors text-sm font-medium"
           >
-            <NotebookPen className="w-3.5 h-3.5 shrink-0" />
-            <span>Note rapide</span>
-            <span className="ml-auto text-[10px] text-muted-foreground">⌃⇧N</span>
+            <NotebookPen className="w-4 h-4 shrink-0" />
+            <span>Notes rapides</span>
+            <span className="ml-auto text-xs text-muted-foreground">⌃⇧N</span>
           </button>
         </div>
 

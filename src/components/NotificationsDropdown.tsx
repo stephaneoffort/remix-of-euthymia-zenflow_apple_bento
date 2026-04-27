@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { Bell, AlertTriangle, Clock, ChevronRight, BellRing, BellOff } from 'lucide-react';
@@ -9,6 +9,7 @@ import { formatDistanceToNow, isPast, isToday, isTomorrow, subDays, subHours } f
 import { fr } from 'date-fns/locale';
 import { supabase } from '@/integrations/supabase/client';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
+import { useSystemNotifications } from '@/hooks/useSystemNotifications';
 import { toast } from '@/hooks/use-toast';
 
 interface Reminder {
@@ -39,9 +40,13 @@ export default function NotificationsDropdown() {
   const { tasks, teamMembers, setSelectedTaskId, setQuickFilter } = useApp();
   const { teamMemberId } = useAuth();
   const { isSupported: pushSupported, isSubscribed: pushSubscribed, subscribe: pushSubscribe, unsubscribe: pushUnsubscribe } = usePushNotifications(teamMemberId);
+  const { permission: notifPermission, requestPermission } = useSystemNotifications();
+  const { notify } = useSystemNotifications();
   const [open, setOpen] = useState(false);
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
   const [reminders, setReminders] = useState<Reminder[]>([]);
+  // Track which task notifications have already been sent as OS notifications
+  const shownOsNotifIds = useRef(new Set<string>());
 
   useEffect(() => {
     const fetchReminders = async () => {
@@ -130,6 +135,23 @@ export default function NotificationsDropdown() {
     return notifs;
   }, [tasks, dismissed, reminders]);
 
+  // Déclenche les OS notifications pour les alertes de tâches (une seule fois par ID par session)
+  useEffect(() => {
+    if (notifPermission !== 'granted') return;
+    for (const n of notifications) {
+      if (shownOsNotifIds.current.has(n.id)) continue;
+      shownOsNotifIds.current.add(n.id);
+
+      if (n.type === 'overdue') {
+        notify('⚠️ Tâche en retard', { body: `${n.title}\n${n.detail}`, url: '/', tag: `task-${n.id}` });
+      } else if (n.type === 'reminder') {
+        notify('🔔 Rappel de tâche', { body: `${n.title}\n${n.detail}`, url: '/', tag: `task-${n.id}` });
+      } else if (n.type === 'due_today') {
+        notify("📅 Échéance aujourd'hui", { body: n.title, url: '/', tag: `task-${n.id}` });
+      }
+    }
+  }, [notifications, notifPermission, notify]);
+
   const overdueCount = notifications.filter(n => n.type === 'overdue').length;
   const totalCount = notifications.length;
 
@@ -175,33 +197,54 @@ export default function NotificationsDropdown() {
               {totalCount === 0 ? 'Aucune notification' : `${totalCount} notification${totalCount > 1 ? 's' : ''}`}
             </p>
           </div>
-          {pushSupported && (
-            <button
-              onClick={async () => {
-                if (pushSubscribed) {
-                  await pushUnsubscribe();
-                  toast({ title: 'Notifications push désactivées' });
-                } else {
-                  const result = await pushSubscribe();
-                  toast({
-                    title: result.ok
-                      ? 'Notifications push activées'
-                      : result.reason === 'permission_denied'
-                        ? 'Permission refusée'
-                        : result.reason === 'db_error'
-                          ? "Abonnement créé côté navigateur, mais l'enregistrement a échoué"
-                          : result.reason === 'unsupported'
-                            ? 'Notifications push non prises en charge'
-                            : "Impossible d'activer les notifications push",
-                  });
-                }
-              }}
-              className={`p-1.5 rounded-md transition-colors ${pushSubscribed ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
-              title={pushSubscribed ? 'Désactiver les notifications push' : 'Activer les notifications push'}
-            >
-              {pushSubscribed ? <BellRing className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
-            </button>
-          )}
+          <div className="flex items-center gap-1">
+            {/* Bouton d'activation des notifications navigateur */}
+            {notifPermission !== 'granted' && 'Notification' in window && (
+              <button
+                onClick={async () => {
+                  const result = await requestPermission();
+                  if (result === 'granted') {
+                    toast({ title: '🔔 Notifications activées' });
+                  } else {
+                    toast({ title: 'Permission refusée — vérifiez les paramètres du navigateur' });
+                  }
+                }}
+                className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                title="Activer les notifications système"
+              >
+                <BellOff className="w-3.5 h-3.5" />
+                Activer
+              </button>
+            )}
+            {/* Toggle push (abonnement serveur) */}
+            {pushSupported && notifPermission === 'granted' && (
+              <button
+                onClick={async () => {
+                  if (pushSubscribed) {
+                    await pushUnsubscribe();
+                    toast({ title: 'Notifications push désactivées' });
+                  } else {
+                    const result = await pushSubscribe();
+                    toast({
+                      title: result.ok
+                        ? 'Notifications push activées'
+                        : result.reason === 'permission_denied'
+                          ? 'Permission refusée'
+                          : result.reason === 'db_error'
+                            ? "Abonnement enregistré côté navigateur"
+                            : result.reason === 'unsupported'
+                              ? 'Non pris en charge'
+                              : "Impossible d'activer",
+                    });
+                  }
+                }}
+                className={`p-1.5 rounded-md transition-colors ${pushSubscribed ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
+                title={pushSubscribed ? 'Désactiver les notifications push' : 'Activer les notifications push'}
+              >
+                {pushSubscribed ? <BellRing className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
+              </button>
+            )}
+          </div>
         </div>
         {totalCount > 0 ? (
           <ScrollArea className="max-h-80">

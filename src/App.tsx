@@ -10,6 +10,7 @@ import { AppProvider } from "@/context/AppContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import InstallPrompt from "@/components/InstallPrompt";
+import { useRealtimeNotifications } from "@/hooks/useRealtimeNotifications";
 
 const lazyRetry = (fn: () => Promise<any>) =>
   lazy(() => fn().catch(() => {
@@ -69,6 +70,12 @@ const PageLoader = () => (
 
 const queryClient = new QueryClient();
 
+// Monté à l'intérieur du BrowserRouter pour avoir accès à useLocation
+function GlobalNotifications() {
+  useRealtimeNotifications();
+  return null;
+}
+
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, teamMemberId, loading } = useAuth();
 
@@ -96,6 +103,7 @@ const App = () => (
         <OfflineBanner />
         <InstallPrompt />
         <BrowserRouter>
+          <GlobalNotifications />
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/auth" element={<Auth />} />

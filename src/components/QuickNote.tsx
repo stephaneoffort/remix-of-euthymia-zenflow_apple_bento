@@ -107,16 +107,21 @@ export function QuickNote() {
   const streamRef     = useRef<MediaStream | null>(null);
   const timerRef      = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // ── Keyboard shortcut Ctrl/⌘+Shift+N ──────────────────────────────────────
+  // ── Keyboard shortcut Ctrl/⌘+Shift+N + custom event ──────────────────────
   useEffect(() => {
-    const fn = (e: KeyboardEvent) => {
+    const onKey = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toUpperCase() === 'N') {
         e.preventDefault();
         setOpen(v => !v);
       }
     };
-    window.addEventListener('keydown', fn);
-    return () => window.removeEventListener('keydown', fn);
+    const onEvent = () => setOpen(true);
+    window.addEventListener('keydown', onKey);
+    window.addEventListener('quicknote:open', onEvent);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('quicknote:open', onEvent);
+    };
   }, []);
 
   // ── Load data on open ──────────────────────────────────────────────────────

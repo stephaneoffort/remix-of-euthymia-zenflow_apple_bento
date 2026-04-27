@@ -87,9 +87,16 @@ function bestMimeType(): string {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
+interface SavedNote { id: string; text: string; createdAt: string; }
+
+function loadSavedNotes(): SavedNote[] {
+  try { return JSON.parse(localStorage.getItem('quick_notes') || '[]'); } catch { return []; }
+}
+
 export function QuickNote() {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
+  const [tab, setTab] = useState<'compose' | 'list'>('compose');
   const [text, setText] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [recordSecs, setRecordSecs] = useState(0);
@@ -99,6 +106,7 @@ export function QuickNote() {
   const [saving, setSaving] = useState(false);
   const [members, setMembers] = useState<Member[]>([]);
   const [channels, setChannels] = useState<Channel[]>([]);
+  const [savedNotes, setSavedNotes] = useState<SavedNote[]>([]);
 
   const recorderRef   = useRef<MediaRecorder | null>(null);
   const chunksRef     = useRef<Blob[]>([]);

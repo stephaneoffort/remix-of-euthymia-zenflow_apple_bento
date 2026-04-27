@@ -213,11 +213,23 @@ export function QuickNote() {
   // ── Recording ──────────────────────────────────────────────────────────────
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Try optimized constraints first (mono + 16 kHz + DSP). Some mobile browsers reject
+      // exact sample rates → we fall back to plain `audio: true` to guarantee a stream.
+      let stream: MediaStream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: buildAudioConstraints() });
+      } catch {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      }
       streamRef.current = stream;
+
       const mime = bestMimeType();
       recordMimeRef.current = mime || 'audio/webm';
-      const recorder = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
+      const bitrate = bestAudioBitrate(recordMimeRef.current);
+      const recorder = new MediaRecorder(
+        stream,
+        mime ? { mimeType: mime, audioBitsPerSecond: bitrate } : { audioBitsPerSecond: bitrate },
+      );
       recorderRef.current = recorder;
       chunksRef.current = [];
       finalTranscriptRef.current = '';

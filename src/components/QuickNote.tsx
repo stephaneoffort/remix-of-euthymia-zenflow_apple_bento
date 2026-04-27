@@ -472,14 +472,26 @@ export function QuickNote() {
                   autoFocus
                 />
 
-                {/* Live transcript */}
+                {/* Live transcript / recording / transcribing */}
                 {(liveTranscript || isRecording) && (
                   <div className="flex items-start gap-2 bg-destructive/10 text-destructive rounded-lg px-3 py-2 text-xs">
                     <span className="relative flex h-2 w-2 mt-0.5 shrink-0">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive opacity-70" />
                       <span className="relative inline-flex h-2 w-2 rounded-full bg-destructive" />
                     </span>
-                    <span className="italic">{liveTranscript || 'Enregistrement…'}</span>
+                    <span className="italic">
+                      {liveTranscript
+                        ? liveTranscript
+                        : useServerTranscription
+                          ? 'Enregistrement… (transcription après l’arrêt)'
+                          : 'Enregistrement…'}
+                    </span>
+                  </div>
+                )}
+                {transcribing && (
+                  <div className="flex items-center gap-2 bg-primary/10 text-primary rounded-lg px-3 py-2 text-xs">
+                    <span className="inline-block h-3 w-3 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+                    <span className="italic">Transcription audio en cours…</span>
                   </div>
                 )}
 

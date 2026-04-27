@@ -11,6 +11,7 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import InstallPrompt from "@/components/InstallPrompt";
 import { useRealtimeNotifications } from "@/hooks/useRealtimeNotifications";
+import { QuickNote } from "@/components/QuickNote";
 
 const lazyRetry = (fn: () => Promise<any>) =>
   lazy(() => fn().catch(() => {
@@ -102,6 +103,7 @@ const App = () => (
         <Sonner />
         <OfflineBanner />
         <InstallPrompt />
+        <QuickNote />
         <BrowserRouter>
           <GlobalNotifications />
           <Suspense fallback={<PageLoader />}>

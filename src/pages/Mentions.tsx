@@ -1,16 +1,18 @@
 import { useApp } from '@/context/AppContext';
 import { useThemeMode } from '@/context/ThemeContext';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useNavigate } from 'react-router-dom';
 import AppSidebar from '@/components/AppSidebar';
 import SidebarNM from '@/components/SidebarNM';
 import MobileBottomNav from '@/components/MobileBottomNav';
 import MentionsPanel from '@/components/messages/MentionsPanel';
-import { PanelLeft, AtSign } from 'lucide-react';
+import { PanelLeft, AtSign, ArrowLeft } from 'lucide-react';
 
 export default function MentionsPage() {
   const { sidebarCollapsed, setSidebarCollapsed } = useApp();
   const { designMode } = useThemeMode();
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   return (
     <div className={`flex h-[100dvh] relative overflow-hidden ${designMode === 'neumorphic' ? 'nm-chat' : ''}`}>
@@ -29,7 +31,16 @@ export default function MentionsPage() {
 
       <div className="flex-1 flex flex-col min-w-0 bg-background">
         <header className="h-14 shrink-0 border-b border-border bg-card flex items-center px-4 gap-3">
-          <div className="w-8 h-8 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+          {(isMobile || sidebarCollapsed) && (
+            <button
+              onClick={() => navigate('/')}
+              className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors shrink-0"
+              title="Retour aux tâches"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+          )}
+          <div className="w-8 h-8 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
             <AtSign className="w-4 h-4 text-primary" />
           </div>
           <div className="min-w-0">

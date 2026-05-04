@@ -151,9 +151,10 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
     };
 
     recognition.onend = () => {
-      // Auto-restart if still in listening phase (browser stops after silence)
-      if (recognitionRef.current && phase === 'listening') {
-        // Don't restart, let the user click stop
+      // recognitionRef is set to null when user manually stops (stopAndParse/cancel)
+      // If still set, the browser auto-stopped due to silence → restart
+      if (recognitionRef.current) {
+        try { recognitionRef.current.start(); } catch {}
       }
     };
 

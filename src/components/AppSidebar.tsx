@@ -76,6 +76,7 @@ import { useChatNotifications } from "@/hooks/useChatNotifications";
 import { useEmailAccounts } from "@/hooks/useEmailAccounts";
 import { useQuery } from "@tanstack/react-query";
 import MessagesHubDialog from "@/components/messages/MessagesHubDialog";
+import QuickCreateTaskDialog from "@/components/QuickCreateTaskDialog";
 
 import { usePresence } from "@/hooks/usePresence";
 import SpaceAccessDialog from "@/components/SpaceAccessDialog";
@@ -253,6 +254,7 @@ export default function AppSidebar() {
     null,
   );
   const [filtersExpanded, setFiltersExpanded] = useState(() => !window.matchMedia("(max-width: 767px)").matches);
+  const [quickCreateOpen, setQuickCreateOpen] = useState(false);
   const [spacesExpanded, setSpacesExpanded] = useState(true);
   const [messagesExpanded, setMessagesExpanded] = useState(() => !window.matchMedia("(max-width: 767px)").matches);
   const [messagesHubOpen, setMessagesHubOpen] = useState(false);
@@ -779,6 +781,15 @@ export default function AppSidebar() {
                   )}
                 </button>
               ))}
+              {!isMobile && (
+                <button
+                  onClick={() => setQuickCreateOpen(true)}
+                  className="w-full flex items-center gap-2 px-2 py-1.5 mt-1 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors border border-dashed border-sidebar-border-color"
+                >
+                  <Plus className="w-4 h-4 text-primary" />
+                  <span className="text-primary font-medium">Créer une tâche</span>
+                </button>
+              )}
             </>
           )}
         </div>
@@ -850,6 +861,7 @@ export default function AppSidebar() {
           )}
         </div>
         <MessagesHubDialog open={messagesHubOpen} onOpenChange={setMessagesHubOpen} initialTile={messagesHubTile} />
+        <QuickCreateTaskDialog open={quickCreateOpen} onClose={() => setQuickCreateOpen(false)} />
 
         {/* Spaces & Projects */}
         <div className="flex-1 overflow-y-auto scrollbar-thin px-3 py-3">

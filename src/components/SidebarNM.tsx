@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
+import QuickCreateTaskDialog from "@/components/QuickCreateTaskDialog";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useThemeMode, PALETTE_META, type ThemePalette } from "@/context/ThemeContext";
@@ -230,6 +231,7 @@ export default function SidebarNM() {
   const { isOnline } = usePresence();
   const NC = useNMColors();
   const [openSpaces, setOpenSpaces] = useState<Set<string>>(new Set());
+  const [quickCreateOpen, setQuickCreateOpen] = useState(false);
   const [draggedProjectId, setDraggedProjectId] = useState<string | null>(null);
   const [dropTargetSpaceId, setDropTargetSpaceId] = useState<string | null>(null);
   const [dropTargetProjectId, setDropTargetProjectId] = useState<string | null>(null);
@@ -864,9 +866,37 @@ export default function SidebarNM() {
                   </span>
                 )}
               </NavBtn>
+              <button
+                onClick={() => setQuickCreateOpen(true)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "6px 10px",
+                  borderRadius: 8,
+                  border: `1.5px dashed ${NC.orange}`,
+                  background: "transparent",
+                  cursor: "pointer",
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: NC.orange,
+                  width: "100%",
+                  marginTop: 2,
+                  transition: "all 0.15s ease",
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = "rgba(122,69,24,0.08)")}
+                onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M7 1v12M1 7h12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+                </svg>
+                Créer une tâche
+              </button>
             </>
           )}
         </div>
+
+        <QuickCreateTaskDialog open={quickCreateOpen} onClose={() => setQuickCreateOpen(false)} />
 
         {/* ── ESPACES ── */}
         <div style={{ flex: 1, overflowY: "auto", padding: "0 16px 10px" }}>

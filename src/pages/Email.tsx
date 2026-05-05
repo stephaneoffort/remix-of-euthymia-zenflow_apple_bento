@@ -42,10 +42,16 @@ export default function EmailPage() {
           <div className="w-8 h-8 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
             <Mail className="w-4 h-4 text-primary" />
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <h1 className="font-display font-semibold text-foreground text-sm">Email</h1>
             <p className="text-[11px] text-muted-foreground">Vos boîtes mail externes</p>
           </div>
+          <button
+            onClick={() => navigate('/')}
+            className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md bg-muted hover:bg-muted/80 text-foreground transition-colors shrink-0"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" /> Retour aux tâches
+          </button>
         </header>
         <div className="flex-1 overflow-hidden">
           <EmailHub />

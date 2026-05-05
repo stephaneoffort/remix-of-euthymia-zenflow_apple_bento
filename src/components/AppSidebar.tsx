@@ -76,6 +76,7 @@ import { useChatNotifications } from "@/hooks/useChatNotifications";
 import { useEmailAccounts } from "@/hooks/useEmailAccounts";
 import { useQuery } from "@tanstack/react-query";
 import MessagesHubDialog from "@/components/messages/MessagesHubDialog";
+import CreateTaskDialog from "@/components/CreateTaskDialog";
 
 import { usePresence } from "@/hooks/usePresence";
 import SpaceAccessDialog from "@/components/SpaceAccessDialog";

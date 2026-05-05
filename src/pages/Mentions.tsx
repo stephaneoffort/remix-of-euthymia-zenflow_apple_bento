@@ -1,16 +1,18 @@
 import { useApp } from '@/context/AppContext';
 import { useThemeMode } from '@/context/ThemeContext';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useNavigate } from 'react-router-dom';
 import AppSidebar from '@/components/AppSidebar';
 import SidebarNM from '@/components/SidebarNM';
 import MobileBottomNav from '@/components/MobileBottomNav';
 import MentionsPanel from '@/components/messages/MentionsPanel';
-import { PanelLeft, AtSign } from 'lucide-react';
+import { PanelLeft, AtSign, ArrowLeft } from 'lucide-react';
 
 export default function MentionsPage() {
   const { sidebarCollapsed, setSidebarCollapsed } = useApp();
   const { designMode } = useThemeMode();
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   return (
     <div className={`flex h-[100dvh] relative overflow-hidden ${designMode === 'neumorphic' ? 'nm-chat' : ''}`}>

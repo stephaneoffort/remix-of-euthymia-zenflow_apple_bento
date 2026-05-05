@@ -32,6 +32,7 @@ export default function TaskFilterBar() {
   const [presetsOpen, setPresetsOpen] = useState(false);
   const [savingName, setSavingName] = useState('');
   const [showSaveInput, setShowSaveInput] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
 
   const allPriorities: Priority[] = ['urgent', 'high', 'normal', 'low'];
   const allTags = Array.from(new Set(tasks.flatMap(t => t.tags))).sort();

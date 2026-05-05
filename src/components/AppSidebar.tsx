@@ -76,6 +76,7 @@ import { useChatNotifications } from "@/hooks/useChatNotifications";
 import { useEmailAccounts } from "@/hooks/useEmailAccounts";
 import { useQuery } from "@tanstack/react-query";
 import MessagesHubDialog from "@/components/messages/MessagesHubDialog";
+import CreateTaskDialog from "@/components/CreateTaskDialog";
 
 import { usePresence } from "@/hooks/usePresence";
 import SpaceAccessDialog from "@/components/SpaceAccessDialog";
@@ -253,6 +254,7 @@ export default function AppSidebar() {
     null,
   );
   const [filtersExpanded, setFiltersExpanded] = useState(() => !window.matchMedia("(max-width: 767px)").matches);
+  const [createTaskOpen, setCreateTaskOpen] = useState(false);
   const [spacesExpanded, setSpacesExpanded] = useState(true);
   const [messagesExpanded, setMessagesExpanded] = useState(() => !window.matchMedia("(max-width: 767px)").matches);
   const [messagesHubOpen, setMessagesHubOpen] = useState(false);
@@ -751,6 +753,13 @@ export default function AppSidebar() {
           </button>
           {filtersExpanded && (
             <>
+              <button
+                onClick={() => { setCreateTaskOpen(true); handleNavClick(); }}
+                className="w-full flex items-center gap-2 px-2 py-1.5 mb-1 rounded-md text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                Créer une tâche
+              </button>
               {QUICK_FILTERS.map((f) => (
                 <button
                   key={f.key}
@@ -850,6 +859,7 @@ export default function AppSidebar() {
           )}
         </div>
         <MessagesHubDialog open={messagesHubOpen} onOpenChange={setMessagesHubOpen} initialTile={messagesHubTile} />
+        <CreateTaskDialog open={createTaskOpen} onOpenChange={setCreateTaskOpen} />
 
         {/* Spaces & Projects */}
         <div className="flex-1 overflow-y-auto scrollbar-thin px-3 py-3">

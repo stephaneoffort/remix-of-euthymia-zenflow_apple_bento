@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Filter, X, ChevronDown, Bookmark, Save, Trash2, Check } from 'lucide-react';
+import { Filter, X, ChevronDown, Bookmark, Save, Trash2, Check, Plus } from 'lucide-react';
+import CreateTaskDialog from '@/components/CreateTaskDialog';
 import { useApp, AdvancedFilters } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';

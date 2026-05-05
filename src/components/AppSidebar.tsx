@@ -753,6 +753,13 @@ export default function AppSidebar() {
           </button>
           {filtersExpanded && (
             <>
+              <button
+                onClick={() => { setCreateTaskOpen(true); handleNavClick(); }}
+                className="w-full flex items-center gap-2 px-2 py-1.5 mb-1 rounded-md text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                Créer une tâche
+              </button>
               {QUICK_FILTERS.map((f) => (
                 <button
                   key={f.key}

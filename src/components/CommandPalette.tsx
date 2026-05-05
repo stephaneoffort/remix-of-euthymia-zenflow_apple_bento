@@ -124,7 +124,7 @@ export default function CommandPalette({ externalOpen, onExternalOpenChange }: C
       navigate('/');
     } else if (item.type === 'member') {
       // Filter tasks by this member
-      setAdvancedFilters({ statuses: [], priorities: [], assigneeIds: [item.id], tags: [] });
+      setAdvancedFilters({ statuses: [], priorities: [], assigneeIds: [item.id], tags: [], spaceIds: [] });
       setSelectedProjectId(null);
       setSelectedSpaceId(null);
       setQuickFilter('all');

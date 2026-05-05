@@ -539,7 +539,7 @@ export default function Index() {
                           {hasActiveFilters && (
                             <button
                               onClick={() =>
-                                setAdvancedFilters({ statuses: [], priorities: [], assigneeIds: [], tags: [] })
+                                setAdvancedFilters({ statuses: [], priorities: [], assigneeIds: [], tags: [], spaceIds: [] })
                               }
                               className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
                             >

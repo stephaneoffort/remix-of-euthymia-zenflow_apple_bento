@@ -254,6 +254,7 @@ export default function AppSidebar() {
     null,
   );
   const [filtersExpanded, setFiltersExpanded] = useState(() => !window.matchMedia("(max-width: 767px)").matches);
+  const [createTaskOpen, setCreateTaskOpen] = useState(false);
   const [spacesExpanded, setSpacesExpanded] = useState(true);
   const [messagesExpanded, setMessagesExpanded] = useState(() => !window.matchMedia("(max-width: 767px)").matches);
   const [messagesHubOpen, setMessagesHubOpen] = useState(false);

@@ -129,6 +129,16 @@ export default function TaskFilterBar() {
 
   return (
     <div className="flex items-center gap-2 flex-wrap">
+      {/* Create task button */}
+      <button
+        onClick={() => setCreateOpen(true)}
+        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm"
+      >
+        <Plus className="w-3 h-3 shrink-0" />
+        <span>Créer une tâche</span>
+      </button>
+      <CreateTaskDialog open={createOpen} onOpenChange={setCreateOpen} />
+
       {/* Presets button */}
       <Popover open={presetsOpen} onOpenChange={(o) => { setPresetsOpen(o); if (!o) setShowSaveInput(false); }}>
         <PopoverTrigger asChild>

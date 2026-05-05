@@ -742,24 +742,29 @@ export default function AppSidebar() {
 
         {/* Quick Filters - collapsible on mobile */}
         <div className="px-3 py-3 border-b border-sidebar-border-color">
-          <button
-            onClick={() => setFiltersExpanded((prev) => !prev)}
-            className="w-full flex items-center justify-between px-2 mb-2"
-          >
-            <p className="text-xs font-semibold text-sidebar-fg uppercase tracking-wider">Filtres</p>
-            <ChevronDown
-              className={`w-3.5 h-3.5 text-sidebar-fg transition-transform ${filtersExpanded ? "" : "-rotate-90"}`}
-            />
-          </button>
+          <div className="flex items-center justify-between px-2 mb-2 gap-2">
+            <button
+              type="button"
+              onClick={() => { setCreateTaskOpen(true); handleNavClick(); }}
+              className="flex-1 flex items-center gap-2 px-2 py-1.5 rounded-md text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              Créer une tâche
+            </button>
+            <button
+              type="button"
+              onClick={() => setFiltersExpanded((prev) => !prev)}
+              aria-label="Afficher/masquer les filtres"
+              className="flex items-center gap-1 text-xs font-semibold text-sidebar-fg uppercase tracking-wider hover:opacity-80"
+            >
+              <span className="hidden sm:inline">Filtres</span>
+              <ChevronDown
+                className={`w-3.5 h-3.5 text-sidebar-fg transition-transform ${filtersExpanded ? "" : "-rotate-90"}`}
+              />
+            </button>
+          </div>
           {filtersExpanded && (
             <>
-              <button
-                onClick={() => { setCreateTaskOpen(true); handleNavClick(); }}
-                className="w-full flex items-center gap-2 px-2 py-1.5 mb-1 rounded-md text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                Créer une tâche
-              </button>
               {QUICK_FILTERS.map((f) => (
                 <button
                   key={f.key}

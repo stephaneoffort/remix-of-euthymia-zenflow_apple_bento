@@ -859,6 +859,7 @@ export default function AppSidebar() {
           )}
         </div>
         <MessagesHubDialog open={messagesHubOpen} onOpenChange={setMessagesHubOpen} initialTile={messagesHubTile} />
+        <CreateTaskDialog open={createTaskOpen} onOpenChange={setCreateTaskOpen} />
 
         {/* Spaces & Projects */}
         <div className="flex-1 overflow-y-auto scrollbar-thin px-3 py-3">

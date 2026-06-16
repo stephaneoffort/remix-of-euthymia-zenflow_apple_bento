@@ -1,8 +1,12 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
+import { useOnlineStatus } from '@/hooks/useOnlineStatus';
+import { transcribeAudio } from '@/lib/transcribeAudio';
+import { enqueueAudio } from '@/lib/audioQueue';
 import {
   Mic, Square, Play, Pause, Send, NotebookPen, X, Trash2, Clock, Copy, FileText,
+  Activity, WifiOff,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -115,6 +119,10 @@ function bestAudioBitrate(mime: string): number {
   return 64_000;
 }
 
+// Each segment is sent to the transcription API independently.
+// 8 s is long enough for meaningful speech yet frequent enough for progressive display.
+const SEGMENT_SECS = 8;
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 interface SavedNote { id: string; text: string; createdAt: string; }
@@ -149,6 +157,20 @@ export function QuickNote() {
   const recordMimeRef = useRef<string>('');
   const [transcribing, setTranscribing] = useState(false);
 
+  // Diagnostic data refs — updated during each recording session.
+  const constraintsOptimizedRef = useRef<boolean>(true);
+  const blobSizeRef             = useRef<number>(0);
+  const confidenceScoresRef     = useRef<number[]>([]);
+  const lastRecordSecsRef       = useRef<number>(0);
+
+  // Segmented-transcription refs — used for progressive mobile transcription.
+  const headerChunkRef    = useRef<Blob | null>(null); // First MediaRecorder chunk (codec init)
+  const sentChunkCountRef = useRef<number>(0);          // Chunks already sent to a segment call
+  const partialAccumRef   = useRef<string>('');         // Accumulated partial transcripts
+  const segTimerRef       = useRef<ReturnType<typeof setInterval> | null>(null);
+  const segLockRef        = useRef<boolean>(false);     // Prevent concurrent segment calls
+  const [segTranscribing, setSegTranscribing] = useState(false);
+
   // Web Speech API is unreliable on mobile (iOS Safari, Firefox Android, etc.)
   // We force server-side transcription on mobile for consistency.
   const hasWebSpeech =
@@ -158,6 +180,31 @@ export function QuickNote() {
     typeof navigator !== 'undefined' &&
     /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
   const useServerTranscription = !hasWebSpeech || isMobile;
+
+  const isOnline = useOnlineStatus();
+
+  const saveDiagnostics = (method: 'web-speech' | 'server', transcriptLen: number) => {
+    const scores = confidenceScoresRef.current;
+    const avgConf = scores.length > 0
+      ? scores.reduce((a, b) => a + b, 0) / scores.length
+      : null;
+    const diag = {
+      timestamp: new Date().toISOString(),
+      duration: lastRecordSecsRef.current,
+      fileSizeBytes: blobSizeRef.current,
+      mimeType: recordMimeRef.current,
+      constraintsOptimized: constraintsOptimizedRef.current,
+      transcriptionMethod: method,
+      confidence: method === 'web-speech' ? avgConf : null,
+      transcriptLength: transcriptLen,
+      platform: {
+        isMobile,
+        hasWebSpeech,
+        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
+      },
+    };
+    try { localStorage.setItem('audio_diagnostics', JSON.stringify(diag)); } catch {}
+  };
 
   // ── Keyboard shortcut Ctrl/⌘+Shift+N + custom event ──────────────────────
   useEffect(() => {
@@ -210,6 +257,110 @@ export function QuickNote() {
 
   const intent = text.trim() ? parseIntent(text, members, channels) : null;
 
+  // ── Segment transcription ──────────────────────────────────────────────────
+  //
+  // How it works:
+  //   • The first MediaRecorder chunk always contains the container header
+  //     (WebM EBML header or fMP4 init segment). Subsequent chunks contain
+  //     raw audio clusters without that header.
+  //   • Each segment blob is built as:
+  //       [header chunk]  +  [new chunks since last segment]
+  //     making it a self-contained, independently decodable file.
+  //   • The first segment is special: it already contains the header, so no
+  //     prepending is needed (sentChunkCountRef === 0).
+  //   • segLockRef prevents concurrent calls if a segment takes longer than
+  //     SEGMENT_SECS to transcribe.
+  const fireSegment = useCallback(async () => {
+    if (segLockRef.current || !navigator.onLine) return;
+
+    const allChunks = chunksRef.current;
+    const fromIdx   = sentChunkCountRef.current;
+    const toIdx     = allChunks.length;
+    if (toIdx - fromIdx < 2) return; // Too few chunks for meaningful audio
+
+    const mime     = recordMimeRef.current;
+    const newChunks = allChunks.slice(fromIdx, toIdx);
+    const segBlob  = fromIdx === 0
+      ? new Blob(newChunks, { type: mime })
+      : new Blob([headerChunkRef.current!, ...newChunks], { type: mime });
+
+    if (segBlob.size < 1500) return; // Skip near-empty segments (silence / padding only)
+
+    sentChunkCountRef.current = toIdx; // Mark chunks as sent before the async call
+    segLockRef.current = true;
+    setSegTranscribing(true);
+    try {
+      const transcript = await transcribeAudio(segBlob, mime);
+      if (transcript) {
+        partialAccumRef.current = partialAccumRef.current
+          ? partialAccumRef.current + ' ' + transcript
+          : transcript;
+        setLiveTranscript(partialAccumRef.current);
+      }
+    } catch (err) {
+      console.warn('[Segment] transcription failed, chunks rolled back:', err);
+      sentChunkCountRef.current = fromIdx; // Roll back so the tail retries these chunks
+    } finally {
+      segLockRef.current = false;
+      setSegTranscribing(false);
+    }
+  }, []); // Only refs — no need to re-create
+
+  // Called in recorder.onstop when at least one segment was already sent.
+  // Transcribes the remaining chunks (tail) and combines with previous partials.
+  const transcribeTailSegment = useCallback(async () => {
+    const tailChunks = chunksRef.current.slice(sentChunkCountRef.current);
+    const mime = recordMimeRef.current;
+
+    // No tail: just commit the partial accumulation as-is.
+    if (tailChunks.length < 2 || !headerChunkRef.current) {
+      const total = partialAccumRef.current.trim();
+      setLiveTranscript('');
+      if (total) {
+        setText(prev => (prev ? prev + ' ' : '') + total);
+        saveDiagnostics('server', total.length);
+        toast.success('Transcription terminée');
+      } else {
+        toast.warning('Aucun texte détecté dans l'audio');
+      }
+      return;
+    }
+
+    setTranscribing(true);
+    try {
+      const tailBlob = new Blob([headerChunkRef.current, ...tailChunks], { type: mime });
+      let tailTranscript = '';
+      if (tailBlob.size > 1000) {
+        tailTranscript = await transcribeAudio(tailBlob, mime);
+      }
+
+      const total = [partialAccumRef.current, tailTranscript]
+        .filter(Boolean).join(' ').trim();
+      setLiveTranscript('');
+      if (total) {
+        setText(prev => (prev ? prev + ' ' : '') + total);
+        saveDiagnostics('server', total.length);
+        toast.success('Transcription terminée');
+      } else {
+        toast.warning('Aucun texte détecté dans l'audio');
+      }
+    } catch (e: any) {
+      // Tail failed but partial results are still usable.
+      const partial = partialAccumRef.current.trim();
+      setLiveTranscript('');
+      if (partial) {
+        setText(prev => (prev ? prev + ' ' : '') + partial);
+        saveDiagnostics('server', partial.length);
+        toast.success('Transcription partielle terminée');
+      } else {
+        console.error('Transcription failed:', e);
+        toast.error(e?.message || 'Échec de la transcription audio');
+      }
+    } finally {
+      setTranscribing(false);
+    }
+  }, []); // Only refs and stable setState — no need to re-create
+
   // ── Recording ──────────────────────────────────────────────────────────────
   const startRecording = async () => {
     try {
@@ -218,10 +369,20 @@ export function QuickNote() {
       let stream: MediaStream;
       try {
         stream = await navigator.mediaDevices.getUserMedia({ audio: buildAudioConstraints() });
+        constraintsOptimizedRef.current = true;
       } catch {
         stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        constraintsOptimizedRef.current = false;
       }
       streamRef.current = stream;
+      confidenceScoresRef.current = [];
+      lastRecordSecsRef.current = 0;
+
+      // Reset segment state for this new recording session.
+      headerChunkRef.current    = null;
+      sentChunkCountRef.current = 0;
+      partialAccumRef.current   = '';
+      segLockRef.current        = false;
 
       const mime = bestMimeType();
       recordMimeRef.current = mime || 'audio/webm';
@@ -235,23 +396,60 @@ export function QuickNote() {
       finalTranscriptRef.current = '';
       usedWebSpeechRef.current = false;
 
-      recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          chunksRef.current.push(e.data);
+          // Capture the very first chunk as the codec header (WebM EBML / fMP4 init segment).
+          if (!headerChunkRef.current) headerChunkRef.current = e.data;
+        }
+      };
+
       recorder.onstop = async () => {
+        // Stop the segment timer before reading final chunk list.
+        if (segTimerRef.current) { clearInterval(segTimerRef.current); segTimerRef.current = null; }
+
         const blob = new Blob(chunksRef.current, { type: recordMimeRef.current });
+        blobSizeRef.current = blob.size;
         setAudioUrl(URL.createObjectURL(blob));
         stream.getTracks().forEach(t => t.stop());
         streamRef.current = null;
 
-        // If Web Speech didn't run (mobile / unsupported), transcribe server-side.
         if (!usedWebSpeechRef.current && blob.size > 0) {
-          await transcribeBlobOnServer(blob, recordMimeRef.current);
+          if (!navigator.onLine) {
+            // Offline: persist full blob for later processing.
+            try {
+              await enqueueAudio(blob, recordMimeRef.current);
+              toast.warning(
+                'Hors-ligne — enregistrement sauvegardé, transcription automatique à la reconnexion',
+                { duration: 6000 },
+              );
+            } catch {
+              toast.error("Impossible de sauvegarder l'enregistrement hors-ligne");
+            }
+            setLiveTranscript('');
+          } else if (sentChunkCountRef.current > 0) {
+            // Segment mode was active: transcribe the remaining tail and combine.
+            await transcribeTailSegment();
+          } else {
+            // No segments ran yet (short recording < SEGMENT_SECS): transcribe full blob.
+            await transcribeBlobOnServer(blob, recordMimeRef.current);
+          }
         }
       };
 
       recorder.start(200);
       setIsRecording(true);
       setRecordSecs(0);
-      timerRef.current = setInterval(() => setRecordSecs(s => s + 1), 1000);
+      timerRef.current = setInterval(() => setRecordSecs(s => {
+        lastRecordSecsRef.current = s + 1;
+        return s + 1;
+      }), 1000);
+
+      // On mobile/server-transcription path, start the segment timer for progressive display.
+      // Not started for desktop Web Speech (which already has incremental results natively).
+      if (useServerTranscription) {
+        segTimerRef.current = setInterval(fireSegment, SEGMENT_SECS * 1000);
+      }
 
       // Only attempt Web Speech on desktop. On mobile we rely on server transcription
       // (Web Speech is missing on iOS Safari / Firefox Android, and silently fails
@@ -267,40 +465,25 @@ export function QuickNote() {
   const transcribeBlobOnServer = async (blob: Blob, mime: string) => {
     setTranscribing(true);
     try {
-      const base64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const result = reader.result as string;
-          // strip "data:audio/...;base64," prefix
-          const idx = result.indexOf(',');
-          resolve(idx >= 0 ? result.slice(idx + 1) : result);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-      });
-
-      const { data, error } = await supabase.functions.invoke('transcribe-audio', {
-        body: { audio: base64, mimeType: mime, language: 'français' },
-      });
-
-      if (error) throw error;
-      const transcript = (data as any)?.transcript?.trim?.() || '';
+      const transcript = await transcribeAudio(blob, mime);
+      saveDiagnostics(‘server’, transcript.length);
       if (transcript) {
-        setText(prev => (prev ? prev + ' ' : '') + transcript);
-        toast.success('Transcription terminée');
+        setText(prev => (prev ? prev + ‘ ‘ : ‘’) + transcript);
+        toast.success(‘Transcription terminée’);
       } else {
-        toast.warning('Aucun texte détecté dans l’audio');
+        toast.warning(‘Aucun texte détecté dans l’audio’);
       }
     } catch (e: any) {
-      console.error('Transcription failed:', e);
-      toast.error(e?.message || 'Échec de la transcription audio');
+      console.error(‘Transcription failed:’, e);
+      toast.error(e?.message || ‘Échec de la transcription audio’);
     } finally {
       setTranscribing(false);
     }
   };
 
   const stopRecording = useCallback(() => {
-    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
+    if (timerRef.current)   { clearInterval(timerRef.current);   timerRef.current   = null; }
+    if (segTimerRef.current) { clearInterval(segTimerRef.current); segTimerRef.current = null; }
     if (recorderRef.current?.state !== 'inactive') recorderRef.current?.stop();
     if (recognRef.current) { try { recognRef.current.stop(); } catch {} recognRef.current = null; }
     setIsRecording(false);
@@ -322,8 +505,13 @@ export function QuickNote() {
       let interim = '';
       for (let i = ev.resultIndex; i < ev.results.length; i++) {
         const t = ev.results[i][0].transcript;
-        if (ev.results[i].isFinal) finalTranscriptRef.current += t + ' ';
-        else interim = t;
+        if (ev.results[i].isFinal) {
+          const c = ev.results[i][0].confidence;
+          if (typeof c === 'number' && !isNaN(c)) confidenceScoresRef.current.push(c);
+          finalTranscriptRef.current += t + ' ';
+        } else {
+          interim = t;
+        }
       }
       setLiveTranscript(finalTranscriptRef.current + interim);
     };
@@ -334,6 +522,7 @@ export function QuickNote() {
     };
     r.onend = () => {
       const final = finalTranscriptRef.current.trim();
+      saveDiagnostics('web-speech', final.length);
       if (final) {
         setText(prev => (prev ? prev + ' ' : '') + final);
         setLiveTranscript('');
@@ -409,12 +598,18 @@ export function QuickNote() {
     setRecordSecs(0);
     setIsPlaying(false);
     setOpen(false);
+    // Reset segment state so a fresh session starts cleanly.
+    partialAccumRef.current   = '';
+    sentChunkCountRef.current = 0;
+    headerChunkRef.current    = null;
+    segLockRef.current        = false;
   }, [stopRecording]);
 
   useEffect(() => () => {
-    if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
-    if (recognRef.current) try { recognRef.current.stop(); } catch {}
-    if (timerRef.current) clearInterval(timerRef.current);
+    if (streamRef.current)   streamRef.current.getTracks().forEach(t => t.stop());
+    if (recognRef.current)   try { recognRef.current.stop(); } catch {}
+    if (timerRef.current)    clearInterval(timerRef.current);
+    if (segTimerRef.current) clearInterval(segTimerRef.current);
   }, []);
 
   if (!user) return null;
@@ -459,12 +654,22 @@ export function QuickNote() {
                   Ctrl+Maj+N
                 </span>
               </SheetTitle>
-              <button
-                onClick={handleClose}
-                className="p-1 rounded hover:bg-muted text-muted-foreground transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => { handleClose(); window.location.assign('/settings/audio-diagnostic'); }}
+                  title="Diagnostic audio"
+                  className="p-1 rounded hover:bg-muted text-muted-foreground transition-colors"
+                  aria-label="Diagnostic audio"
+                >
+                  <Activity className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={handleClose}
+                  className="p-1 rounded hover:bg-muted text-muted-foreground transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
             </div>
             {/* Tabs */}
             <div className="flex gap-1 -mb-px">
@@ -514,26 +719,44 @@ export function QuickNote() {
                   autoFocus
                 />
 
-                {/* Live transcript / recording / transcribing */}
+                {/* Live / partial transcript banner — shown while recording or until final text lands */}
                 {(liveTranscript || isRecording) && (
                   <div className="flex items-start gap-2 bg-destructive/10 text-destructive rounded-lg px-3 py-2 text-xs">
+                    {/* Pulsing red dot */}
                     <span className="relative flex h-2 w-2 mt-0.5 shrink-0">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive opacity-70" />
                       <span className="relative inline-flex h-2 w-2 rounded-full bg-destructive" />
                     </span>
-                    <span className="italic">
+
+                    {/* Transcript text or placeholder */}
+                    <span className="italic flex-1 leading-relaxed">
                       {liveTranscript
                         ? liveTranscript
-                        : useServerTranscription
-                          ? 'Enregistrement… (transcription après l’arrêt)'
-                          : 'Enregistrement…'}
+                        : !isOnline
+                          ? ‘Enregistrement hors-ligne — sauvegardé localement, transcription automatique à la reconnexion’
+                          : useServerTranscription
+                            ? ‘Écoute en cours…’
+                            : ‘Enregistrement…’}
                     </span>
+
+                    {/* Segment spinner: a new slice is being transcribed in the background */}
+                    {segTranscribing && (
+                      <span
+                        className="inline-block h-3 w-3 rounded-full border-2 border-current border-t-transparent animate-spin shrink-0 mt-0.5"
+                        title="Traitement du segment…"
+                      />
+                    )}
+                    {!isOnline && isRecording && !segTranscribing && (
+                      <WifiOff className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                    )}
                   </div>
                 )}
+
+                {/* Final-transcription spinner (shown after recording stops, tail being processed) */}
                 {transcribing && (
                   <div className="flex items-center gap-2 bg-primary/10 text-primary rounded-lg px-3 py-2 text-xs">
                     <span className="inline-block h-3 w-3 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-                    <span className="italic">Transcription audio en cours…</span>
+                    <span className="italic">Finalisation de la transcription…</span>
                   </div>
                 )}
 

@@ -33,6 +33,7 @@ const AuthCallback = lazyRetry(() => import("./pages/AuthCallback.tsx"));
 const NumericAudit = lazyRetry(() => import("./pages/NumericAudit.tsx"));
 const SettingsIntegrationsPage = lazyRetry(() => import("./pages/settings/IntegrationsPage.tsx"));
 const GmailDiagnosticPage = lazyRetry(() => import("./pages/settings/GmailDiagnosticPage.tsx"));
+const AudioDiagnosticPage = lazyRetry(() => import("./pages/settings/AudioDiagnosticPage.tsx"));
 
 
 const PageLoader = () => (
@@ -156,6 +157,14 @@ const App = () => (
                         element={
                           <ProtectedRoute>
                             <GmailDiagnosticPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/settings/audio-diagnostic"
+                        element={
+                          <ProtectedRoute>
+                            <AudioDiagnosticPage />
                           </ProtectedRoute>
                         }
                       />

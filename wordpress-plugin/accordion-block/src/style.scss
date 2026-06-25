@@ -1,0 +1,67 @@
+/* ---- Style public (affiché sur le site) ---- */
+
+.accordion-block {
+	margin: 1.5em 0;
+
+	.accordion-item {
+		border: 1px solid #d1d5db;
+		border-radius: 6px;
+		margin-bottom: 8px;
+		overflow: hidden;
+	}
+
+	.accordion-trigger {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+		padding: 1em 1.25em;
+		background: #f9fafb;
+		border: none;
+		cursor: pointer;
+		font-size: 1rem;
+		font-weight: 600;
+		text-align: left;
+		color: inherit;
+		transition: background 0.2s;
+
+		&:hover {
+			background: #f3f4f6;
+		}
+
+		&[aria-expanded="true"] {
+			background: #f3f4f6;
+
+			.accordion-icon {
+				transform: rotate(180deg);
+			}
+		}
+	}
+
+	.accordion-icon {
+		width: 20px;
+		height: 20px;
+		flex-shrink: 0;
+		margin-left: 12px;
+		transition: transform 0.25s ease;
+	}
+
+	.accordion-panel {
+		padding: 0;
+		overflow: hidden;
+
+		&:not([hidden]) {
+			padding: 1em 1.25em;
+			border-top: 1px solid #d1d5db;
+		}
+	}
+
+	.accordion-panel-inner {
+		line-height: 1.7;
+
+		a {
+			color: #2563eb;
+			text-decoration: underline;
+		}
+	}
+}

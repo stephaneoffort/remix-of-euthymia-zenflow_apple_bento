@@ -1,0 +1,51 @@
+/* ---- Style dans l'éditeur Gutenberg ---- */
+
+.accordion-block-editor {
+	.accordion-item-editor {
+		border: 1px solid #d1d5db;
+		border-radius: 6px;
+		margin-bottom: 10px;
+		padding: 12px;
+		background: #fff;
+	}
+
+	.accordion-item-header-row {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin-bottom: 8px;
+
+		.accordion-title-input {
+			flex: 1;
+			margin-bottom: 0;
+
+			input {
+				font-weight: 600;
+				font-size: 1rem;
+			}
+		}
+	}
+
+	.accordion-item-controls {
+		display: flex;
+		gap: 4px;
+		flex-shrink: 0;
+	}
+
+	.accordion-content-editor {
+		min-height: 60px;
+		border: 1px dashed #d1d5db;
+		border-radius: 4px;
+		padding: 8px 12px;
+		line-height: 1.6;
+
+		&:focus {
+			outline: 2px solid #2563eb;
+			border-color: transparent;
+		}
+	}
+
+	.accordion-add-item {
+		margin-top: 4px;
+	}
+}

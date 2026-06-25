@@ -1,0 +1,1 @@
+document.querySelectorAll(".accordion-block").forEach(e=>{e.querySelectorAll(".accordion-trigger").forEach(e=>{e.addEventListener("click",()=>{const t="true"===e.getAttribute("aria-expanded"),r=document.getElementById(e.getAttribute("aria-controls"));e.setAttribute("aria-expanded",String(!t)),r.hidden=!!t})})});

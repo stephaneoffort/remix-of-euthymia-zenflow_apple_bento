@@ -28,8 +28,10 @@ const SelectTeamMember = React.forwardRef<HTMLDivElement>(function SelectTeamMem
     );
   }
 
-  if (!user) return <Navigate to="/auth" replace />;
-  if (teamMemberId) return <Navigate to="/" replace />;
+  const nextParam = new URLSearchParams(window.location.search).get("next");
+  const safeNext = nextParam && nextParam.startsWith("/") && !nextParam.startsWith("//") ? nextParam : "/";
+  if (!user) return <Navigate to={`/auth${nextParam ? `?next=${encodeURIComponent(nextParam)}` : ""}`} replace />;
+  if (teamMemberId) return <Navigate to={safeNext} replace />;
 
   const handleCreateProfile = async (e: React.FormEvent) => {
     e.preventDefault();

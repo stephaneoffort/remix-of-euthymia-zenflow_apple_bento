@@ -1,0 +1,182 @@
+{
+  "version": 1,
+  "sdk_version": "0.22.2",
+  "path": "/functions/v1/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://jivfyaqpuhutixfjttga.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "euthymia-mcp",
+      "version": "0.1.0",
+      "title": "Euthymia ZenFlow"
+    },
+    "tools": [
+      {
+        "name": "list_projects",
+        "title": "Lister les projets",
+        "description": "Liste les projets Euthymia accessibles à l'utilisateur connecté (non archivés par défaut).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "include_archived": {
+              "type": "boolean",
+              "description": "Inclure les projets archivés"
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_tasks",
+        "title": "Lister les tâches",
+        "description": "Liste les tâches Euthymia visibles par l'utilisateur. Filtres optionnels: statut (todo/in_progress/done), priorité (low/medium/high/urgent), list_id, limite (défaut 50).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "todo",
+                "in_progress",
+                "done"
+              ]
+            },
+            "priority": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high",
+                "urgent"
+              ]
+            },
+            "list_id": {
+              "type": "string",
+              "description": "Filtrer par liste"
+            },
+            "limit": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "description": "Nombre maximum (défaut 50, max 200)"
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_task",
+        "title": "Créer une tâche",
+        "description": "Crée une nouvelle tâche dans une liste Euthymia. list_id est requis (utiliser list_tasks pour découvrir des list_id existants).",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "list_id": {
+              "type": "string",
+              "description": "ID de la liste dans laquelle créer la tâche"
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Titre de la tâche"
+            },
+            "description": {
+              "type": "string"
+            },
+            "priority": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high",
+                "urgent"
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "todo",
+                "in_progress",
+                "done"
+              ]
+            },
+            "due_date": {
+              "type": "string",
+              "description": "Date d'échéance ISO 8601"
+            },
+            "start_date": {
+              "type": "string",
+              "description": "Date de début ISO 8601"
+            }
+          },
+          "required": [
+            "list_id",
+            "title"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "update_task_status",
+        "title": "Mettre à jour le statut d'une tâche",
+        "description": "Change le statut d'une tâche existante (todo, in_progress, done).",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "task_id": {
+              "type": "string",
+              "description": "ID de la tâche"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "todo",
+                "in_progress",
+                "done"
+              ]
+            }
+          },
+          "required": [
+            "task_id",
+            "status"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}

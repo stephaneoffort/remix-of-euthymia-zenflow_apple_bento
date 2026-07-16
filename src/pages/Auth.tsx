@@ -33,8 +33,10 @@ export default function Auth() {
     );
   }
 
-  if (user && teamMemberId) return <Navigate to="/" replace />;
-  if (user && !teamMemberId) return <Navigate to="/select-member" replace />;
+  const nextParam = new URLSearchParams(window.location.search).get("next");
+  const safeNext = nextParam && nextParam.startsWith("/") && !nextParam.startsWith("//") ? nextParam : "/";
+  if (user && teamMemberId) return <Navigate to={safeNext} replace />;
+  if (user && !teamMemberId) return <Navigate to={`/select-member${nextParam ? `?next=${encodeURIComponent(nextParam)}` : ""}`} replace />;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

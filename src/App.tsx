@@ -33,6 +33,7 @@ const AuthCallback = lazyRetry(() => import("./pages/AuthCallback.tsx"));
 const NumericAudit = lazyRetry(() => import("./pages/NumericAudit.tsx"));
 const SettingsIntegrationsPage = lazyRetry(() => import("./pages/settings/IntegrationsPage.tsx"));
 const GmailDiagnosticPage = lazyRetry(() => import("./pages/settings/GmailDiagnosticPage.tsx"));
+const OAuthConsent = lazyRetry(() => import("./pages/OAuthConsent.tsx"));
 
 
 const PageLoader = () => (
@@ -114,6 +115,7 @@ const App = () => (
               <Route path="/select-member" element={<SelectTeamMember />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/install" element={<Install />} />
+              <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
               <Route
                 path="/*"
                 element={

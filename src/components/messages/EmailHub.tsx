@@ -220,9 +220,20 @@ export default function EmailHub() {
   const account = accounts.find(a => a.id === selectedAccountId);
   const { data: messages = [], isLoading: loadingMessages } = useEmailMessages(selectedAccountId);
 
+  // Auto-sync accounts when opening the Email section, and again when switching accounts
+  const autoSyncedRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    if (!account) return;
+    if (autoSyncedRef.current.has(account.id)) return;
+    autoSyncedRef.current.add(account.id);
+    syncAccount.mutate(account);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account?.id]);
+
   const handleSync = () => {
     if (account) syncAccount.mutate(account);
   };
+
 
   const handleDelete = async (msg: EmailMessage, opts?: { skipConfirm?: boolean; keepView?: boolean }) => {
     if (!account) return;

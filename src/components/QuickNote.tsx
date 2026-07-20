@@ -458,13 +458,36 @@ export function QuickNote() {
   // ── Reset / Close ──────────────────────────────────────────────────────────
   const handleClose = useCallback(() => {
     stopRecording();
+    const draft = textRef.current.trim();
+    const hasIntent = draft ? !!parseIntent(draft, members, channels) : false;
+    if (draft && !hasIntent && user) {
+      // Fire-and-forget autosave so we never lose the draft.
+      db.from('quick_notes')
+        .insert({ user_id: user.id, text: draft })
+        .select('id, text, created_at')
+        .single()
+        .then(({ data, error }: any) => {
+          if (error) {
+            console.error('[QuickNote] autosave failed', error);
+            return;
+          }
+          if (data) {
+            setSavedNotes(prev => [
+              { id: data.id, text: data.text, createdAt: data.created_at },
+              ...prev,
+            ]);
+          }
+          toast.success('Note sauvegardée automatiquement');
+        });
+    }
     setText('');
     setAudioUrl(null);
     setLiveTranscript('');
     setRecordSecs(0);
     setIsPlaying(false);
     setOpen(false);
-  }, [stopRecording]);
+  }, [stopRecording, members, channels, user]);
+
 
   useEffect(() => () => {
     if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());

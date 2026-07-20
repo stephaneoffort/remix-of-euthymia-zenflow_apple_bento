@@ -89,9 +89,10 @@ interface VoiceTaskCreatorProps {
   onClose: () => void;
   defaultListId?: string;
   parentTaskId?: string | null;
+  onParsed?: (parsed: ParsedTask, transcript: string) => void;
 }
 
-export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId = null }: VoiceTaskCreatorProps) {
+export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId = null, onParsed }: VoiceTaskCreatorProps) {
   const { addTask, teamMembers, selectedProjectId, getListsForProject, quickFilter } = useApp();
   const { teamMemberId } = useAuth();
 

@@ -119,7 +119,9 @@ function bestAudioBitrate(mime: string): number {
 
 interface SavedNote { id: string; text: string; createdAt: string; }
 
-function loadSavedNotes(): SavedNote[] {
+const MIGRATION_FLAG = 'quick_notes_migrated';
+
+function readLocalNotes(): SavedNote[] {
   try { return JSON.parse(localStorage.getItem('quick_notes') || '[]'); } catch { return []; }
 }
 
@@ -148,6 +150,8 @@ export function QuickNote() {
   const usedWebSpeechRef = useRef<boolean>(false);
   const recordMimeRef = useRef<string>('');
   const [transcribing, setTranscribing] = useState(false);
+  const textRef = useRef(text);
+  useEffect(() => { textRef.current = text; }, [text]);
 
   // Web Speech API is unreliable on mobile (iOS Safari, Firefox Android, etc.)
   // We force server-side transcription on mobile for consistency.
@@ -176,11 +180,50 @@ export function QuickNote() {
     };
   }, []);
 
+  const fetchNotes = useCallback(async () => {
+    if (!user) return;
+    const { data, error } = await db
+      .from('quick_notes')
+      .select('id, text, created_at')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(200);
+    if (error) {
+      console.error('[QuickNote] fetch failed', error);
+      return;
+    }
+    setSavedNotes((data || []).map((n: any) => ({ id: n.id, text: n.text, createdAt: n.created_at })));
+  }, [user]);
+
+  // ── One-shot migration of localStorage notes to Supabase ────────────────
+  useEffect(() => {
+    if (!user) return;
+    if (localStorage.getItem(MIGRATION_FLAG) === '1') return;
+    const legacy = readLocalNotes();
+    if (legacy.length === 0) {
+      localStorage.setItem(MIGRATION_FLAG, '1');
+      return;
+    }
+    (async () => {
+      const rows = legacy.map(n => ({
+        user_id: user.id,
+        text: n.text,
+        created_at: n.createdAt || new Date().toISOString(),
+      }));
+      const { error } = await db.from('quick_notes').insert(rows);
+      if (!error) {
+        localStorage.removeItem('quick_notes');
+        localStorage.setItem(MIGRATION_FLAG, '1');
+      } else {
+        console.error('[QuickNote] migration failed', error);
+      }
+    })();
+  }, [user]);
+
   // ── Load data on open ──────────────────────────────────────────────────────
   useEffect(() => {
-    if (!open) return;
-    setSavedNotes(loadSavedNotes());
-    if (!user) return;
+    if (!open || !user) return;
+    fetchNotes();
     Promise.all([
       db.from('team_members').select('id, name'),
       db.from('chat_channels').select('id, name, type').eq('is_archived', false).order('position'),
@@ -188,16 +231,20 @@ export function QuickNote() {
       setMembers(m || []);
       setChannels(c || []);
     });
-  }, [open, user]);
+  }, [open, user, fetchNotes]);
 
-  const refreshNotes = () => setSavedNotes(loadSavedNotes());
-
-  const deleteNote = (id: string) => {
-    const next = loadSavedNotes().filter(n => n.id !== id);
-    localStorage.setItem('quick_notes', JSON.stringify(next));
-    setSavedNotes(next);
+  const deleteNote = async (id: string) => {
+    const prev = savedNotes;
+    setSavedNotes(prev.filter(n => n.id !== id));
+    const { error } = await db.from('quick_notes').delete().eq('id', id);
+    if (error) {
+      setSavedNotes(prev);
+      toast.error('Suppression impossible');
+      return;
+    }
     toast.success('Note supprimée');
   };
+
 
   const copyNote = async (text: string) => {
     try {
@@ -378,11 +425,18 @@ export function QuickNote() {
           description: intent.recipient ? `Mention : @${intent.recipient.name}` : undefined,
         });
       } else {
-        // Save to localStorage (max 50 notes)
-        const all = loadSavedNotes();
-        const next = [{ id: String(Date.now()), text: text.trim(), createdAt: new Date().toISOString() }, ...all].slice(0, 50);
-        localStorage.setItem('quick_notes', JSON.stringify(next));
-        setSavedNotes(next);
+        // Save to Supabase
+        const noteText = text.trim();
+        const { data: inserted, error: insErr } = await db
+          .from('quick_notes')
+          .insert({ user_id: user.id, text: noteText })
+          .select('id, text, created_at')
+          .single();
+        if (insErr) throw insErr;
+        setSavedNotes(prev => [
+          { id: inserted.id, text: inserted.text, createdAt: inserted.created_at },
+          ...prev,
+        ]);
         toast.success('Note sauvegardée');
         setText('');
         setAudioUrl(null);
@@ -392,6 +446,7 @@ export function QuickNote() {
         setSaving(false);
         return;
       }
+
       handleClose();
     } catch (e: any) {
       toast.error(e.message || 'Erreur lors de la sauvegarde');
@@ -403,13 +458,36 @@ export function QuickNote() {
   // ── Reset / Close ──────────────────────────────────────────────────────────
   const handleClose = useCallback(() => {
     stopRecording();
+    const draft = textRef.current.trim();
+    const hasIntent = draft ? !!parseIntent(draft, members, channels) : false;
+    if (draft && !hasIntent && user) {
+      // Fire-and-forget autosave so we never lose the draft.
+      db.from('quick_notes')
+        .insert({ user_id: user.id, text: draft })
+        .select('id, text, created_at')
+        .single()
+        .then(({ data, error }: any) => {
+          if (error) {
+            console.error('[QuickNote] autosave failed', error);
+            return;
+          }
+          if (data) {
+            setSavedNotes(prev => [
+              { id: data.id, text: data.text, createdAt: data.created_at },
+              ...prev,
+            ]);
+          }
+          toast.success('Note sauvegardée automatiquement');
+        });
+    }
     setText('');
     setAudioUrl(null);
     setLiveTranscript('');
     setRecordSecs(0);
     setIsPlaying(false);
     setOpen(false);
-  }, [stopRecording]);
+  }, [stopRecording, members, channels, user]);
+
 
   useEffect(() => () => {
     if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
@@ -481,7 +559,7 @@ export function QuickNote() {
                 Rédiger
               </button>
               <button
-                onClick={() => { setTab('list'); refreshNotes(); }}
+                onClick={() => { setTab('list'); fetchNotes(); }}
                 className={[
                   'px-3 py-2 text-xs font-medium border-b-2 transition-colors flex items-center gap-1.5',
                   tab === 'list'

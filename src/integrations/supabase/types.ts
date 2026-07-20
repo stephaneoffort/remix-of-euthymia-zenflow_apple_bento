@@ -1849,6 +1849,30 @@ export type Database = {
         }
         Relationships: []
       }
+      quick_notes: {
+        Row: {
+          created_at: string
+          id: string
+          text: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          text: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          text?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       space_managers: {
         Row: {
           member_id: string

@@ -2500,6 +2500,7 @@ export type Database = {
         Args: { _member_id: string; _space_id: string }
         Returns: boolean
       }
+      current_member_id: { Args: never; Returns: string }
       get_user_by_email: {
         Args: { p_email: string }
         Returns: {

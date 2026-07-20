@@ -110,16 +110,20 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
   const [interimText, setInterimText] = useState('');
   const [parsedTask, setParsedTask] = useState<ParsedTask | null>(null);
   const [error, setError] = useState('');
+  const [errorKind, setErrorKind] = useState<'mic' | 'empty' | 'transcribe' | 'parse' | 'generic' | null>(null);
   const [showDetails, setShowDetails] = useState(true);
   const [editingTranscript, setEditingTranscript] = useState(false);
   const [rerunning, setRerunning] = useState(false);
   const [serverTranscribing, setServerTranscribing] = useState(false);
+  const [parseStep, setParseStep] = useState<'idle' | 'transcribe' | 'analyze' | 'done'>('idle');
+  const [progress, setProgress] = useState(0); // 0-100
   const recognitionRef = useRef<any>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const audioMimeRef = useRef<string>('audio/webm');
   const audioBlobRef = useRef<Blob | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const progressTimerRef = useRef<number | null>(null);
 
   // Resolve listId
   const listId = defaultListId || (() => {
@@ -127,12 +131,40 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
     return lists[0]?.id || 'l1';
   })();
 
+  // ─── Progress animation helper ───
+  const startProgress = useCallback((from: number, target: number, durationMs: number) => {
+    if (progressTimerRef.current) window.clearInterval(progressTimerRef.current);
+    setProgress(from);
+    const startTime = Date.now();
+    progressTimerRef.current = window.setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const ratio = Math.min(1, elapsed / durationMs);
+      const eased = 1 - Math.pow(1 - ratio, 2);
+      setProgress(from + (target - from) * eased);
+      if (ratio >= 1 && progressTimerRef.current) {
+        window.clearInterval(progressTimerRef.current);
+        progressTimerRef.current = null;
+      }
+    }, 80) as unknown as number;
+  }, []);
+
+  const stopProgress = useCallback((finalValue?: number) => {
+    if (progressTimerRef.current) {
+      window.clearInterval(progressTimerRef.current);
+      progressTimerRef.current = null;
+    }
+    if (typeof finalValue === 'number') setProgress(finalValue);
+  }, []);
+
   // ─── Start listening ───
   const startListening = useCallback(async () => {
     setError('');
+    setErrorKind(null);
     setTranscript('');
     setInterimText('');
     setParsedTask(null);
+    audioChunksRef.current = [];
+    audioBlobRef.current = null;
     audioChunksRef.current = [];
     audioBlobRef.current = null;
 
@@ -157,9 +189,11 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
       recorder.start();
     } catch (err: any) {
       console.error('getUserMedia error:', err);
-      setError('Accès au microphone refusé. Autorisez le micro dans les paramètres du navigateur.');
+      setErrorKind('mic');
+      setError('Accès au microphone refusé. Autorisez le micro dans les paramètres du navigateur, puis réessayez.');
       return;
     }
+
 
     // Start Web Speech API in parallel (live transcript). Falls back gracefully.
     if (SpeechRecognition) {
@@ -243,10 +277,22 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
     await new Promise(r => setTimeout(r, 150));
 
     let fullText = (transcript + ' ' + interimText).trim();
+    setPhase('parsing');
 
-    // If Web Speech gave nothing (Safari / iOS), try server transcription
+    // Step 1: transcription (Web Speech first; server fallback if empty)
+    setParseStep('transcribe');
+    startProgress(0, 50, 6000);
+
     if (!fullText) {
-      setPhase('parsing');
+      const audioSize = audioBlobRef.current?.size || 0;
+      if (audioSize < 1024) {
+        stopProgress(0);
+        setErrorKind('empty');
+        setError('Aucun son détecté. Vérifiez que le micro fonctionne et parlez plus près, puis réessayez.');
+        setParseStep('idle');
+        setPhase('idle');
+        return;
+      }
       setServerTranscribing(true);
       const serverText = await runServerTranscription();
       setServerTranscribing(false);
@@ -254,26 +300,42 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
     }
 
     if (!fullText.trim()) {
-      setError('Aucun texte détecté. Réessayez en parlant plus fort ou plus près du micro.');
+      stopProgress(0);
+      setErrorKind('transcribe');
+      setError('La transcription n\'a rien renvoyé. Parlez plus fort ou plus longtemps, puis réessayez.');
+      setParseStep('idle');
       setPhase('idle');
       return;
     }
 
     setTranscript(fullText);
     setInterimText('');
-    setPhase('parsing');
+
+    // Step 2: analyze
+    stopProgress(50);
+    setParseStep('analyze');
+    startProgress(50, 95, 4000);
 
     try {
       const parsed = await parseVoiceToTask(fullText);
       parsed.dueDate = resolveDate(parsed.dueDate);
       parsed.startDate = resolveDate(parsed.startDate);
       setParsedTask(parsed);
+      stopProgress(100);
+      setParseStep('done');
       setPhase('preview');
     } catch (err: any) {
-      setError(err.message || 'Erreur lors de l\'analyse');
+      stopProgress(0);
+      setParseStep('idle');
+      setErrorKind('parse');
+      setError(
+        err?.message
+          ? `Impossible d'analyser le texte : ${err.message}. Vous pouvez modifier le transcript et réessayer.`
+          : 'Impossible d\'analyser le texte dicté. Vous pouvez modifier le transcript et réessayer.'
+      );
       setPhase('idle');
     }
-  }, [transcript, interimText, runServerTranscription]);
+  }, [transcript, interimText, runServerTranscription, startProgress, stopProgress]);
 
   // ─── Re-run parsing on edited transcript ───
   const rerunParse = useCallback(async (newTranscript?: string) => {
@@ -320,12 +382,15 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
       streamRef.current.getTracks().forEach(t => t.stop());
       streamRef.current = null;
     }
+    stopProgress(0);
+    setParseStep('idle');
     setPhase('idle');
     setTranscript('');
     setInterimText('');
     setParsedTask(null);
     setError('');
-  }, []);
+    setErrorKind(null);
+  }, [stopProgress]);
 
   // ─── Confirm & create tasks ───
   const confirmCreate = useCallback(() => {
@@ -412,6 +477,10 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(t => t.stop());
       }
+      if (progressTimerRef.current) {
+        window.clearInterval(progressTimerRef.current);
+        progressTimerRef.current = null;
+      }
     };
   }, []);
 
@@ -431,13 +500,47 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
             </button>
           </div>
 
-          {/* Error */}
+          {/* Error with contextual retry */}
           {error && (
-            <div className="flex items-start gap-2 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-              <span>{error}</span>
+            <div className="rounded-lg bg-destructive/10 border border-destructive/30 text-destructive text-sm p-3 space-y-2">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="font-medium">
+                    {errorKind === 'mic' && 'Micro inaccessible'}
+                    {errorKind === 'empty' && 'Aucun son capté'}
+                    {errorKind === 'transcribe' && 'Transcription vide'}
+                    {errorKind === 'parse' && 'Analyse échouée'}
+                    {(!errorKind || errorKind === 'generic') && 'Erreur'}
+                  </p>
+                  <p className="text-xs opacity-90 mt-0.5">{error}</p>
+                </div>
+              </div>
+              <div className="flex gap-2 pt-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs"
+                  onClick={() => { setError(''); setErrorKind(null); startListening(); }}
+                >
+                  <Mic className="w-3 h-3 mr-1" /> Réessayer
+                </Button>
+                {(errorKind === 'transcribe' || errorKind === 'empty') && audioBlobRef.current && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 text-xs"
+                    onClick={retryServerTranscription}
+                    disabled={serverTranscribing}
+                  >
+                    {serverTranscribing ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <RefreshCw className="w-3 h-3 mr-1" />}
+                    Transcrire via IA
+                  </Button>
+                )}
+              </div>
             </div>
           )}
+
 
           {/* ─── Phase: IDLE ─── */}
           {phase === 'idle' && !error && (
@@ -508,16 +611,49 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
             </div>
           )}
 
-          {/* ─── Phase: PARSING ─── */}
+          {/* ─── Phase: PARSING (with progress) ─── */}
           {phase === 'parsing' && (
-            <div className="text-center py-6 space-y-3">
-              <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto" />
-              <p className="text-sm text-muted-foreground">
-                {serverTranscribing ? 'Transcription IA de l\'audio…' : 'Analyse par l\'IA en cours…'}
+            <div className="py-4 space-y-4">
+              {/* Step indicator */}
+              <div className="flex items-center justify-center gap-2 text-xs">
+                <div className={`flex items-center gap-1.5 ${parseStep === 'transcribe' ? 'text-primary font-medium' : parseStep === 'analyze' || parseStep === 'done' ? 'text-foreground/70' : 'text-muted-foreground'}`}>
+                  {parseStep === 'transcribe'
+                    ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    : (parseStep === 'analyze' || parseStep === 'done')
+                      ? <Check className="w-3.5 h-3.5 text-emerald-500" />
+                      : <div className="w-3.5 h-3.5 rounded-full border border-current" />}
+                  Transcription
+                </div>
+                <div className="w-6 h-px bg-border" />
+                <div className={`flex items-center gap-1.5 ${parseStep === 'analyze' ? 'text-primary font-medium' : parseStep === 'done' ? 'text-foreground/70' : 'text-muted-foreground'}`}>
+                  {parseStep === 'analyze'
+                    ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    : parseStep === 'done'
+                      ? <Check className="w-3.5 h-3.5 text-emerald-500" />
+                      : <div className="w-3.5 h-3.5 rounded-full border border-current" />}
+                  Analyse IA
+                </div>
+              </div>
+
+              {/* Progress bar */}
+              <div className="w-full h-1.5 rounded-full bg-muted overflow-hidden">
+                <div
+                  className="h-full bg-primary transition-all duration-200 ease-out"
+                  style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+                />
+              </div>
+
+              <p className="text-xs text-center text-muted-foreground">
+                {parseStep === 'transcribe' && (serverTranscribing ? 'Transcription IA de l\'audio…' : 'Récupération du texte dicté…')}
+                {parseStep === 'analyze' && 'Extraction des informations de la tâche…'}
+                {parseStep === 'done' && 'Terminé !'}
               </p>
-              {transcript && <p className="text-xs text-muted-foreground/60 max-w-sm mx-auto">"{transcript}"</p>}
+              {transcript && (
+                <p className="text-xs text-muted-foreground/60 max-w-sm mx-auto text-center italic">"{transcript}"</p>
+              )}
             </div>
           )}
+
 
           {/* ─── Phase: PREVIEW ─── */}
           {phase === 'preview' && parsedTask && (

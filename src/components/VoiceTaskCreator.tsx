@@ -373,7 +373,7 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
       );
       setPhase('idle');
     }
-  }, [transcript, interimText, runServerTranscription, startProgress, stopProgress]);
+  }, [transcript, interimText, runServerTranscription, startProgress, stopProgress, cancelAutoRetry, startListening]);
 
   // ─── Re-run parsing on edited transcript ───
   const rerunParse = useCallback(async (newTranscript?: string) => {

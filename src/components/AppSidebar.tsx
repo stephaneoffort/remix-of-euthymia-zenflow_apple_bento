@@ -827,10 +827,6 @@ export default function AppSidebar() {
           {messagesExpanded && (
             <>
               <button
-                onClick={() => { navigate('/chat'); handleNavClick(); }}
-                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors text-sidebar-fg hover:bg-sidebar-hover"
-              >
-                <MessagesSquare className="w-4 h-4" />
                 onClick={() => { navigate('/chat'); collapseIfMobile(); }}
                 className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors text-sidebar-fg hover:bg-sidebar-hover"
               >

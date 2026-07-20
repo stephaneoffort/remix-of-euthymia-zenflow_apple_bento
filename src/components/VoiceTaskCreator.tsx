@@ -477,6 +477,10 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(t => t.stop());
       }
+      if (progressTimerRef.current) {
+        window.clearInterval(progressTimerRef.current);
+        progressTimerRef.current = null;
+      }
     };
   }, []);
 

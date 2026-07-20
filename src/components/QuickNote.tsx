@@ -425,11 +425,18 @@ export function QuickNote() {
           description: intent.recipient ? `Mention : @${intent.recipient.name}` : undefined,
         });
       } else {
-        // Save to localStorage (max 50 notes)
-        const all = loadSavedNotes();
-        const next = [{ id: String(Date.now()), text: text.trim(), createdAt: new Date().toISOString() }, ...all].slice(0, 50);
-        localStorage.setItem('quick_notes', JSON.stringify(next));
-        setSavedNotes(next);
+        // Save to Supabase
+        const noteText = text.trim();
+        const { data: inserted, error: insErr } = await db
+          .from('quick_notes')
+          .insert({ user_id: user.id, text: noteText })
+          .select('id, text, created_at')
+          .single();
+        if (insErr) throw insErr;
+        setSavedNotes(prev => [
+          { id: inserted.id, text: inserted.text, createdAt: inserted.created_at },
+          ...prev,
+        ]);
         toast.success('Note sauvegardée');
         setText('');
         setAudioUrl(null);
@@ -439,6 +446,7 @@ export function QuickNote() {
         setSaving(false);
         return;
       }
+
       handleClose();
     } catch (e: any) {
       toast.error(e.message || 'Erreur lors de la sauvegarde');

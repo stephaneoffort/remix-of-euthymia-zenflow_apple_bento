@@ -414,7 +414,7 @@ export function QuickNote() {
     if (!SR) return;
 
     const r = new SR();
-    r.lang = 'fr-FR';
+    r.lang = (TRANSCRIPTION_LANGS.find(l => l.code === transcribeLangRef.current)?.bcp47) || 'fr-FR';
     r.continuous = true;
     r.interimResults = true;
     recognRef.current = r;

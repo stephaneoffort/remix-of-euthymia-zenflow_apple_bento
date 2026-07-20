@@ -181,7 +181,47 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
   }, [activeChannelId, channels, onSelectChannel, onChannelCreated]);
 
 
-  // All team members except self for DMs
+  const toggleSelected = useCallback((channelId: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(channelId)) next.delete(channelId);
+      else next.add(channelId);
+      return next;
+    });
+  }, []);
+
+  const exitSelectionMode = useCallback(() => {
+    setSelectionMode(false);
+    setSelectedIds(new Set());
+  }, []);
+
+  const handleBulkDelete = useCallback(async () => {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) return;
+    const ok = window.confirm(`Supprimer ${ids.length} conversation${ids.length > 1 ? 's' : ''} ? Cette action est irréversible et effacera tous les messages associés.`);
+    if (!ok) return;
+    setBulkDeleting(true);
+    let deleted = 0;
+    const errors: string[] = [];
+    for (const id of ids) {
+      await db.from('chat_messages').delete().eq('channel_id', id);
+      await db.from('chat_channel_members').delete().eq('channel_id', id);
+      const { error } = await db.from('chat_channels').delete().eq('id', id);
+      if (error) errors.push(error.message);
+      else deleted++;
+    }
+    setBulkDeleting(false);
+    if (deleted > 0) toast.success(`${deleted} conversation${deleted > 1 ? 's supprimées' : ' supprimée'}`);
+    if (errors.length > 0) toast.error(`${errors.length} échec${errors.length > 1 ? 's' : ''} de suppression`);
+    if (activeChannelId && ids.includes(activeChannelId)) {
+      const remaining = channels.filter(c => !ids.includes(c.id));
+      if (remaining[0]) onSelectChannel(remaining[0].id);
+    }
+    exitSelectionMode();
+    onChannelCreated?.();
+  }, [selectedIds, activeChannelId, channels, onSelectChannel, onChannelCreated, exitSelectionMode]);
+
+
   const availableForDm = useMemo(() => {
     return teamMembers.filter(m => {
       const authId = teamMemberToAuthId[m.id];

@@ -161,6 +161,14 @@ export function QuickNote() {
   const [members, setMembers] = useState<Member[]>([]);
   const [channels, setChannels] = useState<Channel[]>([]);
   const [savedNotes, setSavedNotes] = useState<SavedNote[]>([]);
+  const [transcribeLang, setTranscribeLang] = useState<string>(() => {
+    try { return localStorage.getItem(LANG_STORAGE_KEY) || 'fr'; } catch { return 'fr'; }
+  });
+  const transcribeLangRef = useRef(transcribeLang);
+  useEffect(() => {
+    transcribeLangRef.current = transcribeLang;
+    try { localStorage.setItem(LANG_STORAGE_KEY, transcribeLang); } catch {}
+  }, [transcribeLang]);
 
   const recorderRef   = useRef<MediaRecorder | null>(null);
   const chunksRef     = useRef<Blob[]>([]);

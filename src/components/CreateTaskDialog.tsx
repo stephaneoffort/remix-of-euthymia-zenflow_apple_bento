@@ -152,7 +152,33 @@ export default function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialo
   };
 
   if (mode === 'voice') {
-    return open ? <VoiceTaskCreator onClose={() => onOpenChange(false)} /> : null;
+    return open ? (
+      <VoiceTaskCreator
+        onClose={() => onOpenChange(false)}
+        onParsed={(parsed) => {
+          // Prefill form fields with parsed voice data
+          setTitle(parsed.title || '');
+          setDescription(parsed.description || '');
+          setPriority((parsed.priority as Priority) || 'normal');
+          if (parsed.dueDate && /^\d{4}-\d{2}-\d{2}$/.test(parsed.dueDate)) setDueDate(parsed.dueDate);
+          if (parsed.dueTime && /^\d{2}:\d{2}$/.test(parsed.dueTime)) setDueTime(parsed.dueTime);
+          if (parsed.startDate && /^\d{4}-\d{2}-\d{2}$/.test(parsed.startDate)) setStartDate(parsed.startDate);
+          // Match assignees by name (fuzzy first-name match)
+          const ids = (parsed.assignees || [])
+            .map((name: string) => {
+              const lower = name.toLowerCase();
+              return teamMembers.find(m =>
+                m.name.toLowerCase().includes(lower) ||
+                lower.includes(m.name.split(' ')[0].toLowerCase())
+              )?.id;
+            })
+            .filter(Boolean) as string[];
+          if (ids.length > 0) setAssigneeIds(ids);
+          setMode('form');
+          toast.success('Formulaire pré-rempli à partir de la dictée');
+        }}
+      />
+    ) : null;
   }
 
   return (

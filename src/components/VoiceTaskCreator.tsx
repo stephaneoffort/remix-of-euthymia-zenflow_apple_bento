@@ -299,14 +299,35 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
     setParseStep('transcribe');
     startProgress(0, 50, 6000);
 
+    const capturedMs = recordingStartRef.current ? Date.now() - recordingStartRef.current : 0;
+
     if (!fullText) {
       const audioSize = audioBlobRef.current?.size || 0;
-      if (audioSize < 1024) {
+      // Too-short capture: skip server transcription and auto-propose a retry
+      if (capturedMs < MIN_CAPTURE_MS || audioSize < 1024) {
         stopProgress(0);
         setErrorKind('empty');
-        setError('Aucun son détecté. Vérifiez que le micro fonctionne et parlez plus près, puis réessayez.');
+        const secs = (capturedMs / 1000).toFixed(1).replace('.', ',');
+        setError(
+          `Capture trop courte (${secs}s, minimum 1,5 s). Nouvelle tentative dans quelques secondes — appuyez sur Annuler pour rester en place.`
+        );
         setParseStep('idle');
         setPhase('idle');
+        // Auto-relance countdown (3 seconds)
+        cancelAutoRetry();
+        let remaining = 3;
+        setAutoRetryIn(remaining);
+        autoRetryTimerRef.current = window.setInterval(() => {
+          remaining -= 1;
+          if (remaining <= 0) {
+            cancelAutoRetry();
+            setError('');
+            setErrorKind(null);
+            startListening();
+          } else {
+            setAutoRetryIn(remaining);
+          }
+        }, 1000) as unknown as number;
         return;
       }
       setServerTranscribing(true);
@@ -314,6 +335,7 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
       setServerTranscribing(false);
       if (serverText) fullText = serverText;
     }
+
 
     if (!fullText.trim()) {
       stopProgress(0);

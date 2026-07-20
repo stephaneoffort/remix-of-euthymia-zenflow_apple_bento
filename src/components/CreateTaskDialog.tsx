@@ -59,6 +59,7 @@ export default function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialo
       setPriority('normal');
       setStartDate(''); setStartTime(''); setDueDate(''); setDueTime('');
       setAssigneeIds(teamMemberId ? [teamMemberId] : []);
+      setReminders([]); setRemAmount(1); setRemUnit('h'); setRemType('before_end');
     }
   }, [open, teamMemberId]);
 
@@ -73,32 +74,79 @@ export default function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialo
     return t ? `${d}T${t}:00` : d;
   };
 
-  const handleSubmit = () => {
+  const addReminderDraft = () => {
+    const amount = Math.max(1, Math.floor(remAmount) || 1);
+    if (reminders.find(r => r.amount === amount && r.unit === remUnit && r.type === remType)) {
+      toast.error('Ce rappel existe déjà');
+      return;
+    }
+    setReminders(prev => [...prev, { amount, unit: remUnit, type: remType }]);
+  };
+
+  const removeReminderDraft = (i: number) => setReminders(prev => prev.filter((_, idx) => idx !== i));
+
+  const handleSubmit = async () => {
     if (!title.trim()) { toast.error('Le titre est requis'); return; }
     if (!projectId) { toast.error('Sélectionnez un projet'); return; }
     const lists = getListsForProject(projectId);
     const listId = lists[0]?.id;
     if (!listId) { toast.error('Aucune liste dans ce projet'); return; }
 
-    addTask({
-      title: title.trim(),
-      description,
-      status: 'todo',
-      priority,
-      dueDate: combineDateTime(dueDate, dueTime),
-      startDate: combineDateTime(startDate, startTime),
-      assigneeIds,
-      tags: [],
-      parentTaskId: null,
-      listId,
-      comments: [],
-      attachments: [],
-      timeEstimate: null,
-      timeLogged: null,
-      aiSummary: null,
-    });
-    toast.success(`Tâche créée : "${title.trim()}"`);
-    onOpenChange(false);
+    const startISO = combineDateTime(startDate, startTime);
+    const dueISO = combineDateTime(dueDate, dueTime);
+
+    // Warn about reminders needing dates
+    const missingStart = reminders.some(r => r.type === 'before_start') && !startISO;
+    const missingEnd = reminders.some(r => r.type === 'before_end') && !dueISO;
+    if (missingStart || missingEnd) {
+      toast.error('Certains rappels nécessitent une date de début ou d\'échéance');
+      return;
+    }
+
+    if (reminders.length === 0) {
+      addTask({
+        title: title.trim(), description, status: 'todo', priority,
+        dueDate: dueISO, startDate: startISO, assigneeIds,
+        tags: [], parentTaskId: null, listId,
+        comments: [], attachments: [],
+        timeEstimate: null, timeLogged: null, aiSummary: null,
+      });
+      toast.success(`Tâche créée : "${title.trim()}"`);
+      onOpenChange(false);
+      return;
+    }
+
+    // With reminders: insert directly to get id
+    try {
+      const { data, error } = await supabase.from('tasks').insert({
+        title: title.trim(), description, status: 'todo', priority,
+        due_date: dueISO, start_date: startISO,
+        parent_task_id: null, list_id: listId,
+        tags: [], time_estimate: null, time_logged: null, ai_summary: null,
+      }).select().single();
+      if (error) throw error;
+
+      if (assigneeIds.length > 0) {
+        await supabase.from('task_assignees').insert(
+          assigneeIds.map(mid => ({ task_id: data.id, member_id: mid }))
+        );
+      }
+
+      await (supabase as any).from('task_reminders').insert(
+        reminders.map(r => ({
+          task_id: data.id,
+          reminder_type: r.type,
+          offset_key: `${r.amount}${r.unit}`,
+        }))
+      );
+
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      toast.success(`Tâche créée : "${title.trim()}"`);
+      onOpenChange(false);
+    } catch (e: any) {
+      console.error(e);
+      toast.error('Erreur lors de la création de la tâche');
+    }
   };
 
   if (mode === 'voice') {

@@ -547,7 +547,7 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
                 <div className="flex-1">
                   <p className="font-medium">
                     {errorKind === 'mic' && 'Micro inaccessible'}
-                    {errorKind === 'empty' && 'Aucun son capté'}
+                    {errorKind === 'empty' && (autoRetryIn !== null ? 'Capture trop courte' : 'Aucun son capté')}
                     {errorKind === 'transcribe' && 'Transcription vide'}
                     {errorKind === 'parse' && 'Analyse échouée'}
                     {(!errorKind || errorKind === 'generic') && 'Erreur'}

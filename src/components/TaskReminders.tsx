@@ -76,10 +76,14 @@ export default function TaskReminders({ taskId, hasStartDate, hasDueDate }: Task
       .insert({ task_id: taskId, reminder_type: reminderType, offset_key: offsetKey })
       .select()
       .single();
-    if (data && !error) {
-      setReminders(prev => [...prev, data as Reminder]);
-      toast({ title: 'Rappel ajouté' });
+    if (error || !data) {
+      console.error('reminder insert error', error);
+      toast({ title: 'Erreur', description: error?.message || 'Impossible d\'ajouter le rappel' });
+      return;
     }
+    setReminders(prev => [...prev, data as Reminder]);
+    toast({ title: 'Rappel ajouté' });
+
   };
 
   const removeReminder = async (id: string) => {

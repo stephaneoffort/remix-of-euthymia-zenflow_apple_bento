@@ -503,8 +503,10 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
           {phase === 'parsing' && (
             <div className="text-center py-6 space-y-3">
               <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto" />
-              <p className="text-sm text-muted-foreground">Analyse par l'IA en cours…</p>
-              <p className="text-xs text-muted-foreground/60 max-w-sm mx-auto">"{transcript}"</p>
+              <p className="text-sm text-muted-foreground">
+                {serverTranscribing ? 'Transcription IA de l\'audio…' : 'Analyse par l\'IA en cours…'}
+              </p>
+              {transcript && <p className="text-xs text-muted-foreground/60 max-w-sm mx-auto">"{transcript}"</p>}
             </div>
           )}
 

@@ -117,6 +117,7 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
   const [serverTranscribing, setServerTranscribing] = useState(false);
   const [parseStep, setParseStep] = useState<'idle' | 'transcribe' | 'analyze' | 'done'>('idle');
   const [progress, setProgress] = useState(0); // 0-100
+  const [autoRetryIn, setAutoRetryIn] = useState<number | null>(null);
   const recognitionRef = useRef<any>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -124,6 +125,18 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
   const audioBlobRef = useRef<Blob | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const progressTimerRef = useRef<number | null>(null);
+  const recordingStartRef = useRef<number>(0);
+  const autoRetryTimerRef = useRef<number | null>(null);
+
+  const MIN_CAPTURE_MS = 1500;
+
+  const cancelAutoRetry = useCallback(() => {
+    if (autoRetryTimerRef.current) {
+      window.clearInterval(autoRetryTimerRef.current);
+      autoRetryTimerRef.current = null;
+    }
+    setAutoRetryIn(null);
+  }, []);
 
   // Resolve listId
   const listId = defaultListId || (() => {
@@ -168,6 +181,8 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
     audioChunksRef.current = [];
     audioBlobRef.current = null;
 
+    cancelAutoRetry();
+
     // Start MediaRecorder to capture audio for optional server re-transcription
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -186,6 +201,7 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
         audioBlobRef.current = new Blob(audioChunksRef.current, { type: audioMimeRef.current });
       };
       mediaRecorderRef.current = recorder;
+      recordingStartRef.current = Date.now();
       recorder.start();
     } catch (err: any) {
       console.error('getUserMedia error:', err);
@@ -283,14 +299,35 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
     setParseStep('transcribe');
     startProgress(0, 50, 6000);
 
+    const capturedMs = recordingStartRef.current ? Date.now() - recordingStartRef.current : 0;
+
     if (!fullText) {
       const audioSize = audioBlobRef.current?.size || 0;
-      if (audioSize < 1024) {
+      // Too-short capture: skip server transcription and auto-propose a retry
+      if (capturedMs < MIN_CAPTURE_MS || audioSize < 1024) {
         stopProgress(0);
         setErrorKind('empty');
-        setError('Aucun son détecté. Vérifiez que le micro fonctionne et parlez plus près, puis réessayez.');
+        const secs = (capturedMs / 1000).toFixed(1).replace('.', ',');
+        setError(
+          `Capture trop courte (${secs}s, minimum 1,5 s). Nouvelle tentative dans quelques secondes — appuyez sur Annuler pour rester en place.`
+        );
         setParseStep('idle');
         setPhase('idle');
+        // Auto-relance countdown (3 seconds)
+        cancelAutoRetry();
+        let remaining = 3;
+        setAutoRetryIn(remaining);
+        autoRetryTimerRef.current = window.setInterval(() => {
+          remaining -= 1;
+          if (remaining <= 0) {
+            cancelAutoRetry();
+            setError('');
+            setErrorKind(null);
+            startListening();
+          } else {
+            setAutoRetryIn(remaining);
+          }
+        }, 1000) as unknown as number;
         return;
       }
       setServerTranscribing(true);
@@ -298,6 +335,7 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
       setServerTranscribing(false);
       if (serverText) fullText = serverText;
     }
+
 
     if (!fullText.trim()) {
       stopProgress(0);
@@ -335,7 +373,7 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
       );
       setPhase('idle');
     }
-  }, [transcript, interimText, runServerTranscription, startProgress, stopProgress]);
+  }, [transcript, interimText, runServerTranscription, startProgress, stopProgress, cancelAutoRetry, startListening]);
 
   // ─── Re-run parsing on edited transcript ───
   const rerunParse = useCallback(async (newTranscript?: string) => {
@@ -383,6 +421,7 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
       streamRef.current = null;
     }
     stopProgress(0);
+    cancelAutoRetry();
     setParseStep('idle');
     setPhase('idle');
     setTranscript('');
@@ -390,7 +429,7 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
     setParsedTask(null);
     setError('');
     setErrorKind(null);
-  }, [stopProgress]);
+  }, [stopProgress, cancelAutoRetry]);
 
   // ─── Confirm & create tasks ───
   const confirmCreate = useCallback(() => {
@@ -481,6 +520,10 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
         window.clearInterval(progressTimerRef.current);
         progressTimerRef.current = null;
       }
+      if (autoRetryTimerRef.current) {
+        window.clearInterval(autoRetryTimerRef.current);
+        autoRetryTimerRef.current = null;
+      }
     };
   }, []);
 
@@ -508,7 +551,7 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
                 <div className="flex-1">
                   <p className="font-medium">
                     {errorKind === 'mic' && 'Micro inaccessible'}
-                    {errorKind === 'empty' && 'Aucun son capté'}
+                    {errorKind === 'empty' && (autoRetryIn !== null ? 'Capture trop courte' : 'Aucun son capté')}
                     {errorKind === 'transcribe' && 'Transcription vide'}
                     {errorKind === 'parse' && 'Analyse échouée'}
                     {(!errorKind || errorKind === 'generic') && 'Erreur'}
@@ -516,16 +559,27 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
                   <p className="text-xs opacity-90 mt-0.5">{error}</p>
                 </div>
               </div>
-              <div className="flex gap-2 pt-1">
+              <div className="flex gap-2 pt-1 items-center">
                 <Button
                   variant="outline"
                   size="sm"
                   className="h-7 text-xs"
-                  onClick={() => { setError(''); setErrorKind(null); startListening(); }}
+                  onClick={() => { cancelAutoRetry(); setError(''); setErrorKind(null); startListening(); }}
                 >
-                  <Mic className="w-3 h-3 mr-1" /> Réessayer
+                  <Mic className="w-3 h-3 mr-1" />
+                  {autoRetryIn !== null ? `Relancer maintenant (${autoRetryIn}s)` : 'Réessayer'}
                 </Button>
-                {(errorKind === 'transcribe' || errorKind === 'empty') && audioBlobRef.current && (
+                {autoRetryIn !== null && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 text-xs"
+                    onClick={() => { cancelAutoRetry(); }}
+                  >
+                    Annuler
+                  </Button>
+                )}
+                {autoRetryIn === null && (errorKind === 'transcribe' || errorKind === 'empty') && audioBlobRef.current && (
                   <Button
                     variant="outline"
                     size="sm"

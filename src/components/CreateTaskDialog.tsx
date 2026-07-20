@@ -13,6 +13,8 @@ import { toast } from 'sonner';
 import VoiceTaskCreator from './VoiceTaskCreator';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
+import { formatReminderOffset } from '@/lib/reminderFormat';
+
 
 type ReminderDraft = { amount: number; unit: 'min' | 'h' | 'd'; type: 'before_start' | 'before_end' };
 const UNIT_LABEL: Record<ReminderDraft['unit'], string> = { min: 'min', h: 'h', d: 'j' };
@@ -258,7 +260,7 @@ export default function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialo
                   {reminders.map((r, i) => (
                     <span key={i} className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary font-medium">
                       <Bell className="w-3 h-3" />
-                      {r.amount}{UNIT_LABEL[r.unit]} avant {r.type === 'before_start' ? 'début' : 'échéance'}
+                      {formatReminderOffset({ amount: r.amount, unit: r.unit })} avant {r.type === 'before_start' ? 'début' : 'échéance'}
                       <button type="button" onClick={() => removeReminderDraft(i)} className="ml-0.5 hover:text-destructive">
                         <X className="w-3 h-3" />
                       </button>

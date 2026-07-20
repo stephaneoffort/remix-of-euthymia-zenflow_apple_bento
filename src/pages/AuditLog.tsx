@@ -19,8 +19,9 @@ const ACTION_LABELS: Record<string, string> = {
 };
 
 export default function AuditLog() {
-  const { tasks, projects, spaces, teamMembers } = useApp();
+  const { tasks, projects, spaces } = useApp();
   const [rows, setRows] = useState<AuditLogRow[]>([]);
+  const [listToProject, setListToProject] = useState<Map<string, string>>(new Map());
   const [loading, setLoading] = useState(true);
 
   // filters
@@ -34,11 +35,14 @@ export default function AuditLog() {
 
   useEffect(() => {
     (async () => {
-      const { data } = await (supabase.from("audit_logs" as any) as any)
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(1000);
-      setRows((data as AuditLogRow[]) ?? []);
+      const [{ data: logs }, { data: lists }] = await Promise.all([
+        (supabase.from("audit_logs" as any) as any).select("*").order("created_at", { ascending: false }).limit(1000),
+        supabase.from("task_lists").select("id, project_id"),
+      ]);
+      setRows((logs as AuditLogRow[]) ?? []);
+      const m = new Map<string, string>();
+      (lists ?? []).forEach((l: any) => { if (l.project_id) m.set(l.id, l.project_id); });
+      setListToProject(m);
       setLoading(false);
     })();
   }, []);
@@ -46,12 +50,6 @@ export default function AuditLog() {
   // Lookups
   const taskById = useMemo(() => new Map(tasks.map(t => [t.id, t])), [tasks]);
   const projectById = useMemo(() => new Map(projects.map(p => [p.id, p])), [projects]);
-  // team members are linked to auth via profiles; we only match names by user_id best-effort via email lookup omitted.
-  const memberByAuthId = useMemo(() => {
-    // profiles.id === auth uid, team_member.id !== auth uid. We don't have profile→member mapping in memory here.
-    // Provide filter list from teamMembers labels; matching to logs by user_id will remain via metadata-only.
-    return new Map<string, string>();
-  }, []);
 
   const uniqueUserIds = useMemo(() => {
     const s = new Set<string>();
@@ -75,15 +73,10 @@ export default function AuditLog() {
         if (!(r.entity_type === "task" && r.entity_id === taskId)) return false;
       }
       if (projectId !== "all" || spaceId !== "all") {
-        // Only meaningful for task entities: resolve via tasks -> lists -> projects (we have listId on task)
         if (r.entity_type !== "task" || !r.entity_id) return false;
         const t = taskById.get(r.entity_id);
         if (!t) return false;
-        // Task has listId; find project from lists via project? Simpler: iterate projects to find one that contains list
-        // Fallback: skip project/space filter if we can't resolve
-        // We rely on t as any to check for a project association
-        const anyT = t as any;
-        const pId = anyT.projectId ?? null;
+        const pId = listToProject.get(t.listId) ?? null;
         if (projectId !== "all" && pId !== projectId) return false;
         if (spaceId !== "all") {
           const proj = pId ? projectById.get(pId) : null;
@@ -102,7 +95,7 @@ export default function AuditLog() {
       }
       return true;
     });
-  }, [rows, search, action, entityType, userId, taskId, projectId, spaceId, taskById, projectById]);
+  }, [rows, search, action, entityType, userId, taskId, projectId, spaceId, taskById, projectById, listToProject]);
 
   const clearFilters = () => {
     setSearch(""); setAction("all"); setEntityType("all");

@@ -555,16 +555,27 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
                   <p className="text-xs opacity-90 mt-0.5">{error}</p>
                 </div>
               </div>
-              <div className="flex gap-2 pt-1">
+              <div className="flex gap-2 pt-1 items-center">
                 <Button
                   variant="outline"
                   size="sm"
                   className="h-7 text-xs"
-                  onClick={() => { setError(''); setErrorKind(null); startListening(); }}
+                  onClick={() => { cancelAutoRetry(); setError(''); setErrorKind(null); startListening(); }}
                 >
-                  <Mic className="w-3 h-3 mr-1" /> Réessayer
+                  <Mic className="w-3 h-3 mr-1" />
+                  {autoRetryIn !== null ? `Relancer maintenant (${autoRetryIn}s)` : 'Réessayer'}
                 </Button>
-                {(errorKind === 'transcribe' || errorKind === 'empty') && audioBlobRef.current && (
+                {autoRetryIn !== null && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 text-xs"
+                    onClick={() => { cancelAutoRetry(); }}
+                  >
+                    Annuler
+                  </Button>
+                )}
+                {autoRetryIn === null && (errorKind === 'transcribe' || errorKind === 'empty') && audioBlobRef.current && (
                   <Button
                     variant="outline"
                     size="sm"

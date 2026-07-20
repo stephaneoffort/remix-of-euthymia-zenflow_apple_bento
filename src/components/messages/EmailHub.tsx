@@ -552,7 +552,7 @@ function NotionMailLayout({
             {isMobile && (
               <button
                 onClick={() => setMobilePane('list')}
-                className="p-1.5 rounded-md hover:bg-muted text-muted-foreground"
+                className="p-1.5 rounded-md hover:bg-muted hover:text-foreground text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
                 title="Retour"
                 aria-label="Retour à la liste"
               >

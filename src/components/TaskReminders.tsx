@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Bell, Plus, X } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { formatReminderOffset } from '@/lib/reminderFormat';
+
 
 interface TaskRemindersProps {
   taskId: string;

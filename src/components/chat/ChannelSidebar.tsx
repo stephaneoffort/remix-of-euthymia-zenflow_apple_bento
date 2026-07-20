@@ -36,6 +36,9 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
   const [dmMembers, setDmMembers] = useState<Record<string, { name: string; avatarColor: string; userId: string }>>({});
   const [teamMemberToAuthId, setTeamMemberToAuthId] = useState<Record<string, string>>({});
   const [authIdToTeamMember, setAuthIdToTeamMember] = useState<Record<string, string>>({});
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkDeleting, setBulkDeleting] = useState(false);
 
   const publicChannels = channels.filter(c => c.type === 'public');
   const privateChannels = channels.filter(c => c.type === 'private');

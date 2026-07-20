@@ -10,6 +10,28 @@ import { toast } from 'sonner';
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle,
 } from '@/components/ui/sheet';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
+
+// ─── Transcription languages ──────────────────────────────────────────────────
+// ISO-639-1 codes (bare, no locale suffix) — Whisper/OpenAI STT accepts this format.
+// "auto" = let the model detect (omit the field).
+const TRANSCRIPTION_LANGS: { code: string; label: string; bcp47: string }[] = [
+  { code: 'auto', label: 'Auto', bcp47: '' },
+  { code: 'fr',   label: 'Français', bcp47: 'fr-FR' },
+  { code: 'en',   label: 'English',  bcp47: 'en-US' },
+  { code: 'es',   label: 'Español',  bcp47: 'es-ES' },
+  { code: 'de',   label: 'Deutsch',  bcp47: 'de-DE' },
+  { code: 'it',   label: 'Italiano', bcp47: 'it-IT' },
+  { code: 'pt',   label: 'Português',bcp47: 'pt-PT' },
+  { code: 'nl',   label: 'Nederlands',bcp47:'nl-NL' },
+  { code: 'pl',   label: 'Polski',   bcp47: 'pl-PL' },
+  { code: 'zh',   label: '中文',      bcp47: 'zh-CN' },
+  { code: 'ja',   label: '日本語',    bcp47: 'ja-JP' },
+  { code: 'ar',   label: 'العربية',   bcp47: 'ar-SA' },
+];
+const LANG_STORAGE_KEY = 'quick_notes_transcribe_lang';
 
 const db = supabase as any;
 
@@ -139,6 +161,14 @@ export function QuickNote() {
   const [members, setMembers] = useState<Member[]>([]);
   const [channels, setChannels] = useState<Channel[]>([]);
   const [savedNotes, setSavedNotes] = useState<SavedNote[]>([]);
+  const [transcribeLang, setTranscribeLang] = useState<string>(() => {
+    try { return localStorage.getItem(LANG_STORAGE_KEY) || 'fr'; } catch { return 'fr'; }
+  });
+  const transcribeLangRef = useRef(transcribeLang);
+  useEffect(() => {
+    transcribeLangRef.current = transcribeLang;
+    try { localStorage.setItem(LANG_STORAGE_KEY, transcribeLang); } catch {}
+  }, [transcribeLang]);
 
   const recorderRef   = useRef<MediaRecorder | null>(null);
   const chunksRef     = useRef<Blob[]>([]);
@@ -353,7 +383,7 @@ export function QuickNote() {
       });
 
       const { data, error } = await supabase.functions.invoke('transcribe-audio', {
-        body: { audio: base64, mimeType: mime, language: 'français' },
+        body: { audio: base64, mimeType: mime, language: transcribeLangRef.current },
       });
 
       if (error) throw error;
@@ -384,7 +414,7 @@ export function QuickNote() {
     if (!SR) return;
 
     const r = new SR();
-    r.lang = 'fr-FR';
+    r.lang = (TRANSCRIPTION_LANGS.find(l => l.code === transcribeLangRef.current)?.bcp47) || 'fr-FR';
     r.continuous = true;
     r.interimResults = true;
     recognRef.current = r;
@@ -772,6 +802,28 @@ export function QuickNote() {
                   </>
                 )}
               </button>
+
+              {/* Transcription language */}
+              <Select
+                value={transcribeLang}
+                onValueChange={setTranscribeLang}
+                disabled={isRecording || transcribing}
+              >
+                <SelectTrigger
+                  className="h-9 w-auto gap-1.5 px-2.5 text-xs bg-muted border-0 hover:bg-muted/80"
+                  title="Langue de transcription"
+                  aria-label="Langue de transcription"
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {TRANSCRIPTION_LANGS.map(l => (
+                    <SelectItem key={l.code} value={l.code} className="text-xs">
+                      {l.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
               <div className="flex-1" />
 

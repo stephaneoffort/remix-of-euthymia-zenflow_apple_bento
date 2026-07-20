@@ -382,12 +382,15 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
       streamRef.current.getTracks().forEach(t => t.stop());
       streamRef.current = null;
     }
+    stopProgress(0);
+    setParseStep('idle');
     setPhase('idle');
     setTranscript('');
     setInterimText('');
     setParsedTask(null);
     setError('');
-  }, []);
+    setErrorKind(null);
+  }, [stopProgress]);
 
   // ─── Confirm & create tasks ───
   const confirmCreate = useCallback(() => {

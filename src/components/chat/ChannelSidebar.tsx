@@ -234,48 +234,66 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
     <>
       <div className="w-64 backdrop-blur-2xl bg-card/15 border-r border-border/15 flex flex-col shrink-0 h-full shadow-[inset_-1px_0_0_rgba(255,255,255,0.03)] sm:w-64 max-sm:w-full">
         {/* Header */}
-        <div className="h-14 flex items-center gap-2 px-3 border-b border-border/15 bg-card/20">
-          <button onClick={() => navigate('/')}
-            className="p-1.5 rounded-xl hover:bg-muted/40 text-muted-foreground hover:text-foreground transition-all backdrop-blur-sm"
-            title="Retour à l'accueil">
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <div className="flex items-center gap-2 flex-1 min-w-0">
-            <div className="w-7 h-7 rounded-xl bg-primary/10 border border-primary/15 flex items-center justify-center shadow-[0_0_10px_hsl(var(--primary)/0.1)]">
-              <MessageCircle className="w-4 h-4 text-primary" />
-            </div>
-            <h3 className="font-bold text-foreground text-sm truncate" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.15)' }}>
-              Chat d'équipe
-            </h3>
-          </div>
-          <button
-            onClick={() => (selectionMode ? exitSelectionMode() : setSelectionMode(true))}
-            className={`p-1.5 rounded-xl transition-all backdrop-blur-sm ${selectionMode ? 'bg-primary/15 text-primary' : 'hover:bg-muted/40 text-muted-foreground hover:text-foreground'}`}
-            title={selectionMode ? 'Quitter la sélection' : 'Sélectionner plusieurs conversations'}
-          >
-            {selectionMode ? <X className="w-4 h-4" /> : <CheckSquare className="w-4 h-4" />}
-          </button>
-        </div>
-
-        {/* Selection toolbar */}
-        {selectionMode && (
-          <div className="flex items-center gap-2 px-3 py-2 border-b border-border/15 bg-primary/5">
-            <span className="text-xs font-medium text-foreground flex-1">
+        {selectionMode ? (
+          <div className="h-14 flex items-center gap-2 px-3 border-b border-border/15 bg-primary/10">
+            <button
+              onClick={exitSelectionMode}
+              className="p-1.5 rounded-xl hover:bg-muted/40 text-foreground transition-all backdrop-blur-sm"
+              title="Quitter la sélection"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <span className="text-xs font-semibold text-foreground flex-1 min-w-0">
               {selectedIds.size} sélectionnée{selectedIds.size > 1 ? 's' : ''}
             </span>
-            <button
-              onClick={() => setSelectedIds(new Set(channels.map(c => c.id)))}
-              className="text-[11px] px-2 py-1 rounded-lg hover:bg-muted/40 text-muted-foreground hover:text-foreground transition-all"
-            >
-              Tout
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setSelectedIds(new Set(channels.map(c => c.id)))}
+                disabled={selectedIds.size === channels.length}
+                className="text-[11px] px-2 py-1.5 rounded-lg hover:bg-muted/40 text-foreground transition-all disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+                title="Tout sélectionner"
+              >
+                Tout sélectionner
+              </button>
+              <button
+                onClick={() => setSelectedIds(new Set())}
+                disabled={selectedIds.size === 0}
+                className="text-[11px] px-2 py-1.5 rounded-lg hover:bg-muted/40 text-foreground transition-all disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+                title="Effacer la sélection"
+              >
+                Effacer
+              </button>
+              <button
+                onClick={handleBulkDelete}
+                disabled={selectedIds.size === 0 || bulkDeleting}
+                className="text-[11px] px-2 py-1.5 rounded-lg bg-destructive/15 text-destructive hover:bg-destructive/25 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 whitespace-nowrap"
+              >
+                <Trash2 className="w-3 h-3" />
+                {bulkDeleting ? '...' : 'Supprimer'}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="h-14 flex items-center gap-2 px-3 border-b border-border/15 bg-card/20">
+            <button onClick={() => navigate('/')}
+              className="p-1.5 rounded-xl hover:bg-muted/40 text-muted-foreground hover:text-foreground transition-all backdrop-blur-sm"
+              title="Retour à l'accueil">
+              <ChevronLeft className="w-5 h-5" />
             </button>
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <div className="w-7 h-7 rounded-xl bg-primary/10 border border-primary/15 flex items-center justify-center shadow-[0_0_10px_hsl(var(--primary)/0.1)]">
+                <MessageCircle className="w-4 h-4 text-primary" />
+              </div>
+              <h3 className="font-bold text-foreground text-sm truncate" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.15)' }}>
+                Chat d'équipe
+              </h3>
+            </div>
             <button
-              onClick={handleBulkDelete}
-              disabled={selectedIds.size === 0 || bulkDeleting}
-              className="text-[11px] px-2 py-1 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
+              onClick={() => setSelectionMode(true)}
+              className="p-1.5 rounded-xl transition-all backdrop-blur-sm hover:bg-muted/40 text-muted-foreground hover:text-foreground"
+              title="Sélectionner plusieurs conversations"
             >
-              <Trash2 className="w-3 h-3" />
-              {bulkDeleting ? '...' : 'Supprimer'}
+              <CheckSquare className="w-4 h-4" />
             </button>
           </div>
         )}

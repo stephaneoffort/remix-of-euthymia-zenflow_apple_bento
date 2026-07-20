@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Hash, Lock, Plus, ChevronLeft, MessageCircle, Mail } from 'lucide-react';
+import { Hash, Lock, Plus, ChevronLeft, MessageCircle, Mail, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -158,6 +158,26 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
     onChannelCreated?.();
   }, [user, onSelectChannel, onChannelCreated]);
 
+  const handleDeleteChannel = useCallback(async (channelId: string, label: string) => {
+    const ok = window.confirm(`Supprimer « ${label} » ? Cette action est irréversible et effacera tous les messages associés.`);
+    if (!ok) return;
+    // Delete dependent rows first (in case cascade is not set)
+    await db.from('chat_messages').delete().eq('channel_id', channelId);
+    await db.from('chat_channel_members').delete().eq('channel_id', channelId);
+    const { error } = await db.from('chat_channels').delete().eq('id', channelId);
+    if (error) {
+      toast.error(`Suppression impossible : ${error.message}`);
+      return;
+    }
+    toast.success('Conversation supprimée');
+    if (activeChannelId === channelId) {
+      const remaining = channels.filter(c => c.id !== channelId);
+      if (remaining[0]) onSelectChannel(remaining[0].id);
+    }
+    onChannelCreated?.();
+  }, [activeChannelId, channels, onSelectChannel, onChannelCreated]);
+
+
   // All team members except self for DMs
   const availableForDm = useMemo(() => {
     return teamMembers.filter(m => {
@@ -201,7 +221,8 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
             <div className="space-y-0.5 px-2">
               {publicChannels.map(ch => (
                 <ChannelItem key={ch.id} channel={ch} isActive={activeChannelId === ch.id}
-                  onClick={() => onSelectChannel(ch.id)} icon={<Hash className="w-4 h-4 shrink-0" />} unread={unreadCounts[ch.id] || 0} />
+                  onClick={() => onSelectChannel(ch.id)} icon={<Hash className="w-4 h-4 shrink-0" />} unread={unreadCounts[ch.id] || 0}
+                  onDelete={() => handleDeleteChannel(ch.id, `#${ch.name}`)} />
               ))}
               {publicChannels.length === 0 && (
                 <p className="text-[11px] text-muted-foreground/40 px-3 py-2 italic">Aucun canal</p>
@@ -218,7 +239,8 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
               <div className="space-y-0.5 px-2">
                 {privateChannels.map(ch => (
                   <ChannelItem key={ch.id} channel={ch} isActive={activeChannelId === ch.id}
-                    onClick={() => onSelectChannel(ch.id)} icon={<Lock className="w-4 h-4 shrink-0" />} unread={unreadCounts[ch.id] || 0} />
+                    onClick={() => onSelectChannel(ch.id)} icon={<Lock className="w-4 h-4 shrink-0" />} unread={unreadCounts[ch.id] || 0}
+                    onDelete={() => handleDeleteChannel(ch.id, ch.name)} />
                 ))}
               </div>
             </div>
@@ -245,6 +267,7 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
                     partnerName={partner?.name}
                     partnerColor={partner?.avatarColor}
                     unread={unreadCounts[ch.id] || 0}
+                    onDelete={() => handleDeleteChannel(ch.id, partner?.name ? `DM avec ${partner.name}` : 'cette conversation')}
                   />
                 );
               })}
@@ -378,58 +401,76 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
   );
 }
 
-function ChannelItem({ channel, isActive, onClick, icon, unread = 0 }: {
-  channel: ChatChannel; isActive: boolean; onClick: () => void; icon: React.ReactNode; unread?: number;
+function ChannelItem({ channel, isActive, onClick, icon, unread = 0, onDelete }: {
+  channel: ChatChannel; isActive: boolean; onClick: () => void; icon: React.ReactNode; unread?: number; onDelete?: () => void;
 }) {
   return (
-    <button onClick={onClick}
-      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all duration-200 ${
-        isActive
-          ? 'bg-primary/10 text-primary font-semibold backdrop-blur-xl border border-primary/15 shadow-[0_0_14px_hsl(var(--primary)/0.1),inset_0_1px_0_rgba(255,255,255,0.05)]'
-          : unread > 0
-            ? 'text-foreground font-medium hover:bg-muted/20'
-            : 'text-muted-foreground/60 hover:bg-muted/20 hover:text-foreground hover:backdrop-blur-sm'
-      }`}
-    >
-      <span className={isActive ? 'text-primary' : unread > 0 ? 'opacity-70' : 'opacity-40'}>{icon}</span>
-      <span className="truncate flex-1 text-left">{channel.name}</span>
+    <div className={`group relative w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all duration-200 ${
+      isActive
+        ? 'bg-primary/10 text-primary font-semibold backdrop-blur-xl border border-primary/15 shadow-[0_0_14px_hsl(var(--primary)/0.1),inset_0_1px_0_rgba(255,255,255,0.05)]'
+        : unread > 0
+          ? 'text-foreground font-medium hover:bg-muted/20'
+          : 'text-muted-foreground/60 hover:bg-muted/20 hover:text-foreground hover:backdrop-blur-sm'
+    }`}>
+      <button onClick={onClick} className="flex items-center gap-2.5 flex-1 min-w-0 text-left">
+        <span className={isActive ? 'text-primary' : unread > 0 ? 'opacity-70' : 'opacity-40'}>{icon}</span>
+        <span className="truncate flex-1">{channel.name}</span>
+      </button>
       {unread > 0 && !isActive && (
-        <span data-numeric className="font-numeric tabular-nums w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center shrink-0">
+        <span data-numeric className="font-numeric tabular-nums w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center shrink-0 group-hover:hidden">
           {unread > 99 ? '99+' : unread}
         </span>
       )}
-    </button>
+      {onDelete && (
+        <button
+          onClick={(e) => { e.stopPropagation(); onDelete(); }}
+          className="opacity-0 group-hover:opacity-100 p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
+          title="Supprimer la conversation"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
+      )}
+    </div>
   );
 }
 
-function DmItem({ channelId, isActive, onClick, partnerName, partnerColor, unread = 0 }: {
-  channelId: string; isActive: boolean; onClick: () => void; partnerName?: string; partnerColor?: string; unread?: number;
+function DmItem({ channelId, isActive, onClick, partnerName, partnerColor, unread = 0, onDelete }: {
+  channelId: string; isActive: boolean; onClick: () => void; partnerName?: string; partnerColor?: string; unread?: number; onDelete?: () => void;
 }) {
   const displayName = partnerName || 'Membre';
   const color = partnerColor || '#6366f1';
 
   return (
-    <button onClick={onClick}
-      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all duration-200 ${
-        isActive
-          ? 'bg-primary/10 text-primary font-semibold backdrop-blur-xl border border-primary/15 shadow-[0_0_14px_hsl(var(--primary)/0.1),inset_0_1px_0_rgba(255,255,255,0.05)]'
-          : unread > 0
-            ? 'text-foreground font-medium hover:bg-muted/20'
-            : 'text-muted-foreground/60 hover:bg-muted/20 hover:text-foreground hover:backdrop-blur-sm'
-      }`}
-    >
-      <div className="relative shrink-0">
-        <div className="w-6 h-6 rounded-lg flex items-center justify-center text-[9px] font-bold text-white"
-          style={{ backgroundColor: color }}>
-          {displayName[0]?.toUpperCase()}
+    <div className={`group relative w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all duration-200 ${
+      isActive
+        ? 'bg-primary/10 text-primary font-semibold backdrop-blur-xl border border-primary/15 shadow-[0_0_14px_hsl(var(--primary)/0.1),inset_0_1px_0_rgba(255,255,255,0.05)]'
+        : unread > 0
+          ? 'text-foreground font-medium hover:bg-muted/20'
+          : 'text-muted-foreground/60 hover:bg-muted/20 hover:text-foreground hover:backdrop-blur-sm'
+    }`}>
+      <button onClick={onClick} className="flex items-center gap-2.5 flex-1 min-w-0 text-left">
+        <div className="relative shrink-0">
+          <div className="w-6 h-6 rounded-lg flex items-center justify-center text-[9px] font-bold text-white"
+            style={{ backgroundColor: color }}>
+            {displayName[0]?.toUpperCase()}
+          </div>
         </div>
-      </div>
-      <span className="truncate flex-1 text-left">{displayName}</span>
+        <span className="truncate flex-1">{displayName}</span>
+      </button>
       {unread > 0 && !isActive && (
-        <span data-numeric className="font-numeric tabular-nums w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center shrink-0">
+        <span data-numeric className="font-numeric tabular-nums w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center shrink-0 group-hover:hidden">
           {unread > 99 ? '99+' : unread}
         </span>
       )}
-    </button>
+      {onDelete && (
+        <button
+          onClick={(e) => { e.stopPropagation(); onDelete(); }}
+          className="opacity-0 group-hover:opacity-100 p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
+          title="Supprimer la conversation"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
+      )}
+    </div>
   );
 }

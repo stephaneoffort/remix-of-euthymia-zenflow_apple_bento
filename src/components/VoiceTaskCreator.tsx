@@ -277,10 +277,22 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
     await new Promise(r => setTimeout(r, 150));
 
     let fullText = (transcript + ' ' + interimText).trim();
+    setPhase('parsing');
 
-    // If Web Speech gave nothing (Safari / iOS), try server transcription
+    // Step 1: transcription (Web Speech first; server fallback if empty)
+    setParseStep('transcribe');
+    startProgress(0, 50, 6000);
+
     if (!fullText) {
-      setPhase('parsing');
+      const audioSize = audioBlobRef.current?.size || 0;
+      if (audioSize < 1024) {
+        stopProgress(0);
+        setErrorKind('empty');
+        setError('Aucun son détecté. Vérifiez que le micro fonctionne et parlez plus près, puis réessayez.');
+        setParseStep('idle');
+        setPhase('idle');
+        return;
+      }
       setServerTranscribing(true);
       const serverText = await runServerTranscription();
       setServerTranscribing(false);
@@ -288,26 +300,42 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
     }
 
     if (!fullText.trim()) {
-      setError('Aucun texte détecté. Réessayez en parlant plus fort ou plus près du micro.');
+      stopProgress(0);
+      setErrorKind('transcribe');
+      setError('La transcription n\'a rien renvoyé. Parlez plus fort ou plus longtemps, puis réessayez.');
+      setParseStep('idle');
       setPhase('idle');
       return;
     }
 
     setTranscript(fullText);
     setInterimText('');
-    setPhase('parsing');
+
+    // Step 2: analyze
+    stopProgress(50);
+    setParseStep('analyze');
+    startProgress(50, 95, 4000);
 
     try {
       const parsed = await parseVoiceToTask(fullText);
       parsed.dueDate = resolveDate(parsed.dueDate);
       parsed.startDate = resolveDate(parsed.startDate);
       setParsedTask(parsed);
+      stopProgress(100);
+      setParseStep('done');
       setPhase('preview');
     } catch (err: any) {
-      setError(err.message || 'Erreur lors de l\'analyse');
+      stopProgress(0);
+      setParseStep('idle');
+      setErrorKind('parse');
+      setError(
+        err?.message
+          ? `Impossible d'analyser le texte : ${err.message}. Vous pouvez modifier le transcript et réessayer.`
+          : 'Impossible d\'analyser le texte dicté. Vous pouvez modifier le transcript et réessayer.'
+      );
       setPhase('idle');
     }
-  }, [transcript, interimText, runServerTranscription]);
+  }, [transcript, interimText, runServerTranscription, startProgress, stopProgress]);
 
   // ─── Re-run parsing on edited transcript ───
   const rerunParse = useCallback(async (newTranscript?: string) => {

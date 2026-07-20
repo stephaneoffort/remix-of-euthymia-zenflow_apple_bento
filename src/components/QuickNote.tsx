@@ -643,6 +643,17 @@ export function QuickNote() {
 
             {tab === 'compose' && (
               <>
+                {/* Transcription language badge */}
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-muted-foreground">Langue de transcription</span>
+                  <span
+                    className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground border border-border"
+                    title={`Langue de transcription : ${langLabel(transcribeLang)}`}
+                  >
+                    {langLabel(transcribeLang)}
+                  </span>
+                </div>
+
                 {/* Text area */}
                 <Textarea
                   placeholder={'Écrivez votre note…\n\nOu commencez par « message pour Marie, tu as reçu le fichier ? » pour envoyer dans le chat.\nAjoutez « dans #design » pour cibler un canal spécifique.'}

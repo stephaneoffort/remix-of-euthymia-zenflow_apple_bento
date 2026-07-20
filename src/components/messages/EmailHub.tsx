@@ -992,11 +992,11 @@ function ConversationView({
 
                     {expanded && (
                       <div className={`${isThread ? 'px-4 pb-4 pt-3' : ''}`}>
-                        <div className="prose prose-sm max-w-none dark:prose-invert text-foreground/90 leading-relaxed">
+                        <div className="prose prose-sm max-w-none dark:prose-invert text-foreground leading-relaxed [&_*]:!text-foreground [&_a]:!text-primary [&_a]:underline">
                           {msg.body_html ? (
-                            <div dangerouslySetInnerHTML={{ __html: msg.body_html }} />
+                            <div dangerouslySetInnerHTML={{ __html: sanitizeEmailHtml(msg.body_html) }} />
                           ) : (
-                            <pre className="whitespace-pre-wrap font-sans text-sm">{msg.body_text}</pre>
+                            <pre className="whitespace-pre-wrap font-sans text-sm text-foreground">{msg.body_text}</pre>
                           )}
                         </div>
                         <AttachmentList attachments={msgAtts} />

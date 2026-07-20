@@ -201,6 +201,7 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
         audioBlobRef.current = new Blob(audioChunksRef.current, { type: audioMimeRef.current });
       };
       mediaRecorderRef.current = recorder;
+      recordingStartRef.current = Date.now();
       recorder.start();
     } catch (err: any) {
       console.error('getUserMedia error:', err);

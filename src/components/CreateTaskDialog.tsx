@@ -7,10 +7,15 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Mic, Pencil, Check, X } from 'lucide-react';
+import { Mic, Pencil, Check, X, Bell, Plus } from 'lucide-react';
 import { Priority, PRIORITY_LABELS } from '@/types';
 import { toast } from 'sonner';
 import VoiceTaskCreator from './VoiceTaskCreator';
+import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
+
+type ReminderDraft = { amount: number; unit: 'min' | 'h' | 'd'; type: 'before_start' | 'before_end' };
+const UNIT_LABEL: Record<ReminderDraft['unit'], string> = { min: 'min', h: 'h', d: 'j' };
 
 interface CreateTaskDialogProps {
   open: boolean;

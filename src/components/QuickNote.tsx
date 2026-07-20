@@ -741,11 +741,19 @@ export function QuickNote() {
                           {n.text}
                         </p>
                         <div className="mt-2 flex items-center justify-between gap-2">
-                          <span className="text-[10px] text-muted-foreground tabular-nums">
-                            {new Date(n.createdAt).toLocaleString('fr-FR', {
-                              day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit',
-                            })}
-                          </span>
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <span className="text-[10px] text-muted-foreground tabular-nums">
+                              {new Date(n.createdAt).toLocaleString('fr-FR', {
+                                day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit',
+                              })}
+                            </span>
+                            <span
+                              className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground border border-border"
+                              title={`Langue de transcription : ${langLabel(n.transcribeLang)}`}
+                            >
+                              {langLabel(n.transcribeLang)}
+                            </span>
+                          </div>
                           <div className="flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
                             <button
                               onClick={() => copyNote(n.text)}
@@ -755,7 +763,7 @@ export function QuickNote() {
                               <Copy className="w-3.5 h-3.5" />
                             </button>
                             <button
-                              onClick={() => { setText(n.text); setTab('compose'); }}
+                              onClick={() => { setText(n.text); setTranscribeLang(n.transcribeLang || 'auto'); setTab('compose'); }}
                               className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
                               title="Réutiliser dans la rédaction"
                             >

@@ -10,6 +10,28 @@ import { toast } from 'sonner';
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle,
 } from '@/components/ui/sheet';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
+
+// ─── Transcription languages ──────────────────────────────────────────────────
+// ISO-639-1 codes (bare, no locale suffix) — Whisper/OpenAI STT accepts this format.
+// "auto" = let the model detect (omit the field).
+const TRANSCRIPTION_LANGS: { code: string; label: string; bcp47: string }[] = [
+  { code: 'auto', label: 'Auto', bcp47: '' },
+  { code: 'fr',   label: 'Français', bcp47: 'fr-FR' },
+  { code: 'en',   label: 'English',  bcp47: 'en-US' },
+  { code: 'es',   label: 'Español',  bcp47: 'es-ES' },
+  { code: 'de',   label: 'Deutsch',  bcp47: 'de-DE' },
+  { code: 'it',   label: 'Italiano', bcp47: 'it-IT' },
+  { code: 'pt',   label: 'Português',bcp47: 'pt-PT' },
+  { code: 'nl',   label: 'Nederlands',bcp47:'nl-NL' },
+  { code: 'pl',   label: 'Polski',   bcp47: 'pl-PL' },
+  { code: 'zh',   label: '中文',      bcp47: 'zh-CN' },
+  { code: 'ja',   label: '日本語',    bcp47: 'ja-JP' },
+  { code: 'ar',   label: 'العربية',   bcp47: 'ar-SA' },
+];
+const LANG_STORAGE_KEY = 'quick_notes_transcribe_lang';
 
 const db = supabase as any;
 

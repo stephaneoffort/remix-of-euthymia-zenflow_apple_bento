@@ -559,7 +559,7 @@ export function QuickNote() {
                 Rédiger
               </button>
               <button
-                onClick={() => { setTab('list'); refreshNotes(); }}
+                onClick={() => { setTab('list'); fetchNotes(); }}
                 className={[
                   'px-3 py-2 text-xs font-medium border-b-2 transition-colors flex items-center gap-1.5',
                   tab === 'list'

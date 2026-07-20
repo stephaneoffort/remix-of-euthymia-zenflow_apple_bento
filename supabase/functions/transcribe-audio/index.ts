@@ -53,6 +53,14 @@ serve(async (req) => {
     const form = new FormData();
     form.append("model", "openai/gpt-4o-mini-transcribe");
     form.append("file", new Blob([bytes], { type: contentType }), `recording.${ext}`);
+    // ISO-639-1 language hint. Pass a bare code (e.g. "fr", "en") to boost accuracy;
+    // omit for auto-detect. Any legacy value (e.g. "français", "fr-FR") is ignored.
+    if (typeof language === "string") {
+      const code = language.trim().toLowerCase().slice(0, 2);
+      if (/^[a-z]{2}$/.test(code) && code !== "au") {
+        form.append("language", code);
+      }
+    }
 
     const response = await fetch(
       "https://ai.gateway.lovable.dev/v1/audio/transcriptions",

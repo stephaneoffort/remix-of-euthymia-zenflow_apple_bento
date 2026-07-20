@@ -34,6 +34,7 @@ const NumericAudit = lazyRetry(() => import("./pages/NumericAudit.tsx"));
 const SettingsIntegrationsPage = lazyRetry(() => import("./pages/settings/IntegrationsPage.tsx"));
 const GmailDiagnosticPage = lazyRetry(() => import("./pages/settings/GmailDiagnosticPage.tsx"));
 const OAuthConsent = lazyRetry(() => import("./pages/OAuthConsent.tsx"));
+const AuditLog = lazyRetry(() => import("./pages/AuditLog.tsx"));
 
 
 const PageLoader = () => (
@@ -174,6 +175,14 @@ const App = () => (
                         element={
                           <ProtectedRoute>
                             <NumericAudit />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/audit-log"
+                        element={
+                          <ProtectedRoute>
+                            <AuditLog />
                           </ProtectedRoute>
                         }
                       />

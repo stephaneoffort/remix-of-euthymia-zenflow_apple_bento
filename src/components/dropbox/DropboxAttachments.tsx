@@ -6,6 +6,7 @@ import { useDropbox, type DropboxAttachment } from '@/hooks/useDropbox';
 import DropboxFilePicker from './DropboxFilePicker';
 import { toast } from 'sonner';
 import { useIntegrations, INTEGRATION_CONFIG } from '@/hooks/useIntegrations';
+import { logAudit } from '@/lib/auditLog';
 
 interface Props {
   entityType: 'task' | 'event' | 'project';
@@ -93,7 +94,7 @@ export default function DropboxAttachments({ entityType, entityId }: Props) {
               </div>
               <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                 {att.file_url && (
-                  <button onClick={() => window.open(att.file_url!, '_blank')} className="p-1 rounded hover:bg-muted" title="Ouvrir dans Dropbox">
+                  <button onClick={() => { logAudit('attachment.downloaded', 'dropbox', att.id, { name: att.file_name, entity_type: entityType, entity_id: entityId }); window.open(att.file_url!, '_blank'); }} className="p-1 rounded hover:bg-muted" title="Ouvrir dans Dropbox">
                     <ExternalLink className="w-3.5 h-3.5 text-muted-foreground" />
                   </button>
                 )}

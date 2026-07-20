@@ -7,6 +7,7 @@ import { getDriveIcon } from '@/components/drive/DriveFilePicker';
 import DriveFilePicker from '@/components/drive/DriveFilePicker';
 import { toast } from 'sonner';
 import { useIntegrations, INTEGRATION_CONFIG } from '@/hooks/useIntegrations';
+import { logAudit } from '@/lib/auditLog';
 
 function formatSize(bytes: number | null) {
   if (!bytes) return '';
@@ -114,6 +115,7 @@ export default function DriveAttachments({ entityType, entityId, compact }: Driv
                 href={att.file_url}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => logAudit('attachment.downloaded', 'drive', att.file_id, { name: att.file_name, entity_type: entityType, entity_id: entityId })}
                 className="flex-1 min-w-0 text-sm font-medium text-foreground hover:text-primary truncate transition-colors"
               >
                 {att.file_name}

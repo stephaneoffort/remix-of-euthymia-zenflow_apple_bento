@@ -248,7 +248,37 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
               Chat d'équipe
             </h3>
           </div>
+          <button
+            onClick={() => (selectionMode ? exitSelectionMode() : setSelectionMode(true))}
+            className={`p-1.5 rounded-xl transition-all backdrop-blur-sm ${selectionMode ? 'bg-primary/15 text-primary' : 'hover:bg-muted/40 text-muted-foreground hover:text-foreground'}`}
+            title={selectionMode ? 'Quitter la sélection' : 'Sélectionner plusieurs conversations'}
+          >
+            {selectionMode ? <X className="w-4 h-4" /> : <CheckSquare className="w-4 h-4" />}
+          </button>
         </div>
+
+        {/* Selection toolbar */}
+        {selectionMode && (
+          <div className="flex items-center gap-2 px-3 py-2 border-b border-border/15 bg-primary/5">
+            <span className="text-xs font-medium text-foreground flex-1">
+              {selectedIds.size} sélectionnée{selectedIds.size > 1 ? 's' : ''}
+            </span>
+            <button
+              onClick={() => setSelectedIds(new Set(channels.map(c => c.id)))}
+              className="text-[11px] px-2 py-1 rounded-lg hover:bg-muted/40 text-muted-foreground hover:text-foreground transition-all"
+            >
+              Tout
+            </button>
+            <button
+              onClick={handleBulkDelete}
+              disabled={selectedIds.size === 0 || bulkDeleting}
+              className="text-[11px] px-2 py-1 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
+            >
+              <Trash2 className="w-3 h-3" />
+              {bulkDeleting ? '...' : 'Supprimer'}
+            </button>
+          </div>
+        )}
 
         {/* Channel list */}
         <div className="flex-1 overflow-y-auto py-3 scrollbar-thin space-y-5">

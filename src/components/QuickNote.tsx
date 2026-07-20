@@ -139,7 +139,11 @@ function bestAudioBitrate(mime: string): number {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-interface SavedNote { id: string; text: string; createdAt: string; }
+interface SavedNote { id: string; text: string; createdAt: string; transcribeLang: string; }
+
+function langLabel(code: string): string {
+  return TRANSCRIPTION_LANGS.find(l => l.code === code)?.label ?? code;
+}
 
 const MIGRATION_FLAG = 'quick_notes_migrated';
 

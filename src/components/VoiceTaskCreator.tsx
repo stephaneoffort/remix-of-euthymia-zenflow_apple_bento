@@ -181,6 +181,8 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
     audioChunksRef.current = [];
     audioBlobRef.current = null;
 
+    cancelAutoRetry();
+
     // Start MediaRecorder to capture audio for optional server re-transcription
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });

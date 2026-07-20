@@ -29,17 +29,8 @@ interface Reminder {
   offset_key: string;
 }
 
-function parseOffsetKey(key: string): { amount: number; unit: string } {
-  const match = key.match(/^(\d+)(min|h|d)$/);
-  if (match) return { amount: parseInt(match[1]), unit: match[2] };
-  return { amount: 1, unit: 'h' };
-}
 
-function formatOffset(key: string): string {
-  const { amount, unit } = parseOffsetKey(key);
-  const labels: Record<string, string> = { min: 'min', h: 'h', d: 'j' };
-  return `${amount}${labels[unit] || unit}`;
-}
+
 
 export default function TaskReminders({ taskId, hasStartDate, hasDueDate }: TaskRemindersProps) {
   const [reminders, setReminders] = useState<Reminder[]>([]);
@@ -128,7 +119,7 @@ export default function TaskReminders({ taskId, hasStartDate, hasDueDate }: Task
                     className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary font-medium"
                   >
                     <Bell className="w-3 h-3" />
-                    {formatOffset(r.offset_key)} avant
+                    {formatReminderOffset(r.offset_key)} avant
                     <button
                       onClick={() => removeReminder(r.id)}
                       className="ml-0.5 hover:text-destructive transition-colors"

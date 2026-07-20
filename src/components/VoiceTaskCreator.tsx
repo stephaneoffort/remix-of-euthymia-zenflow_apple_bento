@@ -520,6 +520,10 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
         window.clearInterval(progressTimerRef.current);
         progressTimerRef.current = null;
       }
+      if (autoRetryTimerRef.current) {
+        window.clearInterval(autoRetryTimerRef.current);
+        autoRetryTimerRef.current = null;
+      }
     };
   }, []);
 

@@ -7,20 +7,29 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// Web Push helpers
-const OFFSET_MS: Record<string, number> = {
-  "3d": 3 * 24 * 60 * 60 * 1000,
-  "1d": 1 * 24 * 60 * 60 * 1000,
-  "8h": 8 * 60 * 60 * 1000,
-  "1h": 1 * 60 * 60 * 1000,
-};
+// Parse offset_key like "15min", "2h", "3d" → ms
+function parseOffsetMs(key: string): number {
+  const m = String(key || '').match(/^(\d+)(min|h|d)$/);
+  if (!m) return 0;
+  const n = parseInt(m[1], 10);
+  const unit = m[2];
+  if (unit === 'min') return n * 60 * 1000;
+  if (unit === 'h') return n * 60 * 60 * 1000;
+  if (unit === 'd') return n * 24 * 60 * 60 * 1000;
+  return 0;
+}
 
-const OFFSET_LABELS: Record<string, string> = {
-  "3d": "3 jours",
-  "1d": "1 jour",
-  "8h": "8 heures",
-  "1h": "1 heure",
-};
+function offsetLabel(key: string): string {
+  const m = String(key || '').match(/^(\d+)(min|h|d)$/);
+  if (!m) return key;
+  const n = parseInt(m[1], 10);
+  const unit = m[2];
+  if (unit === 'min') return `${n} minute${n > 1 ? 's' : ''}`;
+  if (unit === 'h') return `${n} heure${n > 1 ? 's' : ''}`;
+  if (unit === 'd') return `${n} jour${n > 1 ? 's' : ''}`;
+  return key;
+}
+
 
 // Convert base64url or base64 string to Uint8Array using atob
 function b64urlToUint8Array(str: string): Uint8Array {

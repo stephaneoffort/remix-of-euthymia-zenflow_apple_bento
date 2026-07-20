@@ -831,6 +831,10 @@ export default function AppSidebar() {
                 className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors text-sidebar-fg hover:bg-sidebar-hover"
               >
                 <MessagesSquare className="w-4 h-4" />
+                onClick={() => { navigate('/chat'); collapseIfMobile(); }}
+                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors text-sidebar-fg hover:bg-sidebar-hover"
+              >
+                <MessagesSquare className="w-4 h-4" />
                 Chat d'équipe
                 {chatUnreadCount > 0 && (
                   <span data-numeric className="font-numeric tabular-nums ml-auto text-xs bg-primary text-primary-foreground rounded-full px-1.5 py-0.5">
@@ -839,7 +843,7 @@ export default function AppSidebar() {
                 )}
               </button>
               <button
-                onClick={() => { navigate('/mentions'); handleNavClick(); }}
+                onClick={() => { navigate('/mentions'); collapseIfMobile(); }}
                 className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors text-sidebar-fg hover:bg-sidebar-hover"
               >
                 <AtSign className="w-4 h-4" />
@@ -851,7 +855,7 @@ export default function AppSidebar() {
                 )}
               </button>
               <button
-                onClick={() => { navigate('/email'); handleNavClick(); }}
+                onClick={() => { navigate('/email'); collapseIfMobile(); }}
                 className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors text-sidebar-fg hover:bg-sidebar-hover"
               >
                 <Mail className="w-4 h-4" />
@@ -863,7 +867,7 @@ export default function AppSidebar() {
                 )}
               </button>
               <button
-                onClick={() => { openMessagesHub('home'); handleNavClick(); }}
+                onClick={() => { openMessagesHub('home'); collapseIfMobile(); }}
                 className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-xs transition-colors text-sidebar-fg/70 hover:bg-sidebar-hover hover:text-sidebar-fg mt-1"
               >
                 <MessageSquare className="w-3.5 h-3.5" />

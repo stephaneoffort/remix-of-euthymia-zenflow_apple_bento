@@ -1,0 +1,2 @@
+ALTER TABLE public.task_reminders DROP CONSTRAINT IF EXISTS task_reminders_offset_key_check;
+ALTER TABLE public.task_reminders ADD CONSTRAINT task_reminders_offset_key_check CHECK (offset_key ~ '^[0-9]+(min|h|d)$');

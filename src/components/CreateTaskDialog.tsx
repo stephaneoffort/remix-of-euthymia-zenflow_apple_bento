@@ -7,10 +7,15 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Mic, Pencil, Check, X } from 'lucide-react';
+import { Mic, Pencil, Check, X, Bell, Plus } from 'lucide-react';
 import { Priority, PRIORITY_LABELS } from '@/types';
 import { toast } from 'sonner';
 import VoiceTaskCreator from './VoiceTaskCreator';
+import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
+
+type ReminderDraft = { amount: number; unit: 'min' | 'h' | 'd'; type: 'before_start' | 'before_end' };
+const UNIT_LABEL: Record<ReminderDraft['unit'], string> = { min: 'min', h: 'h', d: 'j' };
 
 interface CreateTaskDialogProps {
   open: boolean;
@@ -20,6 +25,7 @@ interface CreateTaskDialogProps {
 export default function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
   const { spaces, projects, getListsForProject, teamMembers, addTask } = useApp();
   const { teamMemberId } = useAuth();
+  const queryClient = useQueryClient();
 
   const [mode, setMode] = useState<'choice' | 'form' | 'voice'>('choice');
 
@@ -34,6 +40,10 @@ export default function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialo
   const [dueDate, setDueDate] = useState('');
   const [dueTime, setDueTime] = useState('');
   const [assigneeIds, setAssigneeIds] = useState<string[]>([]);
+  const [reminders, setReminders] = useState<ReminderDraft[]>([]);
+  const [remAmount, setRemAmount] = useState(1);
+  const [remUnit, setRemUnit] = useState<ReminderDraft['unit']>('h');
+  const [remType, setRemType] = useState<ReminderDraft['type']>('before_end');
 
   const visibleSpaces = useMemo(() => spaces.filter(s => !s.isArchived), [spaces]);
   const spaceProjects = useMemo(
@@ -49,6 +59,7 @@ export default function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialo
       setPriority('normal');
       setStartDate(''); setStartTime(''); setDueDate(''); setDueTime('');
       setAssigneeIds(teamMemberId ? [teamMemberId] : []);
+      setReminders([]); setRemAmount(1); setRemUnit('h'); setRemType('before_end');
     }
   }, [open, teamMemberId]);
 
@@ -63,32 +74,79 @@ export default function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialo
     return t ? `${d}T${t}:00` : d;
   };
 
-  const handleSubmit = () => {
+  const addReminderDraft = () => {
+    const amount = Math.max(1, Math.floor(remAmount) || 1);
+    if (reminders.find(r => r.amount === amount && r.unit === remUnit && r.type === remType)) {
+      toast.error('Ce rappel existe déjà');
+      return;
+    }
+    setReminders(prev => [...prev, { amount, unit: remUnit, type: remType }]);
+  };
+
+  const removeReminderDraft = (i: number) => setReminders(prev => prev.filter((_, idx) => idx !== i));
+
+  const handleSubmit = async () => {
     if (!title.trim()) { toast.error('Le titre est requis'); return; }
     if (!projectId) { toast.error('Sélectionnez un projet'); return; }
     const lists = getListsForProject(projectId);
     const listId = lists[0]?.id;
     if (!listId) { toast.error('Aucune liste dans ce projet'); return; }
 
-    addTask({
-      title: title.trim(),
-      description,
-      status: 'todo',
-      priority,
-      dueDate: combineDateTime(dueDate, dueTime),
-      startDate: combineDateTime(startDate, startTime),
-      assigneeIds,
-      tags: [],
-      parentTaskId: null,
-      listId,
-      comments: [],
-      attachments: [],
-      timeEstimate: null,
-      timeLogged: null,
-      aiSummary: null,
-    });
-    toast.success(`Tâche créée : "${title.trim()}"`);
-    onOpenChange(false);
+    const startISO = combineDateTime(startDate, startTime);
+    const dueISO = combineDateTime(dueDate, dueTime);
+
+    // Warn about reminders needing dates
+    const missingStart = reminders.some(r => r.type === 'before_start') && !startISO;
+    const missingEnd = reminders.some(r => r.type === 'before_end') && !dueISO;
+    if (missingStart || missingEnd) {
+      toast.error('Certains rappels nécessitent une date de début ou d\'échéance');
+      return;
+    }
+
+    if (reminders.length === 0) {
+      addTask({
+        title: title.trim(), description, status: 'todo', priority,
+        dueDate: dueISO, startDate: startISO, assigneeIds,
+        tags: [], parentTaskId: null, listId,
+        comments: [], attachments: [],
+        timeEstimate: null, timeLogged: null, aiSummary: null,
+      });
+      toast.success(`Tâche créée : "${title.trim()}"`);
+      onOpenChange(false);
+      return;
+    }
+
+    // With reminders: insert directly to get id
+    try {
+      const { data, error } = await supabase.from('tasks').insert({
+        title: title.trim(), description, status: 'todo', priority,
+        due_date: dueISO, start_date: startISO,
+        parent_task_id: null, list_id: listId,
+        tags: [], time_estimate: null, time_logged: null, ai_summary: null,
+      }).select().single();
+      if (error) throw error;
+
+      if (assigneeIds.length > 0) {
+        await supabase.from('task_assignees').insert(
+          assigneeIds.map(mid => ({ task_id: data.id, member_id: mid }))
+        );
+      }
+
+      await (supabase as any).from('task_reminders').insert(
+        reminders.map(r => ({
+          task_id: data.id,
+          reminder_type: r.type,
+          offset_key: `${r.amount}${r.unit}`,
+        }))
+      );
+
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      toast.success(`Tâche créée : "${title.trim()}"`);
+      onOpenChange(false);
+    } catch (e: any) {
+      console.error(e);
+      toast.error('Erreur lors de la création de la tâche');
+    }
   };
 
   if (mode === 'voice') {
@@ -190,6 +248,52 @@ export default function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialo
                   <Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
                   <Input type="time" value={dueTime} onChange={(e) => setDueTime(e.target.value)} className="w-28" />
                 </div>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="flex items-center gap-1.5"><Bell className="w-3.5 h-3.5" /> Rappels</Label>
+              {reminders.length > 0 && (
+                <div className="flex flex-wrap gap-1.5">
+                  {reminders.map((r, i) => (
+                    <span key={i} className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary font-medium">
+                      <Bell className="w-3 h-3" />
+                      {r.amount}{UNIT_LABEL[r.unit]} avant {r.type === 'before_start' ? 'début' : 'échéance'}
+                      <button type="button" onClick={() => removeReminderDraft(i)} className="ml-0.5 hover:text-destructive">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+              <div className="flex flex-wrap items-center gap-2">
+                <Input
+                  type="number"
+                  min={1}
+                  max={999}
+                  value={remAmount}
+                  onChange={(e) => setRemAmount(Math.max(1, parseInt(e.target.value) || 1))}
+                  className="w-20 h-9"
+                />
+                <Select value={remUnit} onValueChange={(v) => setRemUnit(v as ReminderDraft['unit'])}>
+                  <SelectTrigger className="w-24 h-9"><SelectValue /></SelectTrigger>
+                  <SelectContent className="bg-popover">
+                    <SelectItem value="min">Minutes</SelectItem>
+                    <SelectItem value="h">Heures</SelectItem>
+                    <SelectItem value="d">Jours</SelectItem>
+                  </SelectContent>
+                </Select>
+                <span className="text-xs text-muted-foreground">avant</span>
+                <Select value={remType} onValueChange={(v) => setRemType(v as ReminderDraft['type'])}>
+                  <SelectTrigger className="w-36 h-9"><SelectValue /></SelectTrigger>
+                  <SelectContent className="bg-popover">
+                    <SelectItem value="before_start">le début</SelectItem>
+                    <SelectItem value="before_end">l'échéance</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button type="button" size="sm" variant="outline" onClick={addReminderDraft}>
+                  <Plus className="w-3.5 h-3.5 mr-1" /> Ajouter
+                </Button>
               </div>
             </div>
 

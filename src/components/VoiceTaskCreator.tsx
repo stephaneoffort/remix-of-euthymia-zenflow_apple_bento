@@ -12,6 +12,11 @@ import { PriorityBadge, StatusBadge } from '@/components/TaskBadges';
 import { supabase } from '@/integrations/supabase/client';
 
 /* ─── Types ─── */
+interface ParsedReminder {
+  amount: number;
+  unit: 'min' | 'h' | 'd';
+  type: 'before_start' | 'before_end';
+}
 interface ParsedTask {
   title: string;
   description: string | null;
@@ -24,6 +29,10 @@ interface ParsedTask {
   tags: string[];
   subtasks: string[];
   timeEstimate: number | null;
+  spaceName?: string | null;
+  projectName?: string | null;
+  listName?: string | null;
+  reminders?: ParsedReminder[];
 }
 
 /* ─── Speech Recognition setup ─── */

@@ -156,13 +156,15 @@ export default function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialo
       <VoiceTaskCreator
         onClose={() => onOpenChange(false)}
         onParsed={(parsed) => {
-          // Prefill form fields with parsed voice data
+          // Prefill form fields with parsed voice data (with fallbacks)
           setTitle(parsed.title || '');
           setDescription(parsed.description || '');
-          setPriority((parsed.priority as Priority) || 'normal');
+          const validPriorities: Priority[] = ['urgent', 'high', 'normal', 'low'];
+          setPriority(validPriorities.includes(parsed.priority as Priority) ? (parsed.priority as Priority) : 'normal');
           if (parsed.dueDate && /^\d{4}-\d{2}-\d{2}$/.test(parsed.dueDate)) setDueDate(parsed.dueDate);
           if (parsed.dueTime && /^\d{2}:\d{2}$/.test(parsed.dueTime)) setDueTime(parsed.dueTime);
           if (parsed.startDate && /^\d{4}-\d{2}-\d{2}$/.test(parsed.startDate)) setStartDate(parsed.startDate);
+
           // Match assignees by name (fuzzy first-name match)
           const ids = (parsed.assignees || [])
             .map((name: string) => {
@@ -174,8 +176,67 @@ export default function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialo
             })
             .filter(Boolean) as string[];
           if (ids.length > 0) setAssigneeIds(ids);
+
+          // Match space by name (fuzzy)
+          const norm = (s: string) => s.toLowerCase().trim();
+          let matchedSpaceId: string | undefined;
+          if (parsed.spaceName) {
+            const target = norm(parsed.spaceName);
+            matchedSpaceId = visibleSpaces.find(s =>
+              norm(s.name) === target || norm(s.name).includes(target) || target.includes(norm(s.name))
+            )?.id;
+          }
+
+          // Match project by name (fuzzy); if found, derive its space
+          let matchedProjectId: string | undefined;
+          if (parsed.projectName) {
+            const target = norm(parsed.projectName);
+            const candidates = projects.filter(p => !p.isArchived &&
+              (matchedSpaceId ? p.spaceId === matchedSpaceId : true));
+            const proj = candidates.find(p =>
+              norm(p.name) === target || norm(p.name).includes(target) || target.includes(norm(p.name))
+            );
+            if (proj) {
+              matchedProjectId = proj.id;
+              matchedSpaceId = proj.spaceId;
+            }
+          }
+          if (matchedSpaceId) setSpaceId(matchedSpaceId);
+          if (matchedProjectId) {
+            // Defer projectId set until spaceId propagates via effect
+            setTimeout(() => setProjectId(matchedProjectId!), 0);
+          }
+
+          // Reminders (with validation + fallback)
+          const validUnits = ['min', 'h', 'd'] as const;
+          const validTypes = ['before_start', 'before_end'] as const;
+          const parsedReminders = Array.isArray(parsed.reminders) ? parsed.reminders : [];
+          const cleaned: ReminderDraft[] = parsedReminders
+            .filter((r: any) =>
+              r && typeof r.amount === 'number' && r.amount > 0 &&
+              validUnits.includes(r.unit) && validTypes.includes(r.type)
+            )
+            .map((r: any) => ({
+              amount: Math.max(1, Math.floor(r.amount)),
+              unit: r.unit,
+              type: r.type,
+            }));
+          if (cleaned.length > 0) setReminders(cleaned);
+
+          // Tags: currently no UI field in this dialog — surface count via toast for feedback
+          const tagCount = Array.isArray(parsed.tags) ? parsed.tags.length : 0;
+
           setMode('form');
-          toast.success('Formulaire pré-rempli à partir de la dictée');
+          const bits: string[] = [];
+          if (matchedProjectId) bits.push('projet');
+          else if (matchedSpaceId) bits.push('espace');
+          if (cleaned.length > 0) bits.push(`${cleaned.length} rappel${cleaned.length > 1 ? 's' : ''}`);
+          if (tagCount > 0) bits.push(`${tagCount} tag${tagCount > 1 ? 's' : ''} détecté${tagCount > 1 ? 's' : ''}`);
+          toast.success(
+            bits.length > 0
+              ? `Formulaire pré-rempli (${bits.join(', ')})`
+              : 'Formulaire pré-rempli à partir de la dictée'
+          );
         }}
       />
     ) : null;

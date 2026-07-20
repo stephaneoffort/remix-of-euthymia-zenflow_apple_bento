@@ -117,6 +117,7 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
   const [serverTranscribing, setServerTranscribing] = useState(false);
   const [parseStep, setParseStep] = useState<'idle' | 'transcribe' | 'analyze' | 'done'>('idle');
   const [progress, setProgress] = useState(0); // 0-100
+  const [autoRetryIn, setAutoRetryIn] = useState<number | null>(null);
   const recognitionRef = useRef<any>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -124,6 +125,18 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
   const audioBlobRef = useRef<Blob | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const progressTimerRef = useRef<number | null>(null);
+  const recordingStartRef = useRef<number>(0);
+  const autoRetryTimerRef = useRef<number | null>(null);
+
+  const MIN_CAPTURE_MS = 1500;
+
+  const cancelAutoRetry = useCallback(() => {
+    if (autoRetryTimerRef.current) {
+      window.clearInterval(autoRetryTimerRef.current);
+      autoRetryTimerRef.current = null;
+    }
+    setAutoRetryIn(null);
+  }, []);
 
   // Resolve listId
   const listId = defaultListId || (() => {

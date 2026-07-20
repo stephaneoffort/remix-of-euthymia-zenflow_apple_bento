@@ -611,16 +611,49 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
             </div>
           )}
 
-          {/* ─── Phase: PARSING ─── */}
+          {/* ─── Phase: PARSING (with progress) ─── */}
           {phase === 'parsing' && (
-            <div className="text-center py-6 space-y-3">
-              <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto" />
-              <p className="text-sm text-muted-foreground">
-                {serverTranscribing ? 'Transcription IA de l\'audio…' : 'Analyse par l\'IA en cours…'}
+            <div className="py-4 space-y-4">
+              {/* Step indicator */}
+              <div className="flex items-center justify-center gap-2 text-xs">
+                <div className={`flex items-center gap-1.5 ${parseStep === 'transcribe' ? 'text-primary font-medium' : parseStep === 'analyze' || parseStep === 'done' ? 'text-foreground/70' : 'text-muted-foreground'}`}>
+                  {parseStep === 'transcribe'
+                    ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    : (parseStep === 'analyze' || parseStep === 'done')
+                      ? <Check className="w-3.5 h-3.5 text-emerald-500" />
+                      : <div className="w-3.5 h-3.5 rounded-full border border-current" />}
+                  Transcription
+                </div>
+                <div className="w-6 h-px bg-border" />
+                <div className={`flex items-center gap-1.5 ${parseStep === 'analyze' ? 'text-primary font-medium' : parseStep === 'done' ? 'text-foreground/70' : 'text-muted-foreground'}`}>
+                  {parseStep === 'analyze'
+                    ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    : parseStep === 'done'
+                      ? <Check className="w-3.5 h-3.5 text-emerald-500" />
+                      : <div className="w-3.5 h-3.5 rounded-full border border-current" />}
+                  Analyse IA
+                </div>
+              </div>
+
+              {/* Progress bar */}
+              <div className="w-full h-1.5 rounded-full bg-muted overflow-hidden">
+                <div
+                  className="h-full bg-primary transition-all duration-200 ease-out"
+                  style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+                />
+              </div>
+
+              <p className="text-xs text-center text-muted-foreground">
+                {parseStep === 'transcribe' && (serverTranscribing ? 'Transcription IA de l\'audio…' : 'Récupération du texte dicté…')}
+                {parseStep === 'analyze' && 'Extraction des informations de la tâche…'}
+                {parseStep === 'done' && 'Terminé !'}
               </p>
-              {transcript && <p className="text-xs text-muted-foreground/60 max-w-sm mx-auto">"{transcript}"</p>}
+              {transcript && (
+                <p className="text-xs text-muted-foreground/60 max-w-sm mx-auto text-center italic">"{transcript}"</p>
+              )}
             </div>
           )}
+
 
           {/* ─── Phase: PREVIEW ─── */}
           {phase === 'preview' && parsedTask && (

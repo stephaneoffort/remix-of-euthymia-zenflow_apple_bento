@@ -489,12 +489,12 @@ export function QuickNote() {
         const noteText = text.trim();
         const { data: inserted, error: insErr } = await db
           .from('quick_notes')
-          .insert({ user_id: user.id, text: noteText })
-          .select('id, text, created_at')
+          .insert({ user_id: user.id, text: noteText, transcribe_lang: transcribeLang })
+          .select('id, text, created_at, transcribe_lang')
           .single();
         if (insErr) throw insErr;
         setSavedNotes(prev => [
-          { id: inserted.id, text: inserted.text, createdAt: inserted.created_at },
+          { id: inserted.id, text: inserted.text, createdAt: inserted.created_at, transcribeLang: inserted.transcribe_lang || 'auto' },
           ...prev,
         ]);
         toast.success('Note sauvegardée');

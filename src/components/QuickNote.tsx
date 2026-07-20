@@ -803,6 +803,28 @@ export function QuickNote() {
                 )}
               </button>
 
+              {/* Transcription language */}
+              <Select
+                value={transcribeLang}
+                onValueChange={setTranscribeLang}
+                disabled={isRecording || transcribing}
+              >
+                <SelectTrigger
+                  className="h-9 w-auto gap-1.5 px-2.5 text-xs bg-muted border-0 hover:bg-muted/80"
+                  title="Langue de transcription"
+                  aria-label="Langue de transcription"
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {TRANSCRIPTION_LANGS.map(l => (
+                    <SelectItem key={l.code} value={l.code} className="text-xs">
+                      {l.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
               <div className="flex-1" />
 
               <Button variant="ghost" size="sm" onClick={handleClose}>

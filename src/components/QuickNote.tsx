@@ -119,7 +119,9 @@ function bestAudioBitrate(mime: string): number {
 
 interface SavedNote { id: string; text: string; createdAt: string; }
 
-function loadSavedNotes(): SavedNote[] {
+const MIGRATION_FLAG = 'quick_notes_migrated';
+
+function readLocalNotes(): SavedNote[] {
   try { return JSON.parse(localStorage.getItem('quick_notes') || '[]'); } catch { return []; }
 }
 
@@ -148,6 +150,8 @@ export function QuickNote() {
   const usedWebSpeechRef = useRef<boolean>(false);
   const recordMimeRef = useRef<string>('');
   const [transcribing, setTranscribing] = useState(false);
+  const textRef = useRef(text);
+  useEffect(() => { textRef.current = text; }, [text]);
 
   // Web Speech API is unreliable on mobile (iOS Safari, Firefox Android, etc.)
   // We force server-side transcription on mobile for consistency.
@@ -176,11 +180,50 @@ export function QuickNote() {
     };
   }, []);
 
+  const fetchNotes = useCallback(async () => {
+    if (!user) return;
+    const { data, error } = await db
+      .from('quick_notes')
+      .select('id, text, created_at')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(200);
+    if (error) {
+      console.error('[QuickNote] fetch failed', error);
+      return;
+    }
+    setSavedNotes((data || []).map((n: any) => ({ id: n.id, text: n.text, createdAt: n.created_at })));
+  }, [user]);
+
+  // ── One-shot migration of localStorage notes to Supabase ────────────────
+  useEffect(() => {
+    if (!user) return;
+    if (localStorage.getItem(MIGRATION_FLAG) === '1') return;
+    const legacy = readLocalNotes();
+    if (legacy.length === 0) {
+      localStorage.setItem(MIGRATION_FLAG, '1');
+      return;
+    }
+    (async () => {
+      const rows = legacy.map(n => ({
+        user_id: user.id,
+        text: n.text,
+        created_at: n.createdAt || new Date().toISOString(),
+      }));
+      const { error } = await db.from('quick_notes').insert(rows);
+      if (!error) {
+        localStorage.removeItem('quick_notes');
+        localStorage.setItem(MIGRATION_FLAG, '1');
+      } else {
+        console.error('[QuickNote] migration failed', error);
+      }
+    })();
+  }, [user]);
+
   // ── Load data on open ──────────────────────────────────────────────────────
   useEffect(() => {
-    if (!open) return;
-    setSavedNotes(loadSavedNotes());
-    if (!user) return;
+    if (!open || !user) return;
+    fetchNotes();
     Promise.all([
       db.from('team_members').select('id, name'),
       db.from('chat_channels').select('id, name, type').eq('is_archived', false).order('position'),
@@ -188,16 +231,20 @@ export function QuickNote() {
       setMembers(m || []);
       setChannels(c || []);
     });
-  }, [open, user]);
+  }, [open, user, fetchNotes]);
 
-  const refreshNotes = () => setSavedNotes(loadSavedNotes());
-
-  const deleteNote = (id: string) => {
-    const next = loadSavedNotes().filter(n => n.id !== id);
-    localStorage.setItem('quick_notes', JSON.stringify(next));
-    setSavedNotes(next);
+  const deleteNote = async (id: string) => {
+    const prev = savedNotes;
+    setSavedNotes(prev.filter(n => n.id !== id));
+    const { error } = await db.from('quick_notes').delete().eq('id', id);
+    if (error) {
+      setSavedNotes(prev);
+      toast.error('Suppression impossible');
+      return;
+    }
     toast.success('Note supprimée');
   };
+
 
   const copyNote = async (text: string) => {
     try {

@@ -266,13 +266,13 @@ export function QuickNote() {
             const n: any = payload.new;
             setSavedNotes(prev => prev.some(x => x.id === n.id)
               ? prev
-              : [{ id: n.id, text: n.text, createdAt: n.created_at }, ...prev]);
+              : [{ id: n.id, text: n.text, createdAt: n.created_at, transcribeLang: n.transcribe_lang || 'auto' }, ...prev]);
           } else if (payload.eventType === 'DELETE') {
             const oldId = (payload.old as any).id;
             setSavedNotes(prev => prev.filter(x => x.id !== oldId));
           } else if (payload.eventType === 'UPDATE') {
             const n: any = payload.new;
-            setSavedNotes(prev => prev.map(x => x.id === n.id ? { id: n.id, text: n.text, createdAt: n.created_at } : x));
+            setSavedNotes(prev => prev.map(x => x.id === n.id ? { id: n.id, text: n.text, createdAt: n.created_at, transcribeLang: n.transcribe_lang || 'auto' } : x));
           }
         },
       )

@@ -13,6 +13,8 @@ import { toast } from 'sonner';
 import VoiceTaskCreator from './VoiceTaskCreator';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
+import { formatReminderOffset } from '@/lib/reminderFormat';
+
 
 type ReminderDraft = { amount: number; unit: 'min' | 'h' | 'd'; type: 'before_start' | 'before_end' };
 const UNIT_LABEL: Record<ReminderDraft['unit'], string> = { min: 'min', h: 'h', d: 'j' };

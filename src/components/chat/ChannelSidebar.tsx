@@ -294,8 +294,9 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
             <div className="space-y-0.5 px-2">
               {publicChannels.map(ch => (
                 <ChannelItem key={ch.id} channel={ch} isActive={activeChannelId === ch.id}
-                  onClick={() => onSelectChannel(ch.id)} icon={<Hash className="w-4 h-4 shrink-0" />} unread={unreadCounts[ch.id] || 0}
-                  onDelete={() => handleDeleteChannel(ch.id, `#${ch.name}`)} />
+                  onClick={() => selectionMode ? toggleSelected(ch.id) : onSelectChannel(ch.id)} icon={<Hash className="w-4 h-4 shrink-0" />} unread={unreadCounts[ch.id] || 0}
+                  onDelete={() => handleDeleteChannel(ch.id, `#${ch.name}`)}
+                  selectionMode={selectionMode} selected={selectedIds.has(ch.id)} />
               ))}
               {publicChannels.length === 0 && (
                 <p className="text-[11px] text-muted-foreground/40 px-3 py-2 italic">Aucun canal</p>
@@ -312,8 +313,9 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
               <div className="space-y-0.5 px-2">
                 {privateChannels.map(ch => (
                   <ChannelItem key={ch.id} channel={ch} isActive={activeChannelId === ch.id}
-                    onClick={() => onSelectChannel(ch.id)} icon={<Lock className="w-4 h-4 shrink-0" />} unread={unreadCounts[ch.id] || 0}
-                    onDelete={() => handleDeleteChannel(ch.id, ch.name)} />
+                    onClick={() => selectionMode ? toggleSelected(ch.id) : onSelectChannel(ch.id)} icon={<Lock className="w-4 h-4 shrink-0" />} unread={unreadCounts[ch.id] || 0}
+                    onDelete={() => handleDeleteChannel(ch.id, ch.name)}
+                    selectionMode={selectionMode} selected={selectedIds.has(ch.id)} />
                 ))}
               </div>
             </div>
@@ -336,11 +338,13 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
                     key={ch.id}
                     channelId={ch.id}
                     isActive={activeChannelId === ch.id}
-                    onClick={() => onSelectChannel(ch.id)}
+                    onClick={() => selectionMode ? toggleSelected(ch.id) : onSelectChannel(ch.id)}
                     partnerName={partner?.name}
                     partnerColor={partner?.avatarColor}
                     unread={unreadCounts[ch.id] || 0}
                     onDelete={() => handleDeleteChannel(ch.id, partner?.name ? `DM avec ${partner.name}` : 'cette conversation')}
+                    selectionMode={selectionMode}
+                    selected={selectedIds.has(ch.id)}
                   />
                 );
               })}

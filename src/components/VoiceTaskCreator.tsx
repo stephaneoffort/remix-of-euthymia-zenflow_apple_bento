@@ -110,16 +110,20 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
   const [interimText, setInterimText] = useState('');
   const [parsedTask, setParsedTask] = useState<ParsedTask | null>(null);
   const [error, setError] = useState('');
+  const [errorKind, setErrorKind] = useState<'mic' | 'empty' | 'transcribe' | 'parse' | 'generic' | null>(null);
   const [showDetails, setShowDetails] = useState(true);
   const [editingTranscript, setEditingTranscript] = useState(false);
   const [rerunning, setRerunning] = useState(false);
   const [serverTranscribing, setServerTranscribing] = useState(false);
+  const [parseStep, setParseStep] = useState<'idle' | 'transcribe' | 'analyze' | 'done'>('idle');
+  const [progress, setProgress] = useState(0); // 0-100
   const recognitionRef = useRef<any>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const audioMimeRef = useRef<string>('audio/webm');
   const audioBlobRef = useRef<Blob | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const progressTimerRef = useRef<number | null>(null);
 
   // Resolve listId
   const listId = defaultListId || (() => {

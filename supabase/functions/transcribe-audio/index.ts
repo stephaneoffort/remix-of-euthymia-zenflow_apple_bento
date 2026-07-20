@@ -14,7 +14,7 @@ serve(async (req) => {
   }
 
   try {
-    const { audio, mimeType } = await req.json();
+    const { audio, mimeType, language } = await req.json();
     if (!audio || typeof audio !== "string") {
       return new Response(
         JSON.stringify({ error: "Le champ 'audio' (base64) est requis." }),

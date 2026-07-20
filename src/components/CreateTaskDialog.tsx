@@ -252,6 +252,52 @@ export default function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialo
             </div>
 
             <div className="space-y-1.5">
+              <Label className="flex items-center gap-1.5"><Bell className="w-3.5 h-3.5" /> Rappels</Label>
+              {reminders.length > 0 && (
+                <div className="flex flex-wrap gap-1.5">
+                  {reminders.map((r, i) => (
+                    <span key={i} className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary font-medium">
+                      <Bell className="w-3 h-3" />
+                      {r.amount}{UNIT_LABEL[r.unit]} avant {r.type === 'before_start' ? 'début' : 'échéance'}
+                      <button type="button" onClick={() => removeReminderDraft(i)} className="ml-0.5 hover:text-destructive">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+              <div className="flex flex-wrap items-center gap-2">
+                <Input
+                  type="number"
+                  min={1}
+                  max={999}
+                  value={remAmount}
+                  onChange={(e) => setRemAmount(Math.max(1, parseInt(e.target.value) || 1))}
+                  className="w-20 h-9"
+                />
+                <Select value={remUnit} onValueChange={(v) => setRemUnit(v as ReminderDraft['unit'])}>
+                  <SelectTrigger className="w-24 h-9"><SelectValue /></SelectTrigger>
+                  <SelectContent className="bg-popover">
+                    <SelectItem value="min">Minutes</SelectItem>
+                    <SelectItem value="h">Heures</SelectItem>
+                    <SelectItem value="d">Jours</SelectItem>
+                  </SelectContent>
+                </Select>
+                <span className="text-xs text-muted-foreground">avant</span>
+                <Select value={remType} onValueChange={(v) => setRemType(v as ReminderDraft['type'])}>
+                  <SelectTrigger className="w-36 h-9"><SelectValue /></SelectTrigger>
+                  <SelectContent className="bg-popover">
+                    <SelectItem value="before_start">le début</SelectItem>
+                    <SelectItem value="before_end">l'échéance</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button type="button" size="sm" variant="outline" onClick={addReminderDraft}>
+                  <Plus className="w-3.5 h-3.5 mr-1" /> Ajouter
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
               <Label>Description</Label>
               <Textarea
                 value={description}

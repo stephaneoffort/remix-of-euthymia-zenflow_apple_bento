@@ -523,8 +523,8 @@ export function QuickNote() {
     if (draft && !hasIntent && user) {
       // Fire-and-forget autosave so we never lose the draft.
       db.from('quick_notes')
-        .insert({ user_id: user.id, text: draft })
-        .select('id, text, created_at')
+        .insert({ user_id: user.id, text: draft, transcribe_lang: transcribeLangRef.current })
+        .select('id, text, created_at, transcribe_lang')
         .single()
         .then(({ data, error }: any) => {
           if (error) {
@@ -533,7 +533,7 @@ export function QuickNote() {
           }
           if (data) {
             setSavedNotes(prev => [
-              { id: data.id, text: data.text, createdAt: data.created_at },
+              { id: data.id, text: data.text, createdAt: data.created_at, transcribeLang: data.transcribe_lang || 'auto' },
               ...prev,
             ]);
           }

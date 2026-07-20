@@ -1,0 +1,1 @@
+ALTER TABLE public.quick_notes ADD COLUMN IF NOT EXISTS transcribe_lang TEXT NOT NULL DEFAULT 'auto';

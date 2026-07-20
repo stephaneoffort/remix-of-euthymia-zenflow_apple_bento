@@ -373,9 +373,13 @@ export default function AppSidebar() {
   const MESSAGES_ROUTES = ["/chat", "/email", "/mentions"];
   const isInMessages = MESSAGES_ROUTES.some((r) => location.pathname.startsWith(r));
 
+  const collapseIfMobile = () => {
+    if (isMobile) setSidebarCollapsed(true);
+  };
+
   const handleNavClick = () => {
     if (isInMessages) navigate("/");
-    if (isMobile) setSidebarCollapsed(true);
+    collapseIfMobile();
   };
 
   const handleAddSpace = () => {

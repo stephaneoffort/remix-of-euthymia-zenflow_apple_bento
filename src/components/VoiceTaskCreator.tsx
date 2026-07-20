@@ -119,83 +119,143 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
   })();
 
   // ─── Start listening ───
-  const startListening = useCallback(() => {
-    if (!SpeechRecognition) {
-      setError('La reconnaissance vocale n\'est pas supportée par ce navigateur. Utilisez Chrome ou Edge.');
-      return;
-    }
-
+  const startListening = useCallback(async () => {
     setError('');
     setTranscript('');
     setInterimText('');
     setParsedTask(null);
+    audioChunksRef.current = [];
+    audioBlobRef.current = null;
 
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'fr-FR';
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.maxAlternatives = 1;
+    // Start MediaRecorder to capture audio for optional server re-transcription
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+      const mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+        ? 'audio/webm;codecs=opus'
+        : MediaRecorder.isTypeSupported('audio/mp4')
+          ? 'audio/mp4'
+          : '';
+      const recorder = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+      audioMimeRef.current = recorder.mimeType || 'audio/webm';
+      recorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) audioChunksRef.current.push(e.data);
+      };
+      recorder.onstop = () => {
+        audioBlobRef.current = new Blob(audioChunksRef.current, { type: audioMimeRef.current });
+      };
+      mediaRecorderRef.current = recorder;
+      recorder.start();
+    } catch (err: any) {
+      console.error('getUserMedia error:', err);
+      setError('Accès au microphone refusé. Autorisez le micro dans les paramètres du navigateur.');
+      return;
+    }
 
-    recognition.onresult = (event: any) => {
-      let final = '';
-      let interim = '';
-      for (let i = 0; i < event.results.length; i++) {
-        const result = event.results[i];
-        if (result.isFinal) {
-          final += result[0].transcript;
-        } else {
-          interim += result[0].transcript;
+    // Start Web Speech API in parallel (live transcript). Falls back gracefully.
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'fr-FR';
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 1;
+
+      recognition.onresult = (event: any) => {
+        let final = '';
+        let interim = '';
+        for (let i = 0; i < event.results.length; i++) {
+          const result = event.results[i];
+          if (result.isFinal) final += result[0].transcript;
+          else interim += result[0].transcript;
         }
-      }
-      if (final) setTranscript(final);
-      setInterimText(interim);
-    };
+        if (final) setTranscript(prev => (prev ? prev + ' ' : '') + final.trim());
+        setInterimText(interim);
+      };
 
-    recognition.onerror = (event: any) => {
-      console.error('Speech error:', event.error);
-      if (event.error === 'not-allowed') {
-        setError('Accès au microphone refusé. Autorisez le micro dans les paramètres du navigateur.');
-      } else if (event.error !== 'aborted') {
-        setError(`Erreur micro: ${event.error}`);
-      }
-      setPhase('idle');
-    };
+      recognition.onerror = (event: any) => {
+        console.error('Speech error:', event.error);
+        if (event.error === 'not-allowed') {
+          setError('Accès au microphone refusé.');
+        } else if (event.error !== 'aborted' && event.error !== 'no-speech') {
+          console.warn(`SR error (non-fatal): ${event.error}`);
+        }
+      };
 
-    recognition.onend = () => {
-      // Auto-restart if still in listening phase (browser stops after silence)
-      if (recognitionRef.current && phase === 'listening') {
-        // Don't restart, let the user click stop
-      }
-    };
+      recognitionRef.current = recognition;
+      try { recognition.start(); } catch {}
+    }
 
-    recognitionRef.current = recognition;
-    recognition.start();
     setPhase('listening');
-  }, [phase]);
+  }, []);
+
+  // ─── Server re-transcription (fallback / quality boost) ───
+  const runServerTranscription = useCallback(async (): Promise<string | null> => {
+    const blob = audioBlobRef.current;
+    if (!blob || blob.size < 1024) return null;
+    try {
+      // Convert blob to base64
+      const b64: string = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const s = String(reader.result || '');
+          resolve(s.includes(',') ? s.split(',')[1] : s);
+        };
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(blob);
+      });
+      const { data, error } = await supabase.functions.invoke('transcribe-audio', {
+        body: { audio: b64, mimeType: blob.type || audioMimeRef.current, language: 'fr' },
+      });
+      if (error) throw error;
+      const t = (data as any)?.transcript?.trim?.();
+      return t || null;
+    } catch (e: any) {
+      console.error('server transcribe error', e);
+      toast.error('Impossible de retranscrire (serveur)');
+      return null;
+    }
+  }, []);
 
   // ─── Stop listening & parse ───
   const stopAndParse = useCallback(async () => {
     if (recognitionRef.current) {
-      recognitionRef.current.stop();
+      try { recognitionRef.current.stop(); } catch {}
       recognitionRef.current = null;
     }
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      try { mediaRecorderRef.current.stop(); } catch {}
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(t => t.stop());
+      streamRef.current = null;
+    }
 
-    const text = transcript || interimText;
-    if (!text.trim()) {
-      setError('Aucun texte détecté. Réessayez.');
+    // Wait a tick for MediaRecorder onstop to flush
+    await new Promise(r => setTimeout(r, 150));
+
+    let fullText = (transcript + ' ' + interimText).trim();
+
+    // If Web Speech gave nothing (Safari / iOS), try server transcription
+    if (!fullText) {
+      setPhase('parsing');
+      setServerTranscribing(true);
+      const serverText = await runServerTranscription();
+      setServerTranscribing(false);
+      if (serverText) fullText = serverText;
+    }
+
+    if (!fullText.trim()) {
+      setError('Aucun texte détecté. Réessayez en parlant plus fort ou plus près du micro.');
       setPhase('idle');
       return;
     }
 
-    // If there's interim text, add it to transcript
-    const fullText = (transcript + ' ' + interimText).trim();
     setTranscript(fullText);
     setInterimText('');
     setPhase('parsing');
 
     try {
       const parsed = await parseVoiceToTask(fullText);
-      // Resolve relative dates
       parsed.dueDate = resolveDate(parsed.dueDate);
       parsed.startDate = resolveDate(parsed.startDate);
       setParsedTask(parsed);
@@ -204,13 +264,52 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
       setError(err.message || 'Erreur lors de l\'analyse');
       setPhase('idle');
     }
-  }, [transcript, interimText]);
+  }, [transcript, interimText, runServerTranscription]);
+
+  // ─── Re-run parsing on edited transcript ───
+  const rerunParse = useCallback(async (newTranscript?: string) => {
+    const text = (newTranscript ?? transcript).trim();
+    if (!text) { toast.error('Texte vide'); return; }
+    setRerunning(true);
+    try {
+      const parsed = await parseVoiceToTask(text);
+      parsed.dueDate = resolveDate(parsed.dueDate);
+      parsed.startDate = resolveDate(parsed.startDate);
+      setParsedTask(parsed);
+      toast.success('Analyse mise à jour');
+    } catch (err: any) {
+      toast.error(err.message || 'Erreur lors de l\'analyse');
+    } finally {
+      setRerunning(false);
+    }
+  }, [transcript]);
+
+  // ─── Retry via server transcription from the recorded audio ───
+  const retryServerTranscription = useCallback(async () => {
+    setServerTranscribing(true);
+    const serverText = await runServerTranscription();
+    setServerTranscribing(false);
+    if (!serverText) {
+      toast.error('Aucun audio disponible pour retranscrire');
+      return;
+    }
+    setTranscript(serverText);
+    toast.success('Transcription IA obtenue');
+    await rerunParse(serverText);
+  }, [runServerTranscription, rerunParse]);
 
   // ─── Cancel listening ───
   const cancel = useCallback(() => {
     if (recognitionRef.current) {
-      recognitionRef.current.stop();
+      try { recognitionRef.current.stop(); } catch {}
       recognitionRef.current = null;
+    }
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      try { mediaRecorderRef.current.stop(); } catch {}
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(t => t.stop());
+      streamRef.current = null;
     }
     setPhase('idle');
     setTranscript('');

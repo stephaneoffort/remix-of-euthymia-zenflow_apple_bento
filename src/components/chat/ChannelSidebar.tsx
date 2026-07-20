@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Hash, Lock, Plus, ChevronLeft, MessageCircle, Mail, Trash2 } from 'lucide-react';
+import { Hash, Lock, Plus, ChevronLeft, MessageCircle, Mail, Trash2, CheckSquare, Square, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -36,6 +36,9 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
   const [dmMembers, setDmMembers] = useState<Record<string, { name: string; avatarColor: string; userId: string }>>({});
   const [teamMemberToAuthId, setTeamMemberToAuthId] = useState<Record<string, string>>({});
   const [authIdToTeamMember, setAuthIdToTeamMember] = useState<Record<string, string>>({});
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkDeleting, setBulkDeleting] = useState(false);
 
   const publicChannels = channels.filter(c => c.type === 'public');
   const privateChannels = channels.filter(c => c.type === 'private');
@@ -178,7 +181,47 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
   }, [activeChannelId, channels, onSelectChannel, onChannelCreated]);
 
 
-  // All team members except self for DMs
+  const toggleSelected = useCallback((channelId: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(channelId)) next.delete(channelId);
+      else next.add(channelId);
+      return next;
+    });
+  }, []);
+
+  const exitSelectionMode = useCallback(() => {
+    setSelectionMode(false);
+    setSelectedIds(new Set());
+  }, []);
+
+  const handleBulkDelete = useCallback(async () => {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) return;
+    const ok = window.confirm(`Supprimer ${ids.length} conversation${ids.length > 1 ? 's' : ''} ? Cette action est irréversible et effacera tous les messages associés.`);
+    if (!ok) return;
+    setBulkDeleting(true);
+    let deleted = 0;
+    const errors: string[] = [];
+    for (const id of ids) {
+      await db.from('chat_messages').delete().eq('channel_id', id);
+      await db.from('chat_channel_members').delete().eq('channel_id', id);
+      const { error } = await db.from('chat_channels').delete().eq('id', id);
+      if (error) errors.push(error.message);
+      else deleted++;
+    }
+    setBulkDeleting(false);
+    if (deleted > 0) toast.success(`${deleted} conversation${deleted > 1 ? 's supprimées' : ' supprimée'}`);
+    if (errors.length > 0) toast.error(`${errors.length} échec${errors.length > 1 ? 's' : ''} de suppression`);
+    if (activeChannelId && ids.includes(activeChannelId)) {
+      const remaining = channels.filter(c => !ids.includes(c.id));
+      if (remaining[0]) onSelectChannel(remaining[0].id);
+    }
+    exitSelectionMode();
+    onChannelCreated?.();
+  }, [selectedIds, activeChannelId, channels, onSelectChannel, onChannelCreated, exitSelectionMode]);
+
+
   const availableForDm = useMemo(() => {
     return teamMembers.filter(m => {
       const authId = teamMemberToAuthId[m.id];
@@ -205,7 +248,37 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
               Chat d'équipe
             </h3>
           </div>
+          <button
+            onClick={() => (selectionMode ? exitSelectionMode() : setSelectionMode(true))}
+            className={`p-1.5 rounded-xl transition-all backdrop-blur-sm ${selectionMode ? 'bg-primary/15 text-primary' : 'hover:bg-muted/40 text-muted-foreground hover:text-foreground'}`}
+            title={selectionMode ? 'Quitter la sélection' : 'Sélectionner plusieurs conversations'}
+          >
+            {selectionMode ? <X className="w-4 h-4" /> : <CheckSquare className="w-4 h-4" />}
+          </button>
         </div>
+
+        {/* Selection toolbar */}
+        {selectionMode && (
+          <div className="flex items-center gap-2 px-3 py-2 border-b border-border/15 bg-primary/5">
+            <span className="text-xs font-medium text-foreground flex-1">
+              {selectedIds.size} sélectionnée{selectedIds.size > 1 ? 's' : ''}
+            </span>
+            <button
+              onClick={() => setSelectedIds(new Set(channels.map(c => c.id)))}
+              className="text-[11px] px-2 py-1 rounded-lg hover:bg-muted/40 text-muted-foreground hover:text-foreground transition-all"
+            >
+              Tout
+            </button>
+            <button
+              onClick={handleBulkDelete}
+              disabled={selectedIds.size === 0 || bulkDeleting}
+              className="text-[11px] px-2 py-1 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
+            >
+              <Trash2 className="w-3 h-3" />
+              {bulkDeleting ? '...' : 'Supprimer'}
+            </button>
+          </div>
+        )}
 
         {/* Channel list */}
         <div className="flex-1 overflow-y-auto py-3 scrollbar-thin space-y-5">
@@ -221,8 +294,9 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
             <div className="space-y-0.5 px-2">
               {publicChannels.map(ch => (
                 <ChannelItem key={ch.id} channel={ch} isActive={activeChannelId === ch.id}
-                  onClick={() => onSelectChannel(ch.id)} icon={<Hash className="w-4 h-4 shrink-0" />} unread={unreadCounts[ch.id] || 0}
-                  onDelete={() => handleDeleteChannel(ch.id, `#${ch.name}`)} />
+                  onClick={() => selectionMode ? toggleSelected(ch.id) : onSelectChannel(ch.id)} icon={<Hash className="w-4 h-4 shrink-0" />} unread={unreadCounts[ch.id] || 0}
+                  onDelete={() => handleDeleteChannel(ch.id, `#${ch.name}`)}
+                  selectionMode={selectionMode} selected={selectedIds.has(ch.id)} />
               ))}
               {publicChannels.length === 0 && (
                 <p className="text-[11px] text-muted-foreground/40 px-3 py-2 italic">Aucun canal</p>
@@ -239,8 +313,9 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
               <div className="space-y-0.5 px-2">
                 {privateChannels.map(ch => (
                   <ChannelItem key={ch.id} channel={ch} isActive={activeChannelId === ch.id}
-                    onClick={() => onSelectChannel(ch.id)} icon={<Lock className="w-4 h-4 shrink-0" />} unread={unreadCounts[ch.id] || 0}
-                    onDelete={() => handleDeleteChannel(ch.id, ch.name)} />
+                    onClick={() => selectionMode ? toggleSelected(ch.id) : onSelectChannel(ch.id)} icon={<Lock className="w-4 h-4 shrink-0" />} unread={unreadCounts[ch.id] || 0}
+                    onDelete={() => handleDeleteChannel(ch.id, ch.name)}
+                    selectionMode={selectionMode} selected={selectedIds.has(ch.id)} />
                 ))}
               </div>
             </div>
@@ -263,11 +338,13 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
                     key={ch.id}
                     channelId={ch.id}
                     isActive={activeChannelId === ch.id}
-                    onClick={() => onSelectChannel(ch.id)}
+                    onClick={() => selectionMode ? toggleSelected(ch.id) : onSelectChannel(ch.id)}
                     partnerName={partner?.name}
                     partnerColor={partner?.avatarColor}
                     unread={unreadCounts[ch.id] || 0}
                     onDelete={() => handleDeleteChannel(ch.id, partner?.name ? `DM avec ${partner.name}` : 'cette conversation')}
+                    selectionMode={selectionMode}
+                    selected={selectedIds.has(ch.id)}
                   />
                 );
               })}
@@ -401,19 +478,25 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
   );
 }
 
-function ChannelItem({ channel, isActive, onClick, icon, unread = 0, onDelete }: {
-  channel: ChatChannel; isActive: boolean; onClick: () => void; icon: React.ReactNode; unread?: number; onDelete?: () => void;
+function ChannelItem({ channel, isActive, onClick, icon, unread = 0, onDelete, selectionMode = false, selected = false }: {
+  channel: ChatChannel; isActive: boolean; onClick: () => void; icon: React.ReactNode; unread?: number; onDelete?: () => void; selectionMode?: boolean; selected?: boolean;
 }) {
   return (
     <div className={`group relative w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all duration-200 ${
-      isActive
-        ? 'bg-primary/10 text-primary font-semibold backdrop-blur-xl border border-primary/15 shadow-[0_0_14px_hsl(var(--primary)/0.1),inset_0_1px_0_rgba(255,255,255,0.05)]'
-        : unread > 0
-          ? 'text-foreground font-medium hover:bg-muted/20'
-          : 'text-muted-foreground/60 hover:bg-muted/20 hover:text-foreground hover:backdrop-blur-sm'
+      selectionMode && selected
+        ? 'bg-primary/15 text-foreground border border-primary/25'
+        : isActive
+          ? 'bg-primary/10 text-primary font-semibold backdrop-blur-xl border border-primary/15 shadow-[0_0_14px_hsl(var(--primary)/0.1),inset_0_1px_0_rgba(255,255,255,0.05)]'
+          : unread > 0
+            ? 'text-foreground font-medium hover:bg-muted/20'
+            : 'text-muted-foreground/60 hover:bg-muted/20 hover:text-foreground hover:backdrop-blur-sm'
     }`}>
       <button onClick={onClick} className="flex items-center gap-2.5 flex-1 min-w-0 text-left">
-        <span className={isActive ? 'text-primary' : unread > 0 ? 'opacity-70' : 'opacity-40'}>{icon}</span>
+        {selectionMode ? (
+          selected ? <CheckSquare className="w-4 h-4 shrink-0 text-primary" /> : <Square className="w-4 h-4 shrink-0 opacity-50" />
+        ) : (
+          <span className={isActive ? 'text-primary' : unread > 0 ? 'opacity-70' : 'opacity-40'}>{icon}</span>
+        )}
         <span className="truncate flex-1">{channel.name}</span>
       </button>
       {unread > 0 && !isActive && (
@@ -434,27 +517,33 @@ function ChannelItem({ channel, isActive, onClick, icon, unread = 0, onDelete }:
   );
 }
 
-function DmItem({ channelId, isActive, onClick, partnerName, partnerColor, unread = 0, onDelete }: {
-  channelId: string; isActive: boolean; onClick: () => void; partnerName?: string; partnerColor?: string; unread?: number; onDelete?: () => void;
+function DmItem({ channelId, isActive, onClick, partnerName, partnerColor, unread = 0, onDelete, selectionMode = false, selected = false }: {
+  channelId: string; isActive: boolean; onClick: () => void; partnerName?: string; partnerColor?: string; unread?: number; onDelete?: () => void; selectionMode?: boolean; selected?: boolean;
 }) {
   const displayName = partnerName || 'Membre';
   const color = partnerColor || '#6366f1';
 
   return (
     <div className={`group relative w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all duration-200 ${
-      isActive
-        ? 'bg-primary/10 text-primary font-semibold backdrop-blur-xl border border-primary/15 shadow-[0_0_14px_hsl(var(--primary)/0.1),inset_0_1px_0_rgba(255,255,255,0.05)]'
-        : unread > 0
-          ? 'text-foreground font-medium hover:bg-muted/20'
-          : 'text-muted-foreground/60 hover:bg-muted/20 hover:text-foreground hover:backdrop-blur-sm'
+      selectionMode && selected
+        ? 'bg-primary/15 text-foreground border border-primary/25'
+        : isActive
+          ? 'bg-primary/10 text-primary font-semibold backdrop-blur-xl border border-primary/15 shadow-[0_0_14px_hsl(var(--primary)/0.1),inset_0_1px_0_rgba(255,255,255,0.05)]'
+          : unread > 0
+            ? 'text-foreground font-medium hover:bg-muted/20'
+            : 'text-muted-foreground/60 hover:bg-muted/20 hover:text-foreground hover:backdrop-blur-sm'
     }`}>
       <button onClick={onClick} className="flex items-center gap-2.5 flex-1 min-w-0 text-left">
-        <div className="relative shrink-0">
-          <div className="w-6 h-6 rounded-lg flex items-center justify-center text-[9px] font-bold text-white"
-            style={{ backgroundColor: color }}>
-            {displayName[0]?.toUpperCase()}
+        {selectionMode ? (
+          selected ? <CheckSquare className="w-4 h-4 shrink-0 text-primary" /> : <Square className="w-4 h-4 shrink-0 opacity-50" />
+        ) : (
+          <div className="relative shrink-0">
+            <div className="w-6 h-6 rounded-lg flex items-center justify-center text-[9px] font-bold text-white"
+              style={{ backgroundColor: color }}>
+              {displayName[0]?.toUpperCase()}
+            </div>
           </div>
-        </div>
+        )}
         <span className="truncate flex-1">{displayName}</span>
       </button>
       {unread > 0 && !isActive && (

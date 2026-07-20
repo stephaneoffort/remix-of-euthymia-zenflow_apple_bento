@@ -369,7 +369,12 @@ export default function AppSidebar() {
     return t.dueDate && t.dueDate < today && t.status !== "done";
   }).length;
 
+  const location = useLocation();
+  const MESSAGES_ROUTES = ["/chat", "/email", "/mentions"];
+  const isInMessages = MESSAGES_ROUTES.some((r) => location.pathname.startsWith(r));
+
   const handleNavClick = () => {
+    if (isInMessages) navigate("/");
     if (isMobile) setSidebarCollapsed(true);
   };
 

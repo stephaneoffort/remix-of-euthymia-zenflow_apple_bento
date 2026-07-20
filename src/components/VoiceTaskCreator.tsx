@@ -131,12 +131,40 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
     return lists[0]?.id || 'l1';
   })();
 
+  // ─── Progress animation helper ───
+  const startProgress = useCallback((from: number, target: number, durationMs: number) => {
+    if (progressTimerRef.current) window.clearInterval(progressTimerRef.current);
+    setProgress(from);
+    const startTime = Date.now();
+    progressTimerRef.current = window.setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const ratio = Math.min(1, elapsed / durationMs);
+      const eased = 1 - Math.pow(1 - ratio, 2);
+      setProgress(from + (target - from) * eased);
+      if (ratio >= 1 && progressTimerRef.current) {
+        window.clearInterval(progressTimerRef.current);
+        progressTimerRef.current = null;
+      }
+    }, 80) as unknown as number;
+  }, []);
+
+  const stopProgress = useCallback((finalValue?: number) => {
+    if (progressTimerRef.current) {
+      window.clearInterval(progressTimerRef.current);
+      progressTimerRef.current = null;
+    }
+    if (typeof finalValue === 'number') setProgress(finalValue);
+  }, []);
+
   // ─── Start listening ───
   const startListening = useCallback(async () => {
     setError('');
+    setErrorKind(null);
     setTranscript('');
     setInterimText('');
     setParsedTask(null);
+    audioChunksRef.current = [];
+    audioBlobRef.current = null;
     audioChunksRef.current = [];
     audioBlobRef.current = null;
 

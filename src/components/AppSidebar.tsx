@@ -66,7 +66,7 @@ import {
   ContextMenuSubTrigger,
   ContextMenuSubContent,
 } from "@/components/ui/context-menu";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -369,8 +369,17 @@ export default function AppSidebar() {
     return t.dueDate && t.dueDate < today && t.status !== "done";
   }).length;
 
-  const handleNavClick = () => {
+  const location = useLocation();
+  const MESSAGES_ROUTES = ["/chat", "/email", "/mentions"];
+  const isInMessages = MESSAGES_ROUTES.some((r) => location.pathname.startsWith(r));
+
+  const collapseIfMobile = () => {
     if (isMobile) setSidebarCollapsed(true);
+  };
+
+  const handleNavClick = () => {
+    if (isInMessages) navigate("/");
+    collapseIfMobile();
   };
 
   const handleAddSpace = () => {
@@ -818,7 +827,7 @@ export default function AppSidebar() {
           {messagesExpanded && (
             <>
               <button
-                onClick={() => { navigate('/chat'); handleNavClick(); }}
+                onClick={() => { navigate('/chat'); collapseIfMobile(); }}
                 className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors text-sidebar-fg hover:bg-sidebar-hover"
               >
                 <MessagesSquare className="w-4 h-4" />
@@ -830,7 +839,7 @@ export default function AppSidebar() {
                 )}
               </button>
               <button
-                onClick={() => { navigate('/mentions'); handleNavClick(); }}
+                onClick={() => { navigate('/mentions'); collapseIfMobile(); }}
                 className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors text-sidebar-fg hover:bg-sidebar-hover"
               >
                 <AtSign className="w-4 h-4" />
@@ -842,7 +851,7 @@ export default function AppSidebar() {
                 )}
               </button>
               <button
-                onClick={() => { navigate('/email'); handleNavClick(); }}
+                onClick={() => { navigate('/email'); collapseIfMobile(); }}
                 className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors text-sidebar-fg hover:bg-sidebar-hover"
               >
                 <Mail className="w-4 h-4" />
@@ -854,7 +863,7 @@ export default function AppSidebar() {
                 )}
               </button>
               <button
-                onClick={() => { openMessagesHub('home'); handleNavClick(); }}
+                onClick={() => { openMessagesHub('home'); collapseIfMobile(); }}
                 className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-xs transition-colors text-sidebar-fg/70 hover:bg-sidebar-hover hover:text-sidebar-fg mt-1"
               >
                 <MessageSquare className="w-3.5 h-3.5" />

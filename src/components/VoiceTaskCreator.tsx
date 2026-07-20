@@ -1,13 +1,15 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
-import { Mic, MicOff, Loader2, Check, X, Sparkles, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Mic, MicOff, Loader2, Check, X, Sparkles, AlertCircle, ChevronDown, ChevronUp, Pencil, RefreshCw } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { format, addDays, nextMonday, nextFriday, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { PriorityBadge, StatusBadge } from '@/components/TaskBadges';
+import { supabase } from '@/integrations/supabase/client';
 
 /* ─── Types ─── */
 interface ParsedTask {

@@ -153,15 +153,9 @@ export function QuickNote() {
   const textRef = useRef(text);
   useEffect(() => { textRef.current = text; }, [text]);
 
-  // Web Speech API is unreliable on mobile (iOS Safari, Firefox Android, etc.)
-  // We force server-side transcription on mobile for consistency.
-  const hasWebSpeech =
-    typeof window !== 'undefined' &&
-    !!((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition);
-  const isMobile =
-    typeof navigator !== 'undefined' &&
-    /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
-  const useServerTranscription = !hasWebSpeech || isMobile;
+  // Always transcribe server-side via Lovable AI (Whisper).
+  // Web Speech API is inconsistent across browsers/platforms — the server route is uniform.
+  const useServerTranscription = true;
 
   // ── Keyboard shortcut Ctrl/⌘+Shift+N + custom event ──────────────────────
   useEffect(() => {

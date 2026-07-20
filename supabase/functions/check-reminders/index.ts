@@ -309,16 +309,17 @@ serve(async (req) => {
       if (!refDate) continue;
 
       const target = new Date(refDate);
-      const offsetMs = OFFSET_MS[reminder.offset_key] || 0;
-      const triggerTime = new Date(target.getTime() - offsetMs);
+        const offsetMs = parseOffsetMs(reminder.offset_key);
+        const triggerTime = new Date(target.getTime() - offsetMs);
 
-      if (now >= triggerTime) {
-        // Time to fire this reminder
-        triggeredIds.push(reminder.id);
+        if (now >= triggerTime) {
+          // Time to fire this reminder
+          triggeredIds.push(reminder.id);
 
-        const typeLabel =
-          reminder.reminder_type === "before_start" ? "du début" : "de l'échéance";
-        const body = `${OFFSET_LABELS[reminder.offset_key] || reminder.offset_key} avant ${typeLabel}`;
+          const typeLabel =
+            reminder.reminder_type === "before_start" ? "du début" : "de l'échéance";
+          const body = `${offsetLabel(reminder.offset_key)} avant ${typeLabel}`;
+
 
         const payloadStr = JSON.stringify({
           title: `📋 ${task.title}`,

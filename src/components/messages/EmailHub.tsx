@@ -552,7 +552,7 @@ function NotionMailLayout({
             {isMobile && (
               <button
                 onClick={() => setMobilePane('list')}
-                className="p-1.5 rounded-md hover:bg-muted text-muted-foreground"
+                className="p-1.5 rounded-md hover:bg-muted hover:text-foreground text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
                 title="Retour"
                 aria-label="Retour à la liste"
               >
@@ -593,7 +593,7 @@ function NotionMailLayout({
                         className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors text-left ${
                           active
                             ? 'bg-foreground/10 text-foreground font-medium'
-                            : 'text-foreground/70 hover:bg-muted hover:text-foreground'
+                            : 'text-foreground hover:bg-muted hover:text-foreground'
                         }`}
                       >
                         {a.account_type === 'gmail' ? (
@@ -692,7 +692,7 @@ function NotionMailLayout({
               <p className="text-xs text-muted-foreground text-center py-8">Chargement…</p>
             ) : filtered.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground px-4">
-                <Inbox className="w-10 h-10 mx-auto mb-3 opacity-30" />
+                <Inbox className="w-10 h-10 mx-auto mb-3 opacity-60" />
                 <p className="text-sm">Aucun email</p>
                 {messages.length === 0 && (
                   <Button variant="link" onClick={onSync} className="mt-1 text-xs">
@@ -965,7 +965,7 @@ function ConversationView({
                               &lt;{msg.from_address}&gt;
                             </p>
                             <p className="text-xs text-muted-foreground mt-0.5">
-                              À : <span className="text-foreground/80">{msg.to_addresses.join(', ')}</span>
+                              À : <span className="text-foreground">{msg.to_addresses.join(', ')}</span>
                             </p>
                           </>
                         ) : (
@@ -974,7 +974,7 @@ function ConversationView({
                               {msg.preview || msg.body_text?.slice(0, 140) || '…'}
                             </p>
                             {msgAtts.length > 0 && (
-                              <p className="text-[11px] text-muted-foreground/80 truncate mt-0.5 italic">
+                              <p className="text-[11px] text-muted-foreground truncate mt-0.5 italic">
                                 <Paperclip className="inline w-3 h-3 mr-1 -mt-0.5" />
                                 {msgAtts.slice(0, 3).map(a => a.name).join(', ')}
                                 {msgAtts.length > 3 && ` + ${msgAtts.length - 3}`}
@@ -1033,7 +1033,7 @@ function SidebarFolder({
         className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors text-left ${
           active
             ? 'bg-foreground/10 text-foreground font-medium'
-            : 'text-foreground/70 hover:bg-muted hover:text-foreground'
+            : 'text-foreground hover:bg-muted hover:text-foreground'
         }`}
       >
         <Icon className="w-4 h-4 shrink-0 text-muted-foreground" />
@@ -1066,7 +1066,7 @@ function FilterChip({
       <span className="flex items-center gap-1.5">
         {label}
         {count != null && count > 0 && (
-          <span className={`text-[10px] font-mono ${active ? 'text-foreground/60' : 'text-muted-foreground/70'}`}>
+          <span className={`text-[10px] font-mono ${active ? 'text-foreground' : 'text-muted-foreground'}`}>
             {count}
           </span>
         )}
@@ -1106,7 +1106,7 @@ function MessageRow({
 
       <div className="px-4 py-3 pr-3">
         <div className="flex items-baseline justify-between gap-2 mb-0.5">
-          <span className={`text-sm truncate ${!msg.is_read ? 'font-semibold text-foreground' : 'font-medium text-foreground/85'}`}>
+          <span className={`text-sm truncate ${!msg.is_read ? 'font-semibold text-foreground' : 'font-medium text-foreground'}`}>
             {msg.from_name || msg.from_address}
           </span>
           <span className="flex items-center gap-1.5 shrink-0">
@@ -1119,7 +1119,7 @@ function MessageRow({
             </span>
           </span>
         </div>
-        <p className={`text-[13px] truncate leading-snug ${!msg.is_read ? 'text-foreground' : 'text-foreground/75'}`}>
+        <p className={`text-[13px] truncate leading-snug ${!msg.is_read ? 'text-foreground' : 'text-foreground'}`}>
           {msg.subject || '(sans objet)'}
         </p>
         {msg.preview && (
@@ -1135,7 +1135,7 @@ function MessageRow({
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); onReply(); }}
-            className="h-7 w-7 flex items-center justify-center rounded-md bg-background/95 backdrop-blur border border-border shadow-sm hover:bg-muted text-foreground/80 hover:text-foreground"
+            className="h-7 w-7 flex items-center justify-center rounded-md bg-background/95 backdrop-blur border border-border shadow-sm hover:bg-muted text-foreground hover:text-foreground"
             title="Répondre"
           >
             <CornerUpLeft className="w-3.5 h-3.5" />
@@ -1143,7 +1143,7 @@ function MessageRow({
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); /* archive placeholder */ }}
-            className="h-7 w-7 flex items-center justify-center rounded-md bg-background/95 backdrop-blur border border-border shadow-sm hover:bg-muted text-foreground/80 hover:text-foreground"
+            className="h-7 w-7 flex items-center justify-center rounded-md bg-background/95 backdrop-blur border border-border shadow-sm hover:bg-muted text-foreground hover:text-foreground"
             title="Archiver"
           >
             <Archive className="w-3.5 h-3.5" />
@@ -1151,7 +1151,7 @@ function MessageRow({
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); onDelete(); }}
-            className="h-7 w-7 flex items-center justify-center rounded-md bg-background/95 backdrop-blur border border-border shadow-sm hover:bg-muted text-foreground/80 hover:text-destructive"
+            className="h-7 w-7 flex items-center justify-center rounded-md bg-background/95 backdrop-blur border border-border shadow-sm hover:bg-muted text-foreground hover:text-destructive"
             title="Supprimer"
           >
             <Trash2 className="w-3.5 h-3.5" />

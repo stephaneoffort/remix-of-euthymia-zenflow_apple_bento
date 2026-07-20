@@ -6,6 +6,7 @@ import { useCanva, type CanvaAttachment } from '@/hooks/useCanva';
 import CanvaDesignPicker from './CanvaDesignPicker';
 import { toast } from 'sonner';
 import { useIntegrations, INTEGRATION_CONFIG } from '@/hooks/useIntegrations';
+import { logAudit } from '@/lib/auditLog';
 
 const TYPE_BADGES: Record<string, { label: string; color: string }> = {
   presentation: { label: 'Présentation', color: 'bg-blue-500/10 text-blue-600' },
@@ -60,6 +61,7 @@ export default function CanvaAttachments({ entityType, entityId, compact, defaul
       toast.info('Export en cours...');
       const result = await canva.exportDesign(att.design_id, 'png');
       if (result?.urls?.[0]) {
+        logAudit('attachment.downloaded', 'canva', att.design_id, { name: att.design_name, format: 'png', entity_type: entityType, entity_id: entityId });
         window.open(result.urls[0], '_blank');
         toast.success('Export prêt !');
       } else {

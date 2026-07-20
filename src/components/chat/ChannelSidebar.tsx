@@ -267,6 +267,7 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
                     partnerName={partner?.name}
                     partnerColor={partner?.avatarColor}
                     unread={unreadCounts[ch.id] || 0}
+                    onDelete={() => handleDeleteChannel(ch.id, partner?.name ? `DM avec ${partner.name}` : 'cette conversation')}
                   />
                 );
               })}

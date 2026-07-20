@@ -212,7 +212,7 @@ export function QuickNote() {
     if (!user) return;
     const { data, error } = await db
       .from('quick_notes')
-      .select('id, text, created_at')
+      .select('id, text, created_at, transcribe_lang')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
       .limit(200);
@@ -220,7 +220,7 @@ export function QuickNote() {
       console.error('[QuickNote] fetch failed', error);
       return;
     }
-    setSavedNotes((data || []).map((n: any) => ({ id: n.id, text: n.text, createdAt: n.created_at })));
+    setSavedNotes((data || []).map((n: any) => ({ id: n.id, text: n.text, createdAt: n.created_at, transcribeLang: n.transcribe_lang || 'auto' })));
   }, [user]);
 
   // ── One-shot migration of localStorage notes to Supabase ────────────────

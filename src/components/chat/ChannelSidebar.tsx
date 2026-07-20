@@ -158,6 +158,26 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
     onChannelCreated?.();
   }, [user, onSelectChannel, onChannelCreated]);
 
+  const handleDeleteChannel = useCallback(async (channelId: string, label: string) => {
+    const ok = window.confirm(`Supprimer « ${label} » ? Cette action est irréversible et effacera tous les messages associés.`);
+    if (!ok) return;
+    // Delete dependent rows first (in case cascade is not set)
+    await db.from('chat_messages').delete().eq('channel_id', channelId);
+    await db.from('chat_channel_members').delete().eq('channel_id', channelId);
+    const { error } = await db.from('chat_channels').delete().eq('id', channelId);
+    if (error) {
+      toast.error(`Suppression impossible : ${error.message}`);
+      return;
+    }
+    toast.success('Conversation supprimée');
+    if (activeChannelId === channelId) {
+      const remaining = channels.filter(c => c.id !== channelId);
+      if (remaining[0]) onSelectChannel(remaining[0].id);
+    }
+    onChannelCreated?.();
+  }, [activeChannelId, channels, onSelectChannel, onChannelCreated]);
+
+
   // All team members except self for DMs
   const availableForDm = useMemo(() => {
     return teamMembers.filter(m => {

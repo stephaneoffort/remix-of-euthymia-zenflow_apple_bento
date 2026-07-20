@@ -236,20 +236,21 @@ export function useDiscordChat() {
   }, [threadParent, activeChannelId, user]);
 
   // Search messages
-  const searchMessages = useCallback(async (query: string) => {
-    if (!activeChannelId || !query.trim()) {
+  const searchMessages = useCallback(async (query: string, authorId?: string | null) => {
+    const q = query.trim();
+    if (!activeChannelId || (!q && !authorId)) {
       setSearchResults([]);
       return;
     }
     setSearching(true);
-    const { data } = await db
+    let req = db
       .from('chat_messages')
       .select('*')
       .eq('channel_id', activeChannelId)
-      .eq('is_deleted', false)
-      .ilike('content', `%${query.trim()}%`)
-      .order('created_at', { ascending: false })
-      .limit(20);
+      .eq('is_deleted', false);
+    if (q) req = req.ilike('content', `%${q}%`);
+    if (authorId) req = req.eq('user_id', authorId);
+    const { data } = await req.order('created_at', { ascending: false }).limit(50);
     setSearchResults(data || []);
     if (data) {
       const userIds = [...new Set(data.map((m: ChatMessage) => m.user_id))];
@@ -257,6 +258,7 @@ export function useDiscordChat() {
     }
     setSearching(false);
   }, [activeChannelId, loadProfiles]);
+
 
   // Realtime subscriptions
   useEffect(() => {

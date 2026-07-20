@@ -189,9 +189,11 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
       recorder.start();
     } catch (err: any) {
       console.error('getUserMedia error:', err);
-      setError('Accès au microphone refusé. Autorisez le micro dans les paramètres du navigateur.');
+      setErrorKind('mic');
+      setError('Accès au microphone refusé. Autorisez le micro dans les paramètres du navigateur, puis réessayez.');
       return;
     }
+
 
     // Start Web Speech API in parallel (live transcript). Falls back gracefully.
     if (SpeechRecognition) {

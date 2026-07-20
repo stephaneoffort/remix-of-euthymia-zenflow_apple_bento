@@ -383,7 +383,7 @@ export function QuickNote() {
       });
 
       const { data, error } = await supabase.functions.invoke('transcribe-audio', {
-        body: { audio: base64, mimeType: mime, language: 'français' },
+        body: { audio: base64, mimeType: mime, language: transcribeLangRef.current },
       });
 
       if (error) throw error;

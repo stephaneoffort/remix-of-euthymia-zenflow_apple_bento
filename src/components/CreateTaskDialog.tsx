@@ -25,6 +25,7 @@ interface CreateTaskDialogProps {
 export default function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
   const { spaces, projects, getListsForProject, teamMembers, addTask } = useApp();
   const { teamMemberId } = useAuth();
+  const queryClient = useQueryClient();
 
   const [mode, setMode] = useState<'choice' | 'form' | 'voice'>('choice');
 
@@ -39,6 +40,10 @@ export default function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialo
   const [dueDate, setDueDate] = useState('');
   const [dueTime, setDueTime] = useState('');
   const [assigneeIds, setAssigneeIds] = useState<string[]>([]);
+  const [reminders, setReminders] = useState<ReminderDraft[]>([]);
+  const [remAmount, setRemAmount] = useState(1);
+  const [remUnit, setRemUnit] = useState<ReminderDraft['unit']>('h');
+  const [remType, setRemType] = useState<ReminderDraft['type']>('before_end');
 
   const visibleSpaces = useMemo(() => spaces.filter(s => !s.isArchived), [spaces]);
   const spaceProjects = useMemo(

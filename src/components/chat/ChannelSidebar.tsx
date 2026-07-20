@@ -405,7 +405,7 @@ function ChannelItem({ channel, isActive, onClick, icon, unread = 0 }: {
 function DmItem({ channelId, isActive, onClick, partnerName, partnerColor, unread = 0 }: {
   channelId: string; isActive: boolean; onClick: () => void; partnerName?: string; partnerColor?: string; unread?: number;
 }) {
-  const displayName = partnerName || 'Utilisateur';
+  const displayName = partnerName || 'Membre';
   const color = partnerColor || '#6366f1';
 
   return (

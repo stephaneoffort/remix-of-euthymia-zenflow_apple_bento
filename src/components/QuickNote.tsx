@@ -139,7 +139,11 @@ function bestAudioBitrate(mime: string): number {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-interface SavedNote { id: string; text: string; createdAt: string; }
+interface SavedNote { id: string; text: string; createdAt: string; transcribeLang: string; }
+
+function langLabel(code: string): string {
+  return TRANSCRIPTION_LANGS.find(l => l.code === code)?.label ?? code;
+}
 
 const MIGRATION_FLAG = 'quick_notes_migrated';
 
@@ -208,7 +212,7 @@ export function QuickNote() {
     if (!user) return;
     const { data, error } = await db
       .from('quick_notes')
-      .select('id, text, created_at')
+      .select('id, text, created_at, transcribe_lang')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
       .limit(200);
@@ -216,7 +220,7 @@ export function QuickNote() {
       console.error('[QuickNote] fetch failed', error);
       return;
     }
-    setSavedNotes((data || []).map((n: any) => ({ id: n.id, text: n.text, createdAt: n.created_at })));
+    setSavedNotes((data || []).map((n: any) => ({ id: n.id, text: n.text, createdAt: n.created_at, transcribeLang: n.transcribe_lang || 'auto' })));
   }, [user]);
 
   // ── One-shot migration of localStorage notes to Supabase ────────────────
@@ -262,13 +266,13 @@ export function QuickNote() {
             const n: any = payload.new;
             setSavedNotes(prev => prev.some(x => x.id === n.id)
               ? prev
-              : [{ id: n.id, text: n.text, createdAt: n.created_at }, ...prev]);
+              : [{ id: n.id, text: n.text, createdAt: n.created_at, transcribeLang: n.transcribe_lang || 'auto' }, ...prev]);
           } else if (payload.eventType === 'DELETE') {
             const oldId = (payload.old as any).id;
             setSavedNotes(prev => prev.filter(x => x.id !== oldId));
           } else if (payload.eventType === 'UPDATE') {
             const n: any = payload.new;
-            setSavedNotes(prev => prev.map(x => x.id === n.id ? { id: n.id, text: n.text, createdAt: n.created_at } : x));
+            setSavedNotes(prev => prev.map(x => x.id === n.id ? { id: n.id, text: n.text, createdAt: n.created_at, transcribeLang: n.transcribe_lang || 'auto' } : x));
           }
         },
       )
@@ -485,12 +489,12 @@ export function QuickNote() {
         const noteText = text.trim();
         const { data: inserted, error: insErr } = await db
           .from('quick_notes')
-          .insert({ user_id: user.id, text: noteText })
-          .select('id, text, created_at')
+          .insert({ user_id: user.id, text: noteText, transcribe_lang: transcribeLang })
+          .select('id, text, created_at, transcribe_lang')
           .single();
         if (insErr) throw insErr;
         setSavedNotes(prev => [
-          { id: inserted.id, text: inserted.text, createdAt: inserted.created_at },
+          { id: inserted.id, text: inserted.text, createdAt: inserted.created_at, transcribeLang: inserted.transcribe_lang || 'auto' },
           ...prev,
         ]);
         toast.success('Note sauvegardée');
@@ -519,8 +523,8 @@ export function QuickNote() {
     if (draft && !hasIntent && user) {
       // Fire-and-forget autosave so we never lose the draft.
       db.from('quick_notes')
-        .insert({ user_id: user.id, text: draft })
-        .select('id, text, created_at')
+        .insert({ user_id: user.id, text: draft, transcribe_lang: transcribeLangRef.current })
+        .select('id, text, created_at, transcribe_lang')
         .single()
         .then(({ data, error }: any) => {
           if (error) {
@@ -529,7 +533,7 @@ export function QuickNote() {
           }
           if (data) {
             setSavedNotes(prev => [
-              { id: data.id, text: data.text, createdAt: data.created_at },
+              { id: data.id, text: data.text, createdAt: data.created_at, transcribeLang: data.transcribe_lang || 'auto' },
               ...prev,
             ]);
           }
@@ -737,11 +741,19 @@ export function QuickNote() {
                           {n.text}
                         </p>
                         <div className="mt-2 flex items-center justify-between gap-2">
-                          <span className="text-[10px] text-muted-foreground tabular-nums">
-                            {new Date(n.createdAt).toLocaleString('fr-FR', {
-                              day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit',
-                            })}
-                          </span>
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <span className="text-[10px] text-muted-foreground tabular-nums">
+                              {new Date(n.createdAt).toLocaleString('fr-FR', {
+                                day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit',
+                              })}
+                            </span>
+                            <span
+                              className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground border border-border"
+                              title={`Langue de transcription : ${langLabel(n.transcribeLang)}`}
+                            >
+                              {langLabel(n.transcribeLang)}
+                            </span>
+                          </div>
                           <div className="flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
                             <button
                               onClick={() => copyNote(n.text)}
@@ -751,7 +763,7 @@ export function QuickNote() {
                               <Copy className="w-3.5 h-3.5" />
                             </button>
                             <button
-                              onClick={() => { setText(n.text); setTab('compose'); }}
+                              onClick={() => { setText(n.text); setTranscribeLang(n.transcribeLang || 'auto'); setTab('compose'); }}
                               className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
                               title="Réutiliser dans la rédaction"
                             >

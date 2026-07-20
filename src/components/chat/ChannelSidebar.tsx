@@ -478,19 +478,25 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
   );
 }
 
-function ChannelItem({ channel, isActive, onClick, icon, unread = 0, onDelete }: {
-  channel: ChatChannel; isActive: boolean; onClick: () => void; icon: React.ReactNode; unread?: number; onDelete?: () => void;
+function ChannelItem({ channel, isActive, onClick, icon, unread = 0, onDelete, selectionMode = false, selected = false }: {
+  channel: ChatChannel; isActive: boolean; onClick: () => void; icon: React.ReactNode; unread?: number; onDelete?: () => void; selectionMode?: boolean; selected?: boolean;
 }) {
   return (
     <div className={`group relative w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all duration-200 ${
-      isActive
-        ? 'bg-primary/10 text-primary font-semibold backdrop-blur-xl border border-primary/15 shadow-[0_0_14px_hsl(var(--primary)/0.1),inset_0_1px_0_rgba(255,255,255,0.05)]'
-        : unread > 0
-          ? 'text-foreground font-medium hover:bg-muted/20'
-          : 'text-muted-foreground/60 hover:bg-muted/20 hover:text-foreground hover:backdrop-blur-sm'
+      selectionMode && selected
+        ? 'bg-primary/15 text-foreground border border-primary/25'
+        : isActive
+          ? 'bg-primary/10 text-primary font-semibold backdrop-blur-xl border border-primary/15 shadow-[0_0_14px_hsl(var(--primary)/0.1),inset_0_1px_0_rgba(255,255,255,0.05)]'
+          : unread > 0
+            ? 'text-foreground font-medium hover:bg-muted/20'
+            : 'text-muted-foreground/60 hover:bg-muted/20 hover:text-foreground hover:backdrop-blur-sm'
     }`}>
       <button onClick={onClick} className="flex items-center gap-2.5 flex-1 min-w-0 text-left">
-        <span className={isActive ? 'text-primary' : unread > 0 ? 'opacity-70' : 'opacity-40'}>{icon}</span>
+        {selectionMode ? (
+          selected ? <CheckSquare className="w-4 h-4 shrink-0 text-primary" /> : <Square className="w-4 h-4 shrink-0 opacity-50" />
+        ) : (
+          <span className={isActive ? 'text-primary' : unread > 0 ? 'opacity-70' : 'opacity-40'}>{icon}</span>
+        )}
         <span className="truncate flex-1">{channel.name}</span>
       </button>
       {unread > 0 && !isActive && (

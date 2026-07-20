@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Hash, Lock, Plus, ChevronLeft, MessageCircle, Mail } from 'lucide-react';
+import { Hash, Lock, Plus, ChevronLeft, MessageCircle, Mail, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';

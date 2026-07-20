@@ -50,6 +50,36 @@ function getAttachmentList(msg: { attachments?: any; has_attachments?: boolean }
     .filter((a): a is AttachmentInfo => a !== null);
 }
 
+// Neutralise les couleurs inline des emails pour respecter le thème (contraste)
+function sanitizeEmailHtml(html: string): string {
+  if (!html) return html;
+  let out = html;
+  // Retire les attributs color / bgcolor
+  out = out.replace(/\s(color|bgcolor|text)\s*=\s*"[^"]*"/gi, '');
+  out = out.replace(/\s(color|bgcolor|text)\s*=\s*'[^']*'/gi, '');
+  // Retire color / background-color / background dans style="..."
+  out = out.replace(/style\s*=\s*"([^"]*)"/gi, (_m, css) => {
+    const cleaned = css
+      .replace(/(^|;)\s*color\s*:[^;]*/gi, '$1')
+      .replace(/(^|;)\s*background(-color)?\s*:[^;]*/gi, '$1')
+      .replace(/;;+/g, ';')
+      .replace(/^\s*;/, '')
+      .trim();
+    return cleaned ? `style="${cleaned}"` : '';
+  });
+  out = out.replace(/style\s*=\s*'([^']*)'/gi, (_m, css) => {
+    const cleaned = css
+      .replace(/(^|;)\s*color\s*:[^;]*/gi, '$1')
+      .replace(/(^|;)\s*background(-color)?\s*:[^;]*/gi, '$1')
+      .replace(/;;+/g, ';')
+      .replace(/^\s*;/, '')
+      .trim();
+    return cleaned ? `style='${cleaned}'` : '';
+  });
+  // Retire <font color="..."> attributes
+  return out;
+}
+
 function formatFileSize(bytes?: number): string {
   if (bytes == null || isNaN(bytes)) return '';
   if (bytes < 1024) return `${bytes} o`;
@@ -962,11 +992,11 @@ function ConversationView({
 
                     {expanded && (
                       <div className={`${isThread ? 'px-4 pb-4 pt-3' : ''}`}>
-                        <div className="prose prose-sm max-w-none dark:prose-invert text-foreground/90 leading-relaxed">
+                        <div className="prose prose-sm max-w-none dark:prose-invert text-foreground leading-relaxed [&_*]:!text-foreground [&_a]:!text-primary [&_a]:underline">
                           {msg.body_html ? (
-                            <div dangerouslySetInnerHTML={{ __html: msg.body_html }} />
+                            <div dangerouslySetInnerHTML={{ __html: sanitizeEmailHtml(msg.body_html) }} />
                           ) : (
-                            <pre className="whitespace-pre-wrap font-sans text-sm">{msg.body_text}</pre>
+                            <pre className="whitespace-pre-wrap font-sans text-sm text-foreground">{msg.body_text}</pre>
                           )}
                         </div>
                         <AttachmentList attachments={msgAtts} />

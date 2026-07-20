@@ -70,16 +70,34 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
 
       for (const ch of dmChannels) {
         const { data: members } = await db.from('chat_channel_members').select('user_id').eq('channel_id', ch.id);
-        if (members) {
-          const partner = members.find((m: any) => m.user_id !== user.id);
-          if (partner) {
-            const tmId = authIdToTeamMember[partner.user_id];
-            const tm = teamMembers.find(m => m.id === tmId);
-            if (tm) {
-              newDmMembers[ch.id] = { name: tm.name, avatarColor: tm.avatarColor, userId: partner.user_id };
-            }
+        if (!members) continue;
+        const partner = members.find((m: any) => m.user_id !== user.id);
+        if (!partner) continue;
+
+        let name: string | undefined;
+        let avatarColor = '#6366f1';
+
+        // 1) try local team members via auth mapping
+        const tmId = authIdToTeamMember[partner.user_id];
+        const tm = tmId ? teamMembers.find(m => m.id === tmId) : undefined;
+        if (tm) { name = tm.name; avatarColor = tm.avatarColor; }
+
+        // 2) fallback: fetch team member directly from DB (scope may exclude some rows)
+        if (!name && tmId) {
+          const { data: tmRow } = await db.from('team_members').select('name, avatar_color').eq('id', tmId).maybeSingle();
+          if (tmRow?.name) { name = tmRow.name; avatarColor = (tmRow as any).avatar_color || avatarColor; }
+        }
+
+        // 3) last resort: try to fetch team_member_id fresh from profiles for this user
+        if (!name) {
+          const { data: prof } = await db.from('profiles').select('team_member_id').eq('id', partner.user_id).maybeSingle();
+          if (prof?.team_member_id) {
+            const { data: tmRow } = await db.from('team_members').select('name, avatar_color').eq('id', prof.team_member_id).maybeSingle();
+            if (tmRow?.name) { name = tmRow.name; avatarColor = (tmRow as any).avatar_color || avatarColor; }
           }
         }
+
+        newDmMembers[ch.id] = { name: name || 'Membre inconnu', avatarColor, userId: partner.user_id };
       }
       setDmMembers(newDmMembers);
     };

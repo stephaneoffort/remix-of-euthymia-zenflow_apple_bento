@@ -607,22 +607,72 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
                 )}
               </div>
 
-              {/* Transcript source */}
-              <details className="text-xs">
-                <summary className="text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
-                  Texte dicté original
-                </summary>
-                <p className="mt-1 p-2 rounded bg-muted/30 text-muted-foreground italic">"{transcript}"</p>
-              </details>
+              {/* Transcript editor */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                    Texte dicté {editingTranscript ? '(modifiable)' : ''}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => setEditingTranscript(v => !v)}
+                      className="text-[11px] px-2 py-0.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+                    >
+                      <Pencil className="w-3 h-3" /> {editingTranscript ? 'Fermer' : 'Modifier'}
+                    </button>
+                    {audioBlobRef.current && (
+                      <button
+                        type="button"
+                        onClick={retryServerTranscription}
+                        disabled={serverTranscribing}
+                        className="text-[11px] px-2 py-0.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 disabled:opacity-50"
+                        title="Retranscrire l'audio avec l'IA serveur (meilleure précision)"
+                      >
+                        {serverTranscribing ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+                        Retranscrire IA
+                      </button>
+                    )}
+                  </div>
+                </div>
+                {editingTranscript ? (
+                  <Textarea
+                    value={transcript}
+                    onChange={(e) => setTranscript(e.target.value)}
+                    rows={3}
+                    className="text-xs"
+                  />
+                ) : (
+                  <p className="text-xs p-2 rounded bg-muted/30 text-muted-foreground italic">"{transcript}"</p>
+                )}
+                {editingTranscript && (
+                  <Button size="sm" variant="secondary" onClick={() => rerunParse()} disabled={rerunning} className="w-full">
+                    {rerunning ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1" />}
+                    Ré-analyser
+                  </Button>
+                )}
+              </div>
 
               {/* Action buttons */}
-              <div className="flex items-center gap-2 pt-1">
-                <Button variant="outline" className="flex-1" onClick={() => { cancel(); }}>
-                  <Mic className="w-4 h-4 mr-1" /> Redicter
-                </Button>
-                <Button className="flex-1" onClick={confirmCreate}>
-                  <Check className="w-4 h-4 mr-1" /> Créer la tâche
-                </Button>
+              <div className="flex flex-col gap-2 pt-1">
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" className="flex-1" onClick={() => { cancel(); }}>
+                    <Mic className="w-4 h-4 mr-1" /> Redicter
+                  </Button>
+                  <Button className="flex-1" onClick={confirmCreate}>
+                    <Check className="w-4 h-4 mr-1" /> Créer la tâche
+                  </Button>
+                </div>
+                {onParsed && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onParsed(parsedTask, transcript)}
+                    className="w-full"
+                  >
+                    <Pencil className="w-4 h-4 mr-1" /> Modifier dans le formulaire
+                  </Button>
+                )}
               </div>
             </div>
           )}

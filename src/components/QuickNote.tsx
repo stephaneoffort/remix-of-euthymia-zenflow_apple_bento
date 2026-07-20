@@ -220,7 +220,39 @@ export function QuickNote() {
     })();
   }, [user]);
 
-  // ── Load data on open ──────────────────────────────────────────────────────
+  // ── Preload notes on mount so they're available immediately after reopening the app
+  useEffect(() => {
+    if (user) fetchNotes();
+  }, [user, fetchNotes]);
+
+  // ── Realtime sync across the user's devices ────────────────────────────────
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel(`quick_notes:${user.id}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'quick_notes', filter: `user_id=eq.${user.id}` },
+        (payload) => {
+          if (payload.eventType === 'INSERT') {
+            const n: any = payload.new;
+            setSavedNotes(prev => prev.some(x => x.id === n.id)
+              ? prev
+              : [{ id: n.id, text: n.text, createdAt: n.created_at }, ...prev]);
+          } else if (payload.eventType === 'DELETE') {
+            const oldId = (payload.old as any).id;
+            setSavedNotes(prev => prev.filter(x => x.id !== oldId));
+          } else if (payload.eventType === 'UPDATE') {
+            const n: any = payload.new;
+            setSavedNotes(prev => prev.map(x => x.id === n.id ? { id: n.id, text: n.text, createdAt: n.created_at } : x));
+          }
+        },
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [user]);
+
+  // ── Load channels/members on open ──────────────────────────────────────────
   useEffect(() => {
     if (!open || !user) return;
     fetchNotes();

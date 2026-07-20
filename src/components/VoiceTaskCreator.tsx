@@ -500,13 +500,47 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
             </button>
           </div>
 
-          {/* Error */}
+          {/* Error with contextual retry */}
           {error && (
-            <div className="flex items-start gap-2 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-              <span>{error}</span>
+            <div className="rounded-lg bg-destructive/10 border border-destructive/30 text-destructive text-sm p-3 space-y-2">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="font-medium">
+                    {errorKind === 'mic' && 'Micro inaccessible'}
+                    {errorKind === 'empty' && 'Aucun son capté'}
+                    {errorKind === 'transcribe' && 'Transcription vide'}
+                    {errorKind === 'parse' && 'Analyse échouée'}
+                    {(!errorKind || errorKind === 'generic') && 'Erreur'}
+                  </p>
+                  <p className="text-xs opacity-90 mt-0.5">{error}</p>
+                </div>
+              </div>
+              <div className="flex gap-2 pt-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs"
+                  onClick={() => { setError(''); setErrorKind(null); startListening(); }}
+                >
+                  <Mic className="w-3 h-3 mr-1" /> Réessayer
+                </Button>
+                {(errorKind === 'transcribe' || errorKind === 'empty') && audioBlobRef.current && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 text-xs"
+                    onClick={retryServerTranscription}
+                    disabled={serverTranscribing}
+                  >
+                    {serverTranscribing ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <RefreshCw className="w-3 h-3 mr-1" />}
+                    Transcrire via IA
+                  </Button>
+                )}
+              </div>
             </div>
           )}
+
 
           {/* ─── Phase: IDLE ─── */}
           {phase === 'idle' && !error && (

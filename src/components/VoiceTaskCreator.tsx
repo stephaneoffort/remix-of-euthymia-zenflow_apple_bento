@@ -421,6 +421,7 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
       streamRef.current = null;
     }
     stopProgress(0);
+    cancelAutoRetry();
     setParseStep('idle');
     setPhase('idle');
     setTranscript('');
@@ -428,7 +429,7 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
     setParsedTask(null);
     setError('');
     setErrorKind(null);
-  }, [stopProgress]);
+  }, [stopProgress, cancelAutoRetry]);
 
   // ─── Confirm & create tasks ───
   const confirmCreate = useCallback(() => {

@@ -856,6 +856,9 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
                 ) : (
                   <p className="text-xs p-2 rounded bg-muted/30 text-muted-foreground italic">"{transcript}"</p>
                 )}
+                {transcriptQuality && (
+                  <TranscriptionQualityBadge quality={transcriptQuality} className="self-start" />
+                )}
                 {editingTranscript && (
                   <Button size="sm" variant="secondary" onClick={() => rerunParse()} disabled={rerunning} className="w-full">
                     {rerunning ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1" />}

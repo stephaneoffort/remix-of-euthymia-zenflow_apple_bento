@@ -269,6 +269,16 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
       });
       if (error) throw error;
       const t = (data as any)?.transcript?.trim?.();
+      setTranscriptQuality({
+        confidence: (data as any)?.confidence ?? null,
+        requestedLanguage: (data as any)?.requestedLanguage ?? 'fr',
+        detectedLanguage: (data as any)?.detectedLanguage ?? 'unknown',
+        detectedScript: (data as any)?.detectedScript,
+        languageMismatch: !!(data as any)?.languageMismatch,
+      });
+      if ((data as any)?.languageMismatch) {
+        toast.warning(`Langue détectée différente (${(data as any)?.detectedLanguage}) — vérifiez le transcript.`);
+      }
       return t || null;
     } catch (e: any) {
       console.error('server transcribe error', e);

@@ -370,7 +370,7 @@ export default function AppSidebar() {
   }).length;
 
   const location = useLocation();
-  const MESSAGES_ROUTES = ["/chat", "/email", "/mentions"];
+  const MESSAGES_ROUTES = ["/chat", "/email", "/mentions", "/support"];
   const isInMessages = MESSAGES_ROUTES.some((r) => location.pathname.startsWith(r));
 
   const collapseIfMobile = () => {
@@ -861,6 +861,13 @@ export default function AppSidebar() {
                     {emailUnreadCount}
                   </span>
                 )}
+              </button>
+              <button
+                onClick={() => { navigate('/support'); collapseIfMobile(); }}
+                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors text-sidebar-fg hover:bg-sidebar-hover"
+              >
+                <LifeBuoy className="w-4 h-4" />
+                Support & bugs
               </button>
               <button
                 onClick={() => { openMessagesHub('home'); collapseIfMobile(); }}

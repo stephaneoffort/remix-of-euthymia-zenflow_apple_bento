@@ -35,6 +35,8 @@ const SettingsIntegrationsPage = lazyRetry(() => import("./pages/settings/Integr
 const GmailDiagnosticPage = lazyRetry(() => import("./pages/settings/GmailDiagnosticPage.tsx"));
 const OAuthConsent = lazyRetry(() => import("./pages/OAuthConsent.tsx"));
 const AuditLog = lazyRetry(() => import("./pages/AuditLog.tsx"));
+const Support = lazyRetry(() => import("./pages/Support.tsx"));
+import SupportFab from "@/components/SupportFab";
 
 
 const PageLoader = () => (
@@ -187,10 +189,21 @@ const App = () => (
                         }
                       />
                       <Route
+                        path="/support"
+                        element={
+                          <ProtectedRoute>
+                            <Support />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
                         path="/"
                         element={
                           <ProtectedRoute>
-                            <Index />
+                            <>
+                              <Index />
+                              <SupportFab />
+                            </>
                           </ProtectedRoute>
                         }
                       />

@@ -37,3 +37,6 @@ verify_jwt = false
 
 [functions.gmail-oauth-diagnostic]
 verify_jwt = false
+
+[functions.support-chat]
+verify_jwt = true

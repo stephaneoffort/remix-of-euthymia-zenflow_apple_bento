@@ -119,6 +119,7 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
   const [parseStep, setParseStep] = useState<'idle' | 'transcribe' | 'analyze' | 'done'>('idle');
   const [progress, setProgress] = useState(0); // 0-100
   const [autoRetryIn, setAutoRetryIn] = useState<number | null>(null);
+  const [transcriptQuality, setTranscriptQuality] = useState<TranscriptionQuality | null>(null);
   const recognitionRef = useRef<any>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);

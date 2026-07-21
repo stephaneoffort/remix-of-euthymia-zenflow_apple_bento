@@ -13,6 +13,7 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
+import { TranscriptionQualityBadge, type TranscriptionQuality } from '@/components/TranscriptionQualityBadge';
 
 // ─── Transcription languages ──────────────────────────────────────────────────
 // ISO-639-1 codes (bare, no locale suffix) — Whisper/OpenAI STT accepts this format.

@@ -10,6 +10,7 @@ import { format, addDays, nextMonday, nextFriday, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { PriorityBadge, StatusBadge } from '@/components/TaskBadges';
 import { supabase } from '@/integrations/supabase/client';
+import { TranscriptionQualityBadge, type TranscriptionQuality } from '@/components/TranscriptionQualityBadge';
 
 /* ─── Types ─── */
 interface ParsedReminder {

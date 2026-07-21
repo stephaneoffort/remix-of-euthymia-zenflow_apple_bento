@@ -30,9 +30,9 @@ serve(async (req) => {
     const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
 
-    if (bytes.byteLength < 512) {
+    if (bytes.byteLength < 2048) {
       return new Response(
-        JSON.stringify({ error: "Audio vide ou trop court." }),
+        JSON.stringify({ error: "Audio vide ou trop court. Parlez pendant au moins 1 seconde." }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
@@ -50,17 +50,34 @@ serve(async (req) => {
                       : ext === "mp3" ? "audio/mpeg"
                       :                 "audio/webm";
 
-    const form = new FormData();
-    form.append("model", "openai/gpt-4o-mini-transcribe");
-    form.append("file", new Blob([bytes], { type: contentType }), `recording.${ext}`);
-    // ISO-639-1 language hint. Pass a bare code (e.g. "fr", "en") to boost accuracy;
-    // omit for auto-detect. Any legacy value (e.g. "français", "fr-FR") is ignored.
+    // Normalize language code (ISO-639-1). Default to "fr" since the app is French-first —
+    // this prevents gpt-4o-mini-transcribe from hallucinating Chinese/Korean on silent
+    // or noisy audio (a well-known failure mode when language is left to auto-detect).
+    let langCode = "fr";
     if (typeof language === "string") {
-      const code = language.trim().toLowerCase().slice(0, 2);
-      if (/^[a-z]{2}$/.test(code) && code !== "au") {
-        form.append("language", code);
-      }
+      const c = language.trim().toLowerCase().slice(0, 2);
+      if (/^[a-z]{2}$/.test(c) && c !== "au") langCode = c;
     }
+
+    // Prompt primes the model with the expected language + vocabulary. Massively reduces
+    // Chinese-hallucination and improves French accent/proper-noun accuracy.
+    const promptByLang: Record<string, string> = {
+      fr: "Transcription en français. Application de gestion de tâches, projets, réunions, rappels, échéances.",
+      en: "English transcription. Task management app: tasks, projects, meetings, reminders, deadlines.",
+      es: "Transcripción en español. Aplicación de gestión de tareas y proyectos.",
+      de: "Deutsche Transkription. Aufgaben- und Projektverwaltung.",
+      it: "Trascrizione in italiano. Applicazione di gestione di attività e progetti.",
+      pt: "Transcrição em português. Aplicação de gestão de tarefas e projetos.",
+    };
+    const promptHint = promptByLang[langCode] ?? `Transcription in ${langCode}.`;
+
+    const form = new FormData();
+    // gpt-4o-transcribe is more accurate than -mini and much less prone to language hallucination.
+    form.append("model", "openai/gpt-4o-transcribe");
+    form.append("file", new Blob([bytes], { type: contentType }), `recording.${ext}`);
+    form.append("language", langCode);
+    form.append("prompt", promptHint);
+    form.append("temperature", "0");
 
     const response = await fetch(
       "https://ai.gateway.lovable.dev/v1/audio/transcriptions",

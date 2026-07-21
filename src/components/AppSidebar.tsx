@@ -40,6 +40,7 @@ import {
   AtSign,
   Mail,
   MessagesSquare,
+  LifeBuoy,
   Palette,
   NotebookPen,
 } from "lucide-react";

@@ -700,6 +700,11 @@ export function QuickNote() {
                   </div>
                 )}
 
+                {/* Detected language + confidence for the last transcription */}
+                {lastQuality && !transcribing && (
+                  <TranscriptionQualityBadge quality={lastQuality} />
+                )}
+
                 {/* Intent preview */}
                 {intent && (
                   <div className="flex items-center gap-2 bg-primary/10 rounded-lg px-3 py-2 text-xs text-primary">

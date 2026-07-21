@@ -10,6 +10,7 @@ import { format, addDays, nextMonday, nextFriday, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { PriorityBadge, StatusBadge } from '@/components/TaskBadges';
 import { supabase } from '@/integrations/supabase/client';
+import { TranscriptionQualityBadge, type TranscriptionQuality } from '@/components/TranscriptionQualityBadge';
 
 /* ─── Types ─── */
 interface ParsedReminder {
@@ -118,6 +119,7 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
   const [parseStep, setParseStep] = useState<'idle' | 'transcribe' | 'analyze' | 'done'>('idle');
   const [progress, setProgress] = useState(0); // 0-100
   const [autoRetryIn, setAutoRetryIn] = useState<number | null>(null);
+  const [transcriptQuality, setTranscriptQuality] = useState<TranscriptionQuality | null>(null);
   const recognitionRef = useRef<any>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -267,6 +269,16 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
       });
       if (error) throw error;
       const t = (data as any)?.transcript?.trim?.();
+      setTranscriptQuality({
+        confidence: (data as any)?.confidence ?? null,
+        requestedLanguage: (data as any)?.requestedLanguage ?? 'fr',
+        detectedLanguage: (data as any)?.detectedLanguage ?? 'unknown',
+        detectedScript: (data as any)?.detectedScript,
+        languageMismatch: !!(data as any)?.languageMismatch,
+      });
+      if ((data as any)?.languageMismatch) {
+        toast.warning(`Langue détectée différente (${(data as any)?.detectedLanguage}) — vérifiez le transcript.`);
+      }
       return t || null;
     } catch (e: any) {
       console.error('server transcribe error', e);
@@ -843,6 +855,9 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
                   />
                 ) : (
                   <p className="text-xs p-2 rounded bg-muted/30 text-muted-foreground italic">"{transcript}"</p>
+                )}
+                {transcriptQuality && (
+                  <TranscriptionQualityBadge quality={transcriptQuality} className="self-start" />
                 )}
                 {editingTranscript && (
                   <Button size="sm" variant="secondary" onClick={() => rerunParse()} disabled={rerunning} className="w-full">

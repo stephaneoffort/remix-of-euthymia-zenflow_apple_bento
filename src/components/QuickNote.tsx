@@ -185,6 +185,7 @@ export function QuickNote() {
   const usedWebSpeechRef = useRef<boolean>(false);
   const recordMimeRef = useRef<string>('');
   const [transcribing, setTranscribing] = useState(false);
+  const [lastQuality, setLastQuality] = useState<TranscriptionQuality | null>(null);
   const textRef = useRef(text);
   useEffect(() => { textRef.current = text; }, [text]);
 

@@ -57,7 +57,13 @@ const priorityColor: Record<string, string> = {
 };
 
 export default function Support() {
-  const { user, isAdmin } = useAuth() as any;
+  const { user } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("user_roles").select("role").eq("user_id", user.id).eq("role", "admin").maybeSingle()
+      .then(({ data }) => setIsAdmin(!!data));
+  }, [user?.id]);
   const { sidebarCollapsed, setSidebarCollapsed } = useApp();
   const { designMode } = useThemeMode();
   const isMobile = useIsMobile();

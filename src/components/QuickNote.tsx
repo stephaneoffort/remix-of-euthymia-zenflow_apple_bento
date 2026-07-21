@@ -394,9 +394,21 @@ export function QuickNote() {
 
       if (error) throw error;
       const transcript = (data as any)?.transcript?.trim?.() || '';
+      const quality: TranscriptionQuality = {
+        confidence: (data as any)?.confidence ?? null,
+        requestedLanguage: (data as any)?.requestedLanguage ?? transcribeLangRef.current,
+        detectedLanguage: (data as any)?.detectedLanguage ?? 'unknown',
+        detectedScript: (data as any)?.detectedScript,
+        languageMismatch: !!(data as any)?.languageMismatch,
+      };
+      setLastQuality(quality);
       if (transcript) {
         setText(prev => (prev ? prev + ' ' : '') + transcript);
-        toast.success('Transcription terminée');
+        if (quality.languageMismatch) {
+          toast.warning(`Langue détectée différente (${quality.detectedLanguage}) — vérifiez le texte.`);
+        } else {
+          toast.success('Transcription terminée');
+        }
       } else {
         toast.warning('Aucun texte détecté dans l’audio');
       }

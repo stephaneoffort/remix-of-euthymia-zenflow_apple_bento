@@ -2547,10 +2547,15 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_channel_member: {
+        Args: { _channel_id: string; _user_id: string }
+        Returns: boolean
+      }
       is_space_manager: {
         Args: { _member_id: string; _space_id: string }
         Returns: boolean
       }
+      is_team_linked: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

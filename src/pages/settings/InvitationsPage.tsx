@@ -64,6 +64,9 @@ export default function InvitationsPage() {
   const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [orgFilter, setOrgFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [target, setTarget] = useState<Invitation | null>(null);
   const [revoking, setRevoking] = useState(false);
@@ -82,16 +85,48 @@ export default function InvitationsPage() {
 
   useEffect(() => { load(); }, [load]);
 
+  const orgOptions = useMemo(() => {
+    const map = new Map<string, string>();
+    invitations.forEach((i) => {
+      if (i.org_id) map.set(i.org_id, i.organizations?.name ?? 'Équipe sans nom');
+    });
+    return Array.from(map, ([id, name]) => ({ id, name })).sort((a, b) => a.name.localeCompare(b.name));
+  }, [invitations]);
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return invitations;
-    return invitations.filter(
-      (i) =>
-        i.email.toLowerCase().includes(q) ||
-        i.name.toLowerCase().includes(q) ||
-        (i.organizations?.name ?? '').toLowerCase().includes(q),
-    );
-  }, [invitations, search]);
+    const from = dateRange?.from ? startOfDay(dateRange.from).getTime() : null;
+    const to = dateRange?.to ? endOfDay(dateRange.to).getTime() : dateRange?.from ? endOfDay(dateRange.from).getTime() : null;
+
+    return invitations.filter((i) => {
+      if (q) {
+        const match =
+          i.email.toLowerCase().includes(q) ||
+          i.name.toLowerCase().includes(q) ||
+          (i.job_role ?? '').toLowerCase().includes(q) ||
+          (i.organizations?.name ?? '').toLowerCase().includes(q);
+        if (!match) return false;
+      }
+      if (orgFilter !== 'all' && i.org_id !== orgFilter) return false;
+      if (statusFilter !== 'all' && computeStatus(i) !== statusFilter) return false;
+      if (from || to) {
+        const created = new Date(i.created_at).getTime();
+        if (from && created < from) return false;
+        if (to && created > to) return false;
+      }
+      return true;
+    });
+  }, [invitations, search, orgFilter, statusFilter, dateRange]);
+
+  const hasFilters = search.trim() !== '' || orgFilter !== 'all' || statusFilter !== 'all' || !!dateRange?.from;
+
+  const resetFilters = () => {
+    setSearch('');
+    setOrgFilter('all');
+    setStatusFilter('all');
+    setDateRange(undefined);
+  };
+
 
   const pendingCount = invitations.filter((i) => computeStatus(i) === 'pending').length;
 

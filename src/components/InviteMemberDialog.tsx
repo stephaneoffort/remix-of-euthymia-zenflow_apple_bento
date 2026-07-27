@@ -75,8 +75,18 @@ export default function InviteMemberDialog({ onMemberAdded }: InviteMemberDialog
       });
 
       // On affiche le message de la fonction tel quel pour rester diagnosticable
-      if (data?.error) throw new Error(data.error);
-      if (error) throw error;
+      if (error) {
+        let msg = error.message;
+        try {
+          const body = await (error as any).context?.json();
+          if (body?.error) msg = body.code ? `${body.error} (${body.code})` : body.error;
+        } catch { /* corps illisible : on garde le message d'origine */ }
+        throw new Error(msg);
+      }
+      if (data && data.success === false) {
+        throw new Error(data.code ? `${data.error} (${data.code})` : data.error);
+      }
+
 
       setResult({
         inviteLink: data?.inviteLink ?? '',

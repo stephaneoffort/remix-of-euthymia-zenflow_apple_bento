@@ -47,6 +47,8 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import OrgSwitcher from "@/components/OrgSwitcher";
 import { useOrg } from "@/context/OrgContext";
+import { useOrgNavTree } from "@/hooks/useOrgNavTree";
+import { usePendingSpaceParam } from "@/hooks/usePendingSpaceParam";
 import { SpaceIcon, SPACE_ICON_PRESETS } from "@/components/SpaceIcon";
 import SpaceIconPickerDialog from "@/components/SpaceIconPickerDialog";
 import {
@@ -292,7 +294,13 @@ export default function AppSidebar() {
   const [draggingProjectId, setDraggingProjectId] = useState<string | null>(null);
 
   // Équipe active : sert uniquement à intituler la section Espaces
-  const { currentOrg } = useOrg();
+  const { currentOrg, switchOrgAndOpenSpace, switching } = useOrg();
+  // Arborescence de navigation (métadonnées uniquement) des autres équipes accessibles
+  const { navOrgs } = useOrgNavTree();
+  const otherNavOrgs = navOrgs.filter((o) => o.id !== currentOrg?.id);
+  const [expandedNavOrgs, setExpandedNavOrgs] = useState<Set<string>>(new Set());
+  // Ouverture d'un espace demandée par une bascule d'équipe (?space=…)
+  usePendingSpaceParam(useCallback((spaceId: string) => setSelectedSpaceId(spaceId), [setSelectedSpaceId]));
 
   // Filter spaces based on access
   const visibleSpaces = spaces.filter((s) => canAccessSpace(s.id));

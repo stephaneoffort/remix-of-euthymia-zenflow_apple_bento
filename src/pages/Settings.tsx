@@ -22,6 +22,7 @@ import { usePushNotifications } from '@/hooks/usePushNotifications';
 import CalendarSyncSettingsPanel from '@/components/settings/CalendarSyncSettings';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import MemberProfileEditor, { type EditableMember } from '@/components/settings/MemberProfileEditor';
 
 interface CustomStatus {
   id: string;
@@ -219,6 +220,7 @@ function MembersPanel() {
   const [editRole, setEditRole] = useState('');
   const [editName, setEditName] = useState('');
   const [members, setMembers] = useState(teamMembers);
+  const [editorMember, setEditorMember] = useState<EditableMember | null>(null);
 
   useEffect(() => { setMembers(teamMembers); }, [teamMembers]);
 
@@ -321,9 +323,14 @@ function MembersPanel() {
   };
 
   const startEditing = (m: typeof members[0]) => {
-    setEditingMember(m.id);
-    setEditRole(m.role);
-    setEditName(m.name);
+    setEditorMember({
+      id: m.id,
+      name: m.name,
+      role: m.role,
+      email: m.email,
+      avatarColor: m.avatarColor,
+      avatarUrl: m.avatarUrl ?? null,
+    });
   };
 
   const cancelEditing = () => {
@@ -509,6 +516,15 @@ function MembersPanel() {
             </div>
           );
         })}
+        <MemberProfileEditor
+          member={editorMember}
+          open={!!editorMember}
+          onOpenChange={(o) => { if (!o) setEditorMember(null); }}
+          onSaved={(updated) => {
+            setMembers(prev => prev.map(m => m.id === updated.id ? { ...m, ...updated } : m));
+            setEditorMember(null);
+          }}
+        />
       </CardContent>
     </Card>
   );

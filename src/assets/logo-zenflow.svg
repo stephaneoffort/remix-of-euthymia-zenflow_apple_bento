@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 58 61" width="58" height="61" role="img" aria-label="ZenFlow">
-  <!-- Trois modules ardoise formant un L -->
-  <rect x="4" y="9" width="22" height="22" rx="6" fill="#334155"/>
-  <rect x="4" y="35" width="22" height="22" rx="6" fill="#334155"/>
-  <rect x="30" y="35" width="22" height="22" rx="6" fill="#334155"/>
+  <!-- Trois modules bleu pétrole formant un L -->
+  <rect x="4" y="9" width="22" height="22" rx="6" fill="#155E75"/>
+  <rect x="4" y="35" width="22" height="22" rx="6" fill="#155E75"/>
+  <rect x="30" y="35" width="22" height="22" rx="6" fill="#155E75"/>
   <!-- Pièce en mouvement, décalée vers le haut à droite -->
   <rect x="32" y="4" width="22" height="22" rx="6" fill="#F4633A"/>
 </svg>

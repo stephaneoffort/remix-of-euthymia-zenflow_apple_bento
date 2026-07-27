@@ -263,6 +263,7 @@ export default function ListView() {
                   <ZoomSessionBadge hasZoom={zoomTaskIds.has(task.id)} />
                   <MeetSessionBadge hasMeet={!!task.googleEventId && meetTaskIds.has(task.googleEventId)} />
                 </div>
+                <TaskPathBreadcrumb listId={task.listId} className="mt-0.5" />
               </div>
             </div>
           </td>

@@ -194,7 +194,7 @@ async function sendWebPush(
 
     const jwt = await createVapidJwt(
       audience,
-      "mailto:noreply@euthymia.app",
+      "mailto:noreply@zenflow.life",
       vapidPrivateKey,
       vapidPublicKey
     );

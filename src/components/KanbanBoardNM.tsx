@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useMemo } from "react"; // kanban-nm
 import HighlightText from '@/components/HighlightText';
+import TaskPathBreadcrumb from '@/components/TaskPathBreadcrumb';
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
@@ -133,6 +134,7 @@ function TaskCard({ task, allTasks, onOpen, getMemberById, getProjectName, statu
       >
         <HighlightText text={task.title} />
       </div>
+      <TaskPathBreadcrumb listId={task.listId} className="mb-1.5" />
 
       {/* Subtasks indicator + progress */}
       {hasSubtasks && (

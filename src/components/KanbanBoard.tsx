@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import HighlightText from '@/components/HighlightText';
+import TaskPathBreadcrumb from '@/components/TaskPathBreadcrumb';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
@@ -637,6 +638,7 @@ function KanbanCard({
             ) : null;
           })()}
           <p className="text-xs sm:text-sm font-medium text-foreground leading-snug mb-1.5 sm:mb-2"><HighlightText text={task.title} /></p>
+          <TaskPathBreadcrumb listId={task.listId} className="mb-1.5" />
           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
             <PriorityBadge priority={task.priority} />
             {task.dueDate && (

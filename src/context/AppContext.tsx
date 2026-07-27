@@ -1125,7 +1125,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     return tasks.filter(t => listIds.has(t.listId) && !t.parentTaskId);
   }, [tasks, lists]);
 
-  const getMemberById = useCallback((id: string) => teamMembers.find(m => m.id === id), [teamMembers]);
+  // Repli « Membre externe » : depuis le cloisonnement multi-équipes, l'annuaire ne
+  // contient que les personnes partageant une équipe. Les références historiques
+  // (auteurs de commentaires, assignations, partages) doivent rester affichables
+  // sans divulguer ni nom ni email.
+  const getMemberById = useCallback((id: string): TeamMember | undefined => {
+    if (!id) return undefined;
+    const found = teamMembers.find(m => m.id === id);
+    if (found) return found;
+    return {
+      id,
+      name: 'Membre externe',
+      role: '',
+      avatarColor: 'hsl(var(--muted-foreground))',
+      avatarUrl: null,
+      email: '',
+    };
+  }, [teamMembers]);
 
   const getTaskBreadcrumb = useCallback((taskId: string): Task[] => {
     const trail: Task[] = [];

@@ -1208,15 +1208,39 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       filtered = filtered.filter(t => spaceListIds.has(t.listId));
     }
 
-    // Text search (title, description, tags)
+    // Text search (title, description, tags) — includes subtasks at any depth
     const q = searchQuery.trim().toLowerCase();
     if (q) {
-      filtered = filtered.filter(t =>
+      const matchesSelf = (t: Task) =>
         t.title.toLowerCase().includes(q) ||
         (t.description || '').toLowerCase().includes(q) ||
-        t.tags.some(tag => tag.toLowerCase().includes(q))
-      );
+        t.tags.some(tag => tag.toLowerCase().includes(q));
+
+      // Index children to walk the hierarchy
+      const childrenByParent = new Map<string, Task[]>();
+      for (const t of tasks) {
+        if (!t.parentTaskId) continue;
+        const arr = childrenByParent.get(t.parentTaskId);
+        if (arr) arr.push(t);
+        else childrenByParent.set(t.parentTaskId, [t]);
+      }
+
+      const memo = new Map<string, boolean>();
+      const matchesTree = (t: Task, seen = new Set<string>()): boolean => {
+        const cached = memo.get(t.id);
+        if (cached !== undefined) return cached;
+        if (seen.has(t.id)) return false;
+        seen.add(t.id);
+        const res =
+          matchesSelf(t) ||
+          (childrenByParent.get(t.id) || []).some(c => matchesTree(c, seen));
+        memo.set(t.id, res);
+        return res;
+      };
+
+      filtered = filtered.filter(t => matchesTree(t));
     }
+
 
     return filtered;
   }, [tasks, selectedProjectId, selectedSpaceId, quickFilter, lists, projects, teamMemberId, advancedFilters, searchQuery]);

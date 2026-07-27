@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, useRef } from 'react';
+import { sanitizeEmailHtml } from '@/lib/sanitizeHtml';
 import {
   Mail, Plus, Trash2, RefreshCw, Send, Reply, Inbox, AlertCircle, X, Check, Loader2,
   History, ChevronDown, ChevronUp, Search, Star, Archive, Clock, Tag, AtSign, Newspaper,

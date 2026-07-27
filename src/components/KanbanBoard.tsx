@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import HighlightText from '@/components/HighlightText';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
@@ -635,7 +636,7 @@ function KanbanCard({
               </span>
             ) : null;
           })()}
-          <p className="text-xs sm:text-sm font-medium text-foreground leading-snug mb-1.5 sm:mb-2">{task.title}</p>
+          <p className="text-xs sm:text-sm font-medium text-foreground leading-snug mb-1.5 sm:mb-2"><HighlightText text={task.title} /></p>
           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
             <PriorityBadge priority={task.priority} />
             {task.dueDate && (

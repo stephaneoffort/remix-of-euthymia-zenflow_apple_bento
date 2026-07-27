@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useMemo } from "react"; // kanban-nm
+import HighlightText from '@/components/HighlightText';
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
@@ -130,7 +131,7 @@ function TaskCard({ task, allTasks, onOpen, getMemberById, getProjectName, statu
           display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
         }}
       >
-        {task.title}
+        <HighlightText text={task.title} />
       </div>
 
       {/* Subtasks indicator + progress */}

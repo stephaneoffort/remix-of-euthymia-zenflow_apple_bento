@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import HighlightText from '@/components/HighlightText';
 import { motion, AnimatePresence } from 'framer-motion';
 import EmptyState from '@/components/EmptyState';
 import { useApp } from '@/context/AppContext';
@@ -138,7 +139,7 @@ export default function ListView() {
                   ) : null;
                 })()}
                 <div className="flex items-center gap-1.5">
-                  <p className={`text-sm font-medium ${isOverdue ? 'text-priority-urgent' : 'text-foreground'}`}>{task.title}</p>
+                  <p className={`text-sm font-medium ${isOverdue ? 'text-priority-urgent' : 'text-foreground'}`}><HighlightText text={task.title} /></p>
                   {task.recurrence && <Repeat className="w-3 h-3 text-primary shrink-0" />}
                 </div>
                 <div className="flex items-center gap-2 mt-1.5 flex-wrap">
@@ -253,7 +254,7 @@ export default function ListView() {
                   ) : null;
                 })()}
                 <div className="flex items-center gap-2">
-                  <span className={`text-sm font-medium ${isOverdue ? 'text-priority-urgent' : 'text-foreground'}`}>{task.title}</span>
+                  <span className={`text-sm font-medium ${isOverdue ? 'text-priority-urgent' : 'text-foreground'}`}><HighlightText text={task.title} /></span>
                   {task.recurrence && <Repeat className="w-3 h-3 text-primary shrink-0" />}
                   <SubtaskProgress total={subtasks.length} done={doneSubtasks.length} />
                   <ZenflowBadge googleEventId={task.googleEventId} />

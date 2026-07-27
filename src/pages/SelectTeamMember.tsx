@@ -68,7 +68,8 @@ const SelectTeamMember = React.forwardRef<HTMLDivElement>(function SelectTeamMem
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-3">
-            <img src="/logo-zenflow.png" alt="ZenFlow" className="w-14 h-14 object-contain" />
+            {/* Plaque carrée : coins arrondis carrés, jamais rognée en cercle */}
+            <img src="/logo-zenflow.png" alt="ZenFlow" className="w-14 h-14 rounded-2xl object-contain" />
           </div>
           <CardTitle className="text-xl font-bold text-foreground flex items-center justify-center gap-2">
             <UserPlus className="w-5 h-5" />

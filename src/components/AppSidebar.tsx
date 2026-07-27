@@ -128,7 +128,7 @@ const PROJECT_COLORS = ["#C9A84C", "#E2D08A", "#F5EFE0", "#D4915C", "#4A6FA5", "
 
 export default function AppSidebar() {
   // Logo personnalisé de l'utilisateur (repli automatique sur ZenFlow)
-  const { logoUrl: userLogoUrl } = useUserLogo();
+  const { logoUrl: userLogoUrl, hasCustomLogo } = useUserLogo();
   const {
     spaces,
     selectedProjectId,
@@ -731,11 +731,13 @@ export default function AppSidebar() {
         <div className="px-4 py-4 flex items-center justify-between border-b border-sidebar-border-color">
           <div className="flex items-center gap-2.5">
             {/* Logo personnalisé de l'utilisateur, repli sur le logo ZenFlow */}
-            <div className="w-8 h-8 shrink-0 rounded-full overflow-hidden flex items-center justify-center bg-sidebar-hover">
+            {/* La plaque ZenFlow est carrée : conteneur carré arrondi, sans fond ajouté.
+                Un logo téléversé conserve object-contain et le fond neutre. */}
+            <div className={`w-8 h-8 shrink-0 rounded-lg overflow-hidden flex items-center justify-center ${hasCustomLogo ? "bg-sidebar-hover" : ""}`}>
               <img
                 src={userLogoUrl}
                 alt="ZenFlow"
-                className="max-w-full max-h-full object-contain"
+                className={hasCustomLogo ? "max-w-full max-h-full object-contain" : "w-full h-full object-cover"}
                 onError={(e) => { (e.currentTarget as HTMLImageElement).src = ZENFLOW_LOGO; }}
               />
             </div>

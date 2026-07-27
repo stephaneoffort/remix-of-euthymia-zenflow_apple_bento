@@ -127,7 +127,7 @@ serve(async (req: Request) => {
         method: "POST",
         headers: zoomHeaders,
         body: JSON.stringify({
-          topic: topic ?? "Réunion Euthymia",
+          topic: topic ?? "Réunion ZenFlow",
           type: start_time ? 2 : 1,
           start_time,
           duration: duration ?? 60,

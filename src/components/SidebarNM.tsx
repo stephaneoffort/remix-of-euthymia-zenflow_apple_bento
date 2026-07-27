@@ -9,7 +9,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
 import { useChatNotifications } from "@/hooks/useChatNotifications";
 import { usePresence } from "@/hooks/usePresence";
-import logoEuthymia from "@/assets/logo-euthymia.png";
+import { useUserLogo, ZENFLOW_LOGO } from "@/hooks/useUserLogo";
 import OrgSwitcher from "@/components/OrgSwitcher";
 import { useOrg } from "@/context/OrgContext";
 import { useOrgNavTree } from "@/hooks/useOrgNavTree";
@@ -482,8 +482,8 @@ export default function SidebarNM() {
             marginBottom: 8,
           }}
         >
-          <img src={logoEuthymia} alt="E" style={{ width: 20, height: 20, objectFit: "contain" }}
-            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+          <img src={userLogoUrl} alt="ZenFlow" style={{ maxWidth: 20, maxHeight: 20, objectFit: "contain" }}
+            onError={(e) => { (e.currentTarget as HTMLImageElement).src = ZENFLOW_LOGO; }} />
         </div>
 
         {/* Dashboard */}
@@ -629,16 +629,16 @@ export default function SidebarNM() {
               }}
             >
               <img
-                src={logoEuthymia}
-                alt="Euthymia"
-                style={{ width: 24, height: 24, objectFit: "contain" }}
+                src={userLogoUrl}
+                alt="ZenFlow"
+                style={{ maxWidth: 24, maxHeight: 24, objectFit: "contain" }}
                 onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = "none";
+                  (e.currentTarget as HTMLImageElement).src = ZENFLOW_LOGO;
                 }}
               />
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 15, fontWeight: 800, color: NC.text, letterSpacing: 0.5 }}>Euthymia</div>
+              <div style={{ fontSize: 15, fontWeight: 800, color: NC.text, letterSpacing: 0.5 }}>ZenFlow</div>
               <div style={{ fontSize: 9, color: NC.muted, letterSpacing: 0.5 }}>Gestion de projets</div>
             </div>
             {/* Collapse button on desktop / Close on mobile */}

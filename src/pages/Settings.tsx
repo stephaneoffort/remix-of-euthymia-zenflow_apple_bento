@@ -377,8 +377,17 @@ function MembersPanel() {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-base">Gestion des membres</CardTitle>
-        <InviteMemberDialog onMemberAdded={handleMemberAdded} />
+        <div className="flex items-center gap-2">
+          <Button asChild size="sm" variant="outline" className="gap-1.5">
+            <Link to="/settings/invitations">
+              <MailCheck className="w-4 h-4" />
+              Invitations
+            </Link>
+          </Button>
+          <InviteMemberDialog onMemberAdded={handleMemberAdded} />
+        </div>
       </CardHeader>
+
       <CardContent className="space-y-2">
         {members.length === 0 && (
           <p className="text-sm text-muted-foreground">Aucun membre</p>

@@ -22,6 +22,10 @@ interface OrgContextType {
   isSuperAdmin: boolean;
   myRole: OrgRole | null;
   switchOrg: (orgId: string) => Promise<void>;
+  /** Bascule d'équipe puis ouverture directe d'un espace après rechargement */
+  switchOrgAndOpenSpace: (orgId: string, spaceId: string) => Promise<void>;
+  /** Vrai pendant la bascule (rechargement complet en cours) */
+  switching: boolean;
   loading: boolean;
   refresh: () => Promise<void>;
 }

@@ -37,6 +37,7 @@ interface AppState {
   sidebarCollapsed: boolean;
   isLoading: boolean;
   advancedFilters: AdvancedFilters;
+  searchQuery: string;
   taskDependencies: TaskDependency[];
   taskLinks: TaskLink[];
 }
@@ -79,6 +80,7 @@ interface AppContextType extends AppState {
   getMemberById: (id: string) => TeamMember | undefined;
   getTaskBreadcrumb: (taskId: string) => Task[];
   setAdvancedFilters: (filters: AdvancedFilters) => void;
+  setSearchQuery: (q: string) => void;
   getStatusLabel: (status: string) => string;
   canAccessSpace: (spaceId: string) => boolean;
   isSpaceManager: (spaceId: string) => boolean;
@@ -175,6 +177,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>(EMPTY_FILTERS);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Fetch spaces
   const { data: spaces = [] } = useQuery({
@@ -1205,8 +1208,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       filtered = filtered.filter(t => spaceListIds.has(t.listId));
     }
 
+    // Text search (title, description, tags)
+    const q = searchQuery.trim().toLowerCase();
+    if (q) {
+      filtered = filtered.filter(t =>
+        t.title.toLowerCase().includes(q) ||
+        (t.description || '').toLowerCase().includes(q) ||
+        t.tags.some(tag => tag.toLowerCase().includes(q))
+      );
+    }
+
     return filtered;
-  }, [tasks, selectedProjectId, selectedSpaceId, quickFilter, lists, projects, teamMemberId, advancedFilters]);
+  }, [tasks, selectedProjectId, selectedSpaceId, quickFilter, lists, projects, teamMemberId, advancedFilters, searchQuery]);
 
   const canAccessSpace = useCallback((spaceId: string) => {
     const space = spaces.find(s => s.id === spaceId);
@@ -1293,6 +1306,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setSelectedTaskId,
     setSidebarCollapsed,
     setAdvancedFilters,
+    searchQuery,
+    setSearchQuery,
     addTask,
     updateTask,
     deleteTask,
@@ -1335,7 +1350,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     addTaskLink,
     removeTaskLink,
     getBlockingDependencies,
-  }), [accessibleSpaces, archivedSpaces, archivedProjects, accessibleProjects, lists, accessibleTasks, teamMembers, customStatuses, allStatuses, spaceMembers, spaceManagers, selectedProjectId, selectedSpaceId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, setSelectedProjectId, setSelectedSpaceId, addTask, updateTask, deleteTask, addAttachment, deleteAttachment, moveTask, addSpace, addProject, duplicateSpace, duplicateProject, duplicateTask, archiveSpace, archiveProject, renameSpace, updateSpaceIcon, renameProject, moveProject, deleteSpace, deleteProject, convertTaskToProject, reorderSpaces, reorderProjects, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb, getStatusLabel, canAccessSpace, isSpaceManagerFn, getSpaceManagersFn, refreshSpaceAccess, taskDependencies, taskLinks, addTaskDependency, removeTaskDependency, addTaskLink, removeTaskLink, getBlockingDependencies]);
+  }), [accessibleSpaces, archivedSpaces, archivedProjects, accessibleProjects, lists, accessibleTasks, teamMembers, customStatuses, allStatuses, spaceMembers, spaceManagers, selectedProjectId, selectedSpaceId, selectedView, quickFilter, selectedTaskId, sidebarCollapsed, isLoading, advancedFilters, searchQuery, setSelectedProjectId, setSelectedSpaceId, addTask, updateTask, deleteTask, addAttachment, deleteAttachment, moveTask, addSpace, addProject, duplicateSpace, duplicateProject, duplicateTask, archiveSpace, archiveProject, renameSpace, updateSpaceIcon, renameProject, moveProject, deleteSpace, deleteProject, convertTaskToProject, reorderSpaces, reorderProjects, getSubtasks, getTaskById, getListsForProject, getProjectsForSpace, getTasksForProject, getFilteredTasks, getMemberById, getTaskBreadcrumb, getStatusLabel, canAccessSpace, isSpaceManagerFn, getSpaceManagersFn, refreshSpaceAccess, taskDependencies, taskLinks, addTaskDependency, removeTaskDependency, addTaskLink, removeTaskLink, getBlockingDependencies]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

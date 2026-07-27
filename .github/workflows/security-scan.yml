@@ -1,0 +1,98 @@
+name: Scan de sécurité
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    # Tous les jours à 04:00 UTC — détecte les nouveaux CVE sans nouveau commit
+    - cron: '0 4 * * *'
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sql-policies:
+    name: Analyse statique des migrations SQL
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Détecter les régressions RLS / GRANT dans les migrations
+        env:
+          SECURITY_LINT_BASE_REF: origin/${{ github.event.pull_request.base.ref || 'main' }}
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.ref || 'main' }} --depth=50 || true
+          node scripts/security-lint-sql.mjs
+
+  supabase-linter:
+    name: Linter sécurité de la base
+    runs-on: ubuntu-latest
+    # Ne s'exécute que si les secrets du projet sont configurés
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Lier le projet
+        if: env.SUPABASE_ACCESS_TOKEN != ''
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: supabase link --project-ref "$SUPABASE_PROJECT_REF"
+
+      - name: Lancer le linter de sécurité (échoue sur niveau ERROR)
+        if: env.SUPABASE_ACCESS_TOKEN != ''
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase inspect db lint --level warn --linked > lint.txt || true
+          cat lint.txt
+          if grep -qi '^\s*ERROR' lint.txt; then
+            echo "::error::Le linter Supabase a remonté des findings de niveau ERROR"
+            exit 1
+          fi
+
+      - name: Secrets absents
+        if: env.SUPABASE_ACCESS_TOKEN == ''
+        run: |
+          echo "::warning::SUPABASE_ACCESS_TOKEN / SUPABASE_PROJECT_REF non configurés — linter base ignoré."
+
+  dependencies:
+    name: Vulnérabilités des dépendances
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Installer les dépendances
+        run: bun install --frozen-lockfile
+
+      - name: Audit (échoue sur high / critical)
+        run: bun audit --audit-level=high
+
+  secrets-scan:
+    name: Fuite de secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

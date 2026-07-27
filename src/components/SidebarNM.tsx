@@ -1442,6 +1442,23 @@ export default function SidebarNM() {
 
   /* ─── Spaces content extracted for reuse ─── */
   function spacesContent() {
+    // État vide explicite : l'équipe active ne contient aucun espace
+    if (spaces.length === 0) {
+      return (
+        <div
+          style={{
+            padding: "12px 10px",
+            borderRadius: 10,
+            boxShadow: insetSm,
+            textAlign: "center",
+            fontSize: 11,
+            color: NC.light,
+          }}
+        >
+          Aucun espace dans cette équipe
+        </div>
+      );
+    }
     return (
       <>
         <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>

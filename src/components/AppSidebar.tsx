@@ -17,6 +17,7 @@ import {
   LogOut,
   Plus,
   Settings,
+  UserCog,
   Trash2,
   GripVertical,
   MessageCircle,

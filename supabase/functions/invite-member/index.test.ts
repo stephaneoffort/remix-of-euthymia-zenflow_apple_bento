@@ -116,3 +116,66 @@ Deno.test("invite-member crée le membre et renvoie un lien d'invitation", async
     }
   }
 });
+
+Deno.test("invite-member refuse un email invalide sans rien créer en base", async () => {
+  const accessToken = await getAdminAccessToken();
+
+  const { data: orgs } = await admin.from("organizations").select("id").limit(1);
+  const orgId = orgs?.[0]?.id as string | undefined;
+  assert(orgId, "Aucune équipe disponible pour le test");
+
+  const invalidEmails = [
+    "pas-un-email",
+    "sans-domaine@",
+    "@sans-local.fr",
+    "espace dans@mail.fr",
+    "double@@mail.fr",
+  ];
+
+  for (const email of invalidEmails) {
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/invite-member`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: ANON_KEY,
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({
+        email,
+        name: "Testeur Email Invalide",
+        role: "Testeur",
+        org_id: orgId,
+        redirectTo: "http://localhost:8080",
+      }),
+    });
+
+    const body = await response.json();
+
+    // Erreur MÉTIER : HTTP 200 + corps explicite
+    assertEquals(response.status, 200, `Statut inattendu pour "${email}"`);
+    assertEquals(body.success, false, `Succès inattendu pour "${email}" : ${JSON.stringify(body)}`);
+    assertEquals(body.code, "invalid_email", `Code inattendu pour "${email}"`);
+    assertEquals(body.memberId, undefined);
+
+    // Aucune ligne dans team_members
+    const { data: members } = await admin
+      .from("team_members")
+      .select("id")
+      .eq("email", email.trim().toLowerCase());
+    assertEquals(members?.length ?? 0, 0, `Ligne team_members créée pour "${email}"`);
+
+    // Aucune ligne dans organization_members pour un membre au nom du test
+    const { data: created } = await admin
+      .from("team_members")
+      .select("id")
+      .eq("name", "Testeur Email Invalide");
+    assertEquals(created?.length ?? 0, 0, "Fiche membre créée alors que l'email est invalide");
+
+    const { data: orgMembers } = await admin
+      .from("organization_members")
+      .select("member_id")
+      .eq("org_id", orgId!)
+      .in("member_id", (created ?? []).map((m) => m.id as string).concat("__none__"));
+    assertEquals(orgMembers?.length ?? 0, 0, "Ligne organization_members créée à tort");
+  }
+});

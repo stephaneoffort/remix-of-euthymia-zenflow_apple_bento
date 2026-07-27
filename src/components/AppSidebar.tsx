@@ -1505,6 +1505,61 @@ export default function AppSidebar() {
             </SortableContext>
           </DndContext>
           </>)}
+
+          {/* Autres équipes : navigation seule (pas de glisser-déposer ni de menu contextuel) */}
+          {otherNavOrgs.map((org) => {
+            const open = expandedNavOrgs.has(org.id);
+            return (
+              <div key={org.id} className="mt-1">
+                <button
+                  onClick={() =>
+                    setExpandedNavOrgs((prev) => {
+                      const next = new Set(prev);
+                      next.has(org.id) ? next.delete(org.id) : next.add(org.id);
+                      return next;
+                    })
+                  }
+                  className="w-full flex items-center gap-1.5 px-1 py-1 rounded-md hover:bg-sidebar-hover transition-colors min-w-0"
+                >
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 text-sidebar-fg transition-transform ${open ? "" : "-rotate-90"}`}
+                  />
+                  <span
+                    aria-hidden
+                    className="w-2.5 h-2.5 rounded-full shrink-0"
+                    style={{ background: org.color || "hsl(var(--primary))" }}
+                  />
+                  <span className="text-sm text-sidebar-fg truncate">{org.name}</span>
+                  {/* Signalement discret pour un super-admin non membre */}
+                  {!org.isMember && (
+                    <span className="text-[10px] uppercase tracking-wide text-sidebar-fg/50 shrink-0">
+                      admin
+                    </span>
+                  )}
+                </button>
+                {open && (
+                  <div className="ml-5">
+                    {org.spaces.length === 0 ? (
+                      <p className="text-xs text-sidebar-fg/60 px-2 py-1.5">Aucun espace dans cette équipe</p>
+                    ) : (
+                      org.spaces.map((s) => (
+                        <button
+                          key={s.id}
+                          onClick={() => switchOrgAndOpenSpace(org.id, s.id)}
+                          disabled={switching}
+                          title={`Basculer vers ${org.name} et ouvrir ${s.name}`}
+                          className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg/75 hover:text-sidebar-fg hover:bg-sidebar-hover transition-colors disabled:opacity-50"
+                        >
+                          <SpaceIcon value={s.icon || undefined} size="xs" />
+                          <span className="flex-1 min-w-0 truncate text-left">{s.name}</span>
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
 
         {/* Quick Note */}

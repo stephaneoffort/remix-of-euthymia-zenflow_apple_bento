@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown, Palette, BellRing, HardDrive, CalendarSync, ShieldCheck, Sparkles, FileText, ExternalLink, Building2 } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown, Palette, BellRing, HardDrive, CalendarSync, ShieldCheck, Sparkles, FileText, ExternalLink, Building2, ImageUp } from 'lucide-react';
+import AppearanceSettings from '@/components/settings/AppearanceSettings';
 import { useOrg } from '@/context/OrgContext';
 import TaskTemplatesPanel from '@/components/settings/TaskTemplatesPanel';
 import { useThemeMode, PALETTE_META, TYPE_META, type ThemePalette, type TypeVariant } from '@/context/ThemeContext';
@@ -68,6 +69,8 @@ export default function Settings() {
   const navItems: { value: string; label: string; icon: React.ComponentType<any> }[] = [
     { value: 'members', label: 'Membres', icon: Users },
     { value: 'theme', label: 'Thèmes', icon: Palette },
+    { value: 'appearance', label: 'Apparence', icon: ImageUp },
+
     { value: 'templates', label: 'Modèles', icon: FileText },
     { value: 'integrations', label: 'Intégrations', icon: HardDrive },
     { value: 'calendar', label: 'Calendrier', icon: CalendarSync },
@@ -157,6 +160,11 @@ export default function Settings() {
             <TabsContent value="theme" className="mt-0">
               <ThemePalettePanel />
             </TabsContent>
+
+            <TabsContent value="appearance" className="mt-0">
+              <AppearanceSettings />
+            </TabsContent>
+
 
             <TabsContent value="templates" className="mt-0">
               <TaskTemplatesPanel />

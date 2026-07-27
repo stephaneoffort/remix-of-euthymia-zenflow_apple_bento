@@ -1654,6 +1654,7 @@ export default function AppSidebar() {
                 <CurrentUserBadge />
                 <ThemeSwitcher />
                 <div className="flex items-center gap-1 mt-1">
+                  <ProfileLink />
                   <AdminSettingsLink />
                   <InstallAppLink />
                   <LogoutButton />
@@ -1701,6 +1702,7 @@ export default function AppSidebar() {
               <CurrentUserBadge />
               <ThemeSwitcher />
               <div className="flex items-center gap-1 mt-1">
+                <ProfileLink />
                 <AdminSettingsLink />
                 <InstallAppLink />
                 <LogoutButton />
@@ -2051,6 +2053,25 @@ function AdminSettingsLink() {
           </button>
         </TooltipTrigger>
         <TooltipContent side="top">Administration</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
+function ProfileLink() {
+  const navigate = useNavigate();
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            onClick={() => navigate("/profile")}
+            className="flex items-center justify-center p-1.5 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors"
+            title="Mon profil"
+          >
+            <UserCog className="w-4 h-4" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="top">Mon profil</TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );

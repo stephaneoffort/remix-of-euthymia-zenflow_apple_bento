@@ -2843,6 +2843,7 @@ export type Database = {
       is_super_admin: { Args: never; Returns: boolean }
       is_team_linked: { Args: { _user_id: string }; Returns: boolean }
       project_in_my_org: { Args: { _project_id: string }; Returns: boolean }
+      shares_org_with_me: { Args: { _member_id: string }; Returns: boolean }
       space_in_my_org: { Args: { _space_id: string }; Returns: boolean }
       task_in_my_org: { Args: { _task_id: string }; Returns: boolean }
     }

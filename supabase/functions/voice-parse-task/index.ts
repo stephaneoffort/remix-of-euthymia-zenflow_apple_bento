@@ -55,6 +55,11 @@ serve(async (req) => {
   if (req.method === "OPTIONS")
     return new Response(null, { headers: corsHeaders });
 
+  const auth = await requireUser(req, corsHeaders);
+  if (auth.error) return auth.error;
+
+
+
   try {
     const { transcript, today } = await req.json();
 

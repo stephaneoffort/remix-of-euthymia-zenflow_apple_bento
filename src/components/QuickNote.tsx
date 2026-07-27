@@ -899,9 +899,45 @@ export function QuickNote() {
             )}
           </div>
 
+          {/* Bandeau rappel + avertissement notifications (compose only) */}
+          {tab === 'compose' && remindAt && (
+            <div className="px-4 pt-3 shrink-0 space-y-2">
+              <div className="flex items-center gap-2 text-xs px-2.5 py-1.5 rounded-lg bg-primary/10 border border-primary/25 text-primary">
+                <BellRing className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">Rappel : {formatReminder(remindAt)}</span>
+                <button
+                  onClick={() => setRemindAt(null)}
+                  className="ml-auto p-1 rounded hover:bg-primary/15"
+                  title="Retirer le rappel"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              {(!pushSupported || !pushSubscribed) && (
+                <div className="flex items-start gap-2 text-xs px-2.5 py-2 rounded-lg bg-destructive/10 border border-destructive/25 text-destructive">
+                  <BellOff className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                  <div className="flex-1">
+                    Les notifications ne sont pas activées sur cet appareil, le rappel ne pourra pas vous être envoyé.
+                    {pushSupported && (
+                      <button
+                        onClick={enablePush}
+                        disabled={pushBusy}
+                        className="ml-1 underline font-medium disabled:opacity-60"
+                      >
+                        {pushBusy ? 'Activation…' : 'Activer les notifications'}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Action bar (compose only) */}
           {tab === 'compose' && (
             <div className="px-4 pb-4 pt-3 border-t border-border flex items-center gap-2 shrink-0">
+
+
 
               {/* Record / Stop */}
               <button

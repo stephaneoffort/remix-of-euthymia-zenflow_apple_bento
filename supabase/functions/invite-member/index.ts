@@ -25,7 +25,7 @@ Deno.serve(async (req) => {
   try {
     // L'appelant doit être authentifié
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) return json({ error: "Non autorisé" }, 401);
+    if (!authHeader) return businessError("no_auth", "Non autorisé : aucun jeton d'authentification transmis");
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -35,16 +35,16 @@ Deno.serve(async (req) => {
       global: { headers: { Authorization: authHeader } },
     });
     const { data: { user: caller } } = await callerClient.auth.getUser();
-    if (!caller) return json({ error: "Non autorisé" }, 401);
+    if (!caller) return businessError("no_auth", "Non autorisé : session invalide ou expirée");
 
     const { email, name, role, redirectTo, org_id } = await req.json();
 
     if (!email || !name || !role) {
-      return json({ error: "Email, nom et fonction sont requis" }, 400);
+      return businessError("missing_fields", "Email, nom et fonction sont requis");
     }
     if (!org_id) {
       console.error("invite-member: org_id manquant");
-      return json({ error: "Aucune équipe active détectée" }, 400);
+      return businessError("no_org", "Aucune équipe active détectée");
     }
 
     const adminClient = createClient(supabaseUrl, serviceRoleKey);
@@ -66,7 +66,7 @@ Deno.serve(async (req) => {
 
       if (!callerProfile?.team_member_id) {
         console.error("invite-member: appelant sans fiche membre", caller.id);
-        return json({ error: "Votre compte n'est rattaché à aucune fiche membre" }, 403);
+        return businessError("no_member_profile", "Votre compte n'est rattaché à aucune fiche membre");
       }
 
       const { data: orgRole } = await adminClient
@@ -78,7 +78,7 @@ Deno.serve(async (req) => {
 
       if (orgRole?.role !== "owner" && orgRole?.role !== "admin") {
         console.error("invite-member: appelant non responsable", caller.id, org_id);
-        return json({ error: "Vous n'êtes pas administrateur de cette équipe" }, 403);
+        return businessError("not_org_admin", "Vous n'êtes pas administrateur de cette équipe");
       }
     }
 
@@ -90,7 +90,7 @@ Deno.serve(async (req) => {
       .maybeSingle();
     if (!org) {
       console.error("invite-member: équipe introuvable", org_id);
-      return json({ error: "Équipe introuvable" }, 404);
+      return businessError("org_not_found", "Équipe introuvable");
     }
 
     const cleanEmail = String(email).trim().toLowerCase();
@@ -107,7 +107,7 @@ Deno.serve(async (req) => {
       } as any);
       if (error) {
         console.error("invite-member: generateLink échoué", type, error.message);
-        throw new Error(error.message);
+        throw Object.assign(new Error(error.message), { code: "generate_link_failed" });
       }
       return {
         link: linkData?.properties?.action_link as string | undefined,
@@ -131,7 +131,7 @@ Deno.serve(async (req) => {
         .maybeSingle();
 
       if (alreadyIn) {
-        return json({ error: `Ce membre fait déjà partie de l'équipe ${org.name}` }, 400);
+        return businessError("already_member", `Ce membre fait déjà partie de l'équipe ${org.name}`);
       }
 
       const { error: addError } = await adminClient
@@ -139,7 +139,7 @@ Deno.serve(async (req) => {
         .insert({ org_id, member_id: existingMember.id, role: "member" });
       if (addError) {
         console.error("invite-member: ajout organization_members échoué", addError.message);
-        return json({ error: addError.message }, 400);
+        return businessError("db_insert_failed", addError.message);
       }
 
       const { link, userId } = await generate("magiclink");
@@ -185,7 +185,7 @@ Deno.serve(async (req) => {
     });
     if (memberError) {
       console.error("invite-member: création team_members échouée", memberError.message);
-      return json({ error: memberError.message }, 400);
+      return businessError("db_insert_failed", memberError.message);
     }
 
     // organization_members.role = niveau de permission
@@ -196,7 +196,7 @@ Deno.serve(async (req) => {
       // Rollback : seule une écriture en base ayant réellement échoué le justifie
       console.error("invite-member: création organization_members échouée", orgMemberError.message);
       await adminClient.from("team_members").delete().eq("id", memberId);
-      return json({ error: orgMemberError.message }, 400);
+      return businessError("db_insert_failed", orgMemberError.message);
     }
 
     // Équipe active par défaut du nouvel arrivant
@@ -220,6 +220,13 @@ Deno.serve(async (req) => {
     });
   } catch (err) {
     console.error("invite-member: erreur inattendue", err);
-    return json({ error: err instanceof Error ? err.message : String(err) }, 500);
+    const message = err instanceof Error ? err.message : String(err);
+    const code = (err as any)?.code;
+    // Échec de génération du lien = erreur métier remontable en 200
+    if (code === "generate_link_failed") {
+      return businessError("generate_link_failed", message);
+    }
+    // Vraie erreur technique inattendue : statut non-2xx, message inclus dans le corps
+    return json({ success: false, error: message, code: "unexpected" }, 500);
   }
 });

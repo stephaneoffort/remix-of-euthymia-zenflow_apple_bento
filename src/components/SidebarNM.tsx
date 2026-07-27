@@ -11,6 +11,7 @@ import { useChatNotifications } from "@/hooks/useChatNotifications";
 import { usePresence } from "@/hooks/usePresence";
 import logoEuthymia from "@/assets/logo-euthymia.png";
 import OrgSwitcher from "@/components/OrgSwitcher";
+import { useOrg } from "@/context/OrgContext";
 
 /* ─── Tokens ─── */
 const BG = "#EDE6DA";
@@ -229,6 +230,8 @@ export default function SidebarNM() {
   const isMobile = useIsMobile();
   const { totalUnread } = useChatNotifications();
   const { isOnline } = usePresence();
+  // Équipe active : sert uniquement à intituler la section Espaces
+  const { currentOrg } = useOrg();
   const NC = useNMColors();
   const [openSpaces, setOpenSpaces] = useState<Set<string>>(new Set());
   const [draggedProjectId, setDraggedProjectId] = useState<string | null>(null);

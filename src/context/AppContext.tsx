@@ -1306,6 +1306,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setSelectedTaskId,
     setSidebarCollapsed,
     setAdvancedFilters,
+    searchQuery,
+    setSearchQuery,
     addTask,
     updateTask,
     deleteTask,

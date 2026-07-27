@@ -1974,7 +1974,7 @@ export type Database = {
           id: string
           is_archived?: boolean
           name: string
-          org_id: string
+          org_id?: string
           sort_order?: number
           space_id: string
         }
@@ -2351,7 +2351,7 @@ export type Database = {
         Insert: {
           id: string
           name: string
-          org_id: string
+          org_id?: string
           project_id: string
           sort_order?: number
         }
@@ -2545,7 +2545,7 @@ export type Database = {
           id?: string
           is_milestone?: boolean | null
           list_id: string
-          org_id: string
+          org_id?: string
           parent_task_id?: string | null
           priority?: string
           progress?: number | null

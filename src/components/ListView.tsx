@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import HighlightText from '@/components/HighlightText';
+import TaskPathBreadcrumb from '@/components/TaskPathBreadcrumb';
 import { motion, AnimatePresence } from 'framer-motion';
 import EmptyState from '@/components/EmptyState';
 import { useApp } from '@/context/AppContext';
@@ -142,6 +143,7 @@ export default function ListView() {
                   <p className={`text-sm font-medium ${isOverdue ? 'text-priority-urgent' : 'text-foreground'}`}><HighlightText text={task.title} /></p>
                   {task.recurrence && <Repeat className="w-3 h-3 text-primary shrink-0" />}
                 </div>
+                <TaskPathBreadcrumb listId={task.listId} className="mt-0.5" />
                 <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                   <StatusBadge status={task.status} />
                   <PriorityBadge priority={task.priority} />
@@ -261,6 +263,7 @@ export default function ListView() {
                   <ZoomSessionBadge hasZoom={zoomTaskIds.has(task.id)} />
                   <MeetSessionBadge hasMeet={!!task.googleEventId && meetTaskIds.has(task.googleEventId)} />
                 </div>
+                <TaskPathBreadcrumb listId={task.listId} className="mt-0.5" />
               </div>
             </div>
           </td>

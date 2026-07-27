@@ -46,6 +46,7 @@ import {
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import OrgSwitcher from "@/components/OrgSwitcher";
+import { useOrg } from "@/context/OrgContext";
 import { SpaceIcon, SPACE_ICON_PRESETS } from "@/components/SpaceIcon";
 import SpaceIconPickerDialog from "@/components/SpaceIconPickerDialog";
 import {
@@ -289,6 +290,9 @@ export default function AppSidebar() {
   const [dragOverSpaceId, setDragOverSpaceId] = useState<string | null>(null);
   const [dragOverProjectId, setDragOverProjectId] = useState<string | null>(null);
   const [draggingProjectId, setDraggingProjectId] = useState<string | null>(null);
+
+  // Équipe active : sert uniquement à intituler la section Espaces
+  const { currentOrg } = useOrg();
 
   // Filter spaces based on access
   const visibleSpaces = spaces.filter((s) => canAccessSpace(s.id));
@@ -899,7 +903,21 @@ export default function AppSidebar() {
               <ChevronDown
                 className={`w-3.5 h-3.5 text-sidebar-fg transition-transform ${spacesExpanded ? "" : "-rotate-90"}`}
               />
-              <p className="text-xs font-semibold text-sidebar-fg uppercase tracking-wider">Espaces</p>
+              {/* Intitulé rattachant visuellement les espaces à l'équipe active */}
+              <p className="text-xs font-semibold text-sidebar-fg uppercase tracking-wider flex items-center gap-1.5 min-w-0">
+                <span>Espaces</span>
+                {currentOrg && (
+                  <>
+                    <span aria-hidden className="opacity-50">·</span>
+                    <span
+                      aria-hidden
+                      className="w-2 h-2 rounded-full shrink-0"
+                      style={{ background: currentOrg.color || "hsl(var(--primary))" }}
+                    />
+                    <span className="truncate normal-case tracking-normal font-medium">{currentOrg.name}</span>
+                  </>
+                )}
+              </p>
             </button>
             <button
               onClick={() => { setSpacesExpanded(true); setAddingSpace(true); }}
@@ -985,6 +1003,19 @@ export default function AppSidebar() {
                   Annuler
                 </button>
               </div>
+            </div>
+          )}
+
+          {/* État vide explicite : l'équipe active ne contient aucun espace */}
+          {visibleSpaces.length === 0 && !addingSpace && (
+            <div className="mx-2 mb-2 px-2 py-3 rounded-md bg-sidebar-hover/50 text-center">
+              <p className="text-xs text-sidebar-fg">Aucun espace dans cette équipe</p>
+              <button
+                onClick={() => setAddingSpace(true)}
+                className="mt-2 text-xs font-medium text-primary hover:underline"
+              >
+                Créer un espace
+              </button>
             </div>
           )}
 

@@ -243,6 +243,24 @@ function MembersPanel() {
     });
   }, []);
 
+  // Équipes (organisations) auxquelles appartient chaque membre
+  const [memberOrgs, setMemberOrgs] = useState<Record<string, { name: string; color: string | null; role: string }[]>>({});
+  useEffect(() => {
+    supabase
+      .from('organization_members')
+      .select('member_id, role, organizations(name, color)')
+      .then(({ data }) => {
+        const map: Record<string, { name: string; color: string | null; role: string }[]> = {};
+        (data as any[] | null)?.forEach(row => {
+          const org = row.organizations;
+          if (!org) return;
+          if (!map[row.member_id]) map[row.member_id] = [];
+          map[row.member_id].push({ name: org.name, color: org.color ?? null, role: row.role });
+        });
+        setMemberOrgs(map);
+      });
+  }, []);
+
   const getUserIdForMember = (memberId: string) => {
     return profiles.find(p => p.team_member_id === memberId)?.id;
   };

@@ -179,3 +179,88 @@ Deno.test("invite-member refuse un email invalide sans rien créer en base", asy
     assertEquals(orgMembers?.length ?? 0, 0, "Ligne organization_members créée à tort");
   }
 });
+
+Deno.test("invite-member ne crée pas de doublon pour un membre déjà existant", async () => {
+  const accessToken = await getAdminAccessToken();
+
+  const { data: orgs } = await admin.from("organizations").select("id, name").limit(1);
+  const orgId = orgs?.[0]?.id as string | undefined;
+  assert(orgId, "Aucune équipe disponible pour le test");
+
+  const email = `test-dup-${crypto.randomUUID()}@zenflow-test.invalid`;
+
+  const invite = () =>
+    fetch(`${SUPABASE_URL}/functions/v1/invite-member`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: ANON_KEY,
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({
+        email,
+        name: "Testeur Doublon",
+        role: "Testeur",
+        org_id: orgId,
+        redirectTo: "http://localhost:8080",
+      }),
+    }).then((r) => r.json());
+
+  // 1re invitation : création initiale du membre
+  const first = await invite();
+
+  try {
+    assertEquals(first.success, true, `Première invitation échouée : ${JSON.stringify(first)}`);
+    const memberId = first.memberId as string;
+
+    // --- Cas A : membre déjà dans l'équipe -> refus explicite, aucun doublon
+    const second = await invite();
+    assertEquals(second.success, false, "Une seconde invitation identique aurait dû être refusée");
+    assertEquals(second.code, "already_member");
+
+    const countRows = async () => {
+      const { data: members } = await admin.from("team_members").select("id").eq("email", email);
+      const { data: links } = await admin
+        .from("organization_members")
+        .select("member_id")
+        .eq("org_id", orgId!)
+        .eq("member_id", memberId);
+      return { members: members?.length ?? 0, links: links?.length ?? 0 };
+    };
+
+    let counts = await countRows();
+    assertEquals(counts.members, 1, "Doublon détecté dans team_members");
+    assertEquals(counts.links, 1, "Doublon détecté dans organization_members");
+
+    // --- Cas B : membre existant hors de l'équipe -> rattachement + lien renvoyé
+    await admin
+      .from("organization_members")
+      .delete()
+      .eq("org_id", orgId!)
+      .eq("member_id", memberId);
+
+    const third = await invite();
+    assertEquals(third.success, true, `Rattachement échoué : ${JSON.stringify(third)}`);
+    assertEquals(third.existing, true, "Le membre existant n'a pas été reconnu comme tel");
+    assertEquals(third.memberId, memberId, "Un nouvel identifiant de membre a été créé à tort");
+    assertEquals(third.linkType, "magiclink");
+    assert(
+      typeof third.inviteLink === "string" && third.inviteLink.startsWith("http"),
+      "Aucun lien d'invitation renvoyé pour le membre existant",
+    );
+
+    counts = await countRows();
+    assertEquals(counts.members, 1, "Doublon créé dans team_members lors du rattachement");
+    assertEquals(counts.links, 1, "Doublon créé dans organization_members lors du rattachement");
+  } finally {
+    const { data: members } = await admin.from("team_members").select("id").eq("email", email);
+    for (const m of members ?? []) {
+      await admin.from("member_active_org").delete().eq("member_id", m.id as string);
+      await admin.from("organization_members").delete().eq("member_id", m.id as string);
+      await admin.from("team_members").delete().eq("id", m.id as string);
+    }
+    if (first?.userId) {
+      await admin.auth.admin.deleteUser(first.userId).catch(() => {});
+    }
+  }
+});

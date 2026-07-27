@@ -143,7 +143,31 @@ function bestAudioBitrate(mime: string): number {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-interface SavedNote { id: string; text: string; createdAt: string; transcribeLang: string; }
+interface SavedNote {
+  id: string;
+  text: string;
+  createdAt: string;
+  transcribeLang: string;
+  /** Rappel programmé (ISO) ou null. */
+  remindAt: string | null;
+  /** Horodatage de l'envoi effectif du rappel, ou null s'il n'est pas encore parti. */
+  remindedAt: string | null;
+}
+
+/** Colonnes systématiquement lues pour une note. */
+const NOTE_COLS = 'id, text, created_at, transcribe_lang, remind_at, reminded_at';
+
+function mapNote(n: any): SavedNote {
+  return {
+    id: n.id,
+    text: n.text,
+    createdAt: n.created_at,
+    transcribeLang: n.transcribe_lang || 'auto',
+    remindAt: n.remind_at ?? null,
+    remindedAt: n.reminded_at ?? null,
+  };
+}
+
 
 function langLabel(code: string): string {
   return TRANSCRIPTION_LANGS.find(l => l.code === code)?.label ?? code;

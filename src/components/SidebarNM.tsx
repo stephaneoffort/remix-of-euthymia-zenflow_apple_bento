@@ -627,7 +627,7 @@ export default function SidebarNM() {
                 width: 36,
                 height: 36,
                 borderRadius: 10,
-                background: BG,
+                background: hasCustomLogo ? BG : "transparent",
                 boxShadow: raisedSm,
                 display: "flex",
                 alignItems: "center",
@@ -638,7 +638,9 @@ export default function SidebarNM() {
               <img
                 src={userLogoUrl}
                 alt="ZenFlow"
-                style={{ maxWidth: 24, maxHeight: 24, objectFit: "contain" }}
+                style={hasCustomLogo
+                  ? { maxWidth: 24, maxHeight: 24, objectFit: "contain" }
+                  : { width: "100%", height: "100%", objectFit: "cover" }}
                 onError={(e) => {
                   (e.currentTarget as HTMLImageElement).src = ZENFLOW_LOGO;
                 }}

@@ -93,7 +93,8 @@ export default function Auth() {
       <Card className="w-full max-w-sm mx-auto bg-card">
         <CardHeader className="text-center">
           <div className="flex flex-col items-center gap-3 mb-2">
-            <img src="/logo-zenflow.png" alt="ZenFlow" className="w-16 h-16 object-contain" />
+            {/* Plaque carrée : coins arrondis carrés, jamais rognée en cercle */}
+            <img src="/logo-zenflow.png" alt="ZenFlow" className="w-16 h-16 rounded-2xl object-contain" />
             <CardTitle className="font-display text-2xl font-bold text-foreground">ZenFlow</CardTitle>
           </div>
           <CardDescription className="text-muted-foreground">

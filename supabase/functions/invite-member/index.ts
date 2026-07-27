@@ -233,6 +233,19 @@ Deno.serve(async (req) => {
       await adminClient.from("profiles").upsert({ id: authUserId, team_member_id: memberId });
     }
 
+    // Trace de l'invitation, consultable dans Membres → Invitations
+    await adminClient.from("member_invitations").insert({
+      org_id,
+      email: cleanEmail,
+      name: String(name).trim(),
+      job_role: String(role).trim(),
+      member_id: memberId,
+      auth_user_id: authUserId,
+      invite_link: link ?? null,
+      link_type: existingAuthUserId ? "magiclink" : "invite",
+      invited_by: caller.id,
+    });
+
     return json({
       success: true,
       memberId,
@@ -242,6 +255,7 @@ Deno.serve(async (req) => {
       inviteLink: link,
       linkType: existingAuthUserId ? "magiclink" : "invite",
     });
+
   } catch (err) {
     console.error("invite-member: erreur inattendue", err);
     const message = err instanceof Error ? err.message : String(err);

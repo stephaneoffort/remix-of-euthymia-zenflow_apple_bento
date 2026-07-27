@@ -13,7 +13,7 @@ export default defineTool({
   name: "create_task",
   title: "Créer une tâche",
   description:
-    "Crée une nouvelle tâche dans une liste Euthymia. list_id est requis (utiliser list_tasks pour découvrir des list_id existants).",
+    "Crée une nouvelle tâche dans une liste ZenFlow. list_id est requis (utiliser list_tasks pour découvrir des list_id existants).",
   inputSchema: {
     list_id: z.string().describe("ID de la liste dans laquelle créer la tâche"),
     title: z.string().min(1).describe("Titre de la tâche"),

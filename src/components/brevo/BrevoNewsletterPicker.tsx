@@ -158,7 +158,7 @@ export default function BrevoNewsletterPicker({ open, onClose, entityType, entit
                 id="nl-label"
                 value={customLabel}
                 onChange={e => setCustomLabel(e.target.value)}
-                placeholder="Newsletter Euthymia - Avril 2026"
+                placeholder="Newsletter ZenFlow - Avril 2026"
               />
             </div>
             <div className="space-y-2">

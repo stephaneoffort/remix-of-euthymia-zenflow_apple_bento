@@ -1,5 +1,5 @@
 /**
- * Design Tokens — Euthymia
+ * Design Tokens — ZenFlow
  *
  * Centralise les tokens de design utilisés dans l'application.
  * Les valeurs CSS réelles proviennent des variables définies dans index.css

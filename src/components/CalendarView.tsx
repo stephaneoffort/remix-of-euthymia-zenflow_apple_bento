@@ -1021,10 +1021,10 @@ export default function CalendarView() {
     const ics = [
       "BEGIN:VCALENDAR",
       "VERSION:2.0",
-      "PRODID:-//Euthymia//Tasks//FR",
+      "PRODID:-//ZenFlow//Tasks//FR",
       "CALSCALE:GREGORIAN",
       "METHOD:PUBLISH",
-      "X-WR-CALNAME:Euthymia - Tâches",
+      "X-WR-CALNAME:ZenFlow - Tâches",
       ...events,
       "END:VCALENDAR",
     ].join("\r\n");
@@ -1032,7 +1032,7 @@ export default function CalendarView() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "euthymia-taches.ics";
+    a.download = "zenflow-taches.ics";
     a.click();
     URL.revokeObjectURL(url);
   };

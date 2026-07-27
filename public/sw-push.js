@@ -1,7 +1,7 @@
 // Service worker — gestion des push notifications et des clics
 
 self.addEventListener('push', function (event) {
-  let data = { title: 'Euthymia', body: 'Vous avez une notification', data: {} };
+  let data = { title: 'ZenFlow', body: 'Vous avez une notification', data: {} };
 
   if (event.data) {
     try {

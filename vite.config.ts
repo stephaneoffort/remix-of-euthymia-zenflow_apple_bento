@@ -65,8 +65,8 @@ export default defineConfig(({ mode }) => ({
         ],
       },
       manifest: {
-        name: "Euthymia — Gestion de projets",
-        short_name: "Euthymia",
+        name: "ZenFlow — Gestion de projets",
+        short_name: "ZenFlow",
         description: "Application de gestion de projets, tâches et collaboration",
         theme_color: "#18181b",
         background_color: "#09090b",

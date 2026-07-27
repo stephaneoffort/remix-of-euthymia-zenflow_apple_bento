@@ -55,7 +55,7 @@ const SelectTeamMember = React.forwardRef<HTMLDivElement>(function SelectTeamMem
       const { error: linkError } = await linkTeamMember(memberId);
       if (linkError) throw linkError;
 
-      toast.success('Profil créé avec succès ! Bienvenue sur Euthymia.');
+      toast.success('Profil créé avec succès ! Bienvenue sur ZenFlow.');
     } catch (err: any) {
       toast.error(err.message || 'Erreur lors de la création du profil');
     } finally {
@@ -68,7 +68,7 @@ const SelectTeamMember = React.forwardRef<HTMLDivElement>(function SelectTeamMem
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-3">
-            <img src="/logo-euthymia.png" alt="Euthymia" className="w-14 h-14 rounded-full object-cover" />
+            <img src="/logo-zenflow.png" alt="ZenFlow" className="w-14 h-14 object-contain" />
           </div>
           <CardTitle className="text-xl font-bold text-foreground flex items-center justify-center gap-2">
             <UserPlus className="w-5 h-5" />

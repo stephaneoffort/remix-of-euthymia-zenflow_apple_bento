@@ -12,7 +12,7 @@ function supabaseForUser(ctx: ToolContext) {
 export default defineTool({
   name: "list_projects",
   title: "Lister les projets",
-  description: "Liste les projets Euthymia accessibles à l'utilisateur connecté (non archivés par défaut).",
+  description: "Liste les projets ZenFlow accessibles à l'utilisateur connecté (non archivés par défaut).",
   inputSchema: {
     include_archived: z.boolean().optional().describe("Inclure les projets archivés"),
   },

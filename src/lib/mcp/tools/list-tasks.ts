@@ -13,7 +13,7 @@ export default defineTool({
   name: "list_tasks",
   title: "Lister les tâches",
   description:
-    "Liste les tâches Euthymia visibles par l'utilisateur. Filtres optionnels: statut (todo/in_progress/done), priorité (low/medium/high/urgent), list_id, limite (défaut 50).",
+    "Liste les tâches ZenFlow visibles par l'utilisateur. Filtres optionnels: statut (todo/in_progress/done), priorité (low/medium/high/urgent), list_id, limite (défaut 50).",
   inputSchema: {
     status: z.enum(["todo", "in_progress", "done"]).optional(),
     priority: z.enum(["low", "medium", "high", "urgent"]).optional(),

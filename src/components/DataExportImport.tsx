@@ -98,7 +98,7 @@ export default function DataExportImport() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `euthymia-export-${new Date().toISOString().slice(0, 10)}.json`;
+      a.download = `zenflow-export-${new Date().toISOString().slice(0, 10)}.json`;
       a.click();
       URL.revokeObjectURL(url);
       toast.success('Export terminé');
@@ -175,7 +175,7 @@ export default function DataExportImport() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `euthymia-tasks-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.download = `zenflow-tasks-${new Date().toISOString().slice(0, 10)}.csv`;
       a.click();
       URL.revokeObjectURL(url);
       toast.success('Export CSV terminé');

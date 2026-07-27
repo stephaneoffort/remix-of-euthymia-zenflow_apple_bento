@@ -98,7 +98,7 @@ export default function OAuthConsent() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            {clientName} demande à accéder à vos projets et tâches Euthymia via ses outils. L'application agira en votre nom.
+            {clientName} demande à accéder à vos projets et tâches ZenFlow via ses outils. L'application agira en votre nom.
           </p>
           <div className="flex gap-2 justify-end">
             <Button variant="outline" disabled={busy} onClick={() => decide(false)}>

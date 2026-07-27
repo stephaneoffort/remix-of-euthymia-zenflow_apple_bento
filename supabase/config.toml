@@ -17,19 +17,19 @@ double_confirm_changes = true
 enable_confirmations = true
 
 [auth.email.template.confirmation]
-subject = "Confirmez votre email — Euthymia ZenFlow"
+subject = "Confirmez votre email — ZenFlow"
 content_path = "./supabase/templates/confirmation.html"
 
 [auth.email.template.recovery]
-subject = "Réinitialisation de mot de passe — Euthymia ZenFlow"
+subject = "Réinitialisation de mot de passe — ZenFlow"
 content_path = "./supabase/templates/recovery.html"
 
 [auth.email.template.invite]
-subject = "Vous avez été invité sur Euthymia ZenFlow"
+subject = "Vous avez été invité sur ZenFlow"
 content_path = "./supabase/templates/invite.html"
 
 [auth.email.template.magic_link]
-subject = "Votre lien de connexion — Euthymia ZenFlow"
+subject = "Votre lien de connexion — ZenFlow"
 content_path = "./supabase/templates/magic_link.html"
 
 [functions.integration-oauth]

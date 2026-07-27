@@ -13,7 +13,7 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const systemPrompt = `Tu es l'assistant IA d'Euthymia, une plateforme de gestion de projet et de formations en pleine conscience (mindfulness).
+    const systemPrompt = `Tu es l'assistant IA d'ZenFlow, une plateforme de gestion de projet et de formations en pleine conscience (mindfulness).
 Tu aides les utilisateurs à organiser leurs projets, planifier leurs tâches, et donner des conseils sur la gestion de leur travail.
 Réponds toujours en français, de manière bienveillante et professionnelle.
 Sois concis mais utile. Utilise des emojis avec parcimonie pour rendre la conversation chaleureuse.

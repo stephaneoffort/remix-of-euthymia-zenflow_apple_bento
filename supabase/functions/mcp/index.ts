@@ -18,7 +18,7 @@ function supabaseForUser(ctx) {
 var list_projects_default = defineTool({
   name: "list_projects",
   title: "Lister les projets",
-  description: "Liste les projets Euthymia accessibles \xE0 l'utilisateur connect\xE9 (non archiv\xE9s par d\xE9faut).",
+  description: "Liste les projets ZenFlow accessibles \xE0 l'utilisateur connect\xE9 (non archiv\xE9s par d\xE9faut).",
   inputSchema: {
     include_archived: z.boolean().optional().describe("Inclure les projets archiv\xE9s")
   },
@@ -50,7 +50,7 @@ function supabaseForUser2(ctx) {
 var list_tasks_default = defineTool2({
   name: "list_tasks",
   title: "Lister les t\xE2ches",
-  description: "Liste les t\xE2ches Euthymia visibles par l'utilisateur. Filtres optionnels: statut (todo/in_progress/done), priorit\xE9 (low/medium/high/urgent), list_id, limite (d\xE9faut 50).",
+  description: "Liste les t\xE2ches ZenFlow visibles par l'utilisateur. Filtres optionnels: statut (todo/in_progress/done), priorit\xE9 (low/medium/high/urgent), list_id, limite (d\xE9faut 50).",
   inputSchema: {
     status: z2.enum(["todo", "in_progress", "done"]).optional(),
     priority: z2.enum(["low", "medium", "high", "urgent"]).optional(),
@@ -88,7 +88,7 @@ function supabaseForUser3(ctx) {
 var create_task_default = defineTool3({
   name: "create_task",
   title: "Cr\xE9er une t\xE2che",
-  description: "Cr\xE9e une nouvelle t\xE2che dans une liste Euthymia. list_id est requis (utiliser list_tasks pour d\xE9couvrir des list_id existants).",
+  description: "Cr\xE9e une nouvelle t\xE2che dans une liste ZenFlow. list_id est requis (utiliser list_tasks pour d\xE9couvrir des list_id existants).",
   inputSchema: {
     list_id: z3.string().describe("ID de la liste dans laquelle cr\xE9er la t\xE2che"),
     title: z3.string().min(1).describe("Titre de la t\xE2che"),
@@ -155,10 +155,10 @@ var update_task_status_default = defineTool4({
 // src/lib/mcp/index.ts
 var projectRef = "jivfyaqpuhutixfjttga";
 var mcp_default = defineMcp({
-  name: "euthymia-mcp",
-  title: "Euthymia ZenFlow",
+  name: "zenflow-mcp",
+  title: "ZenFlow",
   version: "0.1.0",
-  instructions: "Outils pour Euthymia ZenFlow : gestion de projets et t\xE2ches. Utilise list_projects et list_tasks pour explorer, create_task pour cr\xE9er une t\xE2che dans une liste, et update_task_status pour changer le statut d'une t\xE2che.",
+  instructions: "Outils pour ZenFlow : gestion de projets et t\xE2ches. Utilise list_projects et list_tasks pour explorer, create_task pour cr\xE9er une t\xE2che dans une liste, et update_task_status pour changer le statut d'une t\xE2che.",
   auth: auth.oauth.issuer({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated"

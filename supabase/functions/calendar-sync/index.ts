@@ -315,7 +315,7 @@ function buildVEvent(event: any): string {
   return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//EuthymiaZenFlow//CalendarSync//FR",
+    "PRODID:-//ZenFlow//CalendarSync//FR",
     "BEGIN:VEVENT",
     `UID:${uid}`,
     `DTSTAMP:${now}`,
@@ -523,7 +523,7 @@ async function getOrCreateZenflowCalendar(token: string, accountId: string): Pro
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       body: JSON.stringify({
         summary: "ZENFLOW",
-        description: "Tâches synchronisées depuis Euthymia ZenFlow",
+        description: "Tâches synchronisées depuis ZenFlow",
         timeZone: "Europe/Paris",
       }),
     },
@@ -609,7 +609,7 @@ async function buildEventPayload(taskId: string, task: any) {
     start: { dateTime: startDate.toISOString(), timeZone: "Europe/Paris" },
     end: { dateTime: endDate.toISOString(), timeZone: "Europe/Paris" },
     colorId: colorId[task.status] ?? "9",
-    source: { title: "Euthymia ZenFlow", url: "https://euthymia-zenflow-bento.lovable.app" },
+    source: { title: "ZenFlow", url: "https://euthymia-zenflow-bento.lovable.app" },
   };
 
   // Add Zoom as native conference in Google Calendar

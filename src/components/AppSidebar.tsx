@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
-import logoEuthymia from "@/assets/logo-euthymia.png";
+import { useUserLogo, ZENFLOW_LOGO } from "@/hooks/useUserLogo";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import {
   ChevronRight,
@@ -127,6 +127,8 @@ const QUICK_FILTERS: { key: QuickFilter; label: string; icon: React.ReactNode }[
 const PROJECT_COLORS = ["#C9A84C", "#E2D08A", "#F5EFE0", "#D4915C", "#4A6FA5", "#3D8B7A", "#C47B7B", "#7B68AE"];
 
 export default function AppSidebar() {
+  // Logo personnalisé de l'utilisateur (repli automatique sur ZenFlow)
+  const { logoUrl: userLogoUrl } = useUserLogo();
   const {
     spaces,
     selectedProjectId,
@@ -728,9 +730,17 @@ export default function AppSidebar() {
         {/* Header */}
         <div className="px-4 py-4 flex items-center justify-between border-b border-sidebar-border-color">
           <div className="flex items-center gap-2.5">
-            <img src={logoEuthymia} alt="Euthymia" className="w-8 h-8 rounded-full object-cover" />
+            {/* Logo personnalisé de l'utilisateur, repli sur le logo ZenFlow */}
+            <div className="w-8 h-8 shrink-0 rounded-full overflow-hidden flex items-center justify-center bg-sidebar-hover">
+              <img
+                src={userLogoUrl}
+                alt="ZenFlow"
+                className="max-w-full max-h-full object-contain"
+                onError={(e) => { (e.currentTarget as HTMLImageElement).src = ZENFLOW_LOGO; }}
+              />
+            </div>
             <div>
-              <h1 className="font-display text-sidebar-fg-bright font-bold text-lg leading-tight">Euthymia</h1>
+              <h1 className="font-display text-sidebar-fg-bright font-bold text-lg leading-tight">ZenFlow</h1>
               <p className="text-sidebar-fg text-xs">Gestion de projets</p>
             </div>
           </div>

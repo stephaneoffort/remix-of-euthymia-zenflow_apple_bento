@@ -67,7 +67,7 @@ export default function InstallPrompt() {
           <Download className="w-5 h-5 text-primary" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-card-foreground">Installer Euthymia</p>
+          <p className="text-sm font-semibold text-card-foreground">Installer ZenFlow</p>
           {isIOS ? (
             <p className="text-xs text-muted-foreground mt-0.5">
               Appuyez sur <strong>Partager</strong> (↑) puis <strong>« Sur l'écran d'accueil »</strong>

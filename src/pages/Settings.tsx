@@ -428,6 +428,27 @@ function MembersPanel() {
                     )}
                   </div>
                   <p className="text-xs text-muted-foreground truncate">{m.role} · {m.email}</p>
+                  <div className="flex flex-wrap items-center gap-1 mt-1">
+                    {(memberOrgs[m.id] ?? []).length === 0 ? (
+                      <span className="inline-flex items-center rounded-full border border-dashed border-border px-2 py-0.5 text-[10px] text-muted-foreground">
+                        Aucune équipe
+                      </span>
+                    ) : (
+                      (memberOrgs[m.id] ?? []).map(org => (
+                        <span
+                          key={org.name}
+                          title={`Équipe ${org.name} — ${org.role}`}
+                          className="inline-flex items-center gap-1 rounded-full border border-border bg-muted/40 px-2 py-0.5 text-[10px] font-medium text-foreground"
+                        >
+                          <span
+                            className="w-1.5 h-1.5 rounded-full shrink-0"
+                            style={{ backgroundColor: org.color || 'hsl(var(--primary))' }}
+                          />
+                          {org.name}
+                        </span>
+                      ))
+                    )}
+                  </div>
                 </div>
               )}
 

@@ -609,7 +609,7 @@ async function buildEventPayload(taskId: string, task: any) {
     start: { dateTime: startDate.toISOString(), timeZone: "Europe/Paris" },
     end: { dateTime: endDate.toISOString(), timeZone: "Europe/Paris" },
     colorId: colorId[task.status] ?? "9",
-    source: { title: "Euthymia ZenFlow", url: "https://euthymia-zenflow-bento.lovable.app" },
+    source: { title: "ZenFlow", url: "https://euthymia-zenflow-bento.lovable.app" },
   };
 
   // Add Zoom as native conference in Google Calendar

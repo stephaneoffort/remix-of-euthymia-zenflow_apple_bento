@@ -46,6 +46,7 @@ import {
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import OrgSwitcher from "@/components/OrgSwitcher";
+import { useOrg } from "@/context/OrgContext";
 import { SpaceIcon, SPACE_ICON_PRESETS } from "@/components/SpaceIcon";
 import SpaceIconPickerDialog from "@/components/SpaceIconPickerDialog";
 import {
@@ -289,6 +290,9 @@ export default function AppSidebar() {
   const [dragOverSpaceId, setDragOverSpaceId] = useState<string | null>(null);
   const [dragOverProjectId, setDragOverProjectId] = useState<string | null>(null);
   const [draggingProjectId, setDraggingProjectId] = useState<string | null>(null);
+
+  // Équipe active : sert uniquement à intituler la section Espaces
+  const { currentOrg } = useOrg();
 
   // Filter spaces based on access
   const visibleSpaces = spaces.filter((s) => canAccessSpace(s.id));

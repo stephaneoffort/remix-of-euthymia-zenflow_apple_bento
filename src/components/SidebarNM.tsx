@@ -206,7 +206,7 @@ function DashboardIcon() {
 
 export default function SidebarNM() {
   // Logo personnalisé de l'utilisateur (repli automatique sur ZenFlow)
-  const { logoUrl: userLogoUrl } = useUserLogo();
+  const { logoUrl: userLogoUrl, hasCustomLogo } = useUserLogo();
   const {
     spaces,
     projects,
@@ -469,13 +469,13 @@ export default function SidebarNM() {
           </svg>
         </button>
 
-        {/* Logo */}
+        {/* Logo : la plaque ZenFlow remplit le conteneur carré arrondi (pas de fond ajouté) */}
         <div
           style={{
             width: 32,
             height: 32,
             borderRadius: 8,
-            background: BG,
+            background: hasCustomLogo ? BG : "transparent",
             boxShadow: raisedSm,
             display: "flex",
             alignItems: "center",
@@ -484,7 +484,12 @@ export default function SidebarNM() {
             marginBottom: 8,
           }}
         >
-          <img src={userLogoUrl} alt="ZenFlow" style={{ maxWidth: 20, maxHeight: 20, objectFit: "contain" }}
+          <img
+            src={userLogoUrl}
+            alt="ZenFlow"
+            style={hasCustomLogo
+              ? { maxWidth: 20, maxHeight: 20, objectFit: "contain" }
+              : { width: "100%", height: "100%", objectFit: "cover" }}
             onError={(e) => { (e.currentTarget as HTMLImageElement).src = ZENFLOW_LOGO; }} />
         </div>
 

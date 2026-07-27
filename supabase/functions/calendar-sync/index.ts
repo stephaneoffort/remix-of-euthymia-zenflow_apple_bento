@@ -943,7 +943,7 @@ Deno.serve(async (req) => {
       else if (isCalDav) connected = await caldavTest(account);
       else if (isCalDav) connected = await caldavTest(account);
       else if (provider === "ics") {
-        try { const r = await fetch(account.ics_url, { method: "HEAD" }); connected = r.ok; }
+        try { const r = await safeFetch(account.ics_url, { method: "HEAD" }, { allowWebcal: true }); connected = r.ok; }
         catch { connected = false; }
       }
       return new Response(

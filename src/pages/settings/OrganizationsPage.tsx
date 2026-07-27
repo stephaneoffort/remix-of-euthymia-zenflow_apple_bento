@@ -100,7 +100,11 @@ export default function OrganizationsPage() {
   // Création / édition
   const [createOpen, setCreateOpen] = useState(false);
   const [editOrg, setEditOrg] = useState<OrgRow | null>(null);
-  const [form, setForm] = useState({ name: '', color: ORG_COLOR_PALETTE[0].value, logo_url: '' });
+  const [form, setForm] = useState<{ name: string; color: string; logo_url: string }>({
+    name: '',
+    color: ORG_COLOR_PALETTE[0].value,
+    logo_url: '',
+  });
   const [saving, setSaving] = useState(false);
 
   // Gestion des membres

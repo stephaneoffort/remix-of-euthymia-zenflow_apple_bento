@@ -801,7 +801,7 @@ export type Database = {
         Insert: {
           id?: string
           label: string
-          org_id: string
+          org_id?: string
           sort_order?: number
         }
         Update: {
@@ -1250,7 +1250,7 @@ export type Database = {
           id?: string
           member_id: string
           name: string
-          org_id: string
+          org_id?: string
         }
         Update: {
           created_at?: string
@@ -2034,7 +2034,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
-          org_id: string
+          org_id?: string
           text: string
           transcribe_lang?: string
           updated_at?: string
@@ -2136,7 +2136,7 @@ export type Database = {
           is_archived?: boolean
           is_private?: boolean
           name: string
-          org_id: string
+          org_id?: string
           owner_member_id?: string | null
           sort_order?: number
         }
@@ -2454,7 +2454,7 @@ export type Database = {
           due_offset_days?: number | null
           id?: string
           name: string
-          org_id: string
+          org_id?: string
           priority?: string
           subtasks?: Json
           tags?: string[]

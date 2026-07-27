@@ -22,6 +22,47 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ArrowLeft, Building2, Plus, Archive, RotateCcw, Users, Pencil, X } from 'lucide-react';
+import { ORG_COLOR_PALETTE, ORG_COLOR_FALLBACK, nextAvailableOrgColor } from '@/lib/orgColors';
+
+/** Sélecteur de couleur d'équipe : pastilles de la palette + couleur libre */
+function OrgColorPicker({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (color: string) => void;
+}) {
+  return (
+    <div className="space-y-2">
+      <div className="flex flex-wrap gap-2">
+        {ORG_COLOR_PALETTE.map((c) => (
+          <button
+            key={c.value}
+            type="button"
+            title={c.label}
+            aria-label={c.label}
+            onClick={() => onChange(c.value)}
+            className={`w-7 h-7 rounded-full transition-transform ${
+              value.toLowerCase() === c.value.toLowerCase()
+                ? 'ring-2 ring-offset-2 ring-offset-popover ring-foreground scale-110'
+                : 'hover:scale-105'
+            }`}
+            style={{ backgroundColor: c.value }}
+          />
+        ))}
+      </div>
+      <div className="flex items-center gap-2">
+        <Input
+          type="color"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="h-8 w-14 p-1"
+        />
+        <span className="text-xs text-muted-foreground">Couleur libre</span>
+      </div>
+    </div>
+  );
+}
 
 interface OrgRow {
   id: string;

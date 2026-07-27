@@ -2,9 +2,9 @@
   <!-- Fond conteneur gris clair -->
   <rect x="0" y="0" width="96" height="96" rx="22" fill="#E2E8F0"/>
   <!-- Trois modules ardoise formant un L -->
-  <rect x="23" y="26.5" width="22" height="22" rx="6" fill="#334155"/>
-  <rect x="23" y="52.5" width="22" height="22" rx="6" fill="#334155"/>
-  <rect x="49" y="52.5" width="22" height="22" rx="6" fill="#334155"/>
+  <rect x="23" y="26.5" width="22" height="22" rx="6" fill="#155E75"/>
+  <rect x="23" y="52.5" width="22" height="22" rx="6" fill="#155E75"/>
+  <rect x="49" y="52.5" width="22" height="22" rx="6" fill="#155E75"/>
   <!-- Pièce en mouvement -->
   <rect x="51" y="21.5" width="22" height="22" rx="6" fill="#F4633A"/>
 </svg>

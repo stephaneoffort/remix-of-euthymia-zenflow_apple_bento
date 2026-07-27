@@ -43,7 +43,9 @@ import {
   LifeBuoy,
   Palette,
   NotebookPen,
+  Search as SearchIcon,
 } from "lucide-react";
+import { openGlobalTaskSearch } from "@/components/GlobalTaskSearch";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import OrgSwitcher from "@/components/OrgSwitcher";
 import { useOrg } from "@/context/OrgContext";
@@ -782,6 +784,14 @@ export default function AppSidebar() {
 
         {/* Quick Filters - collapsible on mobile */}
         <div className="px-3 py-3 border-b border-sidebar-border-color">
+          <button
+            type="button"
+            onClick={() => { openGlobalTaskSearch(); handleNavClick(); }}
+            className="w-full flex items-center gap-2 px-2 py-1.5 mb-2 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors"
+          >
+            <SearchIcon className="w-4 h-4" />
+            Recherche de tâches
+          </button>
           <div className="flex items-center justify-between px-2 mb-2 gap-2">
             <button
               type="button"

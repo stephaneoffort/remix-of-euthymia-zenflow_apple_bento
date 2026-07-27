@@ -12,6 +12,11 @@ const json = (body: unknown, status = 200) =>
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 
+// Erreur MÉTIER : statut 200 + corps explicite, pour que le client puisse toujours le lire
+const businessError = (code: string, message: string) =>
+  json({ success: false, error: message, code });
+
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });

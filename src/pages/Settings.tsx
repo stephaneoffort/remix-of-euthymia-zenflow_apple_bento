@@ -243,6 +243,24 @@ function MembersPanel() {
     });
   }, []);
 
+  // Équipes (organisations) auxquelles appartient chaque membre
+  const [memberOrgs, setMemberOrgs] = useState<Record<string, { name: string; color: string | null; role: string }[]>>({});
+  useEffect(() => {
+    supabase
+      .from('organization_members')
+      .select('member_id, role, organizations(name, color)')
+      .then(({ data }) => {
+        const map: Record<string, { name: string; color: string | null; role: string }[]> = {};
+        (data as any[] | null)?.forEach(row => {
+          const org = row.organizations;
+          if (!org) return;
+          if (!map[row.member_id]) map[row.member_id] = [];
+          map[row.member_id].push({ name: org.name, color: org.color ?? null, role: row.role });
+        });
+        setMemberOrgs(map);
+      });
+  }, []);
+
   const getUserIdForMember = (memberId: string) => {
     return profiles.find(p => p.team_member_id === memberId)?.id;
   };
@@ -410,6 +428,27 @@ function MembersPanel() {
                     )}
                   </div>
                   <p className="text-xs text-muted-foreground truncate">{m.role} · {m.email}</p>
+                  <div className="flex flex-wrap items-center gap-1 mt-1">
+                    {(memberOrgs[m.id] ?? []).length === 0 ? (
+                      <span className="inline-flex items-center rounded-full border border-dashed border-border px-2 py-0.5 text-[10px] text-muted-foreground">
+                        Aucune équipe
+                      </span>
+                    ) : (
+                      (memberOrgs[m.id] ?? []).map(org => (
+                        <span
+                          key={org.name}
+                          title={`Équipe ${org.name} — ${org.role}`}
+                          className="inline-flex items-center gap-1 rounded-full border border-border bg-muted/40 px-2 py-0.5 text-[10px] font-medium text-foreground"
+                        >
+                          <span
+                            className="w-1.5 h-1.5 rounded-full shrink-0"
+                            style={{ backgroundColor: org.color || 'hsl(var(--primary))' }}
+                          />
+                          {org.name}
+                        </span>
+                      ))
+                    )}
+                  </div>
                 </div>
               )}
 

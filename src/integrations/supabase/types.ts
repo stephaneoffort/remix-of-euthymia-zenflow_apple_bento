@@ -327,6 +327,7 @@ export type Database = {
           last_synced_at: string | null
           location: string | null
           meet_link: string | null
+          org_id: string | null
           provider: string
           start_time: string
           status: string | null
@@ -348,6 +349,7 @@ export type Database = {
           last_synced_at?: string | null
           location?: string | null
           meet_link?: string | null
+          org_id?: string | null
           provider?: string
           start_time: string
           status?: string | null
@@ -369,6 +371,7 @@ export type Database = {
           last_synced_at?: string | null
           location?: string | null
           meet_link?: string | null
+          org_id?: string | null
           provider?: string
           start_time?: string
           status?: string | null
@@ -383,6 +386,13 @@ export type Database = {
             columns: ["account_id"]
             isOneToOne: false
             referencedRelation: "calendar_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "calendar_events_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
         ]
@@ -502,6 +512,7 @@ export type Database = {
           id: string
           is_archived: boolean | null
           name: string
+          org_id: string | null
           position: number | null
           space_id: string | null
           type: string
@@ -513,6 +524,7 @@ export type Database = {
           id?: string
           is_archived?: boolean | null
           name: string
+          org_id?: string | null
           position?: number | null
           space_id?: string | null
           type?: string
@@ -524,11 +536,20 @@ export type Database = {
           id?: string
           is_archived?: boolean | null
           name?: string
+          org_id?: string | null
           position?: number | null
           space_id?: string | null
           type?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "chat_channels_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       chat_messages: {
         Row: {
@@ -774,19 +795,30 @@ export type Database = {
         Row: {
           id: string
           label: string
+          org_id: string
           sort_order: number
         }
         Insert: {
           id?: string
           label: string
+          org_id?: string
           sort_order?: number
         }
         Update: {
           id?: string
           label?: string
+          org_id?: string
           sort_order?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "custom_statuses_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       drive_attachments: {
         Row: {
@@ -1210,6 +1242,7 @@ export type Database = {
           id: string
           member_id: string
           name: string
+          org_id: string
         }
         Insert: {
           created_at?: string
@@ -1217,6 +1250,7 @@ export type Database = {
           id?: string
           member_id: string
           name: string
+          org_id?: string
         }
         Update: {
           created_at?: string
@@ -1224,8 +1258,17 @@ export type Database = {
           id?: string
           member_id?: string
           name?: string
+          org_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "filter_presets_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       gmail_connections: {
         Row: {
@@ -1503,6 +1546,39 @@ export type Database = {
         }
         Relationships: []
       }
+      member_active_org: {
+        Row: {
+          member_id: string
+          org_id: string
+          updated_at: string
+        }
+        Insert: {
+          member_id: string
+          org_id: string
+          updated_at?: string
+        }
+        Update: {
+          member_id?: string
+          org_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_active_org_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: true
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_active_org_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       member_integrations: {
         Row: {
           connected_at: string | null
@@ -1761,6 +1837,72 @@ export type Database = {
         }
         Relationships: []
       }
+      organization_members: {
+        Row: {
+          created_at: string
+          member_id: string
+          org_id: string
+          role: string
+        }
+        Insert: {
+          created_at?: string
+          member_id: string
+          org_id: string
+          role?: string
+        }
+        Update: {
+          created_at?: string
+          member_id?: string
+          org_id?: string
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_members_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_members_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          color: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          logo_url: string | null
+          name: string
+          slug: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name: string
+          slug: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -1883,6 +2025,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          org_id: string
           text: string
           transcribe_lang: string
           updated_at: string
@@ -1891,6 +2034,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          org_id?: string
           text: string
           transcribe_lang?: string
           updated_at?: string
@@ -1899,12 +2043,21 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          org_id?: string
           text?: string
           transcribe_lang?: string
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "quick_notes_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       space_managers: {
         Row: {
@@ -1973,6 +2126,7 @@ export type Database = {
           is_archived: boolean
           is_private: boolean
           name: string
+          org_id: string
           owner_member_id: string | null
           sort_order: number
         }
@@ -1982,6 +2136,7 @@ export type Database = {
           is_archived?: boolean
           is_private?: boolean
           name: string
+          org_id?: string
           owner_member_id?: string | null
           sort_order?: number
         }
@@ -1991,10 +2146,19 @@ export type Database = {
           is_archived?: boolean
           is_private?: boolean
           name?: string
+          org_id?: string
           owner_member_id?: string | null
           sort_order?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "spaces_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       support_conversations: {
         Row: {
@@ -2276,6 +2440,7 @@ export type Database = {
           due_offset_days: number | null
           id: string
           name: string
+          org_id: string
           priority: string
           subtasks: Json
           tags: string[]
@@ -2289,6 +2454,7 @@ export type Database = {
           due_offset_days?: number | null
           id?: string
           name: string
+          org_id?: string
           priority?: string
           subtasks?: Json
           tags?: string[]
@@ -2302,13 +2468,22 @@ export type Database = {
           due_offset_days?: number | null
           id?: string
           name?: string
+          org_id?: string
           priority?: string
           subtasks?: Json
           tags?: string[]
           title?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "task_templates_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tasks: {
         Row: {
@@ -2611,6 +2786,7 @@ export type Database = {
         Returns: boolean
       }
       current_member_id: { Args: never; Returns: string }
+      current_org_id: { Args: never; Returns: string }
       get_user_by_email: {
         Args: { p_email: string }
         Returns: {
@@ -2628,10 +2804,13 @@ export type Database = {
         Args: { _channel_id: string; _user_id: string }
         Returns: boolean
       }
+      is_org_admin: { Args: { _org_id: string }; Returns: boolean }
+      is_org_member: { Args: { _org_id: string }; Returns: boolean }
       is_space_manager: {
         Args: { _member_id: string; _space_id: string }
         Returns: boolean
       }
+      is_super_admin: { Args: never; Returns: boolean }
       is_team_linked: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {

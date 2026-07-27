@@ -143,7 +143,7 @@ export default function GlobalTaskSearch() {
               {spaces.map((s) => (
                 <SelectItem key={s.id} value={s.id}>
                   <span className="flex items-center gap-2">
-                    <SpaceIcon icon={s.icon} className="w-3.5 h-3.5" />
+                    <SpaceIcon value={s.icon} size="sm" />
                     {s.name}
                   </span>
                 </SelectItem>

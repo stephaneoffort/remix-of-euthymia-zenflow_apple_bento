@@ -241,7 +241,7 @@ export function QuickNote() {
     if (!user) return;
     const { data, error } = await db
       .from('quick_notes')
-      .select('id, text, created_at, transcribe_lang')
+      .select(NOTE_COLS)
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
       .limit(200);
@@ -249,7 +249,7 @@ export function QuickNote() {
       console.error('[QuickNote] fetch failed', error);
       return;
     }
-    setSavedNotes((data || []).map((n: any) => ({ id: n.id, text: n.text, createdAt: n.created_at, transcribeLang: n.transcribe_lang || 'auto' })));
+    setSavedNotes((data || []).map(mapNote));
   }, [user]);
 
   // ── One-shot migration of localStorage notes to Supabase ────────────────
@@ -295,13 +295,13 @@ export function QuickNote() {
             const n: any = payload.new;
             setSavedNotes(prev => prev.some(x => x.id === n.id)
               ? prev
-              : [{ id: n.id, text: n.text, createdAt: n.created_at, transcribeLang: n.transcribe_lang || 'auto' }, ...prev]);
+              : [mapNote(n), ...prev]);
           } else if (payload.eventType === 'DELETE') {
             const oldId = (payload.old as any).id;
             setSavedNotes(prev => prev.filter(x => x.id !== oldId));
           } else if (payload.eventType === 'UPDATE') {
             const n: any = payload.new;
-            setSavedNotes(prev => prev.map(x => x.id === n.id ? { id: n.id, text: n.text, createdAt: n.created_at, transcribeLang: n.transcribe_lang || 'auto' } : x));
+            setSavedNotes(prev => prev.map(x => x.id === n.id ? mapNote(n) : x));
           }
         },
       )
@@ -531,13 +531,10 @@ export function QuickNote() {
         const { data: inserted, error: insErr } = await db
           .from('quick_notes')
           .insert({ user_id: user.id, text: noteText, transcribe_lang: transcribeLang })
-          .select('id, text, created_at, transcribe_lang')
+          .select(NOTE_COLS)
           .single();
         if (insErr) throw insErr;
-        setSavedNotes(prev => [
-          { id: inserted.id, text: inserted.text, createdAt: inserted.created_at, transcribeLang: inserted.transcribe_lang || 'auto' },
-          ...prev,
-        ]);
+        setSavedNotes(prev => [mapNote(inserted), ...prev]);
         toast.success('Note sauvegardée');
         setText('');
         setAudioUrl(null);
@@ -565,7 +562,7 @@ export function QuickNote() {
       // Fire-and-forget autosave so we never lose the draft.
       db.from('quick_notes')
         .insert({ user_id: user.id, text: draft, transcribe_lang: transcribeLangRef.current })
-        .select('id, text, created_at, transcribe_lang')
+        .select(NOTE_COLS)
         .single()
         .then(({ data, error }: any) => {
           if (error) {
@@ -573,10 +570,7 @@ export function QuickNote() {
             return;
           }
           if (data) {
-            setSavedNotes(prev => [
-              { id: data.id, text: data.text, createdAt: data.created_at, transcribeLang: data.transcribe_lang || 'auto' },
-              ...prev,
-            ]);
+            setSavedNotes(prev => [mapNote(data), ...prev]);
           }
           toast.success('Note sauvegardée automatiquement');
         });

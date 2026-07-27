@@ -29,13 +29,16 @@ Deno.serve(async (req) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const anonKey = Deno.env.get("SUPABASE_PUBLISHABLE_KEY")!;
 
-    const callerClient = createClient(supabaseUrl, anonKey, {
-      global: { headers: { Authorization: authHeader } },
+    // Validation du jeton via le client admin : le runtime n'expose pas
+    // systématiquement la clé publiable, l'ancien client anonyme échouait.
+    const authClient = createClient(supabaseUrl, serviceRoleKey, {
+      auth: { autoRefreshToken: false, persistSession: false },
     });
-    const { data: { user: caller } } = await callerClient.auth.getUser();
+    const token = authHeader.replace(/^Bearer\s+/i, "");
+    const { data: { user: caller } } = await authClient.auth.getUser(token);
     if (!caller) return businessError("no_auth", "Non autorisé : session invalide ou expirée");
+
 
     const { email, name, role, redirectTo, org_id } = await req.json();
 

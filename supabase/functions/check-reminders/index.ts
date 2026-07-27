@@ -429,9 +429,74 @@ serve(async (req) => {
       console.error("Zoom notification error:", zErr);
     }
 
-    return new Response(JSON.stringify({ sent: sentCount + zoomSent, triggered: triggeredIds.length, zoomNotified: zoomSent }), {
+    // ── Rappels sur les notes rapides ──
+    // Bloc isolé : une erreur ici ne doit casser ni les tâches ni Zoom.
+    let notesSent = 0;
+    try {
+      const { data: dueNotes } = await supabase
+        .from("quick_notes")
+        .select("id, text, user_id, remind_at")
+        .not("remind_at", "is", null)
+        .is("reminded_at", null)
+        // `<=` volontaire : un rappel en retard doit quand même partir.
+        .lte("remind_at", now.toISOString());
+
+      if (dueNotes && dueNotes.length > 0) {
+        // Résolution user_id → team_member_id → abonnements push
+        const noteUserIds = [...new Set(dueNotes.map((n: any) => n.user_id))];
+        const { data: noteProfiles } = await supabase
+          .from("profiles")
+          .select("id, team_member_id")
+          .in("id", noteUserIds);
+
+        const noteUserToMember = new Map<string, string>();
+        for (const p of noteProfiles || []) {
+          if (p.team_member_id) noteUserToMember.set(p.id, p.team_member_id);
+        }
+
+        const notifiedNoteIds: string[] = [];
+
+        for (const note of dueNotes) {
+          const memberId = noteUserToMember.get(note.user_id);
+          if (!memberId) continue;
+
+          // Une note rapide est strictement personnelle : uniquement son auteur.
+          const subs = subsByMember.get(memberId) || [];
+          if (subs.length === 0) continue;
+
+          const payloadStr = JSON.stringify({
+            title: "📝 Note rapide",
+            body: truncateWords(String(note.text || ""), 120),
+            data: { quickNoteId: note.id },
+          });
+
+          for (const sub of subs) {
+            const ok = await sendWebPush(
+              { endpoint: sub.endpoint, p256dh: sub.p256dh, auth: sub.auth },
+              payloadStr,
+              vapidPublicKey,
+              vapidPrivateKey
+            );
+            if (ok) notesSent++;
+          }
+          notifiedNoteIds.push(note.id);
+        }
+
+        if (notifiedNoteIds.length > 0) {
+          await supabase
+            .from("quick_notes")
+            .update({ reminded_at: now.toISOString() })
+            .in("id", notifiedNoteIds);
+        }
+      }
+    } catch (nErr) {
+      console.error("Quick note notification error:", nErr);
+    }
+
+    return new Response(JSON.stringify({ sent: sentCount + zoomSent + notesSent, triggered: triggeredIds.length, zoomNotified: zoomSent, quickNotesNotified: notesSent }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
+
   } catch (e) {
     console.error("check-reminders error:", e);
     return new Response(

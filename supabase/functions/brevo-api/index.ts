@@ -72,22 +72,38 @@ Deno.serve(async (req: Request) => {
       apiKey: string,
       payload?: object
     ) => {
-      const res = await fetch(`https://api.brevo.com/v3${path}`, {
-        method,
-        headers: {
-          "api-key": apiKey,
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: payload ? JSON.stringify(payload) : undefined,
-      });
-      const text = await res.text();
-      try {
-        return JSON.parse(text);
-      } catch {
-        console.error("Brevo non-JSON response:", res.status, text);
-        throw new Error(`Brevo API returned ${res.status}: ${text.slice(0, 200)}`);
+      // Les erreurs 502/503/504 (ou coupures réseau) côté passerelle Brevo sont
+      // transitoires : on retente jusqu'à 3 fois avec un délai croissant.
+      let lastError = "";
+      for (let attempt = 0; attempt < 3; attempt++) {
+        if (attempt > 0) await new Promise((r) => setTimeout(r, 400 * attempt));
+        let res: Response;
+        try {
+          res = await fetch(`https://api.brevo.com/v3${path}`, {
+            method,
+            headers: {
+              "api-key": apiKey,
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: payload ? JSON.stringify(payload) : undefined,
+          });
+        } catch (e) {
+          lastError = e instanceof Error ? e.message : String(e);
+          continue;
+        }
+        const text = await res.text();
+        try {
+          return JSON.parse(text);
+        } catch {
+          console.error("Brevo non-JSON response:", res.status, text);
+          lastError = `Brevo API returned ${res.status}: ${text.slice(0, 200)}`;
+          if (res.status >= 500 || res.status === 429) continue;
+          throw new Error(lastError);
+        }
       }
+      throw new Error(`Service Brevo temporairement indisponible. ${lastError}`);
+
     };
 
     // ── SAVE API KEY ────────────────────────────────

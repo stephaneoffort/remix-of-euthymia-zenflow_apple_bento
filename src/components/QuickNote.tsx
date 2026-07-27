@@ -862,6 +862,11 @@ export function QuickNote() {
                           </div>
 
                           <div className="flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+                            <QuickNoteReminderPicker
+                              compact
+                              value={n.remindAt ? new Date(n.remindAt) : null}
+                              onChange={(d) => updateNoteReminder(n.id, d)}
+                            />
                             <button
                               onClick={() => copyNote(n.text)}
                               className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
@@ -869,6 +874,7 @@ export function QuickNote() {
                             >
                               <Copy className="w-3.5 h-3.5" />
                             </button>
+
                             <button
                               onClick={() => { setText(n.text); setTranscribeLang(n.transcribeLang || 'auto'); setTab('compose'); }}
                               className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"

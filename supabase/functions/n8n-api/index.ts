@@ -143,6 +143,12 @@ serve(async (req) => {
         }
 
         const normalizedUrl = normalizeInstanceUrl(instance_url);
+        // Refuse d'enregistrer une URL pointant vers un réseau interne.
+        try {
+          await assertSafeExternalUrl(normalizedUrl);
+        } catch (e) {
+          return json({ error: e instanceof Error ? e.message : "URL invalide" }, 400);
+        }
 
         // Upsert manuel (pas de UNIQUE sur user_id)
         const { data: existing } = await db

@@ -893,31 +893,28 @@ export default function AppSidebar() {
         <MessagesHubDialog open={messagesHubOpen} onOpenChange={setMessagesHubOpen} initialTile={messagesHubTile} />
         <CreateTaskDialog open={createTaskOpen} onOpenChange={setCreateTaskOpen} />
 
-        {/* Spaces & Projects */}
+        {/* Arborescence multi-équipes : équipe active dépliée, autres équipes en navigation seule */}
         <div className="flex-1 overflow-y-auto scrollbar-thin px-3 py-3">
+          <p className="text-xs font-semibold text-sidebar-fg uppercase tracking-wider px-2 mb-1.5">
+            Équipes
+          </p>
           <div className="flex items-center justify-between px-2 mb-1">
             <button
               onClick={() => setSpacesExpanded((prev) => !prev)}
-              className="flex items-center gap-1.5 flex-1 -mx-1 px-1 py-0.5 rounded hover:bg-sidebar-hover transition-colors"
+              className="flex items-center gap-1.5 flex-1 -mx-1 px-1 py-0.5 rounded hover:bg-sidebar-hover transition-colors min-w-0"
             >
               <ChevronDown
                 className={`w-3.5 h-3.5 text-sidebar-fg transition-transform ${spacesExpanded ? "" : "-rotate-90"}`}
               />
-              {/* Intitulé rattachant visuellement les espaces à l'équipe active */}
-              <p className="text-xs font-semibold text-sidebar-fg uppercase tracking-wider flex items-center gap-1.5 min-w-0">
-                <span>Espaces</span>
-                {currentOrg && (
-                  <>
-                    <span aria-hidden className="opacity-50">·</span>
-                    <span
-                      aria-hidden
-                      className="w-2 h-2 rounded-full shrink-0"
-                      style={{ background: currentOrg.color || "hsl(var(--primary))" }}
-                    />
-                    <span className="truncate normal-case tracking-normal font-medium">{currentOrg.name}</span>
-                  </>
-                )}
-              </p>
+              {/* Équipe active : intitulé plus marqué */}
+              <span
+                aria-hidden
+                className="w-2.5 h-2.5 rounded-full shrink-0"
+                style={{ background: currentOrg?.color || "hsl(var(--primary))" }}
+              />
+              <span className="text-sm font-semibold text-sidebar-fg-bright truncate">
+                {currentOrg?.name ?? "Espaces"}
+              </span>
             </button>
             <button
               onClick={() => { setSpacesExpanded(true); setAddingSpace(true); }}

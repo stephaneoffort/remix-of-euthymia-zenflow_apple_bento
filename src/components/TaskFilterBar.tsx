@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Filter, X, ChevronDown, Bookmark, Save, Trash2, Check, Plus } from 'lucide-react';
+import { Filter, X, ChevronDown, Bookmark, Save, Trash2, Check, Plus, Search } from 'lucide-react';
 import CreateTaskDialog from '@/components/CreateTaskDialog';
 import { useApp, AdvancedFilters } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
@@ -25,7 +25,7 @@ interface FilterPreset {
 }
 
 export default function TaskFilterBar() {
-  const { advancedFilters, setAdvancedFilters, teamMembers, tasks, allStatuses, getStatusLabel, spaces } = useApp();
+  const { advancedFilters, setAdvancedFilters, teamMembers, tasks, allStatuses, getStatusLabel, spaces, searchQuery, setSearchQuery } = useApp();
   const { teamMemberId } = useAuth();
   const queryClient = useQueryClient();
   const [openFilter, setOpenFilter] = useState<FilterType | null>(null);
@@ -138,6 +138,25 @@ export default function TaskFilterBar() {
         <span>Créer une tâche</span>
       </button>
       <CreateTaskDialog open={createOpen} onOpenChange={setCreateOpen} />
+
+      {/* Task search */}
+      <div className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-border bg-card focus-within:border-foreground/30 transition-colors min-w-[180px]">
+        <Search className="w-3 h-3 shrink-0 text-muted-foreground" />
+        <input
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          placeholder="Rechercher une tâche…"
+          aria-label="Rechercher une tâche"
+          className="flex-1 min-w-0 bg-transparent text-xs text-foreground outline-none placeholder:text-muted-foreground"
+        />
+        {searchQuery && (
+          <button onClick={() => setSearchQuery('')} aria-label="Effacer la recherche" className="text-muted-foreground hover:text-foreground">
+            <X className="w-3 h-3" />
+          </button>
+        )}
+      </div>
+
+
 
       {/* Presets button */}
       <Popover open={presetsOpen} onOpenChange={(o) => { setPresetsOpen(o); if (!o) setShowSaveInput(false); }}>

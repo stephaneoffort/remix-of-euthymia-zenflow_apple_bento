@@ -39,6 +39,7 @@ const GmailDiagnosticPage = lazyRetry(() => import("./pages/settings/GmailDiagno
 const OAuthConsent = lazyRetry(() => import("./pages/OAuthConsent.tsx"));
 const AuditLog = lazyRetry(() => import("./pages/AuditLog.tsx"));
 const Support = lazyRetry(() => import("./pages/Support.tsx"));
+const Profile = lazyRetry(() => import("./pages/Profile.tsx"));
 import SupportFab from "@/components/SupportFab";
 
 
@@ -199,6 +200,14 @@ const App = () => (
                         element={
                           <ProtectedRoute>
                             <AuditLog />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/profile"
+                        element={
+                          <ProtectedRoute>
+                            <Profile />
                           </ProtectedRoute>
                         }
                       />

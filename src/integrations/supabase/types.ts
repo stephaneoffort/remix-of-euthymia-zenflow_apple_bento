@@ -1702,6 +1702,71 @@ export type Database = {
         }
         Relationships: []
       }
+      member_invitations: {
+        Row: {
+          accepted_at: string | null
+          auth_user_id: string | null
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          invite_link: string | null
+          invited_by: string | null
+          job_role: string
+          link_type: string
+          member_id: string | null
+          name: string
+          org_id: string
+          revoked_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          auth_user_id?: string | null
+          created_at?: string
+          email: string
+          expires_at?: string
+          id?: string
+          invite_link?: string | null
+          invited_by?: string | null
+          job_role?: string
+          link_type?: string
+          member_id?: string | null
+          name: string
+          org_id: string
+          revoked_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          auth_user_id?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          invite_link?: string | null
+          invited_by?: string | null
+          job_role?: string
+          link_type?: string
+          member_id?: string | null
+          name?: string
+          org_id?: string
+          revoked_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_invitations_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       miro_attachments: {
         Row: {
           board_description: string | null

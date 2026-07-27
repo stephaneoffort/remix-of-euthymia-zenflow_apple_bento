@@ -52,7 +52,7 @@ export default function Install() {
             </div>
             <CardTitle className="text-xl">Déjà installée ✓</CardTitle>
             <CardDescription>
-              Euthymia est installée sur votre appareil. L'app se met à jour automatiquement.
+              ZenFlow est installée sur votre appareil. L'app se met à jour automatiquement.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -69,8 +69,8 @@ export default function Install() {
     <div className="min-h-screen bg-background p-4 sm:p-8">
       <div className="max-w-2xl mx-auto space-y-8">
         <div className="text-center space-y-3">
-          <img src="/pwa-192x192.png" alt="Euthymia" className="w-20 h-20 mx-auto rounded-2xl" />
-          <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground">Installer Euthymia</h1>
+          <img src="/pwa-192x192.png" alt="ZenFlow" className="w-20 h-20 mx-auto rounded-2xl" />
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground">Installer ZenFlow</h1>
           <p className="text-muted-foreground max-w-md mx-auto">
             Installez l'application sur votre appareil pour y accéder rapidement. Les mises à jour sont automatiques.
           </p>
@@ -139,7 +139,7 @@ export default function Install() {
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground space-y-2">
               <p>1. Ouvrir dans <strong>Chrome</strong> ou <strong>Edge</strong></p>
-              <p>2. Menu → <strong>« Installer Euthymia »</strong></p>
+              <p>2. Menu → <strong>« Installer ZenFlow »</strong></p>
               <p>3. Confirmer</p>
             </CardContent>
           </Card>

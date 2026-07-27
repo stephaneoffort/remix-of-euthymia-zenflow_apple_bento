@@ -148,7 +148,7 @@ export default function CsvTaskImport() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'euthymia-tasks-template.csv';
+    a.download = 'zenflow-tasks-template.csv';
     a.click();
     URL.revokeObjectURL(url);
   };

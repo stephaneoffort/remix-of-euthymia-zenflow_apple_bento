@@ -350,8 +350,8 @@ export default function Index() {
 
   if (!isQuickFilter) {
     if (project && parentSpace) {
-      // Euthymia > Space > Project
-      breadcrumbs.push({ label: "Euthymia", onClick: navigateToAll });
+      // ZenFlow > Space > Project
+      breadcrumbs.push({ label: "ZenFlow", onClick: navigateToAll });
       breadcrumbs.push({
         label: parentSpace.name,
         icon: parentSpace.icon,
@@ -359,8 +359,8 @@ export default function Index() {
       });
       breadcrumbs.push({ label: project.name, color: project.color });
     } else if (space) {
-      // Euthymia > Space
-      breadcrumbs.push({ label: "Euthymia", onClick: navigateToAll });
+      // ZenFlow > Space
+      breadcrumbs.push({ label: "ZenFlow", onClick: navigateToAll });
       breadcrumbs.push({ label: space.name, icon: space.icon });
     }
   }

@@ -274,7 +274,7 @@ export default function CalendarAccountsManager({ accounts, syncing, visibleAcco
                 <ol className="text-xs text-muted-foreground space-y-1.5 list-decimal list-inside">
                   <li>Va sur <a href="https://appleid.apple.com/account/manage" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:no-underline">appleid.apple.com</a></li>
                   <li>Connecte-toi → <strong>Sécurité</strong> → <strong>Mots de passe d'application</strong></li>
-                  <li>Crée un mot de passe pour « Euthymia Calendar »</li>
+                  <li>Crée un mot de passe pour « ZenFlow Calendar »</li>
                   <li>Utilise ton <strong>identifiant Apple</strong> (email) et ce <strong>mot de passe d'application</strong> ci-dessous</li>
                 </ol>
               </div>

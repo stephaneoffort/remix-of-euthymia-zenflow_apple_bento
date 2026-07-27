@@ -152,7 +152,7 @@ serve(async (req: Request) => {
         method: "POST",
         headers: miroHeaders,
         body: JSON.stringify({
-          name: name ?? "Nouveau board Euthymia",
+          name: name ?? "Nouveau board ZenFlow",
           description: description ?? "",
           policy: {
             permissionsPolicy: { collaborationToolsStartAccess: "all_editors", copyAccess: "team_editors", sharingAccess: "team_members_with_editing_rights" },

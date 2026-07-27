@@ -78,7 +78,7 @@ export default function BrevoContacts({ entityType, entityId, compact }: Props) 
       await sendTransactional(
         contact.email,
         `${contact.first_name ?? ''} ${contact.last_name ?? ''}`.trim(),
-        'Information depuis Euthymia',
+        'Information depuis ZenFlow',
         `<p>Bonjour ${contact.first_name ?? ''},</p><p>Merci pour votre inscription.</p>`
       );
       toast.success(`Email envoyé à ${contact.email}`);

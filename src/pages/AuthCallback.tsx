@@ -17,7 +17,7 @@ export default function AuthCallback() {
       if (redirected) return;
       redirected = true;
       setStatus('success');
-      toast.success('Email confirmé ! Bienvenue sur Euthymia.');
+      toast.success('Email confirmé ! Bienvenue sur ZenFlow.');
       setTimeout(() => navigate('/', { replace: true }), 1500);
     };
 

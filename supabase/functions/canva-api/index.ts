@@ -141,7 +141,7 @@ serve(async (req: Request) => {
         headers: canvaHeaders,
         body: JSON.stringify({
           design_type: { type: design_type ?? "doc" },
-          title: title ?? "Nouveau design Euthymia",
+          title: title ?? "Nouveau design ZenFlow",
         }),
       })
       const data = await res.json()

@@ -170,7 +170,7 @@ export default function Support() {
       conversation_id: data.id,
       role: "assistant",
       content:
-        "Bonjour 👋 Je suis l'assistant support d'Euthymia ZenFlow. Décris-moi le problème que tu rencontres (page concernée, message d'erreur, appareil…). Si nécessaire je préviendrai Stéphane, le concepteur.",
+        "Bonjour 👋 Je suis l'assistant support d'ZenFlow. Décris-moi le problème que tu rencontres (page concernée, message d'erreur, appareil…). Si nécessaire je préviendrai Stéphane, le concepteur.",
     });
     await loadConversations();
     setActiveId(data.id);

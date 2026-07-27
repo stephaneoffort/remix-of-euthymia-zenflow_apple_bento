@@ -516,6 +516,15 @@ function MembersPanel() {
             </div>
           );
         })}
+        <MemberProfileEditor
+          member={editorMember}
+          open={!!editorMember}
+          onOpenChange={(o) => { if (!o) setEditorMember(null); }}
+          onSaved={(updated) => {
+            setMembers(prev => prev.map(m => m.id === updated.id ? { ...m, ...updated } : m));
+            setEditorMember(null);
+          }}
+        />
       </CardContent>
     </Card>
   );

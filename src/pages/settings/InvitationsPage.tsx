@@ -16,7 +16,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { ArrowLeft, Copy, Check, RefreshCw, Ban, MailCheck, Clock, Search } from 'lucide-react';
+import { ArrowLeft, Copy, Check, RefreshCw, Ban, MailCheck, Clock, Search, Send } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
@@ -61,6 +61,7 @@ export default function InvitationsPage() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [target, setTarget] = useState<Invitation | null>(null);
   const [revoking, setRevoking] = useState(false);
+  const [resendingId, setResendingId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -97,6 +98,32 @@ export default function InvitationsPage() {
       setTimeout(() => setCopiedId(null), 2000);
     } catch {
       toast.error('Copie impossible, sélectionnez le lien manuellement');
+    }
+  };
+
+  const handleResend = async (inv: Invitation) => {
+    setResendingId(inv.id);
+    try {
+      const { data, error } = await supabase.functions.invoke('resend-invitation', {
+        body: { invitation_id: inv.id, redirectTo: `${window.location.origin}/` },
+      });
+      if (error) throw new Error(error.message);
+      if (data && data.success === false) throw new Error(data.error || 'Renvoi impossible');
+      if (data?.inviteLink) {
+        try {
+          await navigator.clipboard.writeText(data.inviteLink);
+          toast.success('Nouveau lien généré et copié (valable 1 h)');
+        } catch {
+          toast.success('Nouveau lien généré (valable 1 h)');
+        }
+      } else {
+        toast.success('Nouveau lien généré');
+      }
+      await load();
+    } catch (err: any) {
+      toast.error(err?.message || String(err));
+    } finally {
+      setResendingId(null);
     }
   };
 
@@ -193,6 +220,20 @@ export default function InvitationsPage() {
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
+                      {status !== 'accepted' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="gap-1.5"
+                          onClick={() => handleResend(inv)}
+                          disabled={resendingId === inv.id}
+                        >
+                          {resendingId === inv.id
+                            ? <RefreshCw className="w-4 h-4 animate-spin" />
+                            : <Send className="w-4 h-4" />}
+                          Renvoyer
+                        </Button>
+                      )}
                       {inv.invite_link && status === 'pending' && (
                         <Button size="sm" variant="outline" className="gap-1.5" onClick={() => handleCopy(inv)}>
                           {copiedId === inv.id ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}

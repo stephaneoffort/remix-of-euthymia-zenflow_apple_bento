@@ -30,6 +30,7 @@ interface CustomStatus {
 
 export default function Settings() {
   const { user, loading } = useAuth();
+  const { isSuperAdmin } = useOrg();
   const navigate = useNavigate();
   const location = useLocation();
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);

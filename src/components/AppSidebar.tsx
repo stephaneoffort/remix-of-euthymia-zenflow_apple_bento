@@ -127,6 +127,8 @@ const QUICK_FILTERS: { key: QuickFilter; label: string; icon: React.ReactNode }[
 const PROJECT_COLORS = ["#C9A84C", "#E2D08A", "#F5EFE0", "#D4915C", "#4A6FA5", "#3D8B7A", "#C47B7B", "#7B68AE"];
 
 export default function AppSidebar() {
+  // Logo personnalisé de l'utilisateur (repli automatique sur ZenFlow)
+  const { logoUrl: userLogoUrl } = useUserLogo();
   const {
     spaces,
     selectedProjectId,

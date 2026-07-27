@@ -205,6 +205,8 @@ function DashboardIcon() {
 }
 
 export default function SidebarNM() {
+  // Logo personnalisé de l'utilisateur (repli automatique sur ZenFlow)
+  const { logoUrl: userLogoUrl } = useUserLogo();
   const {
     spaces,
     projects,

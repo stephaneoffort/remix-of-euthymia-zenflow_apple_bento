@@ -101,8 +101,22 @@ export default function Settings() {
             <ShieldCheck className="w-4 h-4" />
             <span className="hidden sm:inline">Audit numérique</span>
           </Button>
+          {/* Administration des équipes — super-admins uniquement */}
+          {isSuperAdmin && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/settings/organizations')}
+              className="gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+              title="Gérer les équipes"
+            >
+              <Building2 className="w-4 h-4" />
+              <span className="hidden sm:inline">Équipes</span>
+            </Button>
+          )}
         </div>
       </header>
+
 
       <Tabs value={activeTab} onValueChange={setActiveTab} orientation="vertical" className="flex flex-row min-h-[calc(100vh-3.5rem)]">
         {/* Sidebar verticale */}

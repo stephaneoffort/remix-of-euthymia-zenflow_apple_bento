@@ -6,103 +6,176 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Verify the caller is authenticated and is an admin
+    // L'appelant doit être authentifié
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Non autorisé" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    if (!authHeader) return json({ error: "Non autorisé" }, 401);
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const anonKey = Deno.env.get("SUPABASE_PUBLISHABLE_KEY")!;
 
-    // Verify caller is admin using their JWT
     const callerClient = createClient(supabaseUrl, anonKey, {
       global: { headers: { Authorization: authHeader } },
     });
     const { data: { user: caller } } = await callerClient.auth.getUser();
-    if (!caller) {
-      return new Response(JSON.stringify({ error: "Non autorisé" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    if (!caller) return json({ error: "Non autorisé" }, 401);
+
+    const { email, name, role, redirectTo, org_id } = await req.json();
+
+    if (!email || !name || !role) {
+      return json({ error: "Email, nom et fonction sont requis" }, 400);
+    }
+    if (!org_id) {
+      return json({ error: "Équipe cible manquante" }, 400);
     }
 
-    // Check admin role
     const adminClient = createClient(supabaseUrl, serviceRoleKey);
+
+    // --- Contrôle d'accès : super-admin OU owner/admin de CETTE équipe ---
     const { data: roles } = await adminClient
       .from("user_roles")
       .select("role")
       .eq("user_id", caller.id)
       .eq("role", "admin");
+    const isSuperAdmin = !!roles && roles.length > 0;
 
-    if (!roles || roles.length === 0) {
-      return new Response(JSON.stringify({ error: "Accès réservé aux administrateurs" }), {
-        status: 403,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+    let allowed = isSuperAdmin;
+    if (!allowed) {
+      const { data: callerProfile } = await adminClient
+        .from("profiles")
+        .select("team_member_id")
+        .eq("id", caller.id)
+        .maybeSingle();
+
+      if (callerProfile?.team_member_id) {
+        const { data: orgRole } = await adminClient
+          .from("organization_members")
+          .select("role")
+          .eq("org_id", org_id)
+          .eq("member_id", callerProfile.team_member_id)
+          .maybeSingle();
+        allowed = orgRole?.role === "owner" || orgRole?.role === "admin";
+      }
+    }
+
+    if (!allowed) {
+      return json({ error: "Vous n'êtes pas administrateur de cette équipe" }, 403);
+    }
+
+    // Nom réel de l'équipe cible
+    const { data: org } = await adminClient
+      .from("organizations")
+      .select("id, name")
+      .eq("id", org_id)
+      .maybeSingle();
+    if (!org) return json({ error: "Équipe introuvable" }, 404);
+
+    const cleanEmail = String(email).trim().toLowerCase();
+
+    // --- CAS 1 : le membre existe déjà globalement -----------------------
+    const { data: existingMember } = await adminClient
+      .from("team_members")
+      .select("id, name")
+      .eq("email", cleanEmail)
+      .maybeSingle();
+
+    if (existingMember) {
+      const { data: alreadyIn } = await adminClient
+        .from("organization_members")
+        .select("member_id")
+        .eq("org_id", org_id)
+        .eq("member_id", existingMember.id)
+        .maybeSingle();
+
+      if (alreadyIn) {
+        return json({ error: `Ce membre fait déjà partie de l'équipe ${org.name}` }, 400);
+      }
+
+      const { error: addError } = await adminClient
+        .from("organization_members")
+        .insert({ org_id, member_id: existingMember.id, role: "member" });
+      if (addError) return json({ error: addError.message }, 400);
+
+      // Email d'information : lien de connexion vers l'application
+      try {
+        await adminClient.auth.admin.generateLink({
+          type: "magiclink",
+          email: cleanEmail,
+          options: { redirectTo: redirectTo || undefined },
+        });
+      } catch (_) {
+        // L'ajout à l'équipe reste valide même si l'email échoue
+      }
+
+      return json({
+        success: true,
+        memberId: existingMember.id,
+        orgName: org.name,
+        existing: true,
       });
     }
 
-    const { email, name, role, redirectTo } = await req.json();
-
-    if (!email || !name || !role) {
-      return new Response(JSON.stringify({ error: "Email, nom et fonction sont requis" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    // Create team member record
+    // --- CAS 2 : nouvel email --------------------------------------------
     const avatarColors = ["#6366f1", "#f43f5e", "#10b981", "#f59e0b", "#3b82f6", "#8b5cf6", "#ec4899", "#14b8a6"];
     const avatarColor = avatarColors[Math.floor(Math.random() * avatarColors.length)];
     const memberId = `tm_${crypto.randomUUID()}`;
 
+    // Attention : team_members.role = intitulé de poste (texte libre)
     const { error: memberError } = await adminClient.from("team_members").insert({
       id: memberId,
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      role: role.trim(),
+      name: String(name).trim(),
+      email: cleanEmail,
+      role: String(role).trim(),
       avatar_color: avatarColor,
     });
+    if (memberError) return json({ error: memberError.message }, 400);
 
-    if (memberError) {
-      return new Response(JSON.stringify({ error: memberError.message }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    // organization_members.role = niveau de permission
+    const { error: orgMemberError } = await adminClient
+      .from("organization_members")
+      .insert({ org_id, member_id: memberId, role: "member" });
+    if (orgMemberError) {
+      await adminClient.from("team_members").delete().eq("id", memberId);
+      return json({ error: orgMemberError.message }, 400);
     }
 
-    // Invite user via Supabase Auth (sends invitation email)
+    // Équipe active par défaut du nouvel arrivant
+    await adminClient
+      .from("member_active_org")
+      .upsert({ member_id: memberId, org_id }, { onConflict: "member_id" });
+
     const { data: inviteData, error: inviteError } = await adminClient.auth.admin.inviteUserByEmail(
-      email.trim().toLowerCase(),
+      cleanEmail,
       {
         redirectTo: redirectTo || undefined,
         data: {
-          full_name: name.trim(),
+          full_name: String(name).trim(),
           team_member_id: memberId,
+          org_id,
         },
       }
     );
 
     if (inviteError) {
-      // Clean up team member if invite fails
+      // Rollback complet des trois tables
+      await adminClient.from("member_active_org").delete().eq("member_id", memberId);
+      await adminClient.from("organization_members").delete().eq("member_id", memberId);
       await adminClient.from("team_members").delete().eq("id", memberId);
-      return new Response(JSON.stringify({ error: inviteError.message }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return json({ error: inviteError.message }, 400);
     }
 
-    // Link the new auth user to the team member via profiles
     if (inviteData?.user) {
       await adminClient.from("profiles").upsert({
         id: inviteData.user.id,
@@ -110,17 +183,14 @@ Deno.serve(async (req) => {
       });
     }
 
-    return new Response(
-      JSON.stringify({ success: true, memberId, userId: inviteData?.user?.id }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
-  } catch (err) {
-    return new Response(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    return json({
+      success: true,
+      memberId,
+      userId: inviteData?.user?.id,
+      orgName: org.name,
+      existing: false,
     });
+  } catch (err) {
+    return json({ error: err instanceof Error ? err.message : String(err) }, 500);
   }
 });

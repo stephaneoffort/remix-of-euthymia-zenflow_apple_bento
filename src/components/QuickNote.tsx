@@ -986,6 +986,11 @@ export function QuickNote() {
                 </SelectContent>
               </Select>
 
+              {/* Rappel programmé */}
+              <QuickNoteReminderPicker value={remindAt} onChange={setRemindAt} />
+
+
+
               <div className="flex-1" />
 
               <Button variant="ghost" size="sm" onClick={handleClose}>

@@ -880,13 +880,34 @@ export default function SidebarNM() {
         {/* ── ESPACES ── */}
         <div style={{ flex: 1, overflowY: "auto", padding: "0 16px 10px" }}>
           {isMobile ? (
-            <CollapsibleSection title="Espaces">
+            <CollapsibleSection title={currentOrg ? `Espaces · ${currentOrg.name}` : "Espaces"}>
               {spacesContent()}
             </CollapsibleSection>
           ) : (
             <>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <Lbl>Espaces</Lbl>
+                {/* Intitulé rattachant visuellement les espaces à l'équipe active */}
+                <Lbl>
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                    <span>Espaces</span>
+                    {currentOrg && (
+                      <>
+                        <span style={{ opacity: 0.5 }}>·</span>
+                        <span
+                          aria-hidden
+                          style={{
+                            width: 7,
+                            height: 7,
+                            borderRadius: "50%",
+                            background: currentOrg.color || NC.orange,
+                            display: "inline-block",
+                          }}
+                        />
+                        <span style={{ textTransform: "none", letterSpacing: 0.2 }}>{currentOrg.name}</span>
+                      </>
+                    )}
+                  </span>
+                </Lbl>
                 <button
                   style={{
                     width: 20,

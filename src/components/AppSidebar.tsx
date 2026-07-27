@@ -45,6 +45,7 @@ import {
   NotebookPen,
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import OrgSwitcher from "@/components/OrgSwitcher";
 import { SpaceIcon, SPACE_ICON_PRESETS } from "@/components/SpaceIcon";
 import SpaceIconPickerDialog from "@/components/SpaceIconPickerDialog";
 import {
@@ -728,6 +729,11 @@ export default function AppSidebar() {
             <PanelLeftClose className="w-4 h-4" />
           </button>
         </div>
+
+        {/* Sélecteur d'équipe (multi-équipes uniquement) */}
+        <OrgSwitcher onNavigate={handleNavClick} />
+
+
 
         {/* Dashboard button */}
         <div className="px-3 pt-3 pb-1">

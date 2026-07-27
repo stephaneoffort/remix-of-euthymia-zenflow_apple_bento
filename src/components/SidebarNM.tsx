@@ -232,8 +232,13 @@ export default function SidebarNM() {
   const isMobile = useIsMobile();
   const { totalUnread } = useChatNotifications();
   const { isOnline } = usePresence();
-  // Équipe active : sert uniquement à intituler la section Espaces
-  const { currentOrg } = useOrg();
+  // Équipe active + bascule vers une autre équipe
+  const { currentOrg, switchOrgAndOpenSpace, switching } = useOrg();
+  // Arborescence de navigation (métadonnées uniquement)
+  const { navOrgs } = useOrgNavTree();
+  const otherNavOrgs = navOrgs.filter((o) => o.id !== currentOrg?.id);
+  const [expandedNavOrgs, setExpandedNavOrgs] = useState<Set<string>>(new Set());
+  usePendingSpaceParam(useCallback((spaceId: string) => setSelectedSpaceId(spaceId), [setSelectedSpaceId]));
   const NC = useNMColors();
   const [openSpaces, setOpenSpaces] = useState<Set<string>>(new Set());
   const [draggedProjectId, setDraggedProjectId] = useState<string | null>(null);

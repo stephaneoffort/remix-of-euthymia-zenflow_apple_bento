@@ -36,6 +36,7 @@ const NumericAudit = lazyRetry(() => import("./pages/NumericAudit.tsx"));
 const SettingsIntegrationsPage = lazyRetry(() => import("./pages/settings/IntegrationsPage.tsx"));
 const OrganizationsPage = lazyRetry(() => import("./pages/settings/OrganizationsPage.tsx"));
 const GmailDiagnosticPage = lazyRetry(() => import("./pages/settings/GmailDiagnosticPage.tsx"));
+const InvitationsPage = lazyRetry(() => import("./pages/settings/InvitationsPage.tsx"));
 const OAuthConsent = lazyRetry(() => import("./pages/OAuthConsent.tsx"));
 const AuditLog = lazyRetry(() => import("./pages/AuditLog.tsx"));
 const Support = lazyRetry(() => import("./pages/Support.tsx"));
@@ -176,6 +177,14 @@ const App = () => (
                         element={
                           <ProtectedRoute>
                             <GmailDiagnosticPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/settings/invitations"
+                        element={
+                          <ProtectedRoute>
+                            <InvitationsPage />
                           </ProtectedRoute>
                         }
                       />

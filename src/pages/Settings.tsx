@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useApp } from '@/context/AppContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { Navigate, useNavigate, useLocation, Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown, Palette, BellRing, HardDrive, CalendarSync, ShieldCheck, Sparkles, FileText, ExternalLink, Building2, ImageUp } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown, Palette, BellRing, HardDrive, CalendarSync, ShieldCheck, Sparkles, FileText, ExternalLink, Building2, ImageUp, MailCheck } from 'lucide-react';
 import AppearanceSettings from '@/components/settings/AppearanceSettings';
 import { useOrg } from '@/context/OrgContext';
 import TaskTemplatesPanel from '@/components/settings/TaskTemplatesPanel';
@@ -377,8 +377,17 @@ function MembersPanel() {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-base">Gestion des membres</CardTitle>
-        <InviteMemberDialog onMemberAdded={handleMemberAdded} />
+        <div className="flex items-center gap-2">
+          <Button asChild size="sm" variant="outline" className="gap-1.5">
+            <Link to="/settings/invitations">
+              <MailCheck className="w-4 h-4" />
+              Invitations
+            </Link>
+          </Button>
+          <InviteMemberDialog onMemberAdded={handleMemberAdded} />
+        </div>
       </CardHeader>
+
       <CardContent className="space-y-2">
         {members.length === 0 && (
           <p className="text-sm text-muted-foreground">Aucun membre</p>

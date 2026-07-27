@@ -2,7 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import {
-  Mic, Square, Play, Pause, Send, NotebookPen, X, Trash2, Clock, Copy, FileText,
+  Mic, Square, Play, Pause, Send, NotebookPen, X, Trash2, Clock, Copy, FileText, BellRing, BellOff,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -14,6 +14,9 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { TranscriptionQualityBadge, type TranscriptionQuality } from '@/components/TranscriptionQualityBadge';
+import { QuickNoteReminderPicker, formatReminder } from '@/components/QuickNoteReminderPicker';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
+
 
 // ─── Transcription languages ──────────────────────────────────────────────────
 // ISO-639-1 codes (bare, no locale suffix) — Whisper/OpenAI STT accepts this format.

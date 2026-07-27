@@ -334,3 +334,103 @@ Deno.test("invite-member renvoie generate_link_failed sans rien créer", async (
     }
   }
 });
+
+Deno.test("invite-member refuse un appelant non autorisé sans rien créer", async () => {
+  const { data: orgs } = await admin.from("organizations").select("id").limit(1);
+  const orgId = orgs?.[0]?.id as string | undefined;
+  assert(orgId, "Aucune équipe disponible pour le test");
+
+  const targetEmail = `test-unauth-${crypto.randomUUID()}@zenflow-test.invalid`;
+
+  const call = (authorization?: string) =>
+    fetch(`${SUPABASE_URL}/functions/v1/invite-member`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: ANON_KEY,
+        ...(authorization ? { Authorization: authorization } : {}),
+      },
+      body: JSON.stringify({
+        email: targetEmail,
+        name: "Testeur Non Autorisé",
+        role: "Testeur",
+        org_id: orgId,
+        redirectTo: "http://localhost:8080",
+      }),
+    });
+
+  // Utilisateur légitime mais sans droits : compte Auth sans fiche membre
+  const outsiderEmail = `test-outsider-${crypto.randomUUID()}@zenflow-test.invalid`;
+  const { data: created, error: createError } = await admin.auth.admin.createUser({
+    email: outsiderEmail,
+    email_confirm: true,
+  });
+  assertEquals(createError, null);
+  const outsiderId = created?.user?.id as string | undefined;
+  assert(outsiderId, "Compte de test non créé");
+
+  const { data: linkData } = await admin.auth.admin.generateLink({
+    type: "magiclink",
+    email: outsiderEmail,
+  });
+  const anon = createClient(SUPABASE_URL, ANON_KEY, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+  const { data: outsiderSession } = await anon.auth.verifyOtp({
+    type: "magiclink",
+    token_hash: linkData!.properties!.hashed_token!,
+  });
+  const outsiderToken = outsiderSession?.session?.access_token;
+  assert(outsiderToken, "Session du compte non autorisé non obtenue");
+
+  try {
+    const cases: Array<{ label: string; auth?: string; code: string }> = [
+      { label: "aucun jeton", auth: undefined, code: "no_auth" },
+      { label: "jeton invalide", auth: "Bearer jeton-bidon", code: "no_auth" },
+      { label: "clé anonyme seule", auth: `Bearer ${ANON_KEY}`, code: "no_auth" },
+      { label: "compte sans droits", auth: `Bearer ${outsiderToken}`, code: "no_member_profile" },
+    ];
+
+    for (const c of cases) {
+      const response = await call(c.auth);
+      const body = await response.json();
+
+      assertEquals(response.status, 200, `Statut inattendu (${c.label})`);
+      assertEquals(body.success, false, `Invitation acceptée à tort (${c.label})`);
+      assertEquals(body.code, c.code, `Code inattendu (${c.label}) : ${JSON.stringify(body)}`);
+      assertEquals(body.inviteLink, undefined, `Lien renvoyé à tort (${c.label})`);
+      assertEquals(body.memberId, undefined, `memberId renvoyé à tort (${c.label})`);
+    }
+
+    // Aucune écriture en base, quelle que soit la tentative
+    const { data: members } = await admin
+      .from("team_members")
+      .select("id")
+      .in("email", [targetEmail, outsiderEmail]);
+    assertEquals(members?.length ?? 0, 0, "Ligne créée dans team_members par un appelant non autorisé");
+
+    const { data: named } = await admin
+      .from("team_members")
+      .select("id")
+      .eq("name", "Testeur Non Autorisé");
+    assertEquals(named?.length ?? 0, 0, "Fiche membre créée par un appelant non autorisé");
+
+    const { data: orgMembers } = await admin
+      .from("organization_members")
+      .select("member_id")
+      .eq("org_id", orgId!)
+      .in("member_id", (named ?? []).map((m) => m.id as string).concat("__none__"));
+    assertEquals(orgMembers?.length ?? 0, 0, "Ligne créée dans organization_members à tort");
+  } finally {
+    const { data: leftovers } = await admin
+      .from("team_members")
+      .select("id")
+      .in("email", [targetEmail, outsiderEmail]);
+    for (const m of leftovers ?? []) {
+      await admin.from("member_active_org").delete().eq("member_id", m.id as string);
+      await admin.from("organization_members").delete().eq("member_id", m.id as string);
+      await admin.from("team_members").delete().eq("id", m.id as string);
+    }
+    await admin.auth.admin.deleteUser(outsiderId!).catch(() => {});
+  }
+});

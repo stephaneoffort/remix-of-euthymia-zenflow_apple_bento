@@ -98,6 +98,13 @@ Deno.serve(async (req) => {
 
     const cleanEmail = String(email).trim().toLowerCase();
 
+    // Format d'e-mail : contrôlé avant toute écriture en base
+    const EMAIL_RE = /^[^\s@]+@[^\s@,;]+\.[a-z]{2,}$/i;
+    if (!EMAIL_RE.test(cleanEmail)) {
+      console.error("invite-member: email invalide");
+      return businessError("invalid_email", "Adresse e-mail invalide");
+    }
+
     // Génère un lien d'authentification sans dépendre de l'envoi d'e-mail
     const generate = async (type: "invite" | "magiclink", data?: Record<string, unknown>) => {
       const { data: linkData, error } = await adminClient.auth.admin.generateLink({

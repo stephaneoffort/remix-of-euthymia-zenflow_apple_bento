@@ -22,6 +22,10 @@ interface OrgContextType {
   isSuperAdmin: boolean;
   myRole: OrgRole | null;
   switchOrg: (orgId: string) => Promise<void>;
+  /** Bascule d'équipe puis ouverture directe d'un espace après rechargement */
+  switchOrgAndOpenSpace: (orgId: string, spaceId: string) => Promise<void>;
+  /** Vrai pendant la bascule (rechargement complet en cours) */
+  switching: boolean;
   loading: boolean;
   refresh: () => Promise<void>;
 }
@@ -36,6 +40,7 @@ export function OrgProvider({ children }: { children: React.ReactNode }) {
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [myRole, setMyRole] = useState<OrgRole | null>(null);
   const [loading, setLoading] = useState(true);
+  const [switching, setSwitching] = useState(false);
 
   const load = useCallback(async () => {
     if (!user) {
@@ -122,19 +127,63 @@ export function OrgProvider({ children }: { children: React.ReactNode }) {
   const switchOrg = useCallback(
     async (orgId: string) => {
       if (!teamMemberId) return;
-      await supabase
-        .from('member_active_org')
-        .upsert({ member_id: teamMemberId, org_id: orgId }, { onConflict: 'member_id' });
-      window.location.reload();
+      setSwitching(true);
+      try {
+        await supabase
+          .from('member_active_org')
+          .upsert({ member_id: teamMemberId, org_id: orgId }, { onConflict: 'member_id' });
+        window.location.reload();
+      } catch {
+        setSwitching(false);
+      }
+    },
+    [teamMemberId]
+  );
+
+  /**
+   * Bascule d'équipe avec ouverture d'un espace précis.
+   * L'espace cible transite par l'URL (?space=…) car le rechargement complet
+   * détruit tout état React.
+   */
+  const switchOrgAndOpenSpace = useCallback(
+    async (orgId: string, spaceId: string) => {
+      if (!teamMemberId) return;
+      setSwitching(true);
+      try {
+        await supabase
+          .from('member_active_org')
+          .upsert({ member_id: teamMemberId, org_id: orgId }, { onConflict: 'member_id' });
+        window.location.href = `/?space=${encodeURIComponent(spaceId)}`;
+      } catch {
+        setSwitching(false);
+      }
     },
     [teamMemberId]
   );
 
   return (
     <OrgContext.Provider
-      value={{ currentOrg, myOrgs, memberOrgIds, isSuperAdmin, myRole, switchOrg, loading, refresh: load }}
+      value={{
+        currentOrg,
+        myOrgs,
+        memberOrgIds,
+        isSuperAdmin,
+        myRole,
+        switchOrg,
+        switchOrgAndOpenSpace,
+        switching,
+        loading,
+        refresh: load,
+      }}
     >
       {children}
+      {/* Indicateur pendant la bascule : l'application se recharge entièrement */}
+      {switching && (
+        <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center gap-3 bg-background/80 backdrop-blur-sm">
+          <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+          <p className="text-sm text-muted-foreground">Changement d’équipe…</p>
+        </div>
+      )}
     </OrgContext.Provider>
   );
 }

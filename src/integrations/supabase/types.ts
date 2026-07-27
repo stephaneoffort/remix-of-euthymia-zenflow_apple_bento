@@ -2817,6 +2817,20 @@ export type Database = {
       }
       current_member_id: { Args: never; Returns: string }
       current_org_id: { Args: never; Returns: string }
+      get_org_nav_tree: {
+        Args: never
+        Returns: {
+          is_member: boolean
+          org_color: string
+          org_id: string
+          org_is_active: boolean
+          org_name: string
+          space_icon: string
+          space_id: string
+          space_name: string
+          space_sort_order: number
+        }[]
+      }
       get_user_by_email: {
         Args: { p_email: string }
         Returns: {

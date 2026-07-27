@@ -47,6 +47,8 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import OrgSwitcher from "@/components/OrgSwitcher";
 import { useOrg } from "@/context/OrgContext";
+import { useOrgNavTree } from "@/hooks/useOrgNavTree";
+import { usePendingSpaceParam } from "@/hooks/usePendingSpaceParam";
 import { SpaceIcon, SPACE_ICON_PRESETS } from "@/components/SpaceIcon";
 import SpaceIconPickerDialog from "@/components/SpaceIconPickerDialog";
 import {
@@ -292,7 +294,13 @@ export default function AppSidebar() {
   const [draggingProjectId, setDraggingProjectId] = useState<string | null>(null);
 
   // Équipe active : sert uniquement à intituler la section Espaces
-  const { currentOrg } = useOrg();
+  const { currentOrg, switchOrgAndOpenSpace, switching } = useOrg();
+  // Arborescence de navigation (métadonnées uniquement) des autres équipes accessibles
+  const { navOrgs } = useOrgNavTree();
+  const otherNavOrgs = navOrgs.filter((o) => o.id !== currentOrg?.id);
+  const [expandedNavOrgs, setExpandedNavOrgs] = useState<Set<string>>(new Set());
+  // Ouverture d'un espace demandée par une bascule d'équipe (?space=…)
+  usePendingSpaceParam(useCallback((spaceId: string) => setSelectedSpaceId(spaceId), [setSelectedSpaceId]));
 
   // Filter spaces based on access
   const visibleSpaces = spaces.filter((s) => canAccessSpace(s.id));
@@ -893,31 +901,28 @@ export default function AppSidebar() {
         <MessagesHubDialog open={messagesHubOpen} onOpenChange={setMessagesHubOpen} initialTile={messagesHubTile} />
         <CreateTaskDialog open={createTaskOpen} onOpenChange={setCreateTaskOpen} />
 
-        {/* Spaces & Projects */}
+        {/* Arborescence multi-équipes : équipe active dépliée, autres équipes en navigation seule */}
         <div className="flex-1 overflow-y-auto scrollbar-thin px-3 py-3">
+          <p className="text-xs font-semibold text-sidebar-fg uppercase tracking-wider px-2 mb-1.5">
+            Équipes
+          </p>
           <div className="flex items-center justify-between px-2 mb-1">
             <button
               onClick={() => setSpacesExpanded((prev) => !prev)}
-              className="flex items-center gap-1.5 flex-1 -mx-1 px-1 py-0.5 rounded hover:bg-sidebar-hover transition-colors"
+              className="flex items-center gap-1.5 flex-1 -mx-1 px-1 py-0.5 rounded hover:bg-sidebar-hover transition-colors min-w-0"
             >
               <ChevronDown
                 className={`w-3.5 h-3.5 text-sidebar-fg transition-transform ${spacesExpanded ? "" : "-rotate-90"}`}
               />
-              {/* Intitulé rattachant visuellement les espaces à l'équipe active */}
-              <p className="text-xs font-semibold text-sidebar-fg uppercase tracking-wider flex items-center gap-1.5 min-w-0">
-                <span>Espaces</span>
-                {currentOrg && (
-                  <>
-                    <span aria-hidden className="opacity-50">·</span>
-                    <span
-                      aria-hidden
-                      className="w-2 h-2 rounded-full shrink-0"
-                      style={{ background: currentOrg.color || "hsl(var(--primary))" }}
-                    />
-                    <span className="truncate normal-case tracking-normal font-medium">{currentOrg.name}</span>
-                  </>
-                )}
-              </p>
+              {/* Équipe active : intitulé plus marqué */}
+              <span
+                aria-hidden
+                className="w-2.5 h-2.5 rounded-full shrink-0"
+                style={{ background: currentOrg?.color || "hsl(var(--primary))" }}
+              />
+              <span className="text-sm font-semibold text-sidebar-fg-bright truncate">
+                {currentOrg?.name ?? "Espaces"}
+              </span>
             </button>
             <button
               onClick={() => { setSpacesExpanded(true); setAddingSpace(true); }}
@@ -1508,6 +1513,61 @@ export default function AppSidebar() {
             </SortableContext>
           </DndContext>
           </>)}
+
+          {/* Autres équipes : navigation seule (pas de glisser-déposer ni de menu contextuel) */}
+          {otherNavOrgs.map((org) => {
+            const open = expandedNavOrgs.has(org.id);
+            return (
+              <div key={org.id} className="mt-1">
+                <button
+                  onClick={() =>
+                    setExpandedNavOrgs((prev) => {
+                      const next = new Set(prev);
+                      next.has(org.id) ? next.delete(org.id) : next.add(org.id);
+                      return next;
+                    })
+                  }
+                  className="w-full flex items-center gap-1.5 px-1 py-1 rounded-md hover:bg-sidebar-hover transition-colors min-w-0"
+                >
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 text-sidebar-fg transition-transform ${open ? "" : "-rotate-90"}`}
+                  />
+                  <span
+                    aria-hidden
+                    className="w-2.5 h-2.5 rounded-full shrink-0"
+                    style={{ background: org.color || "hsl(var(--primary))" }}
+                  />
+                  <span className="text-sm text-sidebar-fg truncate">{org.name}</span>
+                  {/* Signalement discret pour un super-admin non membre */}
+                  {!org.isMember && (
+                    <span className="text-[10px] uppercase tracking-wide text-sidebar-fg/50 shrink-0">
+                      admin
+                    </span>
+                  )}
+                </button>
+                {open && (
+                  <div className="ml-5">
+                    {org.spaces.length === 0 ? (
+                      <p className="text-xs text-sidebar-fg/60 px-2 py-1.5">Aucun espace dans cette équipe</p>
+                    ) : (
+                      org.spaces.map((s) => (
+                        <button
+                          key={s.id}
+                          onClick={() => switchOrgAndOpenSpace(org.id, s.id)}
+                          disabled={switching}
+                          title={`Basculer vers ${org.name} et ouvrir ${s.name}`}
+                          className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg/75 hover:text-sidebar-fg hover:bg-sidebar-hover transition-colors disabled:opacity-50"
+                        >
+                          <SpaceIcon value={s.icon || undefined} size="xs" />
+                          <span className="flex-1 min-w-0 truncate text-left">{s.name}</span>
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
 
         {/* Quick Note */}

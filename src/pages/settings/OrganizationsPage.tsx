@@ -22,6 +22,47 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ArrowLeft, Building2, Plus, Archive, RotateCcw, Users, Pencil, X } from 'lucide-react';
+import { ORG_COLOR_PALETTE, ORG_COLOR_FALLBACK, nextAvailableOrgColor } from '@/lib/orgColors';
+
+/** Sélecteur de couleur d'équipe : pastilles de la palette + couleur libre */
+function OrgColorPicker({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (color: string) => void;
+}) {
+  return (
+    <div className="space-y-2">
+      <div className="flex flex-wrap gap-2">
+        {ORG_COLOR_PALETTE.map((c) => (
+          <button
+            key={c.value}
+            type="button"
+            title={c.label}
+            aria-label={c.label}
+            onClick={() => onChange(c.value)}
+            className={`w-7 h-7 rounded-full transition-transform ${
+              value.toLowerCase() === c.value.toLowerCase()
+                ? 'ring-2 ring-offset-2 ring-offset-popover ring-foreground scale-110'
+                : 'hover:scale-105'
+            }`}
+            style={{ backgroundColor: c.value }}
+          />
+        ))}
+      </div>
+      <div className="flex items-center gap-2">
+        <Input
+          type="color"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="h-8 w-14 p-1"
+        />
+        <span className="text-xs text-muted-foreground">Couleur libre</span>
+      </div>
+    </div>
+  );
+}
 
 interface OrgRow {
   id: string;
@@ -59,7 +100,11 @@ export default function OrganizationsPage() {
   // Création / édition
   const [createOpen, setCreateOpen] = useState(false);
   const [editOrg, setEditOrg] = useState<OrgRow | null>(null);
-  const [form, setForm] = useState({ name: '', color: '#6366f1', logo_url: '' });
+  const [form, setForm] = useState<{ name: string; color: string; logo_url: string }>({
+    name: '',
+    color: ORG_COLOR_PALETTE[0].value,
+    logo_url: '',
+  });
   const [saving, setSaving] = useState(false);
 
   // Gestion des membres
@@ -155,7 +200,7 @@ export default function OrganizationsPage() {
 
       toast.success('Équipe créée');
       setCreateOpen(false);
-      setForm({ name: '', color: '#6366f1', logo_url: '' });
+      setForm({ name: '', color: ORG_COLOR_PALETTE[0].value, logo_url: '' });
       await loadOrgs();
       await refresh();
     } finally {
@@ -286,7 +331,8 @@ export default function OrganizationsPage() {
           </div>
           <Button
             onClick={() => {
-              setForm({ name: '', color: '#6366f1', logo_url: '' });
+              // Couleur par défaut : première de la palette non utilisée
+              setForm({ name: '', color: nextAvailableOrgColor(orgs.map((o) => o.color)), logo_url: '' });
               setCreateOpen(true);
             }}
           >
@@ -332,7 +378,7 @@ export default function OrganizationsPage() {
                   size="sm"
                   onClick={() => {
                     setEditOrg(org);
-                    setForm({ name: org.name, color: org.color || '#6366f1', logo_url: org.logo_url || '' });
+                    setForm({ name: org.name, color: org.color || ORG_COLOR_PALETTE[0].value, logo_url: org.logo_url || '' });
                   }}
                 >
                   <Pencil className="w-3.5 h-3.5 mr-1.5" /> Modifier
@@ -374,12 +420,7 @@ export default function OrganizationsPage() {
             </div>
             <div className="space-y-1.5">
               <Label>Couleur</Label>
-              <Input
-                type="color"
-                value={form.color}
-                onChange={(e) => setForm({ ...form, color: e.target.value })}
-                className="h-10 w-20 p-1"
-              />
+              <OrgColorPicker value={form.color} onChange={(c) => setForm({ ...form, color: c })} />
             </div>
             <div className="space-y-1.5">
               <Label>Logo (URL, optionnel)</Label>
@@ -414,12 +455,7 @@ export default function OrganizationsPage() {
             </div>
             <div className="space-y-1.5">
               <Label>Couleur</Label>
-              <Input
-                type="color"
-                value={form.color}
-                onChange={(e) => setForm({ ...form, color: e.target.value })}
-                className="h-10 w-20 p-1"
-              />
+              <OrgColorPicker value={form.color} onChange={(c) => setForm({ ...form, color: c })} />
             </div>
           </div>
           <DialogFooter>

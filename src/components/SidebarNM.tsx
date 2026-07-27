@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useChatNotifications } from "@/hooks/useChatNotifications";
 import { usePresence } from "@/hooks/usePresence";
 import logoEuthymia from "@/assets/logo-euthymia.png";
+import OrgSwitcher from "@/components/OrgSwitcher";
 
 /* ─── Tokens ─── */
 const BG = "#EDE6DA";
@@ -657,6 +658,11 @@ export default function SidebarNM() {
             </button>
           </div>
         </div>
+
+        {/* Sélecteur d'équipe (multi-équipes uniquement) */}
+        <OrgSwitcher />
+
+
 
         {/* ── BREADCRUMB ── */}
         {!isMobile && (selSpace || selProject) && (

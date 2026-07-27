@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" role="img" aria-label="ZenFlow">
-  <!-- Fond plein conteneur -->
-  <rect x="0" y="0" width="96" height="96" rx="22" fill="#334155"/>
-  <!-- Trois modules blancs formant un L -->
-  <rect x="17" y="27" width="26" height="26" rx="7" fill="#FFFFFF"/>
-  <rect x="17" y="57" width="26" height="26" rx="7" fill="#FFFFFF"/>
-  <rect x="47" y="57" width="26" height="26" rx="7" fill="#FFFFFF"/>
+  <!-- Fond conteneur gris clair -->
+  <rect x="0" y="0" width="96" height="96" rx="22" fill="#E2E8F0"/>
+  <!-- Trois modules ardoise formant un L -->
+  <rect x="23" y="26.5" width="22" height="22" rx="6" fill="#334155"/>
+  <rect x="23" y="52.5" width="22" height="22" rx="6" fill="#334155"/>
+  <rect x="49" y="52.5" width="22" height="22" rx="6" fill="#334155"/>
   <!-- Pièce en mouvement -->
-  <rect x="53" y="13" width="26" height="26" rx="7" fill="#F4633A"/>
+  <rect x="51" y="21.5" width="22" height="22" rx="6" fill="#F4633A"/>
 </svg>

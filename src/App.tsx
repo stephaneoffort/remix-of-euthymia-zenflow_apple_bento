@@ -13,6 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import InstallPrompt from "@/components/InstallPrompt";
 import { useRealtimeNotifications } from "@/hooks/useRealtimeNotifications";
 import { QuickNote } from "@/components/QuickNote";
+import GlobalTaskSearch from "@/components/GlobalTaskSearch";
 
 const lazyRetry = (fn: () => Promise<any>) =>
   lazy(() => fn().catch(() => {
@@ -126,6 +127,7 @@ const App = () => (
                 element={
                   <OrgProvider>
                   <AppProvider>
+                    <GlobalTaskSearch />
                     <Routes>
                       <Route
                         path="/chat"

@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown, Palette, BellRing, HardDrive, CalendarSync, ShieldCheck, Sparkles, FileText, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown, Palette, BellRing, HardDrive, CalendarSync, ShieldCheck, Sparkles, FileText, ExternalLink, Building2 } from 'lucide-react';
+import { useOrg } from '@/context/OrgContext';
 import TaskTemplatesPanel from '@/components/settings/TaskTemplatesPanel';
 import { useThemeMode, PALETTE_META, TYPE_META, type ThemePalette, type TypeVariant } from '@/context/ThemeContext';
 import DataExportImport from '@/components/DataExportImport';
@@ -29,6 +30,7 @@ interface CustomStatus {
 
 export default function Settings() {
   const { user, loading } = useAuth();
+  const { isSuperAdmin } = useOrg();
   const navigate = useNavigate();
   const location = useLocation();
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
@@ -101,8 +103,22 @@ export default function Settings() {
             <ShieldCheck className="w-4 h-4" />
             <span className="hidden sm:inline">Audit numérique</span>
           </Button>
+          {/* Administration des équipes — super-admins uniquement */}
+          {isSuperAdmin && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/settings/organizations')}
+              className="gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+              title="Gérer les équipes"
+            >
+              <Building2 className="w-4 h-4" />
+              <span className="hidden sm:inline">Équipes</span>
+            </Button>
+          )}
         </div>
       </header>
+
 
       <Tabs value={activeTab} onValueChange={setActiveTab} orientation="vertical" className="flex flex-row min-h-[calc(100vh-3.5rem)]">
         {/* Sidebar verticale */}

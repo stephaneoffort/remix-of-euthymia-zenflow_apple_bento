@@ -6,6 +6,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
+import { OrgProvider } from "@/context/OrgContext";
 import { AppProvider } from "@/context/AppContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -32,6 +33,7 @@ const ResetPassword = lazyRetry(() => import("./pages/ResetPassword.tsx"));
 const AuthCallback = lazyRetry(() => import("./pages/AuthCallback.tsx"));
 const NumericAudit = lazyRetry(() => import("./pages/NumericAudit.tsx"));
 const SettingsIntegrationsPage = lazyRetry(() => import("./pages/settings/IntegrationsPage.tsx"));
+const OrganizationsPage = lazyRetry(() => import("./pages/settings/OrganizationsPage.tsx"));
 const GmailDiagnosticPage = lazyRetry(() => import("./pages/settings/GmailDiagnosticPage.tsx"));
 const OAuthConsent = lazyRetry(() => import("./pages/OAuthConsent.tsx"));
 const AuditLog = lazyRetry(() => import("./pages/AuditLog.tsx"));
@@ -122,6 +124,7 @@ const App = () => (
               <Route
                 path="/*"
                 element={
+                  <OrgProvider>
                   <AppProvider>
                     <Routes>
                       <Route
@@ -149,6 +152,14 @@ const App = () => (
                         }
                       />
                       <Route
+                        path="/settings/organizations"
+                        element={
+                          <ProtectedRoute>
+                            <OrganizationsPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
                         path="/settings/integrations"
                         element={
                           <ProtectedRoute>
@@ -156,6 +167,7 @@ const App = () => (
                           </ProtectedRoute>
                         }
                       />
+
                       <Route
                         path="/settings/gmail-diagnostic"
                         element={
@@ -210,6 +222,7 @@ const App = () => (
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </AppProvider>
+                  </OrgProvider>
                 }
               />
             </Routes>

@@ -3000,6 +3000,7 @@ export type Database = {
         Args: { _member_id: string; _space_id: string }
         Returns: boolean
       }
+      channel_in_my_org: { Args: { _channel_id: string }; Returns: boolean }
       current_member_id: { Args: never; Returns: string }
       current_org_id: { Args: never; Returns: string }
       delete_email: {

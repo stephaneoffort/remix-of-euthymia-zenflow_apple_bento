@@ -297,8 +297,11 @@ export default function InvitationsPage() {
             <MailCheck className="w-8 h-8 mx-auto mb-3 text-muted-foreground" />
             <p className="text-foreground font-medium">Aucune invitation</p>
             <p className="text-sm text-muted-foreground">
-              Les invitations générées depuis Paramètres → Membres apparaîtront ici.
+              {hasFilters
+                ? 'Aucune invitation ne correspond à ces critères.'
+                : 'Les invitations générées depuis Paramètres → Membres apparaîtront ici.'}
             </p>
+
           </Card>
         ) : (
           <div className="space-y-3">

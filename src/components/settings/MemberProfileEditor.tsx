@@ -1,11 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Loader2, Upload, Trash2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import AvatarUploader from './AvatarUploader';
 
 export interface EditableMember {
   id: string;
@@ -22,8 +23,6 @@ export const AVATAR_COLORS = [
   '#155E75', '#F4633A', '#64748b', '#0ea5e9',
 ];
 
-const TEN_YEARS = 60 * 60 * 24 * 3650;
-
 interface Props {
   member: EditableMember | null;
   open: boolean;
@@ -38,8 +37,6 @@ export default function MemberProfileEditor({ member, open, onOpenChange, onSave
   const [color, setColor] = useState(AVATAR_COLORS[0]);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!member) return;
@@ -49,37 +46,6 @@ export default function MemberProfileEditor({ member, open, onOpenChange, onSave
     setColor(member.avatarColor || AVATAR_COLORS[0]);
     setAvatarUrl(member.avatarUrl ?? null);
   }, [member, open]);
-
-  const handleUpload = async (file: File) => {
-    if (!member) return;
-    if (!file.type.startsWith('image/')) {
-      toast.error('Veuillez choisir une image');
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image trop lourde (5 Mo max)');
-      return;
-    }
-    setUploading(true);
-    try {
-      const { data: auth } = await supabase.auth.getUser();
-      const uid = auth.user?.id;
-      if (!uid) throw new Error('Session expirée');
-      const ext = file.name.split('.').pop()?.toLowerCase() || 'png';
-      const path = `${uid}/${member.id}-${Date.now()}.${ext}`;
-      const { error: upErr } = await supabase.storage.from('avatars').upload(path, file, { upsert: true });
-      if (upErr) throw upErr;
-      const { data: signed, error: signErr } = await supabase.storage.from('avatars').createSignedUrl(path, TEN_YEARS);
-      if (signErr) throw signErr;
-      setAvatarUrl(signed?.signedUrl ?? null);
-      toast.success('Photo chargée — pensez à enregistrer');
-    } catch (err: any) {
-      toast.error(err.message || "Échec de l'envoi de l'image");
-    } finally {
-      setUploading(false);
-      if (fileRef.current) fileRef.current.value = '';
-    }
-  };
 
   const handleSave = async () => {
     if (!member) return;
@@ -130,37 +96,13 @@ export default function MemberProfileEditor({ member, open, onOpenChange, onSave
         </DialogHeader>
 
         <div className="space-y-4">
-          <div className="flex items-center gap-4">
-            {avatarUrl ? (
-              <img src={avatarUrl} alt={name} className="w-16 h-16 rounded-full object-cover" />
-            ) : (
-              <div
-                className="w-16 h-16 rounded-full flex items-center justify-center text-lg font-bold text-white"
-                style={{ backgroundColor: color }}
-              >
-                {initials}
-              </div>
-            )}
-            <div className="flex flex-col gap-2">
-              <input
-                ref={fileRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={e => { const f = e.target.files?.[0]; if (f) handleUpload(f); }}
-              />
-              <Button type="button" variant="outline" size="sm" disabled={uploading} onClick={() => fileRef.current?.click()}>
-                {uploading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Upload className="w-4 h-4 mr-2" />}
-                Changer la photo
-              </Button>
-              {avatarUrl && (
-                <Button type="button" variant="ghost" size="sm" className="text-destructive" onClick={() => setAvatarUrl(null)}>
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Retirer la photo
-                </Button>
-              )}
-            </div>
-          </div>
+          <AvatarUploader
+            memberId={member?.id ?? 'new'}
+            value={avatarUrl}
+            onChange={setAvatarUrl}
+            fallbackColor={color}
+            initials={initials}
+          />
 
           <div className="space-y-2">
             <Label htmlFor="member-name">Nom</Label>

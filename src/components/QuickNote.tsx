@@ -837,6 +837,15 @@ export function QuickNote() {
                         <p className="text-sm text-foreground whitespace-pre-wrap break-words leading-relaxed">
                           {n.text}
                         </p>
+                        {/* Rappel programmé sur la note */}
+                        {n.remindAt && (
+                          <div className="mt-2 inline-flex items-center gap-1.5 text-[11px] px-2 py-1 rounded-full bg-primary/10 border border-primary/25 text-primary">
+                            <BellRing className="w-3 h-3" />
+                            {n.remindedAt
+                              ? `Rappel envoyé le ${formatReminder(new Date(n.remindAt))}`
+                              : `Rappel : ${formatReminder(new Date(n.remindAt))}`}
+                          </div>
+                        )}
                         <div className="mt-2 flex items-center justify-between gap-2">
                           <div className="flex items-center gap-1.5 min-w-0">
                             <span className="text-[10px] text-muted-foreground tabular-nums">
@@ -851,6 +860,7 @@ export function QuickNote() {
                               {langLabel(n.transcribeLang)}
                             </span>
                           </div>
+
                           <div className="flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
                             <button
                               onClick={() => copyNote(n.text)}

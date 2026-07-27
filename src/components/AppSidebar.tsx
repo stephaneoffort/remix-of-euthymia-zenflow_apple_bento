@@ -43,7 +43,9 @@ import {
   LifeBuoy,
   Palette,
   NotebookPen,
+  Search as SearchIcon,
 } from "lucide-react";
+import { openGlobalTaskSearch } from "@/components/GlobalTaskSearch";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import OrgSwitcher from "@/components/OrgSwitcher";
 import { useOrg } from "@/context/OrgContext";

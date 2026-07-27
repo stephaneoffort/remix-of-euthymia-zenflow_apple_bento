@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/compone
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, X } from 'lucide-react';
 import { StatusCircle } from '@/components/TaskBadges';
-import SpaceIcon from '@/components/SpaceIcon';
+import { SpaceIcon } from '@/components/SpaceIcon';
 
 const GLOBAL_SEARCH_EVENT = 'zenflow:global-task-search';
 

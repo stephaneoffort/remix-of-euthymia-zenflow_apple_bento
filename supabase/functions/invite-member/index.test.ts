@@ -264,3 +264,73 @@ Deno.test("invite-member ne crée pas de doublon pour un membre déjà existant"
     }
   }
 });
+
+Deno.test("invite-member renvoie generate_link_failed sans rien créer", async () => {
+  const accessToken = await getAdminAccessToken();
+
+  const { data: orgs } = await admin.from("organizations").select("id").limit(1);
+  const orgId = orgs?.[0]?.id as string | undefined;
+  assert(orgId, "Aucune équipe disponible pour le test");
+
+  // Adresse au format valide mais refusée par le service d'authentification
+  // (partie locale trop longue) : la génération du lien échoue à coup sûr.
+  const email = `${"a".repeat(250)}@zenflow-test.invalid`;
+
+  const response = await fetch(`${SUPABASE_URL}/functions/v1/invite-member`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      apikey: ANON_KEY,
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({
+      email,
+      name: "Testeur Lien Impossible",
+      role: "Testeur",
+      org_id: orgId,
+      redirectTo: "http://localhost:8080",
+    }),
+  });
+
+  const body = await response.json();
+
+  try {
+    // Erreur MÉTIER : HTTP 200 + code explicite
+    assertEquals(response.status, 200, `Statut inattendu : ${JSON.stringify(body)}`);
+    assertEquals(body.success, false);
+    assertEquals(body.code, "generate_link_failed", `Corps inattendu : ${JSON.stringify(body)}`);
+    assert(typeof body.error === "string" && body.error.length > 0, "Message d'erreur absent");
+    assertEquals(body.memberId, undefined);
+    assertEquals(body.inviteLink, undefined);
+
+    // Aucune écriture : la génération du lien précède les insertions
+    const { data: members } = await admin
+      .from("team_members")
+      .select("id")
+      .eq("email", email.toLowerCase());
+    assertEquals(members?.length ?? 0, 0, "Ligne créée dans team_members malgré l'échec");
+
+    const { data: named } = await admin
+      .from("team_members")
+      .select("id")
+      .eq("name", "Testeur Lien Impossible");
+    assertEquals(named?.length ?? 0, 0, "Fiche membre créée malgré l'échec");
+
+    const { data: orgMembers } = await admin
+      .from("organization_members")
+      .select("member_id")
+      .eq("org_id", orgId!)
+      .in("member_id", (named ?? []).map((m) => m.id as string).concat("__none__"));
+    assertEquals(orgMembers?.length ?? 0, 0, "Ligne créée dans organization_members malgré l'échec");
+  } finally {
+    const { data: leftovers } = await admin
+      .from("team_members")
+      .select("id")
+      .eq("email", email.toLowerCase());
+    for (const m of leftovers ?? []) {
+      await admin.from("member_active_org").delete().eq("member_id", m.id as string);
+      await admin.from("organization_members").delete().eq("member_id", m.id as string);
+      await admin.from("team_members").delete().eq("id", m.id as string);
+    }
+  }
+});

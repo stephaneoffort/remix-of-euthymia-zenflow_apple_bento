@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { sanitizeRichText } from '@/lib/sanitizeHtml';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { useApp } from '@/context/AppContext';
@@ -92,7 +93,7 @@ export default function MentionsPanel() {
                       </span>
                     </div>
                     <p className="text-sm text-foreground/80 line-clamp-2 mb-2"
-                       dangerouslySetInnerHTML={{ __html: m.content }} />
+                       dangerouslySetInnerHTML={{ __html: sanitizeRichText(m.content) }} />
                     {task && (
                       <div className="flex items-center gap-1 text-xs text-primary opacity-70 group-hover:opacity-100">
                         <MessageSquare className="w-3 h-3" />

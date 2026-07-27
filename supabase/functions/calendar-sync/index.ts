@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { safeFetch } from "../_shared/safe-url.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -38,13 +39,17 @@ async function refreshGoogleToken(account: any): Promise<string> {
   return data.access_token;
 }
 
-// ─── RESILIENT FETCH WITH RETRY ───
+// ─── RESILIENT FETCH WITH RETRY (protégé contre le SSRF) ───
+// Toutes les URLs (y compris caldav_url / ics_url fournies par l'utilisateur)
+// sont validées : https uniquement, pas de réseau privé/loopback/link-local,
+// et les redirections sont revalidées à chaque saut.
 async function fetchWithRetry(url: string, options: RequestInit, retries = 3): Promise<Response> {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
-      return await fetch(url, options);
+      return await safeFetch(url, options, { allowWebcal: true });
     } catch (err) {
       const msg = String(err);
+      if (msg.includes("non autorisé") || msg.includes("non autorisée") || msg.includes("URL invalide")) throw err;
       const isTransient = msg.includes("close_notify") || msg.includes("tls handshake eof") || msg.includes("connection error");
       if (!isTransient || attempt === retries) throw err;
       console.warn(`Fetch attempt ${attempt} failed (transient), retrying in ${attempt * 500}ms...`);
@@ -938,7 +943,7 @@ Deno.serve(async (req) => {
       else if (isCalDav) connected = await caldavTest(account);
       else if (isCalDav) connected = await caldavTest(account);
       else if (provider === "ics") {
-        try { const r = await fetch(account.ics_url, { method: "HEAD" }); connected = r.ok; }
+        try { const r = await safeFetch(account.ics_url, { method: "HEAD" }, { allowWebcal: true }); connected = r.ok; }
         catch { connected = false; }
       }
       return new Response(

@@ -1,4 +1,5 @@
 import React, { useEffect, useCallback, useRef, useState, forwardRef, useImperativeHandle } from 'react';
+import { sanitizeRichText } from '@/lib/sanitizeHtml';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
@@ -651,7 +652,7 @@ export function RichTextDisplay({ content, className = '' }: { content: string; 
   return (
     <div
       className={`prose prose-sm dark:prose-invert max-w-none [&>p]:my-1 [&>ul]:my-1 [&>ol]:my-1 [&_a]:text-primary [&_a]:underline ${className}`}
-      dangerouslySetInnerHTML={{ __html: content }}
+      dangerouslySetInnerHTML={{ __html: sanitizeRichText(content) }}
     />
   );
 }

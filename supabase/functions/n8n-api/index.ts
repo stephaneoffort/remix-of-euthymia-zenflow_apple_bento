@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { safeFetch, assertSafeExternalUrl } from "../_shared/safe-url.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
@@ -35,7 +36,9 @@ async function n8nFetch(
   init: RequestInit = {},
 ): Promise<Response> {
   const url = `${normalizeInstanceUrl(instanceUrl)}/api/v1${path}`;
-  return fetch(url, {
+  // safeFetch valide l'URL (https, pas de réseau privé/loopback/metadata) et
+  // revalide chaque redirection : protection contre le SSRF.
+  return safeFetch(url, {
     ...init,
     headers: {
       "X-N8N-API-KEY": apiKey,
@@ -140,6 +143,12 @@ serve(async (req) => {
         }
 
         const normalizedUrl = normalizeInstanceUrl(instance_url);
+        // Refuse d'enregistrer une URL pointant vers un réseau interne.
+        try {
+          await assertSafeExternalUrl(normalizedUrl);
+        } catch (e) {
+          return json({ error: e instanceof Error ? e.message : "URL invalide" }, 400);
+        }
 
         // Upsert manuel (pas de UNIQUE sur user_id)
         const { data: existing } = await db

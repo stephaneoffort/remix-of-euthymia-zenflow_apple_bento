@@ -30,6 +30,15 @@ function offsetLabel(key: string): string {
   return key;
 }
 
+/** Tronque proprement à ~max caractères sans couper un mot en plein milieu. */
+function truncateWords(text: string, max: number): string {
+  const clean = text.trim().replace(/\s+/g, " ");
+  if (clean.length <= max) return clean;
+  const cut = clean.slice(0, max);
+  const lastSpace = cut.lastIndexOf(" ");
+  return (lastSpace > max * 0.5 ? cut.slice(0, lastSpace) : cut).trimEnd() + "…";
+}
+
 
 // Convert base64url or base64 string to Uint8Array using atob
 function b64urlToUint8Array(str: string): Uint8Array {

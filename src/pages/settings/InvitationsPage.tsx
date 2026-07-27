@@ -211,15 +211,84 @@ export default function InvitationsPage() {
           </Button>
         </div>
 
-        <div className="relative">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            className="pl-9"
-            placeholder="Rechercher par nom, e-mail ou équipe…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+        <div className="space-y-3">
+          <div className="relative">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              className="pl-9"
+              placeholder="Rechercher par nom, e-mail, fonction ou équipe…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <Select value={orgFilter} onValueChange={setOrgFilter}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Toutes les équipes" />
+              </SelectTrigger>
+              <SelectContent className="bg-popover text-popover-foreground">
+                <SelectItem value="all">Toutes les équipes</SelectItem>
+                {orgOptions.map((o) => (
+                  <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[170px]">
+                <SelectValue placeholder="Tous les statuts" />
+              </SelectTrigger>
+              <SelectContent className="bg-popover text-popover-foreground">
+                <SelectItem value="all">Tous les statuts</SelectItem>
+                <SelectItem value="pending">En cours</SelectItem>
+                <SelectItem value="expired">Expirée</SelectItem>
+                <SelectItem value="accepted">Acceptée</SelectItem>
+                <SelectItem value="revoked">Révoquée</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn('justify-start gap-2 font-normal', !dateRange?.from && 'text-muted-foreground')}
+                >
+                  <CalendarIcon className="w-4 h-4" />
+                  {dateRange?.from
+                    ? dateRange.to
+                      ? `${format(dateRange.from, 'd MMM yyyy', { locale: fr })} → ${format(dateRange.to, 'd MMM yyyy', { locale: fr })}`
+                      : format(dateRange.from, 'd MMM yyyy', { locale: fr })
+                    : 'Plage de dates'}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 bg-popover text-popover-foreground" align="start">
+                <Calendar
+                  mode="range"
+                  selected={dateRange}
+                  onSelect={setDateRange}
+                  numberOfMonths={2}
+                  locale={fr}
+                  weekStartsOn={1}
+                  initialFocus
+                  className={cn('p-3 pointer-events-auto')}
+                />
+              </PopoverContent>
+            </Popover>
+
+            {hasFilters && (
+              <Button variant="ghost" size="sm" className="gap-1.5" onClick={resetFilters}>
+                <X className="w-4 h-4" />
+                Réinitialiser
+              </Button>
+            )}
+
+            <span className="text-sm text-muted-foreground ml-auto">
+              {filtered.length} résultat{filtered.length > 1 ? 's' : ''}
+            </span>
+          </div>
         </div>
+
 
         {loading ? (
           <p className="text-sm text-muted-foreground">Chargement…</p>

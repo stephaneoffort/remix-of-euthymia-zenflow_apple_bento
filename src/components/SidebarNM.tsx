@@ -12,6 +12,8 @@ import { usePresence } from "@/hooks/usePresence";
 import logoEuthymia from "@/assets/logo-euthymia.png";
 import OrgSwitcher from "@/components/OrgSwitcher";
 import { useOrg } from "@/context/OrgContext";
+import { useOrgNavTree } from "@/hooks/useOrgNavTree";
+import { usePendingSpaceParam } from "@/hooks/usePendingSpaceParam";
 
 /* ─── Tokens ─── */
 const BG = "#EDE6DA";
@@ -932,6 +934,88 @@ export default function SidebarNM() {
               {spacesContent()}
             </>
           )}
+
+          {/* Autres équipes accessibles : navigation seule */}
+          {otherNavOrgs.map((org) => {
+            const open = expandedNavOrgs.has(org.id);
+            return (
+              <div key={org.id} style={{ marginTop: 8 }}>
+                <button
+                  onClick={() =>
+                    setExpandedNavOrgs((prev) => {
+                      const next = new Set(prev);
+                      next.has(org.id) ? next.delete(org.id) : next.add(org.id);
+                      return next;
+                    })
+                  }
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    padding: "5px 6px",
+                    border: "none",
+                    background: "transparent",
+                    cursor: "pointer",
+                    color: NC.text,
+                    fontSize: 12.5,
+                    fontWeight: 600,
+                  }}
+                >
+                  <span style={{ fontSize: 9, opacity: 0.7 }}>{open ? "▼" : "▶"}</span>
+                  <span
+                    aria-hidden
+                    style={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: "50%",
+                      background: org.color || NC.orange,
+                      display: "inline-block",
+                    }}
+                  />
+                  <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {org.name}
+                  </span>
+                </button>
+                {open && (
+                  <div style={{ marginLeft: 16 }}>
+                    {org.spaces.length === 0 ? (
+                      <p style={{ fontSize: 11, color: NC.light, padding: "4px 6px" }}>
+                        Aucun espace dans cette équipe
+                      </p>
+                    ) : (
+                      org.spaces.map((s) => (
+                        <button
+                          key={s.id}
+                          disabled={switching}
+                          onClick={() => switchOrgAndOpenSpace(org.id, s.id)}
+                          title={`Basculer vers ${org.name} et ouvrir ${s.name}`}
+                          style={{
+                            width: "100%",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 8,
+                            padding: "5px 6px",
+                            border: "none",
+                            background: "transparent",
+                            cursor: switching ? "wait" : "pointer",
+                            color: NC.light,
+                            fontSize: 12.5,
+                            textAlign: "left",
+                          }}
+                        >
+                          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            {s.name}
+                          </span>
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
 
           {/* Archives */}
           {archiveCount > 0 && (

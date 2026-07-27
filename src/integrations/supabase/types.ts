@@ -1965,6 +1965,7 @@ export type Database = {
           id: string
           is_archived: boolean
           name: string
+          org_id: string
           sort_order: number
           space_id: string
         }
@@ -1973,6 +1974,7 @@ export type Database = {
           id: string
           is_archived?: boolean
           name: string
+          org_id?: string
           sort_order?: number
           space_id: string
         }
@@ -1981,10 +1983,18 @@ export type Database = {
           id?: string
           is_archived?: boolean
           name?: string
+          org_id?: string
           sort_order?: number
           space_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "projects_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "projects_space_id_fkey"
             columns: ["space_id"]
@@ -2334,22 +2344,32 @@ export type Database = {
         Row: {
           id: string
           name: string
+          org_id: string
           project_id: string
           sort_order: number
         }
         Insert: {
           id: string
           name: string
+          org_id?: string
           project_id: string
           sort_order?: number
         }
         Update: {
           id?: string
           name?: string
+          org_id?: string
           project_id?: string
           sort_order?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "task_lists_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "task_lists_project_id_fkey"
             columns: ["project_id"]
@@ -2497,6 +2517,7 @@ export type Database = {
           id: string
           is_milestone: boolean | null
           list_id: string
+          org_id: string
           parent_task_id: string | null
           priority: string
           progress: number | null
@@ -2524,6 +2545,7 @@ export type Database = {
           id?: string
           is_milestone?: boolean | null
           list_id: string
+          org_id?: string
           parent_task_id?: string | null
           priority?: string
           progress?: number | null
@@ -2551,6 +2573,7 @@ export type Database = {
           id?: string
           is_milestone?: boolean | null
           list_id?: string
+          org_id?: string
           parent_task_id?: string | null
           priority?: string
           progress?: number | null
@@ -2573,6 +2596,13 @@ export type Database = {
             columns: ["list_id"]
             isOneToOne: false
             referencedRelation: "task_lists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
           {
@@ -2812,6 +2842,9 @@ export type Database = {
       }
       is_super_admin: { Args: never; Returns: boolean }
       is_team_linked: { Args: { _user_id: string }; Returns: boolean }
+      project_in_my_org: { Args: { _project_id: string }; Returns: boolean }
+      space_in_my_org: { Args: { _space_id: string }; Returns: boolean }
+      task_in_my_org: { Args: { _task_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

@@ -91,11 +91,12 @@ export default function InviteMemberDialog({ onMemberAdded }: InviteMemberDialog
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Mail className="w-5 h-5 text-primary" />
-            Inviter par email
+            Inviter dans {activeOrg?.name ?? '…'}
           </DialogTitle>
           <DialogDescription>
-            Un email d'invitation sera envoyé au nouveau membre pour qu'il puisse se connecter.
+            Un email d'invitation sera envoyé au nouveau membre pour qu'il rejoigne l'équipe{activeOrg ? ` ${activeOrg.name}` : ''}.
           </DialogDescription>
+
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 pt-2">
           <div className="space-y-2">

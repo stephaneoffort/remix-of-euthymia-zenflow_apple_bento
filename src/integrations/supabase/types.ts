@@ -2826,6 +2826,10 @@ export type Database = {
       }
       current_member_id: { Args: never; Returns: string }
       current_org_id: { Args: never; Returns: string }
+      entity_in_my_org: {
+        Args: { _entity_id: string; _entity_type: string }
+        Returns: boolean
+      }
       get_org_nav_tree: {
         Args: never
         Returns: {

@@ -2039,6 +2039,8 @@ export type Database = {
           created_at: string
           id: string
           org_id: string
+          remind_at: string | null
+          reminded_at: string | null
           text: string
           transcribe_lang: string
           updated_at: string
@@ -2048,6 +2050,8 @@ export type Database = {
           created_at?: string
           id?: string
           org_id?: string
+          remind_at?: string | null
+          reminded_at?: string | null
           text: string
           transcribe_lang?: string
           updated_at?: string
@@ -2057,6 +2061,8 @@ export type Database = {
           created_at?: string
           id?: string
           org_id?: string
+          remind_at?: string | null
+          reminded_at?: string | null
           text?: string
           transcribe_lang?: string
           updated_at?: string

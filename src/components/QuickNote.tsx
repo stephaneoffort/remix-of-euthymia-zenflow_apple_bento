@@ -2,7 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import {
-  Mic, Square, Play, Pause, Send, NotebookPen, X, Trash2, Clock, Copy, FileText,
+  Mic, Square, Play, Pause, Send, NotebookPen, X, Trash2, Clock, Copy, FileText, BellRing, BellOff,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -14,6 +14,9 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { TranscriptionQualityBadge, type TranscriptionQuality } from '@/components/TranscriptionQualityBadge';
+import { QuickNoteReminderPicker, formatReminder } from '@/components/QuickNoteReminderPicker';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
+
 
 // ─── Transcription languages ──────────────────────────────────────────────────
 // ISO-639-1 codes (bare, no locale suffix) — Whisper/OpenAI STT accepts this format.
@@ -140,7 +143,31 @@ function bestAudioBitrate(mime: string): number {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-interface SavedNote { id: string; text: string; createdAt: string; transcribeLang: string; }
+interface SavedNote {
+  id: string;
+  text: string;
+  createdAt: string;
+  transcribeLang: string;
+  /** Rappel programmé (ISO) ou null. */
+  remindAt: string | null;
+  /** Horodatage de l'envoi effectif du rappel, ou null s'il n'est pas encore parti. */
+  remindedAt: string | null;
+}
+
+/** Colonnes systématiquement lues pour une note. */
+const NOTE_COLS = 'id, text, created_at, transcribe_lang, remind_at, reminded_at';
+
+function mapNote(n: any): SavedNote {
+  return {
+    id: n.id,
+    text: n.text,
+    createdAt: n.created_at,
+    transcribeLang: n.transcribe_lang || 'auto',
+    remindAt: n.remind_at ?? null,
+    remindedAt: n.reminded_at ?? null,
+  };
+}
+
 
 function langLabel(code: string): string {
   return TRANSCRIPTION_LANGS.find(l => l.code === code)?.label ?? code;
@@ -153,7 +180,7 @@ function readLocalNotes(): SavedNote[] {
 }
 
 export function QuickNote() {
-  const { user } = useAuth();
+  const { user, teamMemberId } = useAuth();
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<'compose' | 'list'>('compose');
   const [text, setText] = useState('');
@@ -166,6 +193,50 @@ export function QuickNote() {
   const [members, setMembers] = useState<Member[]>([]);
   const [channels, setChannels] = useState<Channel[]>([]);
   const [savedNotes, setSavedNotes] = useState<SavedNote[]>([]);
+  // Rappel programmé sur la note en cours de rédaction.
+  const [remindAt, setRemindAt] = useState<Date | null>(null);
+  const remindAtRef = useRef<Date | null>(null);
+  useEffect(() => { remindAtRef.current = remindAt; }, [remindAt]);
+
+  // État des notifications push : sans abonnement actif, aucun rappel ne partira.
+  const {
+    isSupported: pushSupported,
+    isSubscribed: pushSubscribed,
+    subscribe: pushSubscribe,
+  } = usePushNotifications(teamMemberId);
+  const [pushBusy, setPushBusy] = useState(false);
+
+  const enablePush = async () => {
+    setPushBusy(true);
+    const res = await pushSubscribe();
+    setPushBusy(false);
+    if (res.ok) {
+      toast.success('Notifications activées sur cet appareil');
+    } else if (res.reason === 'permission_denied') {
+      toast.error('Notifications refusées', { description: 'Autorisez-les dans les réglages du navigateur.' });
+    } else {
+      toast.error("Impossible d'activer les notifications");
+    }
+  };
+
+  /** Met à jour le rappel d'une note existante (reprogrammation = reminded_at remis à NULL). */
+  const updateNoteReminder = async (id: string, next: Date | null) => {
+    const prev = savedNotes;
+    setSavedNotes(prev.map(n => n.id === id
+      ? { ...n, remindAt: next ? next.toISOString() : null, remindedAt: null }
+      : n));
+    const { error } = await db
+      .from('quick_notes')
+      .update({ remind_at: next ? next.toISOString() : null, reminded_at: null })
+      .eq('id', id);
+    if (error) {
+      setSavedNotes(prev);
+      toast.error('Impossible de mettre à jour le rappel');
+      return;
+    }
+    toast.success(next ? `Rappel : ${formatReminder(next)}` : 'Rappel supprimé');
+  };
+
   const [transcribeLang, setTranscribeLang] = useState<string>(() => {
     try { return localStorage.getItem(LANG_STORAGE_KEY) || 'fr'; } catch { return 'fr'; }
   });
@@ -214,7 +285,7 @@ export function QuickNote() {
     if (!user) return;
     const { data, error } = await db
       .from('quick_notes')
-      .select('id, text, created_at, transcribe_lang')
+      .select(NOTE_COLS)
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
       .limit(200);
@@ -222,7 +293,7 @@ export function QuickNote() {
       console.error('[QuickNote] fetch failed', error);
       return;
     }
-    setSavedNotes((data || []).map((n: any) => ({ id: n.id, text: n.text, createdAt: n.created_at, transcribeLang: n.transcribe_lang || 'auto' })));
+    setSavedNotes((data || []).map(mapNote));
   }, [user]);
 
   // ── One-shot migration of localStorage notes to Supabase ────────────────
@@ -268,13 +339,13 @@ export function QuickNote() {
             const n: any = payload.new;
             setSavedNotes(prev => prev.some(x => x.id === n.id)
               ? prev
-              : [{ id: n.id, text: n.text, createdAt: n.created_at, transcribeLang: n.transcribe_lang || 'auto' }, ...prev]);
+              : [mapNote(n), ...prev]);
           } else if (payload.eventType === 'DELETE') {
             const oldId = (payload.old as any).id;
             setSavedNotes(prev => prev.filter(x => x.id !== oldId));
           } else if (payload.eventType === 'UPDATE') {
             const n: any = payload.new;
-            setSavedNotes(prev => prev.map(x => x.id === n.id ? { id: n.id, text: n.text, createdAt: n.created_at, transcribeLang: n.transcribe_lang || 'auto' } : x));
+            setSavedNotes(prev => prev.map(x => x.id === n.id ? mapNote(n) : x));
           }
         },
       )
@@ -503,15 +574,13 @@ export function QuickNote() {
         const noteText = text.trim();
         const { data: inserted, error: insErr } = await db
           .from('quick_notes')
-          .insert({ user_id: user.id, text: noteText, transcribe_lang: transcribeLang })
-          .select('id, text, created_at, transcribe_lang')
+          .insert({ user_id: user.id, text: noteText, transcribe_lang: transcribeLang, remind_at: remindAt ? remindAt.toISOString() : null })
+          .select(NOTE_COLS)
           .single();
         if (insErr) throw insErr;
-        setSavedNotes(prev => [
-          { id: inserted.id, text: inserted.text, createdAt: inserted.created_at, transcribeLang: inserted.transcribe_lang || 'auto' },
-          ...prev,
-        ]);
-        toast.success('Note sauvegardée');
+        setSavedNotes(prev => [mapNote(inserted), ...prev]);
+        toast.success(remindAt ? `Note sauvegardée · rappel ${formatReminder(remindAt)}` : 'Note sauvegardée');
+        setRemindAt(null);
         setText('');
         setAudioUrl(null);
         setLiveTranscript('');
@@ -537,8 +606,8 @@ export function QuickNote() {
     if (draft && !hasIntent && user) {
       // Fire-and-forget autosave so we never lose the draft.
       db.from('quick_notes')
-        .insert({ user_id: user.id, text: draft, transcribe_lang: transcribeLangRef.current })
-        .select('id, text, created_at, transcribe_lang')
+        .insert({ user_id: user.id, text: draft, transcribe_lang: transcribeLangRef.current, remind_at: remindAtRef.current ? remindAtRef.current.toISOString() : null })
+        .select(NOTE_COLS)
         .single()
         .then(({ data, error }: any) => {
           if (error) {
@@ -546,15 +615,13 @@ export function QuickNote() {
             return;
           }
           if (data) {
-            setSavedNotes(prev => [
-              { id: data.id, text: data.text, createdAt: data.created_at, transcribeLang: data.transcribe_lang || 'auto' },
-              ...prev,
-            ]);
+            setSavedNotes(prev => [mapNote(data), ...prev]);
           }
           toast.success('Note sauvegardée automatiquement');
         });
     }
     setText('');
+    setRemindAt(null);
     setAudioUrl(null);
     setLiveTranscript('');
     setRecordSecs(0);
@@ -770,6 +837,15 @@ export function QuickNote() {
                         <p className="text-sm text-foreground whitespace-pre-wrap break-words leading-relaxed">
                           {n.text}
                         </p>
+                        {/* Rappel programmé sur la note */}
+                        {n.remindAt && (
+                          <div className="mt-2 inline-flex items-center gap-1.5 text-[11px] px-2 py-1 rounded-full bg-primary/10 border border-primary/25 text-primary">
+                            <BellRing className="w-3 h-3" />
+                            {n.remindedAt
+                              ? `Rappel envoyé le ${formatReminder(new Date(n.remindAt))}`
+                              : `Rappel : ${formatReminder(new Date(n.remindAt))}`}
+                          </div>
+                        )}
                         <div className="mt-2 flex items-center justify-between gap-2">
                           <div className="flex items-center gap-1.5 min-w-0">
                             <span className="text-[10px] text-muted-foreground tabular-nums">
@@ -784,7 +860,13 @@ export function QuickNote() {
                               {langLabel(n.transcribeLang)}
                             </span>
                           </div>
+
                           <div className="flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+                            <QuickNoteReminderPicker
+                              compact
+                              value={n.remindAt ? new Date(n.remindAt) : null}
+                              onChange={(d) => updateNoteReminder(n.id, d)}
+                            />
                             <button
                               onClick={() => copyNote(n.text)}
                               className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
@@ -792,6 +874,7 @@ export function QuickNote() {
                             >
                               <Copy className="w-3.5 h-3.5" />
                             </button>
+
                             <button
                               onClick={() => { setText(n.text); setTranscribeLang(n.transcribeLang || 'auto'); setTab('compose'); }}
                               className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
@@ -816,9 +899,45 @@ export function QuickNote() {
             )}
           </div>
 
+          {/* Bandeau rappel + avertissement notifications (compose only) */}
+          {tab === 'compose' && remindAt && (
+            <div className="px-4 pt-3 shrink-0 space-y-2">
+              <div className="flex items-center gap-2 text-xs px-2.5 py-1.5 rounded-lg bg-primary/10 border border-primary/25 text-primary">
+                <BellRing className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">Rappel : {formatReminder(remindAt)}</span>
+                <button
+                  onClick={() => setRemindAt(null)}
+                  className="ml-auto p-1 rounded hover:bg-primary/15"
+                  title="Retirer le rappel"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              {(!pushSupported || !pushSubscribed) && (
+                <div className="flex items-start gap-2 text-xs px-2.5 py-2 rounded-lg bg-destructive/10 border border-destructive/25 text-destructive">
+                  <BellOff className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                  <div className="flex-1">
+                    Les notifications ne sont pas activées sur cet appareil, le rappel ne pourra pas vous être envoyé.
+                    {pushSupported && (
+                      <button
+                        onClick={enablePush}
+                        disabled={pushBusy}
+                        className="ml-1 underline font-medium disabled:opacity-60"
+                      >
+                        {pushBusy ? 'Activation…' : 'Activer les notifications'}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Action bar (compose only) */}
           {tab === 'compose' && (
             <div className="px-4 pb-4 pt-3 border-t border-border flex items-center gap-2 shrink-0">
+
+
 
               {/* Record / Stop */}
               <button
@@ -866,6 +985,11 @@ export function QuickNote() {
                   ))}
                 </SelectContent>
               </Select>
+
+              {/* Rappel programmé */}
+              <QuickNoteReminderPicker value={remindAt} onChange={setRemindAt} />
+
+
 
               <div className="flex-1" />
 

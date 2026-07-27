@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 58 61" width="58" height="61" role="img" aria-label="ZenFlow">
-  <!-- Version une seule encre : la couleur suit le contexte -->
+  <!-- Variante une encre : réservée à l'impression et aux fonds colorés -->
   <rect x="4" y="9" width="22" height="22" rx="6" fill="currentColor"/>
   <rect x="4" y="35" width="22" height="22" rx="6" fill="currentColor"/>
   <rect x="30" y="35" width="22" height="22" rx="6" fill="currentColor"/>

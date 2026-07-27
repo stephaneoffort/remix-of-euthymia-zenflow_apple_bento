@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
-import defaultLogo from '@/assets/logo-zenflow.png';
+import defaultLogo from '@/assets/logo-zenflow.svg';
 
 /** Bucket privé contenant les logos personnalisés (un dossier par utilisateur) */
 export const USER_LOGOS_BUCKET = 'user-logos';

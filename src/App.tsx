@@ -181,6 +181,14 @@ const App = () => (
                         }
                       />
                       <Route
+                        path="/settings/invitations"
+                        element={
+                          <ProtectedRoute>
+                            <InvitationsPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
                         path="/settings"
                         element={
                           <ProtectedRoute>

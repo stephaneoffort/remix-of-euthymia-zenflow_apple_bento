@@ -180,7 +180,7 @@ function readLocalNotes(): SavedNote[] {
 }
 
 export function QuickNote() {
-  const { user } = useAuth();
+  const { user, teamMemberId } = useAuth();
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<'compose' | 'list'>('compose');
   const [text, setText] = useState('');
@@ -193,6 +193,50 @@ export function QuickNote() {
   const [members, setMembers] = useState<Member[]>([]);
   const [channels, setChannels] = useState<Channel[]>([]);
   const [savedNotes, setSavedNotes] = useState<SavedNote[]>([]);
+  // Rappel programmé sur la note en cours de rédaction.
+  const [remindAt, setRemindAt] = useState<Date | null>(null);
+  const remindAtRef = useRef<Date | null>(null);
+  useEffect(() => { remindAtRef.current = remindAt; }, [remindAt]);
+
+  // État des notifications push : sans abonnement actif, aucun rappel ne partira.
+  const {
+    isSupported: pushSupported,
+    isSubscribed: pushSubscribed,
+    subscribe: pushSubscribe,
+  } = usePushNotifications(teamMemberId);
+  const [pushBusy, setPushBusy] = useState(false);
+
+  const enablePush = async () => {
+    setPushBusy(true);
+    const res = await pushSubscribe();
+    setPushBusy(false);
+    if (res.ok) {
+      toast.success('Notifications activées sur cet appareil');
+    } else if (res.reason === 'permission_denied') {
+      toast.error('Notifications refusées', { description: 'Autorisez-les dans les réglages du navigateur.' });
+    } else {
+      toast.error("Impossible d'activer les notifications");
+    }
+  };
+
+  /** Met à jour le rappel d'une note existante (reprogrammation = reminded_at remis à NULL). */
+  const updateNoteReminder = async (id: string, next: Date | null) => {
+    const prev = savedNotes;
+    setSavedNotes(prev.map(n => n.id === id
+      ? { ...n, remindAt: next ? next.toISOString() : null, remindedAt: null }
+      : n));
+    const { error } = await db
+      .from('quick_notes')
+      .update({ remind_at: next ? next.toISOString() : null, reminded_at: null })
+      .eq('id', id);
+    if (error) {
+      setSavedNotes(prev);
+      toast.error('Impossible de mettre à jour le rappel');
+      return;
+    }
+    toast.success(next ? `Rappel : ${formatReminder(next)}` : 'Rappel supprimé');
+  };
+
   const [transcribeLang, setTranscribeLang] = useState<string>(() => {
     try { return localStorage.getItem(LANG_STORAGE_KEY) || 'fr'; } catch { return 'fr'; }
   });

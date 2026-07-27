@@ -16,9 +16,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { ArrowLeft, Copy, Check, RefreshCw, Ban, MailCheck, Clock, Search, Send } from 'lucide-react';
-import { format } from 'date-fns';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils';
+import type { DateRange } from 'react-day-picker';
+import { ArrowLeft, Copy, Check, RefreshCw, Ban, MailCheck, Clock, Search, Send, CalendarIcon, X } from 'lucide-react';
+import { format, startOfDay, endOfDay } from 'date-fns';
 import { fr } from 'date-fns/locale';
+
 
 interface Invitation {
   id: string;
@@ -58,6 +64,9 @@ export default function InvitationsPage() {
   const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [orgFilter, setOrgFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [target, setTarget] = useState<Invitation | null>(null);
   const [revoking, setRevoking] = useState(false);
@@ -76,16 +85,48 @@ export default function InvitationsPage() {
 
   useEffect(() => { load(); }, [load]);
 
+  const orgOptions = useMemo(() => {
+    const map = new Map<string, string>();
+    invitations.forEach((i) => {
+      if (i.org_id) map.set(i.org_id, i.organizations?.name ?? 'Équipe sans nom');
+    });
+    return Array.from(map, ([id, name]) => ({ id, name })).sort((a, b) => a.name.localeCompare(b.name));
+  }, [invitations]);
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return invitations;
-    return invitations.filter(
-      (i) =>
-        i.email.toLowerCase().includes(q) ||
-        i.name.toLowerCase().includes(q) ||
-        (i.organizations?.name ?? '').toLowerCase().includes(q),
-    );
-  }, [invitations, search]);
+    const from = dateRange?.from ? startOfDay(dateRange.from).getTime() : null;
+    const to = dateRange?.to ? endOfDay(dateRange.to).getTime() : dateRange?.from ? endOfDay(dateRange.from).getTime() : null;
+
+    return invitations.filter((i) => {
+      if (q) {
+        const match =
+          i.email.toLowerCase().includes(q) ||
+          i.name.toLowerCase().includes(q) ||
+          (i.job_role ?? '').toLowerCase().includes(q) ||
+          (i.organizations?.name ?? '').toLowerCase().includes(q);
+        if (!match) return false;
+      }
+      if (orgFilter !== 'all' && i.org_id !== orgFilter) return false;
+      if (statusFilter !== 'all' && computeStatus(i) !== statusFilter) return false;
+      if (from || to) {
+        const created = new Date(i.created_at).getTime();
+        if (from && created < from) return false;
+        if (to && created > to) return false;
+      }
+      return true;
+    });
+  }, [invitations, search, orgFilter, statusFilter, dateRange]);
+
+  const hasFilters = search.trim() !== '' || orgFilter !== 'all' || statusFilter !== 'all' || !!dateRange?.from;
+
+  const resetFilters = () => {
+    setSearch('');
+    setOrgFilter('all');
+    setStatusFilter('all');
+    setDateRange(undefined);
+  };
+
 
   const pendingCount = invitations.filter((i) => computeStatus(i) === 'pending').length;
 
@@ -170,15 +211,84 @@ export default function InvitationsPage() {
           </Button>
         </div>
 
-        <div className="relative">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            className="pl-9"
-            placeholder="Rechercher par nom, e-mail ou équipe…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+        <div className="space-y-3">
+          <div className="relative">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              className="pl-9"
+              placeholder="Rechercher par nom, e-mail, fonction ou équipe…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <Select value={orgFilter} onValueChange={setOrgFilter}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Toutes les équipes" />
+              </SelectTrigger>
+              <SelectContent className="bg-popover text-popover-foreground">
+                <SelectItem value="all">Toutes les équipes</SelectItem>
+                {orgOptions.map((o) => (
+                  <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[170px]">
+                <SelectValue placeholder="Tous les statuts" />
+              </SelectTrigger>
+              <SelectContent className="bg-popover text-popover-foreground">
+                <SelectItem value="all">Tous les statuts</SelectItem>
+                <SelectItem value="pending">En cours</SelectItem>
+                <SelectItem value="expired">Expirée</SelectItem>
+                <SelectItem value="accepted">Acceptée</SelectItem>
+                <SelectItem value="revoked">Révoquée</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn('justify-start gap-2 font-normal', !dateRange?.from && 'text-muted-foreground')}
+                >
+                  <CalendarIcon className="w-4 h-4" />
+                  {dateRange?.from
+                    ? dateRange.to
+                      ? `${format(dateRange.from, 'd MMM yyyy', { locale: fr })} → ${format(dateRange.to, 'd MMM yyyy', { locale: fr })}`
+                      : format(dateRange.from, 'd MMM yyyy', { locale: fr })
+                    : 'Plage de dates'}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 bg-popover text-popover-foreground" align="start">
+                <Calendar
+                  mode="range"
+                  selected={dateRange}
+                  onSelect={setDateRange}
+                  numberOfMonths={2}
+                  locale={fr}
+                  weekStartsOn={1}
+                  initialFocus
+                  className={cn('p-3 pointer-events-auto')}
+                />
+              </PopoverContent>
+            </Popover>
+
+            {hasFilters && (
+              <Button variant="ghost" size="sm" className="gap-1.5" onClick={resetFilters}>
+                <X className="w-4 h-4" />
+                Réinitialiser
+              </Button>
+            )}
+
+            <span className="text-sm text-muted-foreground ml-auto">
+              {filtered.length} résultat{filtered.length > 1 ? 's' : ''}
+            </span>
+          </div>
         </div>
+
 
         {loading ? (
           <p className="text-sm text-muted-foreground">Chargement…</p>
@@ -187,8 +297,11 @@ export default function InvitationsPage() {
             <MailCheck className="w-8 h-8 mx-auto mb-3 text-muted-foreground" />
             <p className="text-foreground font-medium">Aucune invitation</p>
             <p className="text-sm text-muted-foreground">
-              Les invitations générées depuis Paramètres → Membres apparaîtront ici.
+              {hasFilters
+                ? 'Aucune invitation ne correspond à ces critères.'
+                : 'Les invitations générées depuis Paramètres → Membres apparaîtront ici.'}
             </p>
+
           </Card>
         ) : (
           <div className="space-y-3">

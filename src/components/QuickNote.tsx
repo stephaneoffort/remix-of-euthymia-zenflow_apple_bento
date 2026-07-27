@@ -574,12 +574,13 @@ export function QuickNote() {
         const noteText = text.trim();
         const { data: inserted, error: insErr } = await db
           .from('quick_notes')
-          .insert({ user_id: user.id, text: noteText, transcribe_lang: transcribeLang })
+          .insert({ user_id: user.id, text: noteText, transcribe_lang: transcribeLang, remind_at: remindAt ? remindAt.toISOString() : null })
           .select(NOTE_COLS)
           .single();
         if (insErr) throw insErr;
         setSavedNotes(prev => [mapNote(inserted), ...prev]);
-        toast.success('Note sauvegardée');
+        toast.success(remindAt ? `Note sauvegardée · rappel ${formatReminder(remindAt)}` : 'Note sauvegardée');
+        setRemindAt(null);
         setText('');
         setAudioUrl(null);
         setLiveTranscript('');
@@ -605,7 +606,7 @@ export function QuickNote() {
     if (draft && !hasIntent && user) {
       // Fire-and-forget autosave so we never lose the draft.
       db.from('quick_notes')
-        .insert({ user_id: user.id, text: draft, transcribe_lang: transcribeLangRef.current })
+        .insert({ user_id: user.id, text: draft, transcribe_lang: transcribeLangRef.current, remind_at: remindAtRef.current ? remindAtRef.current.toISOString() : null })
         .select(NOTE_COLS)
         .single()
         .then(({ data, error }: any) => {
@@ -620,6 +621,7 @@ export function QuickNote() {
         });
     }
     setText('');
+    setRemindAt(null);
     setAudioUrl(null);
     setLiveTranscript('');
     setRecordSecs(0);

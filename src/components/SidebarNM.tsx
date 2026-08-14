@@ -14,6 +14,7 @@ import OrgSwitcher from "@/components/OrgSwitcher";
 import { useOrg } from "@/context/OrgContext";
 import { useOrgNavTree } from "@/hooks/useOrgNavTree";
 import { usePendingSpaceParam } from "@/hooks/usePendingSpaceParam";
+import { clearAppCaches } from "@/lib/clearAppCaches";
 
 /* ─── Tokens ─── */
 const BG = "#EDE6DA";
@@ -327,6 +328,7 @@ export default function SidebarNM() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    await clearAppCaches();
     navigate("/auth");
   };
 

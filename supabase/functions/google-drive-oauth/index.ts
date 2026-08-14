@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getAuthorizedUser, createOAuthState, consumeOAuthState } from "../_shared/oauth-state.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -25,7 +26,11 @@ Deno.serve(async (req: Request) => {
 
   // ── Authorize ──
   if (path.endsWith("/authorize")) {
-    const userId = url.searchParams.get("user_id") || "";
+    const authedUser = await getAuthorizedUser(req);
+    if (!authedUser) {
+      return new Response("Unauthorized", { status: 401, headers: corsHeaders });
+    }
+    const oauthState = await createOAuthState(authedUser.id, "google_drive");
     const authUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth");
     authUrl.searchParams.set("client_id", Deno.env.get("GOOGLE_CLIENT_ID") ?? "");
     authUrl.searchParams.set("redirect_uri", REDIRECT_URI);
@@ -38,15 +43,20 @@ Deno.serve(async (req: Request) => {
     ].join(" "));
     authUrl.searchParams.set("access_type", "offline");
     authUrl.searchParams.set("prompt", "consent");
-    authUrl.searchParams.set("state", userId);
+    authUrl.searchParams.set("state", oauthState);
     return Response.redirect(authUrl.toString(), 302);
   }
 
   // ── Callback ──
   if (path.endsWith("/callback")) {
     const code = url.searchParams.get("code");
-    const userId = url.searchParams.get("state") || null;
+    const stateParam = url.searchParams.get("state");
     const error = url.searchParams.get("error");
+    const consumed = await consumeOAuthState(stateParam, "google_drive");
+    const userId = consumed?.user_id ?? null;
+    if (!error && !userId) {
+      return new Response("Invalid state", { status: 400, headers: corsHeaders });
+    }
 
     if (error) {
       return new Response(`OAuth error: ${error}`, { status: 400, headers: corsHeaders });

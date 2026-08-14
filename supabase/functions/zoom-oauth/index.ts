@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getAuthorizedUser, createOAuthState, consumeOAuthState } from "../_shared/oauth-state.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -25,26 +26,12 @@ serve(async (req: Request) => {
 
   // ── Authorize ──
   if (path.endsWith("/authorize")) {
-    const token = url.searchParams.get("token") ?? "";
-
-    // Validate JWT to get user_id
-    const supabaseUser = createClient(Deno.env.get("SUPABASE_URL") ?? "", Deno.env.get("SUPABASE_ANON_KEY") ?? "", {
-      global: { headers: { Authorization: `Bearer ${token}` } },
-    });
-
-    const { data, error } = await supabaseUser.auth.getClaims(token);
-    const userId = (data?.claims?.sub as string) ?? "";
-
-    if (!userId) {
+    const authedUser = await getAuthorizedUser(req);
+    if (!authedUser) {
       return new Response("Unauthorized — invalid token", { status: 401, headers: corsHeaders });
     }
 
-    const state = btoa(
-      JSON.stringify({
-        user_id: userId,
-        nonce: crypto.randomUUID(),
-      }),
-    );
+    const state = await createOAuthState(authedUser.id, "zoom");
 
     const authUrl = new URL("https://zoom.us/oauth/authorize");
     authUrl.searchParams.set("client_id", ZOOM_CLIENT_ID);
@@ -65,17 +52,11 @@ serve(async (req: Request) => {
       return new Response("Missing code", { status: 400, headers: corsHeaders });
     }
 
-    let userId = "";
-    try {
-      const decoded = JSON.parse(atob(stateParam));
-      userId = decoded.user_id;
-    } catch {
+    const consumed = await consumeOAuthState(stateParam, "zoom");
+    if (!consumed) {
       return new Response("Invalid state", { status: 400, headers: corsHeaders });
     }
-
-    if (!userId) {
-      return new Response("Missing user_id in state", { status: 400, headers: corsHeaders });
-    }
+    const userId = consumed.user_id;
 
     // Exchange code for tokens
     const credentials = btoa(`${ZOOM_CLIENT_ID}:${ZOOM_CLIENT_SECRET}`);

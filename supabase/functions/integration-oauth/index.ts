@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { createOAuthState, consumeOAuthState } from "../_shared/oauth-state.ts"
 
 const SUPABASE_URL         = Deno.env.get("SUPABASE_URL")!
 const SUPABASE_ANON_KEY    = Deno.env.get("SUPABASE_ANON_KEY")!
@@ -151,7 +152,7 @@ serve(async (req) => {
     const user  = await getUser(req)
     if (!user) return new Response("Unauthorized", { status: 401, headers: CORS })
 
-    const state = btoa(JSON.stringify({ provider, user_id: user.id }))
+    const state = await createOAuthState(user.id, provider)
 
     const authUrl = new URL(cfg.authUrl)
     authUrl.searchParams.set("client_id",     clientId(provider))
@@ -170,13 +171,9 @@ serve(async (req) => {
     const state = url.searchParams.get("state")
     const error = url.searchParams.get("error")
 
-    let resolvedProvider = provider
-    let userId = ""
-    try {
-      const d = JSON.parse(atob(state ?? ""))
-      resolvedProvider = d.provider ?? provider
-      userId = d.user_id ?? ""
-    } catch (_) { /* ignore */ }
+    const consumed = await consumeOAuthState(state)
+    const resolvedProvider = consumed?.provider ?? provider
+    const userId = consumed?.user_id ?? ""
 
     const resolvedCfg     = PROVIDER_CONFIG[resolvedProvider]
     const connectionTable = CONNECTION_TABLE[resolvedProvider]

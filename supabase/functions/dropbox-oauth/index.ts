@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { getAuthorizedUser, createOAuthState, consumeOAuthState } from "../_shared/oauth-state.ts"
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -28,17 +29,18 @@ serve(async (req: Request) => {
 
     // ── Démarrage du flow OAuth ──
     if (path.endsWith("/authorize")) {
-      const userId = url.searchParams.get("user_id")
-      if (!userId) {
-        return new Response("Missing user_id", { status: 400, headers: corsHeaders })
+      const authedUser = await getAuthorizedUser(req)
+      if (!authedUser) {
+        return new Response("Unauthorized", { status: 401, headers: corsHeaders })
       }
+      const oauthState = await createOAuthState(authedUser.id, "dropbox")
 
       const authUrl = new URL("https://www.dropbox.com/oauth2/authorize")
       authUrl.searchParams.set("response_type", "code")
       authUrl.searchParams.set("client_id", DROPBOX_CLIENT_ID)
       authUrl.searchParams.set("redirect_uri", REDIRECT_URI)
       authUrl.searchParams.set("token_access_type", "offline")
-      authUrl.searchParams.set("state", userId)
+      authUrl.searchParams.set("state", oauthState)
       authUrl.searchParams.set("scope", "files.metadata.read files.content.read files.content.write account_info.read sharing.write")
 
       return Response.redirect(authUrl.toString(), 302)
@@ -46,11 +48,17 @@ serve(async (req: Request) => {
 
     // ── Callback OAuth ──
     const code = url.searchParams.get("code")
-    const state = url.searchParams.get("state")
+    const stateParam = url.searchParams.get("state")
 
-    if (!code || !state) {
+    if (!code || !stateParam) {
       return Response.redirect(`${APP_URL}/settings?dropbox_error=missing_code_or_state`, 302)
     }
+
+    const consumed = await consumeOAuthState(stateParam, "dropbox")
+    if (!consumed) {
+      return Response.redirect(`${APP_URL}/settings?dropbox_error=invalid_state`, 302)
+    }
+    const state = consumed.user_id
 
     // Échange code → tokens
     const tokenRes = await fetch("https://api.dropboxapi.com/oauth2/token", {

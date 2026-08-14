@@ -1269,8 +1269,10 @@ export default function CalendarView() {
 
   // ─── Mobile layouts ───
   if (isMobile) {
-    const handleConnectGoogle = () => {
-      window.open("https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/google-oauth/authorize", "_blank");
+    const handleConnectGoogle = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) return;
+      window.open(`https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/google-oauth/authorize?token=${encodeURIComponent(session.access_token)}`, "_blank");
     };
 
     const mobileActionBar = (

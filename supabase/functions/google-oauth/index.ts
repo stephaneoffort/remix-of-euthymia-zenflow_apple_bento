@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { getAuthorizedUser, createOAuthState, consumeOAuthState } from "../_shared/oauth-state.ts"
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -16,8 +17,11 @@ serve(async (req: Request) => {
   const path = url.pathname
 
   if (path.endsWith("/authorize")) {
-    // Accept user_id as query param to associate accounts with the user
-    const userId = url.searchParams.get("user_id") || ""
+    const authedUser = await getAuthorizedUser(req)
+    if (!authedUser) {
+      return new Response("Unauthorized", { status: 401, headers: corsHeaders })
+    }
+    const oauthState = await createOAuthState(authedUser.id, "google_calendar")
     const authUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth")
     authUrl.searchParams.set("client_id", Deno.env.get("GOOGLE_CLIENT_ID") ?? "")
     authUrl.searchParams.set("redirect_uri", Deno.env.get("GOOGLE_REDIRECT_URI") ?? "")
@@ -25,16 +29,22 @@ serve(async (req: Request) => {
     authUrl.searchParams.set("scope", "https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events")
     authUrl.searchParams.set("access_type", "offline")
     authUrl.searchParams.set("prompt", "consent")
-    authUrl.searchParams.set("state", userId)
+    authUrl.searchParams.set("state", oauthState)
     return Response.redirect(authUrl.toString(), 302)
   }
 
   if (path.endsWith("/callback")) {
     const code = url.searchParams.get("code")
-    const userId = url.searchParams.get("state") || null
+    const stateParam = url.searchParams.get("state")
     if (!code) {
       return new Response("Missing code", { status: 400, headers: corsHeaders })
     }
+
+    const consumed = await consumeOAuthState(stateParam, "google_calendar")
+    if (!consumed) {
+      return new Response("Invalid state", { status: 400, headers: corsHeaders })
+    }
+    const userId = consumed.user_id
 
     const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
       method: "POST",

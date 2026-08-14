@@ -156,3 +156,42 @@ export async function safeFetch(
   }
   throw new Error("Trop de redirections");
 }
+
+/** Ports mail légitimes (IMAP/IMAPS, SMTP/submission). */
+const ALLOWED_MAIL_PORTS = new Set([25, 143, 465, 587, 993, 2525]);
+
+/**
+ * Protection SSRF pour les connexions IMAP/SMTP : valide l'hôte et le port
+ * fournis par l'utilisateur avant toute connexion sortante.
+ */
+export async function assertSafeMailHost(rawHost: string, rawPort: number): Promise<{ host: string; port: number }> {
+  const host = (rawHost ?? "").trim().toLowerCase().replace(/^\[|\]$/g, "");
+  if (!host || /[\s/\\@]/.test(host)) {
+    throw new Error("Hôte de messagerie invalide");
+  }
+  if (BLOCKED_HOSTNAMES.has(host) || host.endsWith(".localhost") || host.endsWith(".internal")) {
+    throw new Error("Cet hôte cible un service interne et n'est pas autorisé");
+  }
+  if (isPrivateIp(host)) {
+    throw new Error("Cet hôte cible un réseau privé et n'est pas autorisé");
+  }
+
+  const port = Number(rawPort);
+  if (!Number.isInteger(port) || !ALLOWED_MAIL_PORTS.has(port)) {
+    throw new Error(`Port de messagerie non autorisé (${rawPort})`);
+  }
+
+  try {
+    const records = [
+      ...(await Deno.resolveDns(host, "A").catch(() => [] as string[])),
+      ...(await Deno.resolveDns(host, "AAAA").catch(() => [] as string[])),
+    ];
+    if (records.length > 0 && records.some((ip) => isPrivateIp(ip))) {
+      throw new Error("Cet hôte résout vers un réseau privé et n'est pas autorisé");
+    }
+  } catch (e) {
+    if (e instanceof Error && e.message.includes("réseau privé")) throw e;
+  }
+
+  return { host, port };
+}

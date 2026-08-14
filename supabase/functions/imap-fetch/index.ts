@@ -1,5 +1,6 @@
 // Edge function: récupère les emails via IMAP et les cache dans email_messages
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { assertSafeMailHost } from "../_shared/safe-url.ts";
 import { ImapFlow } from "https://esm.sh/imapflow@1.0.164";
 import { simpleParser } from "https://esm.sh/mailparser@3.7.1";
 
@@ -74,9 +75,10 @@ Deno.serve(async (req) => {
       );
     }
 
+    const safeMail = await assertSafeMailHost(account.imap_host, account.imap_port || 993);
     const client = new ImapFlow({
-      host: account.imap_host,
-      port: account.imap_port || 993,
+      host: safeMail.host,
+      port: safeMail.port,
       secure: account.imap_secure ?? true,
       auth: {
         user: account.imap_username || account.email_address,

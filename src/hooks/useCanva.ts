@@ -41,9 +41,10 @@ export function useCanva() {
   };
 
   const connect = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) return;
     window.location.href =
-      `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/canva-oauth/authorize?user_id=${user?.id || ""}`;
+      `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/canva-oauth/authorize?token=${encodeURIComponent(session.access_token)}`;
   };
 
   const disconnect = async () => {

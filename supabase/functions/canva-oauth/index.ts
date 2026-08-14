@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { getAuthorizedUser, createOAuthState, consumeOAuthState } from "../_shared/oauth-state.ts"
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -26,8 +27,10 @@ serve(async (req: Request) => {
 
   // ── Authorize ──
   if (path.endsWith("/authorize")) {
-    const userId = url.searchParams.get("user_id") || ""
-    const state = crypto.randomUUID()
+    const authedUser = await getAuthorizedUser(req)
+    if (!authedUser) {
+      return new Response("Unauthorized", { status: 401, headers: corsHeaders })
+    }
     const codeVerifier = crypto.randomUUID() + crypto.randomUUID()
 
     // PKCE
@@ -38,14 +41,8 @@ serve(async (req: Request) => {
     const base64 = btoa(String.fromCharCode(...hashArray))
     const codeChallenge = base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "")
 
-    // Store code_verifier temporarily
-    await supabase.from("canva_connections").upsert({
-      access_token: "pending",
-      refresh_token: codeVerifier,
-      token_expiry: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
-      email: `pending_${state}`,
-      display_name: userId,
-    }, { onConflict: "email" })
+    // Le code_verifier PKCE est stocké avec le state à usage unique (table interne).
+    const state = await createOAuthState(authedUser.id, "canva", { code_verifier: codeVerifier })
 
     const authUrl = new URL("https://www.canva.com/api/oauth/authorize")
     authUrl.searchParams.set("client_id", CANVA_CLIENT_ID)
@@ -71,14 +68,12 @@ serve(async (req: Request) => {
       return new Response("Missing code", { status: 400, headers: corsHeaders })
     }
 
-    const { data: pending } = await supabase
-      .from("canva_connections")
-      .select("refresh_token, display_name")
-      .eq("email", `pending_${state}`)
-      .single()
-
-    const codeVerifier = pending?.refresh_token ?? ""
-    const userId = pending?.display_name ?? ""
+    const consumed = await consumeOAuthState(state, "canva")
+    if (!consumed) {
+      return new Response("Invalid state", { status: 400, headers: corsHeaders })
+    }
+    const codeVerifier = consumed.code_verifier ?? ""
+    const userId = consumed.user_id
 
     // Exchange code for tokens
     const tokenRes = await fetch("https://api.canva.com/rest/v1/oauth/token", {
@@ -108,9 +103,7 @@ serve(async (req: Request) => {
 
     const expiry = new Date(Date.now() + tokens.expires_in * 1000)
 
-    // Delete pending entry and create real connection
-    await supabase.from("canva_connections").delete().eq("email", `pending_${state}`)
-
+    // Crée la connexion réelle
     await supabase.from("canva_connections").upsert({
       user_id: userId || null,
       access_token: tokens.access_token,

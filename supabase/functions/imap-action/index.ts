@@ -1,5 +1,6 @@
 // Edge function: actions sur emails IMAP (mark read, delete, move)
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { assertSafeMailHost } from "../_shared/safe-url.ts";
 // NOTE: ImapFlow est importé dynamiquement plus bas (branche IMAP uniquement)
 // car le module est lourd et casse le boot de l'edge runtime quand
 // l'action concerne un compte Gmail (OAuth, sans IMAP).
@@ -157,9 +158,10 @@ Deno.serve(async (req) => {
 
     // ===== IMAP path =====
     const { ImapFlow } = await import("https://esm.sh/imapflow@1.0.164");
+    const safeMail = await assertSafeMailHost(account.imap_host, account.imap_port || 993);
     const client = new ImapFlow({
-      host: account.imap_host,
-      port: account.imap_port || 993,
+      host: safeMail.host,
+      port: safeMail.port,
       secure: account.imap_secure ?? true,
       auth: {
         user: account.imap_username || account.email_address,

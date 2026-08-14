@@ -1989,6 +1989,36 @@ export type Database = {
         }
         Relationships: []
       }
+      oauth_states: {
+        Row: {
+          code_verifier: string | null
+          created_at: string
+          expires_at: string
+          provider: string
+          redirect_path: string | null
+          state: string
+          user_id: string
+        }
+        Insert: {
+          code_verifier?: string | null
+          created_at?: string
+          expires_at?: string
+          provider: string
+          redirect_path?: string | null
+          state: string
+          user_id: string
+        }
+        Update: {
+          code_verifier?: string | null
+          created_at?: string
+          expires_at?: string
+          provider?: string
+          redirect_path?: string | null
+          state?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       organization_members: {
         Row: {
           created_at: string

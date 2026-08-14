@@ -113,11 +113,7 @@ export default function IntegrationsSettings() {
     const { data: { session } } = await supabase.auth.getSession();
     if (!user || !session) return;
 
-    if (key === 'zoom' || key === 'gmail' || key === 'miro') {
-      window.location.href = `${url}?token=${session.access_token}`;
-    } else {
-      window.location.href = `${url}?user_id=${user.id}`;
-    }
+    window.location.href = `${url}?token=${encodeURIComponent(session.access_token)}`;
   };
 
   const handleDisconnect = async (key: IntegrationKey) => {

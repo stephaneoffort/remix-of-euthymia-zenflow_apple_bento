@@ -79,9 +79,10 @@ export default function CalendarAccountsManager({ accounts, syncing, visibleAcco
   };
 
   const handleConnectGoogle = async () => {
-    const { data: { user } } = await (await import('@/integrations/supabase/client')).supabase.auth.getUser();
-    const userId = user?.id || '';
-    window.location.href = `https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/google-oauth/authorize?user_id=${userId}`;
+    const { supabase } = await import('@/integrations/supabase/client');
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) return;
+    window.location.href = `https://jivfyaqpuhutixfjttga.supabase.co/functions/v1/google-oauth/authorize?token=${encodeURIComponent(session.access_token)}`;
   };
 
 

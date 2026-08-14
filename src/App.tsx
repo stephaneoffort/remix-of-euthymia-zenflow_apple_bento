@@ -28,6 +28,7 @@ const Settings = lazyRetry(() => import("./pages/Settings.tsx"));
 const Chat = lazyRetry(() => import("./pages/Chat.tsx"));
 const Mentions = lazyRetry(() => import("./pages/Mentions.tsx"));
 const EmailPage = lazyRetry(() => import("./pages/Email.tsx"));
+const TimePage = lazyRetry(() => import("./pages/Time.tsx"));
 const NotFound = lazyRetry(() => import("./pages/NotFound.tsx"));
 const Install = lazyRetry(() => import("./pages/Install.tsx"));
 const ResetPassword = lazyRetry(() => import("./pages/ResetPassword.tsx"));
@@ -155,6 +156,15 @@ const App = () => (
                           </ProtectedRoute>
                         }
                       />
+                      <Route
+                        path="/time"
+                        element={
+                          <ProtectedRoute>
+                            <TimePage />
+                          </ProtectedRoute>
+                        }
+                      />
+
                       <Route
                         path="/settings/organizations"
                         element={

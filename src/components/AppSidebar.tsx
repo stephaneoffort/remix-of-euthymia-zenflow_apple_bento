@@ -30,6 +30,7 @@ import {
   MoreHorizontal,
   Pencil,
   Home,
+  Timer,
   FolderInput,
   ArrowDownToLine,
   MoveHorizontal,
@@ -792,6 +793,14 @@ export default function AppSidebar() {
           >
             <SearchIcon className="w-4 h-4" />
             Recherche de tâches
+          </button>
+          <button
+            type="button"
+            onClick={() => { navigate('/time'); collapseIfMobile(); }}
+            className="w-full flex items-center gap-2 px-2 py-1.5 mb-2 rounded-md text-sm text-sidebar-fg hover:bg-sidebar-hover transition-colors"
+          >
+            <Timer className="w-4 h-4" />
+            Temps
           </button>
           <div className="flex items-center justify-between px-2 mb-2 gap-2">
             <button

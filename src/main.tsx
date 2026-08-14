@@ -23,4 +23,9 @@ if (isPreviewHost || isInIframe) {
   });
 }
 
+// Purge de l'ancien cache d'API Supabase créé par les versions précédentes du SW
+if (typeof caches !== "undefined") {
+  caches.delete("supabase-api-cache").catch(() => {});
+}
+
 createRoot(document.getElementById("root")!).render(<App />);

@@ -92,7 +92,7 @@ serve(async (req: Request) => {
         token_expiry: expiry.toISOString(),
         is_active: true,
         user_id: userId,
-      }, { onConflict: "user_id,calendar_id" })
+      }, { onConflict: "calendar_id" })
     }
 
     const appUrl = Deno.env.get("APP_URL") ?? ""

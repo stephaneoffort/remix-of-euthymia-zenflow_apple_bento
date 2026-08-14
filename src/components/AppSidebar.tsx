@@ -30,6 +30,7 @@ import {
   MoreHorizontal,
   Pencil,
   Home,
+  Timer,
   FolderInput,
   ArrowDownToLine,
   MoveHorizontal,

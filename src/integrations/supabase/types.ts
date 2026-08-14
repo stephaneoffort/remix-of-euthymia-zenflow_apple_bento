@@ -2856,6 +2856,189 @@ export type Database = {
         }
         Relationships: []
       }
+      time_active: {
+        Row: {
+          accumulated_seconds: number
+          created_at: string
+          id: string
+          is_paused: boolean
+          lot_id: string | null
+          member_id: string
+          note: string | null
+          org_id: string
+          project_id: string | null
+          started_at: string
+        }
+        Insert: {
+          accumulated_seconds?: number
+          created_at?: string
+          id?: string
+          is_paused?: boolean
+          lot_id?: string | null
+          member_id: string
+          note?: string | null
+          org_id: string
+          project_id?: string | null
+          started_at: string
+        }
+        Update: {
+          accumulated_seconds?: number
+          created_at?: string
+          id?: string
+          is_paused?: boolean
+          lot_id?: string | null
+          member_id?: string
+          note?: string | null
+          org_id?: string
+          project_id?: string | null
+          started_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "time_active_lot_id_fkey"
+            columns: ["lot_id"]
+            isOneToOne: false
+            referencedRelation: "time_lots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "time_active_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: true
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "time_active_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "time_active_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      time_entries: {
+        Row: {
+          created_at: string
+          id: string
+          lot_id: string | null
+          member_id: string
+          note: string | null
+          org_id: string
+          project_id: string | null
+          seconds: number
+          started_at: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lot_id?: string | null
+          member_id: string
+          note?: string | null
+          org_id: string
+          project_id?: string | null
+          seconds: number
+          started_at: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lot_id?: string | null
+          member_id?: string
+          note?: string | null
+          org_id?: string
+          project_id?: string | null
+          seconds?: number
+          started_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "time_entries_lot_id_fkey"
+            columns: ["lot_id"]
+            isOneToOne: false
+            referencedRelation: "time_lots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "time_entries_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "time_entries_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "time_entries_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      time_lots: {
+        Row: {
+          category: string
+          code: string
+          created_at: string
+          id: string
+          is_active: boolean
+          label: string
+          org_id: string
+          sort_order: number
+          target_hours: number
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label: string
+          org_id: string
+          sort_order?: number
+          target_hours?: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label?: string
+          org_id?: string
+          sort_order?: number
+          target_hours?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "time_lots_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_presence: {
         Row: {
           custom_status: string | null

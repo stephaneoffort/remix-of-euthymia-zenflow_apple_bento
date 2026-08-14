@@ -37,15 +37,12 @@ function mintSession(userId: string): MintedSession {
 
 test.describe("Connexions successives : aucun 403 sur les fonctions RLS", () => {
   for (const account of ACCOUNTS) {
-    test(`${account.label} — current_org_id, get_org_nav_tree, is_super_admin restent exécutables`, async ({
+    // Sans compte d'authentification, le cas est ignoré plutôt que faussement vert.
+    const testCase = account.userId ? test : test.skip;
+    testCase(`${account.label} — current_org_id, get_org_nav_tree, is_super_admin restent exécutables`, async ({
       page,
       context,
     }) => {
-      test.skip(
-        !account.userId,
-        `Aucun compte d'authentification pour ${account.label} (${account.email})`,
-      );
-
       let session: MintedSession;
       try {
         session = mintSession(account.userId!);

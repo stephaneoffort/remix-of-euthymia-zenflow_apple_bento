@@ -3209,6 +3209,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_access_chat_object: {
+        Args: { _object_name: string }
+        Returns: boolean
+      }
       can_access_space: {
         Args: { _member_id: string; _space_id: string }
         Returns: boolean

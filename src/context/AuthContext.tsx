@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
+import { clearAppCaches } from '@/lib/clearAppCaches';
 
 interface AuthContextType {
   user: User | null;
@@ -96,7 +97,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    await clearAppCaches();
   };
+
 
   const linkTeamMember = async (memberId: string) => {
     if (!user) return { error: 'Not authenticated' };

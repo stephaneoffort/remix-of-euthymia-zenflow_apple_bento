@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getAuthorizedUser, createOAuthState, consumeOAuthState } from "../_shared/oauth-state.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -43,15 +44,16 @@ serve(async (req) => {
   // /authorize : redirige vers Notion (state = user_id)
   // ────────────────────────────────────────────────────────────────────
   if (path.endsWith("/authorize")) {
-    const userId = url.searchParams.get("user_id") || url.searchParams.get("state") || "";
-    if (!userId) return html("Paramètre user_id manquant.", 400);
+    const authedUser = await getAuthorizedUser(req);
+    if (!authedUser) return html("Session invalide : veuillez vous reconnecter.", 401);
+    const oauthState = await createOAuthState(authedUser.id, "notion");
 
     const authUrl = new URL("https://api.notion.com/v1/oauth/authorize");
     authUrl.searchParams.set("client_id", NOTION_CLIENT_ID);
     authUrl.searchParams.set("response_type", "code");
     authUrl.searchParams.set("owner", "user");
     authUrl.searchParams.set("redirect_uri", REDIRECT_URI);
-    authUrl.searchParams.set("state", userId);
+    authUrl.searchParams.set("state", oauthState);
     return Response.redirect(authUrl.toString(), 302);
   }
 
@@ -60,14 +62,18 @@ serve(async (req) => {
   // ────────────────────────────────────────────────────────────────────
   if (path.endsWith("/callback")) {
     const code = url.searchParams.get("code");
-    const userId = url.searchParams.get("state");
+    const stateParam = url.searchParams.get("state");
     const errorParam = url.searchParams.get("error");
 
     const back = (qs: string) =>
       Response.redirect(`${APP_URL}/settings/integrations?${qs}`, 302);
 
     if (errorParam) return back(`provider=notion&status=error&reason=${encodeURIComponent(errorParam)}`);
-    if (!code || !userId) return back("provider=notion&status=error&reason=missing_code_or_state");
+    if (!code || !stateParam) return back("provider=notion&status=error&reason=missing_code_or_state");
+
+    const consumed = await consumeOAuthState(stateParam, "notion");
+    if (!consumed) return back("provider=notion&status=error&reason=invalid_state");
+    const userId = consumed.user_id;
 
     try {
       const basic = btoa(`${NOTION_CLIENT_ID}:${NOTION_CLIENT_SECRET}`);

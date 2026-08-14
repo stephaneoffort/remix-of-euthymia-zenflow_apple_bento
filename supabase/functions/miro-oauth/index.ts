@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { getAuthorizedUser, createOAuthState, consumeOAuthState } from "../_shared/oauth-state.ts"
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -26,28 +27,31 @@ serve(async (req: Request) => {
   try {
     const url = new URL(req.url)
     const code = url.searchParams.get("code")
-    const state = url.searchParams.get("state") // contient user_id
+    const stateParam = url.searchParams.get("state")
 
     // ── Démarrage du flow OAuth (pas de code) ──
     if (!code) {
-      const userId = url.searchParams.get("user_id")
-      if (!userId) {
-        return new Response("Missing user_id", { status: 400, headers: corsHeaders })
+      const authedUser = await getAuthorizedUser(req)
+      if (!authedUser) {
+        return new Response("Unauthorized", { status: 401, headers: corsHeaders })
       }
+      const oauthState = await createOAuthState(authedUser.id, "miro")
 
       const authUrl = new URL("https://miro.com/oauth/authorize")
       authUrl.searchParams.set("response_type", "code")
       authUrl.searchParams.set("client_id", MIRO_CLIENT_ID)
       authUrl.searchParams.set("redirect_uri", REDIRECT_URI)
-      authUrl.searchParams.set("state", userId)
+      authUrl.searchParams.set("state", oauthState)
 
       return Response.redirect(authUrl.toString(), 302)
     }
 
     // ── Callback OAuth (avec code) ──
-    if (!state) {
-      return new Response("Missing state", { status: 400, headers: corsHeaders })
+    const consumed = await consumeOAuthState(stateParam, "miro")
+    if (!consumed) {
+      return Response.redirect(`${APP_URL}?miro_error=invalid_state`, 302)
     }
+    const state = consumed.user_id
 
     // Échange code → tokens
     const tokenRes = await fetch("https://api.miro.com/v1/oauth/token", {

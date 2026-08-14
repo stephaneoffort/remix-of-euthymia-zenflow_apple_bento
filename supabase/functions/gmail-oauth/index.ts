@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { getAuthorizedUser, createOAuthState, consumeOAuthState } from "../_shared/oauth-state.ts"
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -24,23 +25,12 @@ serve(async (req: Request) => {
   const path = url.pathname
 
   if (path.endsWith("/authorize")) {
-    const token = req.headers.get("Authorization")?.replace("Bearer ", "")
-      ?? url.searchParams.get("token") ?? ""
-
-    const supabaseUser = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-      { global: { headers: { Authorization: `Bearer ${token}` } } }
-    )
-    const { data: { user } } = await supabaseUser.auth.getUser()
+    const user = await getAuthorizedUser(req)
     if (!user) {
       return new Response("Unauthorized", { status: 401, headers: corsHeaders })
     }
 
-    const state = btoa(JSON.stringify({
-      user_id: user.id,
-      nonce: crypto.randomUUID()
-    }))
+    const state = await createOAuthState(user.id, "gmail")
 
     const authUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth")
     authUrl.searchParams.set("client_id", Deno.env.get("GOOGLE_CLIENT_ID") ?? "")
@@ -68,17 +58,11 @@ serve(async (req: Request) => {
       return new Response("Missing code", { status: 400, headers: corsHeaders })
     }
 
-    let userId = ""
-    try {
-      const decoded = JSON.parse(atob(stateParam))
-      userId = decoded.user_id
-    } catch {
+    const consumed = await consumeOAuthState(stateParam, "gmail")
+    if (!consumed) {
       return new Response("Invalid state", { status: 400, headers: corsHeaders })
     }
-
-    if (!userId) {
-      return new Response("Missing user_id", { status: 400, headers: corsHeaders })
-    }
+    const userId = consumed.user_id
 
     const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
       method: "POST",

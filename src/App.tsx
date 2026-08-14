@@ -157,6 +157,15 @@ const App = () => (
                         }
                       />
                       <Route
+                        path="/time"
+                        element={
+                          <ProtectedRoute>
+                            <TimePage />
+                          </ProtectedRoute>
+                        }
+                      />
+
+                      <Route
                         path="/settings/organizations"
                         element={
                           <ProtectedRoute>

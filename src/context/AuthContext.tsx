@@ -96,7 +96,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    await clearAppCaches();
   };
+
 
   const linkTeamMember = async (memberId: string) => {
     if (!user) return { error: 'Not authenticated' };

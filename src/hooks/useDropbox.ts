@@ -54,7 +54,9 @@ export function useDropbox() {
   const connect = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { toast.error('Vous devez être connecté'); return; }
-    window.location.href = `${DROPBOX_OAUTH_URL}?user_id=${user.id}`;
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) return;
+    window.location.href = `${DROPBOX_OAUTH_URL}?token=${encodeURIComponent(session.access_token)}`;
   }, []);
 
   const disconnect = useCallback(async () => {

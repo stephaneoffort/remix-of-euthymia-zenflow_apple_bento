@@ -88,10 +88,10 @@ export default function IntegrationsPage() {
       return
     }
 
-    // Notion : edge function dédiée (avec user_id en query)
+    // Notion : edge function dédiée (session vérifiée côté serveur)
     if (key === "notion") {
       window.location.href =
-        `${SUPABASE_URL}/functions/v1/notion-oauth/authorize?user_id=${session.user.id}`
+        `${SUPABASE_URL}/functions/v1/notion-oauth/authorize?token=${encodeURIComponent(session.access_token)}`
       return
     }
 

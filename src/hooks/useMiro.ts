@@ -50,7 +50,9 @@ export function useMiro() {
   const connect = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { toast.error('Vous devez être connecté'); return; }
-    const url = `${MIRO_OAUTH_URL}?user_id=${user.id}`;
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) return;
+    const url = `${MIRO_OAUTH_URL}?token=${encodeURIComponent(session.access_token)}`;
     window.location.href = url;
   }, []);
 

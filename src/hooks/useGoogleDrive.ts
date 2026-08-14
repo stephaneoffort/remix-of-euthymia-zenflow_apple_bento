@@ -62,7 +62,9 @@ export function useGoogleDrive() {
 
   const connect = async () => {
     const userId = await getUserId();
-    window.location.href = `${DRIVE_OAUTH_URL}?user_id=${userId || ""}`;
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) return;
+    window.location.href = `${DRIVE_OAUTH_URL}?token=${encodeURIComponent(session.access_token)}`;
   };
 
   const disconnect = async () => {

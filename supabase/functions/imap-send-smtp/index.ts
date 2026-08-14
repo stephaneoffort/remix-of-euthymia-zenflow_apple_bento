@@ -1,5 +1,6 @@
 // Edge function: envoie un email via SMTP du compte IMAP
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { assertSafeMailHost } from "../_shared/safe-url.ts";
 import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 
 const corsHeaders = {
@@ -148,10 +149,11 @@ Deno.serve(async (req) => {
     }
 
     // ===== IMAP/SMTP path =====
+    const safeMail = await assertSafeMailHost(account.smtp_host || account.imap_host, account.smtp_port || 587);
     const client = new SMTPClient({
       connection: {
-        hostname: account.smtp_host || account.imap_host,
-        port: account.smtp_port || 587,
+        hostname: safeMail.host,
+        port: safeMail.port,
         tls: account.smtp_secure ?? true,
         auth: {
           username: account.smtp_username || account.imap_username || account.email_address,

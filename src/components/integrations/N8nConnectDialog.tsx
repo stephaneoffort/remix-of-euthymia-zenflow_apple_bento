@@ -206,8 +206,8 @@ export default function N8nConnectDialog({
           </div>
 
           {testStatus?.ok && (
-            <Alert className="border-emerald-200 bg-emerald-50 dark:border-emerald-900/50 dark:bg-emerald-950/30">
-              <AlertDescription className="text-sm text-emerald-700 dark:text-emerald-400">
+            <Alert className="border-status-done/30 bg-status-done/10">
+              <AlertDescription className="text-sm text-status-done">
                 Connexion réussie ✓
               </AlertDescription>
             </Alert>

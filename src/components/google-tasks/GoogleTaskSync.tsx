@@ -121,7 +121,7 @@ export default function GoogleTaskSync({ task, className }: Props) {
         <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
       ) : link ? (
         <div className="text-xs text-muted-foreground flex items-center gap-1.5">
-          <span className="inline-flex w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          <span className="inline-flex w-1.5 h-1.5 rounded-full bg-status-done" />
           Liée à Google Tasks · dernière sync {new Date(link.last_synced_at).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })}
         </div>
       ) : (
@@ -275,7 +275,7 @@ function PushDialog({ open, onOpenChange, task, existingLink, onPushed }: PushPr
           </div>
 
           {existingLink && existingLink.google_tasklist_id !== selectedListId && (
-            <p className="text-[11px] text-amber-700 dark:text-amber-500 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded p-2">
+            <p className="text-[11px] text-priority-high bg-priority-high/10 border border-priority-high/30 rounded p-2">
               ⚠️ Cette tâche est déjà liée à une autre liste. La pousser ici créera une seconde copie côté Google.
             </p>
           )}

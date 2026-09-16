@@ -9,11 +9,11 @@ import { useIntegrations, INTEGRATION_CONFIG } from '@/hooks/useIntegrations';
 import { logAudit } from '@/lib/auditLog';
 
 const TYPE_BADGES: Record<string, { label: string; color: string }> = {
-  presentation: { label: 'Présentation', color: 'bg-blue-500/10 text-blue-600' },
-  poster: { label: 'Poster', color: 'bg-orange-500/10 text-orange-600' },
-  social_media: { label: 'Social', color: 'bg-pink-500/10 text-pink-600' },
-  flyer: { label: 'Flyer', color: 'bg-violet-500/10 text-violet-600' },
-  doc: { label: 'Document', color: 'bg-green-500/10 text-green-600' },
+  presentation: { label: 'Présentation', color: 'bg-priority-normal/10 text-priority-normal' },
+  poster: { label: 'Poster', color: 'bg-priority-high/10 text-priority-high' },
+  social_media: { label: 'Social', color: 'bg-tone-terracotta-fg/10 text-tone-terracotta-fg' },
+  flyer: { label: 'Flyer', color: 'bg-tone-sand-fg/10 text-tone-sand-fg' },
+  doc: { label: 'Document', color: 'bg-status-done/10 text-status-done' },
 };
 
 interface Props {

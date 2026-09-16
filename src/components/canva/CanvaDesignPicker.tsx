@@ -9,11 +9,11 @@ import { toast } from 'sonner';
 import { Search, Plus, ExternalLink } from 'lucide-react';
 
 const DESIGN_TYPES = [
-  { value: 'presentation', label: 'Présentation', emoji: '📊', color: 'bg-blue-500/10 text-blue-600' },
-  { value: 'poster', label: 'Poster / Affiche', emoji: '🖼️', color: 'bg-orange-500/10 text-orange-600' },
-  { value: 'social_media', label: 'Post réseaux sociaux', emoji: '📱', color: 'bg-pink-500/10 text-pink-600' },
-  { value: 'flyer', label: 'Flyer / Brochure', emoji: '📄', color: 'bg-violet-500/10 text-violet-600' },
-  { value: 'doc', label: 'Document', emoji: '📝', color: 'bg-green-500/10 text-green-600' },
+  { value: 'presentation', label: 'Présentation', emoji: '📊', color: 'bg-priority-normal/10 text-priority-normal' },
+  { value: 'poster', label: 'Poster / Affiche', emoji: '🖼️', color: 'bg-priority-high/10 text-priority-high' },
+  { value: 'social_media', label: 'Post réseaux sociaux', emoji: '📱', color: 'bg-tone-terracotta-fg/10 text-tone-terracotta-fg' },
+  { value: 'flyer', label: 'Flyer / Brochure', emoji: '📄', color: 'bg-tone-sand-fg/10 text-tone-sand-fg' },
+  { value: 'doc', label: 'Document', emoji: '📝', color: 'bg-status-done/10 text-status-done' },
 ];
 
 function getTypeBadge(type: string | null) {

@@ -189,7 +189,7 @@ function highlightMatch(text: string, query: string): React.ReactNode {
   const parts = text.split(regex)
   return parts.map((part, i) =>
     regex.test(part)
-      ? <mark key={i} className="bg-amber-200/60 dark:bg-amber-500/30 text-foreground rounded px-0.5">{part}</mark>
+      ? <mark key={i} className="bg-priority-high/30 text-foreground rounded px-0.5">{part}</mark>
       : <span key={i}>{part}</span>,
   )
 }

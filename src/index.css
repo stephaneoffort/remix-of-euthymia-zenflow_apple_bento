@@ -1133,4 +1133,3 @@ FOND GLOBAL — Navy profond Apple-style ─────────────
 .subtask-date:active {
   color: hsl(var(--foreground)) !important;
 }
-@import "./styles/theme-ivoire-chaud.css";

@@ -2,9 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { useApp } from "@/context/AppContext";
-import { useThemeMode } from "@/context/ThemeContext";
 import AppSidebar from "@/components/AppSidebar";
-import SidebarNM from "@/components/SidebarNM";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -65,7 +63,6 @@ export default function Support() {
       .then(({ data }) => setIsAdmin(!!data));
   }, [user?.id]);
   const { sidebarCollapsed, setSidebarCollapsed } = useApp();
-  const { designMode } = useThemeMode();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
 
@@ -232,8 +229,8 @@ export default function Support() {
   };
 
   return (
-    <div className={`flex h-[100dvh] relative overflow-hidden ${designMode === "neumorphic" ? "nm-chat" : ""}`}>
-      {!isMobile && !sidebarCollapsed && (designMode === "neumorphic" ? <SidebarNM /> : <AppSidebar />)}
+    <div className="flex h-[100dvh] relative overflow-hidden">
+      {!isMobile && !sidebarCollapsed && <AppSidebar />}
       {!isMobile && sidebarCollapsed && (
         <button
           onClick={() => setSidebarCollapsed(false)}

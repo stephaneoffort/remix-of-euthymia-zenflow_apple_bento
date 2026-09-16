@@ -14,16 +14,13 @@ import MobileBottomNav from '@/components/MobileBottomNav';
 import { useApp } from '@/context/AppContext';
 import { usePresence } from '@/hooks/usePresence';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useThemeMode } from '@/context/ThemeContext';
 import AppSidebar from '@/components/AppSidebar';
-import SidebarNM from '@/components/SidebarNM';
 import { PanelLeft } from 'lucide-react';
 
 export default function Chat() {
   const chat = useDiscordChat();
   const { teamMembers, sidebarCollapsed, setSidebarCollapsed } = useApp();
   const { onlineMembers } = usePresence();
-  const { designMode } = useThemeMode();
   const [showMembers, setShowMembers] = useState(true);
   const [showChannels, setShowChannels] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -79,11 +76,9 @@ export default function Chat() {
   const hasMobileOverlay = isMobile && (showSearch || showPinned || showMobileMembers || !!chat.threadParent);
 
   return (
-    <div className={`flex h-[100dvh] relative overflow-hidden ${designMode === "neumorphic" ? "nm-chat" : ""}`}>
+    <div className="flex h-[100dvh] relative overflow-hidden">
       {/* ── Main app sidebar (persistent, like Index) ── */}
-      {!isMobile && !sidebarCollapsed && (
-        designMode === "neumorphic" ? <SidebarNM /> : <AppSidebar />
-      )}
+      {!isMobile && !sidebarCollapsed && <AppSidebar />}
       {!isMobile && sidebarCollapsed && (
         <button
           onClick={() => setSidebarCollapsed(false)}

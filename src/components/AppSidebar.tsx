@@ -26,7 +26,7 @@ import {
   Lock,
   Sun,
   Moon,
-  SunMoon,
+  Monitor,
   MoreHorizontal,
   Pencil,
   Home,
@@ -43,7 +43,6 @@ import {
   Mail,
   MessagesSquare,
   LifeBuoy,
-  Palette,
   NotebookPen,
   Search as SearchIcon,
 } from "lucide-react";
@@ -175,7 +174,6 @@ export default function AppSidebar() {
   const navigate = useNavigate();
   const { isOnline } = usePresence();
   const { user, teamMemberId } = useAuth();
-  const { designMode } = useThemeMode();
 
   // Resizable sidebar
   const [sidebarWidth, setSidebarWidth] = useState<number>(() => {
@@ -555,7 +553,7 @@ export default function AppSidebar() {
   if (sidebarCollapsed) {
     return (
       <TooltipProvider delayDuration={200}>
-        <div className={`w-[52px] bg-sidebar-bg flex flex-col items-center py-3 border-r border-sidebar-border-color shrink-0 gap-0.5${designMode === "neumorphic" ? " nm-sidebar" : ""}`}>
+        <div className="w-[52px] bg-sidebar-bg flex flex-col items-center py-3 border-r border-sidebar-border-color shrink-0 gap-0.5">
           {/* Expand */}
           <Tooltip>
             <TooltipTrigger asChild>
@@ -713,7 +711,7 @@ export default function AppSidebar() {
     <>
       {isMobile && <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setSidebarCollapsed(true)} />}
       <div
-        className={`${isMobile ? "fixed inset-y-0 left-0 z-50" : "relative"} bg-sidebar-bg flex flex-col border-r border-sidebar-border-color shrink-0 h-screen${designMode === "neumorphic" ? " nm-sidebar" : ""}`}
+        className={`${isMobile ? "fixed inset-y-0 left-0 z-50" : "relative"} bg-sidebar-bg flex flex-col border-r border-sidebar-border-color shrink-0 h-screen`}
         style={{ width: isMobile ? 256 : sidebarWidth }}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
@@ -1966,16 +1964,15 @@ function ChatLink({ handleNavClick }: { handleNavClick: () => void }) {
   );
 }
 function ThemeSwitcher() {
-  const { theme, setTheme, designMode, setDesignMode } = useThemeMode();
-  const navigate = useNavigate();
-  const options: { key: "light" | "dark" | "mixed"; label: string; title: string; icon: React.ReactNode }[] = [
+  const { theme, setTheme } = useThemeMode();
+  const options: { key: "system" | "light" | "dark"; label: string; title: string; icon: React.ReactNode }[] = [
+    { key: "system", label: "Auto", title: "Suit le réglage du système", icon: <Monitor className="w-3.5 h-3.5" /> },
     { key: "light", label: "Clair", title: "Thème clair", icon: <Sun className="w-3.5 h-3.5" /> },
     { key: "dark", label: "Sombre", title: "Thème sombre", icon: <Moon className="w-3.5 h-3.5" /> },
-    { key: "mixed", label: "Mixte", title: "Sidebar sombre, contenu clair", icon: <SunMoon className="w-3.5 h-3.5" /> },
   ];
 
   return (
-    <div className="space-y-1 mb-1">
+    <div className="mb-1">
       <div className="flex items-center gap-0.5 px-1 py-1 rounded-md bg-sidebar-hover/50">
         {options.map((opt) => (
           <button
@@ -1991,14 +1988,6 @@ function ThemeSwitcher() {
           </button>
         ))}
       </div>
-      <button
-        onClick={() => navigate("/settings", { state: { settingsTab: "theme" } })}
-        className="w-full flex items-center justify-center gap-2 px-2 py-1.5 rounded-md text-xs font-medium bg-sidebar-hover/50 text-sidebar-fg hover:text-sidebar-fg-bright hover:bg-sidebar-hover transition-colors"
-        title="Ouvrir la sélection des thèmes"
-      >
-        <Palette className="w-3.5 h-3.5" />
-        Thèmes
-      </button>
     </div>
   );
 }

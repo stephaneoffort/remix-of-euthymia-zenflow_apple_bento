@@ -10,7 +10,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { generateGoogleCalendarUrl, generateOutlookCalendarUrl, generateYahooCalendarUrl } from '@/lib/calendarLinks';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
-import { useThemeMode } from '@/context/ThemeContext';
 import MentionCommentInput from '@/components/MentionCommentInput';
 import TaskChecklist from '@/components/TaskChecklist';
 import RichTextEditor, { RichTextDisplay } from '@/components/RichTextEditor';
@@ -166,7 +165,6 @@ export default function TaskDetailPanel() {
   const { selectedTaskId, setSelectedTaskId, setSelectedProjectId, getTaskById, updateTask, deleteTask, getSubtasks, addTask, getTaskBreadcrumb, getMemberById, tasks, teamMembers, allStatuses, getStatusLabel, addAttachment, deleteAttachment, projects, spaces, getListsForProject, convertTaskToProject, duplicateTask } = useApp();
   const { isActive } = useIntegrations();
   const { teamMemberId } = useAuth();
-  const { designMode } = useThemeMode();
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [addingSubtaskFor, setAddingSubtaskFor] = useState<string | null>(null);
   const [newComment, setNewComment] = useState('');
@@ -297,14 +295,7 @@ export default function TaskDetailPanel() {
   return (
     <div className={`flex flex-col h-full bg-background border-l border-border shadow-xl task-detail-panel ${
       expanded ? 'fixed inset-0 z-[60]' : ''
-    } ${designMode === "neumorphic" ? 'nm-task-detail' : ''}`}
-    style={designMode === "neumorphic" ? {
-      background: "#EDE6DA",
-      borderLeft: "1px solid rgba(140,118,88,0.2)",
-      boxShadow: "-8px 0 30px rgba(140,118,88,0.3)",
-      fontFamily: "'DM Sans', sans-serif",
-    } : {}}
-    >
+    }`}>
       {/* Header */}
       <div className="flex items-center justify-between px-3 sm:px-5 py-3 sm:py-4 border-b border-border">
         <div className="flex items-center gap-1.5 text-xs text-foreground/60 min-w-0 overflow-x-auto" />

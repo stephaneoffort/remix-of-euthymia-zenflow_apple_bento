@@ -1,8 +1,6 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
-import "./styles/palettes.css";
-import "./styles/theme-ivoire-chaud.css";
 
 // Prevent PWA service worker from interfering in iframe/preview contexts
 const isInIframe = (() => {

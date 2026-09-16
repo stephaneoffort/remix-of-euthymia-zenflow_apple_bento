@@ -19,6 +19,58 @@ interface Props {
   projects: Project[];
 }
 
+// Construit la correspondance tâche → projet (via task_lists) pour pouvoir
+// rattacher au bon projet les pièces jointes posées sur une tâche ou sous-tâche.
+async function buildTaskProjectMap(): Promise<Record<string, string>> {
+  const { data: lists } = await (supabase as any)
+    .from("task_lists")
+    .select("id, project_id");
+  const listToProject: Record<string, string> = {};
+  (lists ?? []).forEach((l: any) => {
+    if (l?.id && l?.project_id) listToProject[l.id] = l.project_id;
+  });
+  const { data: taskRows } = await (supabase as any)
+    .from("tasks")
+    .select("id, list_id, parent_task_id");
+  const tasksById: Record<string, any> = {};
+  (taskRows ?? []).forEach((t: any) => {
+    tasksById[t.id] = t;
+  });
+  const taskToProject: Record<string, string> = {};
+  const resolve = (taskId: string, depth = 0): string | undefined => {
+    if (depth > 12) return undefined;
+    const t = tasksById[taskId];
+    if (!t) return undefined;
+    if (t.list_id && listToProject[t.list_id]) return listToProject[t.list_id];
+    if (t.parent_task_id) return resolve(t.parent_task_id, depth + 1);
+    return undefined;
+  };
+  Object.keys(tasksById).forEach((id) => {
+    const pid = resolve(id);
+    if (pid) taskToProject[id] = pid;
+  });
+  return taskToProject;
+}
+
+function aggregateAttachmentsByProject(
+  rows: Array<{ entity_id: string; entity_type: string }>,
+  taskToProject: Record<string, string>
+): Record<string, number> {
+  const counts: Record<string, number> = {};
+  rows.forEach((r) => {
+    let projectId: string | undefined;
+    if (r.entity_type === "project") {
+      projectId = r.entity_id;
+    } else if (r.entity_type === "task" || r.entity_type === "subtask") {
+      projectId = taskToProject[r.entity_id];
+    }
+    if (projectId) {
+      counts[projectId] = (counts[projectId] || 0) + 1;
+    }
+  });
+  return counts;
+}
+
 function DriveCard({ projects }: Props) {
   const { setSelectedProjectId, setSelectedView } = useApp();
   const onProjectClick = (id: string) => { setSelectedProjectId(id); setSelectedView("kanban"); };
@@ -31,15 +83,12 @@ function DriveCard({ projects }: Props) {
   const fetchData = async () => {
     setLoading(true);
     try {
+      const taskToProject = await buildTaskProjectMap();
       const { data } = await (supabase as any)
         .from("drive_attachments")
-        .select("entity_id")
-        .eq("entity_type", "project");
+        .select("entity_id, entity_type");
       const rows = data ?? [];
-      const counts: Record<string, number> = {};
-      rows.forEach((r: any) => {
-        counts[r.entity_id] = (counts[r.entity_id] || 0) + 1;
-      });
+      const counts = aggregateAttachmentsByProject(rows, taskToProject);
       const idsWithFiles = new Set(Object.keys(counts));
       setProjectsWithFiles(projects.filter((p) => idsWithFiles.has(p.id)));
       setFileCounts(counts);
@@ -146,15 +195,12 @@ function CanvaCard({ projects }: Props) {
   const fetchData = async () => {
     setLoading(true);
     try {
+      const taskToProject = await buildTaskProjectMap();
       const { data } = await (supabase as any)
         .from("canva_attachments")
-        .select("entity_id")
-        .eq("entity_type", "project");
+        .select("entity_id, entity_type");
       const rows = data ?? [];
-      const counts: Record<string, number> = {};
-      rows.forEach((r: any) => {
-        counts[r.entity_id] = (counts[r.entity_id] || 0) + 1;
-      });
+      const counts = aggregateAttachmentsByProject(rows, taskToProject);
       const idsWithDesigns = new Set(Object.keys(counts));
       setProjectsWithDesigns(projects.filter((p) => idsWithDesigns.has(p.id)));
       setDesignCounts(counts);

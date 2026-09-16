@@ -133,14 +133,14 @@ function MyTasksCard({
 export default function DashboardView() {
   const { tasks, teamMembers, spaces, projects, setSelectedTaskId } = useApp();
   const { teamMemberId } = useAuth();
-  const { palette, theme } = useThemeMode();
+  const { resolvedTheme } = useThemeMode();
 
-  // Compute chart colors reactively based on current palette
+  // Compute chart colors reactively when the theme (clair/sombre) changes
   const { STATUS_COLORS, PRIORITY_COLORS } = useMemo(() => {
     const colors = getChartColors();
     return { STATUS_COLORS: colors.status, PRIORITY_COLORS: colors.priority };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [palette, theme]);
+  }, [resolvedTheme]);
   // ─── Current member name ───
   const currentMember = useMemo(() => teamMembers.find((m) => m.id === teamMemberId), [teamMembers, teamMemberId]);
   const firstName = currentMember?.name?.split(" ")[0] || "là";

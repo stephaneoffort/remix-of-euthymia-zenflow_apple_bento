@@ -1,5 +1,4 @@
 import DashboardView from "@/components/DashboardView";
-import DashboardViewNM from "@/components/DashboardViewNM";
 import GanttView from "@/components/GanttView";
 import TimelineView from "@/components/TimelineView";
 import VoiceTaskCreator from "@/components/VoiceTaskCreator";
@@ -8,14 +7,10 @@ import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import AppSidebar from "@/components/AppSidebar";
-import SidebarNM from "@/components/SidebarNM";
 import KanbanBoard from "@/components/KanbanBoard";
-import KanbanBoardNM from "@/components/KanbanBoardNM";
 import ListView from "@/components/ListView";
 import CalendarView from "@/components/CalendarView";
-import CalendarViewNM from "@/components/CalendarViewNM";
 import WorkloadView from "@/components/WorkloadView";
-import WorkloadViewNM from "@/components/WorkloadViewNM";
 import MindMapView from "@/components/MindMapView";
 import TaskDetailPanel from "@/components/TaskDetailPanel";
 import TaskFilterBar from "@/components/TaskFilterBar";
@@ -30,8 +25,6 @@ import { ViewType } from "@/types";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Drawer, DrawerContent, DrawerTrigger, DrawerTitle } from "@/components/ui/drawer";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useThemeMode, PALETTE_META } from "@/context/ThemeContext";
-import { useThemePreview } from "@/lib/themePreviewStore";
 
 import {
   Sparkles,
@@ -110,67 +103,6 @@ const QUICK_FILTER_TITLES: Record<string, string> = {
   overdue: "Tâches en retard",
 };
 
-function ThemeIndicator() {
-  const { palette, theme, designMode, typeVariant } = useThemeMode();
-  const preview = useThemePreview();
-  const effectivePalette = preview.palette ?? palette;
-  const effectiveTheme = preview.theme ?? theme;
-  const effectiveType = preview.type ?? typeVariant;
-  const isPreviewing = preview.palette !== null || preview.theme !== null || preview.type !== null;
-  const meta = PALETTE_META[effectivePalette];
-  const label = meta?.label ?? effectivePalette;
-  const colors = meta?.colors ?? ["#ccc"];
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <button
-          onClick={() => { window.location.hash = "#theme"; window.dispatchEvent(new HashChangeEvent("hashchange")); }}
-          className={`relative inline-flex items-center gap-1 px-1.5 py-1 rounded-md border transition-all shrink-0 ${
-            isPreviewing
-              ? 'border-amber-500 bg-amber-50/40 dark:bg-amber-900/30 ring-1 ring-amber-500/40 animate-pulse'
-              : 'border-border bg-muted/30 hover:bg-muted hover:text-foreground'
-          }`}
-          style={isPreviewing ? undefined : { borderColor: `${colors[0]}40` }}
-        >
-          <div className="flex -space-x-0.5">
-            {colors.slice(0, 3).map((c, i) => (
-              <span
-                key={i}
-                className="inline-block w-2.5 h-2.5 rounded-full border border-white/40 transition-colors"
-                style={{ backgroundColor: c }}
-              />
-            ))}
-          </div>
-          <span className={`hidden md:inline text-[10px] font-medium tracking-tight ${isPreviewing ? 'text-amber-700 dark:text-amber-300' : 'text-muted-foreground'}`}>
-            {label.length > 12 ? label.slice(0, 12) + "…" : label}
-          </span>
-          {isPreviewing && (
-            <span className="absolute -top-1.5 -right-1.5 px-1 py-0.5 rounded-full bg-amber-500 text-[8px] font-bold text-white uppercase tracking-wide leading-none">
-              Aperçu
-            </span>
-          )}
-        </button>
-      </TooltipTrigger>
-      <TooltipContent side="bottom" className="text-xs">
-        <div className="space-y-1">
-          <p className="font-semibold flex items-center gap-1.5">
-            {label}
-            {isPreviewing && <span className="text-amber-600 dark:text-amber-400 text-[9px] uppercase">· Aperçu</span>}
-          </p>
-          <p className="text-muted-foreground text-[10px]">
-            {effectiveTheme === "light" ? "☀ Clair" : effectiveTheme === "dark" ? "☽ Sombre" : "⊙ Mixte"} · {designMode === "classic" ? "⊞ Classic" : "✦ Premium"} · {effectiveType}
-          </p>
-          {isPreviewing && (
-            <p className="text-[9px] text-amber-700 dark:text-amber-400 italic">
-              Cliquez sur l'option pour appliquer
-            </p>
-          )}
-        </div>
-      </TooltipContent>
-    </Tooltip>
-  );
-}
-
 export default function Index() {
   const {
     selectedProjectId,
@@ -207,8 +139,6 @@ export default function Index() {
   const [projectMemberIds, setProjectMemberIds] = useState<string[]>([]);
   const [todayEventCount, setTodayEventCount] = useState(0);
   const [viewOrder, setViewOrder] = useState<ViewType[]>(loadViewOrder);
-  const { designMode } = useThemeMode();
-  console.log("designMode:", designMode);
 
   const orderedViews = useMemo(() => viewOrder.map((key) => VIEW_MAP[key]).filter(Boolean), [viewOrder]);
 
@@ -366,11 +296,11 @@ export default function Index() {
   }
 
   return (
-    <div className={`flex h-screen overflow-hidden design-mode-transition ${designMode === "neumorphic" ? "" : "bg-background"}`}>
-      {designMode === "neumorphic" ? <SidebarNM /> : <AppSidebar />}
-      <div className="flex-1 flex flex-col min-w-0" style={designMode === "neumorphic" ? { background: "#EDE6DA" } : {}}>
+    <div className="flex h-screen overflow-hidden bg-background">
+      <AppSidebar />
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
-        <header className={`shrink-0 ${designMode === "neumorphic" ? "border-b" : "border-b border-border bg-card"}`} style={designMode === "neumorphic" ? { background: "#C8BDAD", borderColor: "rgba(140,118,88,0.25)", boxShadow: "0 4px 12px rgba(140,118,88,0.3)" } : {}}>
+        <header className="shrink-0 border-b border-border bg-card">
           {/* Row 1: Title + actions */}
           <div className="h-12 sm:h-14 flex items-center px-3 sm:px-6 gap-1.5 sm:gap-2">
             <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 flex-1 overflow-hidden">
@@ -490,7 +420,6 @@ export default function Index() {
               )}
             </div>
             <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-              <ThemeIndicator />
               <NotificationsDropdown />
               {/* Search button — desktop */}
               <button
@@ -605,16 +534,16 @@ export default function Index() {
         </header>
 
         {/* Main content - add bottom padding on mobile for nav bar */}
-        <main className={`flex-1 overflow-hidden ${isMobile ? "pb-16" : ""}`} style={designMode === "neumorphic" ? { background: "#EDE6DA" } : {}}>
+        <main className={`flex-1 overflow-hidden ${isMobile ? "pb-16" : ""}`}>
           {selectedView === "dashboard" && (
             <div className="h-full overflow-y-auto w-full">
-              {designMode === "neumorphic" ? <DashboardViewNM /> : <DashboardView />}
+              <DashboardView />
             </div>
           )}
-          {selectedView === "kanban" && (designMode === "neumorphic" ? <KanbanBoardNM /> : <KanbanBoard />)}
+          {selectedView === "kanban" && <KanbanBoard />}
           {selectedView === "list" && <ListView />}
-          {selectedView === "calendar" && (designMode === "neumorphic" ? <CalendarViewNM /> : <CalendarView />)}
-          {selectedView === "workload" && (designMode === "neumorphic" ? <WorkloadViewNM /> : <WorkloadView />)}
+          {selectedView === "calendar" && <CalendarView />}
+          {selectedView === "workload" && <WorkloadView />}
           {selectedView === "mindmap" && <MindMapView />}
           {selectedView === "gantt" && <GanttView />}
           {selectedView === "timeline" && <TimelineView />}

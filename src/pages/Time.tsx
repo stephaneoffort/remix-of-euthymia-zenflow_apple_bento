@@ -1,10 +1,8 @@
 import { useApp } from '@/context/AppContext';
 import { useOrg } from '@/context/OrgContext';
-import { useThemeMode } from '@/context/ThemeContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useNavigate } from 'react-router-dom';
 import AppSidebar from '@/components/AppSidebar';
-import SidebarNM from '@/components/SidebarNM';
 import MobileBottomNav from '@/components/MobileBottomNav';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TimerTab from '@/components/time/TimerTab';
@@ -15,13 +13,12 @@ import { PanelLeft, Timer, ArrowLeft } from 'lucide-react';
 export default function TimePage() {
   const { sidebarCollapsed, setSidebarCollapsed } = useApp();
   const { currentOrg } = useOrg();
-  const { designMode } = useThemeMode();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
 
   return (
-    <div className={`flex h-[100dvh] relative overflow-hidden ${designMode === 'neumorphic' ? 'nm-chat' : ''}`}>
-      {!isMobile && !sidebarCollapsed && (designMode === 'neumorphic' ? <SidebarNM /> : <AppSidebar />)}
+    <div className="flex h-[100dvh] relative overflow-hidden">
+      {!isMobile && !sidebarCollapsed && <AppSidebar />}
       {!isMobile && sidebarCollapsed && (
         <button
           onClick={() => setSidebarCollapsed(false)}

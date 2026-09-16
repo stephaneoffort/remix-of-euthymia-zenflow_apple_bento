@@ -6,15 +6,13 @@ import { Navigate, useNavigate, useLocation, Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown, Palette, BellRing, HardDrive, CalendarSync, ShieldCheck, Sparkles, FileText, ExternalLink, Building2, ImageUp, MailCheck } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown, Palette, BellRing, HardDrive, CalendarSync, ShieldCheck, FileText, ExternalLink, Building2, ImageUp, MailCheck } from 'lucide-react';
 import AppearanceSettings from '@/components/settings/AppearanceSettings';
 import { useOrg } from '@/context/OrgContext';
 import TaskTemplatesPanel from '@/components/settings/TaskTemplatesPanel';
-import { useThemeMode, PALETTE_META, TYPE_META, type ThemePalette, type TypeVariant } from '@/context/ThemeContext';
+import { useThemeMode } from '@/context/ThemeContext';
 import DataExportImport from '@/components/DataExportImport';
-import { themePreviewStore } from '@/lib/themePreviewStore';
 import InviteMemberDialog from '@/components/InviteMemberDialog';
 import IntegrationsSettings from '@/components/settings/IntegrationsSettings';
 import AdminIntegrationsPanel from '@/components/settings/AdminIntegrationsPanel';
@@ -637,446 +635,48 @@ function StatusesPanel() {
 
 
 function ThemePalettePanel() {
-  const {
-    palette, setPalette,
-    theme, setTheme,
-    designMode, setDesignMode,
-    typeVariant, setTypeVariant,
-    taskPanelOpacity, setTaskPanelOpacity,
-  } = useThemeMode();
-  const palettes = Object.entries(PALETTE_META) as [ThemePalette, typeof PALETTE_META[ThemePalette]][];
-  const isBento = palette.startsWith("bento");
+  const { theme, setTheme } = useThemeMode();
 
-  // ── Preview state (hover) ─────────────────────────────────────────
-  const [previewPalette, setPreviewPalette] = useState<ThemePalette | null>(null);
-  const [previewTheme, setPreviewTheme] = useState<'light' | 'dark' | 'mixed' | null>(null);
-  const [previewType, setPreviewType] = useState<TypeVariant | null>(null);
-
-  // Apply palette preview via root.dataset.palette without touching localStorage
-  useEffect(() => {
-    const root = document.documentElement;
-    if (previewPalette) {
-      root.dataset.palette = previewPalette;
-      root.classList.add('palette-transitioning');
-    } else {
-      root.dataset.palette = palette;
-    }
-    return () => { root.dataset.palette = palette; };
-  }, [previewPalette, palette]);
-
-  // Apply theme preview by toggling root classes
-  useEffect(() => {
-    const root = document.documentElement;
-    const apply = (t: 'light' | 'dark' | 'mixed') => {
-      root.classList.remove('light', 'dark', 'mixed');
-      root.classList.add(t === 'mixed' ? 'mixed' : t);
-    };
-    if (previewTheme) apply(previewTheme);
-    else apply(theme);
-    return () => apply(theme);
-  }, [previewTheme, theme]);
-
-  // Apply typo preview via CSS vars
-  useEffect(() => {
-    const root = document.documentElement;
-    const meta = TYPE_META[previewType ?? typeVariant];
-    root.style.setProperty('--font-display', meta.display);
-    root.style.setProperty('--font-body', meta.body);
-    root.style.setProperty('--font-numeric', meta.numeric);
-    return () => {
-      const restore = TYPE_META[typeVariant];
-      root.style.setProperty('--font-display', restore.display);
-      root.style.setProperty('--font-body', restore.body);
-      root.style.setProperty('--font-numeric', restore.numeric);
-    };
-  }, [previewType, typeVariant]);
-
-  // Sync preview state to global store so the top-bar ThemeIndicator can mirror it
-  useEffect(() => {
-    themePreviewStore.set({ palette: previewPalette, theme: previewTheme, type: previewType });
-  }, [previewPalette, previewTheme, previewType]);
-
-  // Reset global preview when leaving the Settings page
-  useEffect(() => {
-    return () => themePreviewStore.reset();
-  }, []);
-
-  // Effective values for the "Thème actuel" indicator card
-  const effectivePalette = previewPalette ?? palette;
-  const effectiveTheme = previewTheme ?? theme;
-  const effectiveType = previewType ?? typeVariant;
-  const isPreviewing = previewPalette !== null || previewTheme !== null || previewType !== null;
-
-  const handleSelect = (key: ThemePalette) => {
-    setPreviewPalette(null);
-    if (key === palette) return;
-    setPalette(key);
-    toast.success(`Palette "${PALETTE_META[key].label}" appliquée`);
-  };
-
-  const PALETTE_GROUPS: { title: string; keys: ThemePalette[] }[] = [
-    { title: "Classiques", keys: ["clubroom", "neutrals", "sapphire", "cinematic", "teal", "dunesCuivre", "crepuscule", "brumeArdoise", "prunelle", "azurProfond", "auroreCorail", "braiseNocturne"] },
-    { title: "Bento 2026", keys: ["bento2026", "bentoOcean", "bentoRose", "bentoAmber", "bentoDunesCuivre", "bentoCrepuscule", "bentoBrumeArdoise", "bentoPrunelle", "bentoAzurProfond", "bentoAuroreCorail", "bentoBraiseNocturne"] },
-    { title: "Soft UI (Neumorphisme)", keys: ["nmCloud", "nmMidnight", "nmSand", "nmForest", "nmLavender", "nmDeepForest", "ivoireChaud", "nmDunesCuivre", "nmCrepuscule", "nmBrumeArdoise", "nmPrunelle", "nmAzurProfond", "nmAuroreCorail", "nmBraiseNocturne"] },
+  const options: { key: 'system' | 'light' | 'dark'; label: string; description: string }[] = [
+    { key: 'system', label: 'Automatique', description: 'Suit le réglage clair/sombre du système' },
+    { key: 'light', label: 'Clair', description: 'Toujours en apparence claire' },
+    { key: 'dark', label: 'Sombre', description: 'Toujours en apparence sombre' },
   ];
 
   return (
     <div className="space-y-6">
-      {/* ── Thème actuel ── */}
-      <Card className={`shadow-sm transition-all sticky top-2 z-10 ${isPreviewing ? 'border-amber-500/60 bg-amber-50/30 dark:bg-amber-900/20' : 'border-primary/40 bg-accent/20'}`}>
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-foreground text-base">
-            <Sparkles className={`w-5 h-5 ${isPreviewing ? 'text-amber-500 animate-pulse' : 'text-primary'}`} />
-            {isPreviewing ? 'Aperçu (survol)' : 'Thème actuel'}
-            {isPreviewing && (
-              <span className="ml-auto px-2 py-0.5 rounded-full bg-amber-500 text-[10px] font-bold text-white uppercase tracking-wide">
-                Prévisualisation
-              </span>
-            )}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap items-center gap-3">
-            {/* Mode */}
-            <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border bg-card transition-all ${previewTheme ? 'border-amber-500 ring-1 ring-amber-500/30' : 'border-border'}`}>
-              <span className="text-sm">
-                {effectiveTheme === 'light' ? '☀' : effectiveTheme === 'dark' ? '☽' : '⊙'}
-              </span>
-              <span className="text-sm font-medium text-foreground">
-                {effectiveTheme === 'light' ? 'Clair' : effectiveTheme === 'dark' ? 'Sombre' : 'Mixte'}
-              </span>
-            </div>
-            {/* Design mode */}
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-card">
-              <span className="text-sm">{designMode === 'classic' ? '⊞' : '✦'}</span>
-              <span className="text-sm font-medium text-foreground">
-                {designMode === 'classic' ? 'Classic' : 'Premium'}
-              </span>
-            </div>
-            {/* Typo */}
-            <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border bg-card transition-all ${previewType ? 'border-amber-500 ring-1 ring-amber-500/30' : 'border-border'}`}>
-              <span className="font-display text-sm font-semibold" style={{ fontFamily: TYPE_META[effectiveType].display }}>Aa</span>
-              <span className="text-sm font-medium text-foreground">{TYPE_META[effectiveType].label}</span>
-            </div>
-            {/* Palette */}
-            <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-all ${previewPalette ? 'border-amber-500 ring-1 ring-amber-500/30 bg-amber-50/40 dark:bg-amber-900/20' : 'border-primary/50 bg-primary/5'}`}>
-              <div className="flex gap-1">
-                {PALETTE_META[effectivePalette].colors.slice(0, 4).map((c, i) => (
-                  <div key={i} className="w-5 h-5 rounded-md border border-border/60 transition-colors" style={{ backgroundColor: c }} />
-                ))}
-              </div>
-              <span className={`text-sm font-semibold ${previewPalette ? 'text-amber-700 dark:text-amber-400' : 'text-primary'}`}>{PALETTE_META[effectivePalette].label}</span>
-            </div>
-          </div>
-          {isPreviewing && (
-            <p className="text-xs text-muted-foreground mt-3 italic">
-              💡 Cliquez pour appliquer · déplacez la souris ailleurs pour annuler
-            </p>
-          )}
-        </CardContent>
-      </Card>
       <Card className="border-border bg-card">
         <CardHeader>
-          <CardTitle className="text-base text-foreground">Mode d'affichage</CardTitle>
-          <p className="text-sm text-muted-foreground">Clair, sombre ou mixte (contenu clair + sidebar sombre).</p>
+          <CardTitle className="text-base text-foreground">Thème</CardTitle>
+          <p className="text-sm text-muted-foreground">Choisis comment ZenFlow s'affiche.</p>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-3">
-            {([
-              { key: "light" as const, label: "☀ Clair" },
-              { key: "dark" as const, label: "☽ Sombre" },
-              { key: "mixed" as const, label: "⊙ Mixte" },
-            ]).map(({ key, label }) => (
-              <button
-                key={key}
-                onMouseEnter={() => setPreviewTheme(key)}
-                onMouseLeave={() => setPreviewTheme(null)}
-                onFocus={() => setPreviewTheme(key)}
-                onBlur={() => setPreviewTheme(null)}
-                onClick={() => { setPreviewTheme(null); setTheme(key); toast.success(`Mode ${label} activé`); }}
-                className={`relative flex items-center gap-2 px-5 py-3 rounded-xl border-2 transition-all text-sm font-medium ${
-                  previewTheme === key && previewTheme !== theme
-                    ? 'border-amber-500 bg-amber-50/40 dark:bg-amber-900/30 text-foreground shadow-md ring-2 ring-amber-500/30'
-                    : theme === key
-                    ? 'border-primary bg-accent/40 text-foreground shadow-md ring-1 ring-primary/20'
-                    : 'border-border bg-card text-muted-foreground hover:border-muted-foreground/30 hover:bg-muted/30'
-                }`}
-              >
-                {label}
-                {theme === key && previewTheme !== key && (
-                  <>
-                    <span className="ml-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                      <Check className="w-3 h-3 text-primary-foreground" />
-                    </span>
-                    <span className="absolute -top-2 -right-2 px-1.5 py-0.5 rounded-full bg-primary text-[9px] font-bold text-primary-foreground uppercase tracking-wide">
-                      Actif
-                    </span>
-                  </>
-                )}
-                {previewTheme === key && previewTheme !== theme && (
-                  <span className="absolute -top-2 -right-2 px-1.5 py-0.5 rounded-full bg-amber-500 text-[9px] font-bold text-white uppercase tracking-wide">
-                    Aperçu
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Opacité du panneau de détail — uniquement pour les thèmes Bento */}
-      {isBento && (
-        <Card className="border-border bg-card">
-          <CardHeader>
-            <CardTitle className="text-base text-foreground">Opacité du panneau de tâche</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Ajustez la transparence du fond du panneau de détail pour optimiser la lisibilité selon votre écran.
-              Réservé aux thèmes Bento.
-            </p>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between gap-4">
-                <Label htmlFor="task-panel-opacity" className="text-sm text-foreground">
-                  Opacité du fond
-                </Label>
-                <span
-                  className="text-sm font-semibold text-primary tabular-nums min-w-[3.5rem] text-right"
-                  data-numeric
-                >
-                  {Math.round(taskPanelOpacity * 100)}%
-                </span>
-              </div>
-              <input
-                id="task-panel-opacity"
-                type="range"
-                min={50}
-                max={100}
-                step={5}
-                value={Math.round(taskPanelOpacity * 100)}
-                onChange={(e) => setTaskPanelOpacity(Number(e.target.value) / 100)}
-                className="w-full h-2 rounded-full appearance-none cursor-pointer bg-muted accent-primary"
-                style={{
-                  background: `linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary)) ${
-                    ((taskPanelOpacity - 0.5) / 0.5) * 100
-                  }%, hsl(var(--muted)) ${((taskPanelOpacity - 0.5) / 0.5) * 100}%, hsl(var(--muted)) 100%)`,
-                }}
-              />
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>50% · Verre dépoli</span>
-                <span>100% · Opaque</span>
-              </div>
-              <div className="flex flex-wrap gap-2 pt-1">
-                {[0.6, 0.75, 0.9, 1].map((v) => (
-                  <button
-                    key={v}
-                    type="button"
-                    onClick={() => setTaskPanelOpacity(v)}
-                    className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
-                      Math.abs(taskPanelOpacity - v) < 0.001
-                        ? "border-primary bg-accent/40 text-foreground shadow-sm"
-                        : "border-border bg-card text-muted-foreground hover:border-muted-foreground/30 hover:bg-muted/30"
-                    }`}
-                  >
-                    {Math.round(v * 100)}%
-                  </button>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Mode de design */}
-      <Card className="border-border bg-card">
-        <CardHeader>
-          <CardTitle className="text-base text-foreground">Mode de design</CardTitle>
-          <p className="text-sm text-muted-foreground">Interface classique ou neumorphique (Soft UI).</p>
-        </CardHeader>
-        <CardContent>
-          <div className="flex gap-3">
-            {([
-              { key: "classic" as const, label: "⊞ Classic" },
-              { key: "neumorphic" as const, label: "✦ Premium" },
-            ]).map(({ key, label }) => (
-              <button
-                key={key}
-                onClick={() => { setDesignMode(key); toast.success(`Mode ${label} activé`); }}
-                className={`relative flex items-center gap-2 px-5 py-3 rounded-xl border-2 transition-all text-sm font-medium ${
-                  designMode === key
-                    ? 'border-primary bg-accent/40 text-foreground shadow-md ring-1 ring-primary/20'
-                    : 'border-border bg-card text-muted-foreground hover:border-muted-foreground/30 hover:bg-muted/30'
-                }`}
-              >
-                {label}
-                {designMode === key && (
-                  <>
-                    <span className="ml-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                      <Check className="w-3 h-3 text-primary-foreground" />
-                    </span>
-                    <span className="absolute -top-2 -right-2 px-1.5 py-0.5 rounded-full bg-primary text-[9px] font-bold text-primary-foreground uppercase tracking-wide">
-                      Actif
-                    </span>
-                  </>
-                )}
-              </button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Typographie */}
-      <Card className="border-border bg-card">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-foreground text-base">
-            <span className="font-display text-xl leading-none">Aa</span>
-            Typographie
-          </CardTitle>
-          <p className="text-sm text-muted-foreground">Choisis l'identité typographique de l'interface.</p>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
-            {(Object.entries(TYPE_META) as [TypeVariant, typeof TYPE_META[TypeVariant]][]).map(([key, meta]) => {
-              const active = typeVariant === key;
+          <div className="grid gap-3 grid-cols-1 sm:grid-cols-3">
+            {options.map(({ key, label, description }) => {
+              const active = theme === key;
               return (
                 <button
                   key={key}
-                  onMouseEnter={() => setPreviewType(key)}
-                  onMouseLeave={() => setPreviewType(null)}
-                  onFocus={() => setPreviewType(key)}
-                  onBlur={() => setPreviewType(null)}
-                  onClick={() => {
-                    setPreviewType(null);
-                    if (active) return;
-                    setTypeVariant(key);
-                    toast.success(`Typographie "${meta.label}" appliquée`);
-                  }}
-                  className={`group relative flex flex-col gap-3 p-5 rounded-xl border-2 transition-all text-left ${
-                    previewType === key && previewType !== typeVariant
-                      ? 'border-amber-500 bg-amber-50/40 dark:bg-amber-900/30 shadow-md ring-2 ring-amber-500/30'
-                      : active
-                      ? 'border-primary bg-accent/40 shadow-md ring-1 ring-primary/20'
-                      : 'border-border bg-card hover:border-muted-foreground/30 hover:bg-muted/30'
+                  onClick={() => { setTheme(key); toast.success(`Thème "${label}" appliqué`); }}
+                  className={`relative flex flex-col items-start gap-1 px-4 py-3 rounded-xl border-2 transition-all text-left ${
+                    active
+                      ? 'border-primary bg-accent/40 text-foreground shadow-md ring-1 ring-primary/20'
+                      : 'border-border bg-card text-muted-foreground hover:border-muted-foreground/30 hover:bg-muted/30'
                   }`}
                 >
-                  {active && previewType !== key && (
-                    <>
-                      <span className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                        <Check className="w-3.5 h-3.5 text-primary-foreground" />
-                      </span>
-                      <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full bg-primary text-[10px] font-bold text-primary-foreground uppercase tracking-wide">
-                        Actuel
-                      </span>
-                    </>
-                  )}
-                  {previewType === key && previewType !== typeVariant && (
-                    <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full bg-amber-500 text-[10px] font-bold text-white uppercase tracking-wide">
-                      Aperçu
+                  <span className="text-sm font-medium text-foreground">{label}</span>
+                  <span className="text-xs text-muted-foreground">{description}</span>
+                  {active && (
+                    <span className="absolute top-3 right-3 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                      <Check className="w-3 h-3 text-primary-foreground" />
                     </span>
                   )}
-                  <div
-                    className="rounded-lg border border-border/50 bg-muted/20 p-4 space-y-2"
-                    style={{
-                      ['--font-display' as any]: meta.display,
-                      ['--font-body' as any]: meta.body,
-                      ['--font-numeric' as any]: meta.numeric,
-                    }}
-                  >
-                    <p
-                      className="text-2xl font-semibold text-foreground leading-tight tracking-tight"
-                      style={{ fontFamily: meta.display }}
-                    >
-                      Bonjour, Stéphane
-                    </p>
-                    <p
-                      className="text-sm text-muted-foreground leading-snug"
-                      style={{ fontFamily: meta.body }}
-                    >
-                      Voici un aperçu de votre typographie corps de texte avec une lecture confortable.
-                    </p>
-                    <p
-                      className="text-3xl font-bold text-primary tabular-nums"
-                      style={{ fontFamily: meta.numeric }}
-                    >
-                      87%
-                    </p>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-sm text-foreground">{meta.label}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">{meta.description}</p>
-                  </div>
                 </button>
               );
             })}
           </div>
         </CardContent>
       </Card>
-
-      {/* Palettes groupées */}
-      {PALETTE_GROUPS.map(group => (
-        <Card key={group.title} className="border-border bg-card">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-foreground text-base">
-              <Palette className="w-5 h-5 text-primary" />
-              {group.title}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
-              {group.keys.map(key => {
-                const meta = PALETTE_META[key];
-                const active = palette === key;
-                return (
-                  <button
-                    key={key}
-                    onMouseEnter={() => setPreviewPalette(key)}
-                    onMouseLeave={() => setPreviewPalette(null)}
-                    onFocus={() => setPreviewPalette(key)}
-                    onBlur={() => setPreviewPalette(null)}
-                    onClick={() => handleSelect(key)}
-                    className={`group relative flex flex-col gap-3 p-5 rounded-xl border-2 transition-all text-left ${
-                      previewPalette === key && previewPalette !== palette
-                        ? 'border-amber-500 bg-amber-50/40 dark:bg-amber-900/30 shadow-md ring-2 ring-amber-500/30'
-                        : active
-                        ? 'border-primary bg-accent/40 shadow-md ring-1 ring-primary/20'
-                        : 'border-border bg-card hover:border-muted-foreground/30 hover:bg-muted/30'
-                    }`}
-                  >
-                    {active && previewPalette !== key && (
-                      <>
-                        <span className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                          <Check className="w-3.5 h-3.5 text-primary-foreground" />
-                        </span>
-                        <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full bg-primary text-[10px] font-bold text-primary-foreground uppercase tracking-wide">
-                          Actuel
-                        </span>
-                      </>
-                    )}
-                    {previewPalette === key && previewPalette !== palette && (
-                      <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full bg-amber-500 text-[10px] font-bold text-white uppercase tracking-wide">
-                        Aperçu
-                      </span>
-                    )}
-                    <div className="flex gap-1.5">
-                      {meta.colors.map((c, i) => (
-                        <div
-                          key={i}
-                          className="w-8 h-8 rounded-lg border border-border/50"
-                          style={{ backgroundColor: c }}
-                        />
-                      ))}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-sm text-foreground">{meta.label}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">{meta.description}</p>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-      ))}
     </div>
   );
 }

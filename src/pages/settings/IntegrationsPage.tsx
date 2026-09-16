@@ -192,7 +192,7 @@ export default function IntegrationsPage() {
                   key={key}
                   className={cn(
                     "transition-all duration-200",
-                    isActive && "border-emerald-200/60 dark:border-emerald-800/40",
+                    isActive && "border-status-done/40",
                   )}
                 >
                   <CardContent className="p-4">
@@ -220,7 +220,7 @@ export default function IntegrationsPage() {
                       ) : isKeep ? (
                         <Badge
                           variant="outline"
-                          className="gap-1.5 text-xs text-amber-700 border-amber-200 bg-amber-50 dark:text-amber-400 dark:border-amber-800 dark:bg-amber-950/30"
+                          className="gap-1.5 text-xs text-priority-high border-priority-high/30 bg-priority-high/10"
                         >
                           <CheckCircle2 className="h-3 w-3" />
                           {enabled ? "Activé" : "Disponible"}
@@ -228,7 +228,7 @@ export default function IntegrationsPage() {
                       ) : connected ? (
                         <Badge
                           variant="outline"
-                          className="gap-1.5 text-xs text-emerald-700 border-emerald-200 bg-emerald-50 dark:text-emerald-400 dark:border-emerald-800 dark:bg-emerald-950/30"
+                          className="gap-1.5 text-xs text-status-done border-status-done/30 bg-status-done/10"
                         >
                           <CheckCircle2 className="h-3 w-3" />
                           Connecté

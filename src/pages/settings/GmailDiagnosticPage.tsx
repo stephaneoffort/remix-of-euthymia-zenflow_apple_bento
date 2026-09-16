@@ -170,7 +170,7 @@ export default function GmailDiagnosticPage() {
                     }
                     valueClass={
                       data.client_secret_set
-                        ? "text-emerald-600"
+                        ? "text-status-done"
                         : "text-destructive"
                     }
                   />
@@ -201,9 +201,9 @@ export default function GmailDiagnosticPage() {
                       className="flex items-center gap-2 text-sm font-mono"
                     >
                       {isRestricted ? (
-                        <ShieldAlert className="w-4 h-4 text-amber-500 shrink-0" />
+                        <ShieldAlert className="w-4 h-4 text-priority-high shrink-0" />
                       ) : (
-                        <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                        <CheckCircle2 className="w-4 h-4 text-status-done shrink-0" />
                       )}
                       <span className="break-all">{s}</span>
                       {isRestricted && (
@@ -230,7 +230,7 @@ export default function GmailDiagnosticPage() {
               </h2>
               <div className="bg-muted/50 rounded-lg p-3 text-sm space-y-2">
                 <div className="flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 text-amber-500" />
+                  <AlertTriangle className="w-4 h-4 text-priority-high" />
                   <span className="font-medium">
                     Non détectable automatiquement
                   </span>

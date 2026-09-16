@@ -117,11 +117,11 @@ export default function AdminIntegrationsPanel() {
                       return (
                         <td key={k} className="text-center py-3 px-1">
                           {active ? (
-                            <Badge variant="default" className="bg-green-500/15 text-green-700 dark:text-green-400 border-green-500/30 text-[10px] px-1.5">
+                            <Badge variant="default" className="bg-status-done/15 text-status-done border-status-done/30 text-[10px] px-1.5">
                               ✅ Actif
                             </Badge>
                           ) : enabledOnly ? (
-                            <Badge variant="outline" className="text-amber-600 border-amber-400/50 text-[10px] px-1.5">
+                            <Badge variant="outline" className="text-priority-high border-priority-high/50 text-[10px] px-1.5">
                               ⚠️ Activé
                             </Badge>
                           ) : (

@@ -55,7 +55,7 @@ const computeStatus = (inv: Invitation): Computed => {
 const statusMeta: Record<Computed, { label: string; className: string }> = {
   pending: { label: 'En cours', className: 'bg-primary/15 text-primary border-primary/30' },
   expired: { label: 'Expirée', className: 'bg-muted text-muted-foreground border-border' },
-  accepted: { label: 'Acceptée', className: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30' },
+  accepted: { label: 'Acceptée', className: 'bg-status-done/15 text-status-done border-status-done/30' },
   revoked: { label: 'Révoquée', className: 'bg-destructive/15 text-destructive border-destructive/30' },
 };
 

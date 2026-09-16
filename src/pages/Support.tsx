@@ -50,8 +50,8 @@ const db = supabase as any;
 const priorityColor: Record<string, string> = {
   low: "bg-muted text-muted-foreground",
   normal: "bg-primary/15 text-primary",
-  high: "bg-orange-500/15 text-orange-500",
-  urgent: "bg-red-500/15 text-red-500",
+  high: "bg-priority-high/15 text-priority-high",
+  urgent: "bg-priority-urgent/15 text-priority-urgent",
 };
 
 export default function Support() {
@@ -292,7 +292,7 @@ export default function Support() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5">
                           <p className="text-sm font-medium truncate">{c.subject}</p>
-                          {c.escalated && <ShieldAlert className="w-3.5 h-3.5 text-orange-500 shrink-0" />}
+                          {c.escalated && <ShieldAlert className="w-3.5 h-3.5 text-priority-high shrink-0" />}
                         </div>
                         <div className="flex items-center gap-1.5 mt-0.5">
                           <span className="text-[10px] text-muted-foreground">
@@ -430,13 +430,13 @@ function MessageBubble({ message, isMine }: { message: Message; isMine: boolean 
           isMine
             ? "bg-primary text-primary-foreground"
             : isAdmin
-            ? "bg-orange-500/10 border border-orange-500/30 text-foreground"
+            ? "bg-priority-high/10 border border-priority-high/30 text-foreground"
             : "bg-muted/60 text-foreground"
         }`}
       >
         <div className="flex items-center gap-1.5 mb-1 text-[10px] uppercase tracking-wide opacity-70">
           {isMine ? "Toi" : isAdmin ? "Stéphane (admin)" : isAssistant ? "Assistant IA" : "Système"}
-          {escalated && <ShieldAlert className="w-3 h-3 text-orange-500" />}
+          {escalated && <ShieldAlert className="w-3 h-3 text-priority-high" />}
         </div>
         <div className="prose prose-sm max-w-none dark:prose-invert prose-p:my-1 prose-ul:my-1 prose-headings:my-1">
           <ReactMarkdown>{message.content}</ReactMarkdown>

@@ -171,19 +171,19 @@ export default function IntegrationsSettings() {
               onClick={() => setSelectedKey(key)}
               className={`group relative flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all hover:shadow-md hover:-translate-y-0.5 text-left ${
                 connected
-                  ? 'border-green-500/30 bg-green-500/5 hover:border-green-500/50'
+                  ? 'border-status-done/30 bg-status-done/5 hover:border-status-done/50'
                   : 'border-border bg-card hover:border-primary/40 hover:bg-primary/5'
               }`}
             >
               {connected && (
-                <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center ring-2 ring-background">
+                <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-status-done flex items-center justify-center ring-2 ring-background">
                   <CheckCircle2 className="w-3.5 h-3.5 text-white" />
                 </span>
               )}
               <img src={config.icon} alt={config.label} className="w-10 h-10 rounded shrink-0" loading="lazy" />
               <div className="text-center w-full min-w-0">
                 <p className="text-sm font-semibold text-foreground truncate">{config.label}</p>
-                <p className={`text-[11px] mt-0.5 ${connected ? 'text-green-600' : 'text-muted-foreground'}`}>
+                <p className={`text-[11px] mt-0.5 ${connected ? 'text-status-done' : 'text-muted-foreground'}`}>
                   {connected ? 'Connecté' : 'Non connecté'}
                 </p>
               </div>
@@ -202,7 +202,7 @@ export default function IntegrationsSettings() {
                   <img src={selectedConfig.icon} alt={selectedConfig.label} className="w-8 h-8 rounded" />
                   {selectedConfig.label}
                   {selectedConnected && (
-                    <span className="ml-auto inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-500/10 px-2 py-0.5 rounded-full">
+                    <span className="ml-auto inline-flex items-center gap-1 text-xs font-medium text-status-done bg-status-done/10 px-2 py-0.5 rounded-full">
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       Connectée
                     </span>

@@ -247,7 +247,7 @@ export default function CalendarSyncSettings() {
             {/* Status + resync */}
             <div className="flex items-center justify-between pt-2 border-t border-border">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <CheckCircle className="w-4 h-4 text-green-500" />
+                <CheckCircle className="w-4 h-4 text-status-done" />
                 <span data-numeric className="font-numeric tabular-nums">{syncedCount}</span> tâche(s) synchronisée(s)
               </div>
               <Button

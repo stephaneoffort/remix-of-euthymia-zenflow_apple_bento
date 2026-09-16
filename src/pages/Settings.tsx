@@ -409,7 +409,7 @@ function MembersPanel() {
                   </div>
                 )}
                 {memberIsAdmin && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-amber-500 flex items-center justify-center ring-2 ring-background">
+                  <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-priority-high flex items-center justify-center ring-2 ring-background">
                     <Crown className="w-3 h-3 text-white" />
                   </span>
                 )}
@@ -435,7 +435,7 @@ function MembersPanel() {
                   <div className="flex items-center gap-2">
                     <p className="font-medium text-foreground text-sm truncate">{m.name}</p>
                     {memberIsAdmin && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-priority-high/15 text-priority-high px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
                         <Crown className="w-2.5 h-2.5" />
                         Admin
                       </span>
@@ -501,7 +501,7 @@ function MembersPanel() {
                       <Button
                         variant={memberIsAdmin ? 'default' : 'outline'}
                         size="sm"
-                        className={`text-xs gap-1.5 h-8 px-3 ${memberIsAdmin ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-500' : 'hover:border-amber-400 hover:text-amber-600'}`}
+                        className={`text-xs gap-1.5 h-8 px-3 ${memberIsAdmin ? 'bg-priority-high hover:bg-priority-high/90 text-white border-priority-high' : 'hover:border-priority-high/60 hover:text-priority-high'}`}
                         onClick={() => handleToggleAdmin(m.id)}
                         title={memberIsAdmin ? 'Retirer les droits admin' : 'Nommer administrateur'}
                       >
@@ -706,7 +706,7 @@ function PushDebugPanel() {
   }, [teamMemberId, isSubscribed]);
 
   const StatusDot = ({ ok }: { ok: boolean }) => (
-    <span className={`inline-block w-2.5 h-2.5 rounded-full ${ok ? 'bg-green-500' : 'bg-destructive'}`} />
+    <span className={`inline-block w-2.5 h-2.5 rounded-full ${ok ? 'bg-status-done' : 'bg-destructive'}`} />
   );
 
   return (

@@ -28,7 +28,5 @@ project_id = "jivfyaqpuhutixfjttga"
     verify_jwt = false
   [functions.integration-oauth]
     verify_jwt = false
-  [functions.process-email-queue]
-    verify_jwt = true
   [functions.support-chat]
     verify_jwt = true

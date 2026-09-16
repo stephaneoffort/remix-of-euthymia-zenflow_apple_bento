@@ -305,7 +305,7 @@ export default function CalendarAccountsManager({ accounts, syncing, visibleAcco
                   {testing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
                   Tester la connexion
                 </Button>
-                {testResult === true && <span className="text-xs text-green-600 font-medium">✓ Connecté</span>}
+                {testResult === true && <span className="text-xs text-status-done font-medium">✓ Connecté</span>}
                 {testResult === false && <span className="text-xs text-destructive font-medium">✗ Échec — vérifie le mot de passe d'application</span>}
               </div>
 
@@ -360,7 +360,7 @@ export default function CalendarAccountsManager({ accounts, syncing, visibleAcco
                   {testing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
                   Tester la connexion
                 </Button>
-                {testResult === true && <span className="text-xs text-green-600 font-medium">✓ Connecté</span>}
+                {testResult === true && <span className="text-xs text-status-done font-medium">✓ Connecté</span>}
                 {testResult === false && <span className="text-xs text-destructive font-medium">✗ Échec — vérifie les identifiants</span>}
               </div>
 

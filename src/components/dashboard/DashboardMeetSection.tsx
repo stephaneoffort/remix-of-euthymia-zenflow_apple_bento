@@ -155,8 +155,8 @@ export default function DashboardMeetSection() {
             <div className="grid grid-cols-3 gap-2 mb-3">
               {[
                 { label: "À venir", value: upcomingCount, color: "text-primary" },
-                { label: "Aujourd'hui", value: todayCount, color: "text-amber-500" },
-                { label: "Ce mois", value: thisMonthCount, color: "text-emerald-500" },
+                { label: "Aujourd'hui", value: todayCount, color: "text-priority-high" },
+                { label: "Ce mois", value: thisMonthCount, color: "text-status-done" },
               ].map((s) => (
                 <div key={s.label} className="bg-muted/40 rounded-lg px-3 py-2 text-center">
                   <p data-numeric className={`font-numeric text-lg font-bold ${s.color}`}>{s.value}</p>

@@ -98,7 +98,7 @@ export default function TaskLinksSection({ taskId }: Props) {
         className="group flex items-center gap-2 px-2 py-1.5 rounded-md bg-muted/50 hover:bg-muted transition-colors"
       >
         {isBlocking && !isDone && <Lock className="w-3.5 h-3.5 text-priority-urgent shrink-0" />}
-        {isBlocking && isDone && <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />}
+        {isBlocking && isDone && <Check className="w-3.5 h-3.5 text-status-done shrink-0" />}
         <button
           onClick={() => setSelectedTaskId(task.id)}
           className="flex-1 min-w-0 text-left"

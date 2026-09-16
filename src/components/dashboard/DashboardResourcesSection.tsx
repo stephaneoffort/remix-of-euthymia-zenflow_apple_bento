@@ -130,8 +130,8 @@ function DriveCard({ projects }: Props) {
             <div className="grid grid-cols-3 gap-2 mb-3">
               {[
                 { label: "Fichiers", value: totalFiles, color: "text-primary" },
-                { label: "Projets", value: projectsWithFiles.length, color: "text-amber-500" },
-                { label: "Récents", value: Math.min(totalFiles, 5), color: "text-emerald-500" },
+                { label: "Projets", value: projectsWithFiles.length, color: "text-priority-high" },
+                { label: "Récents", value: Math.min(totalFiles, 5), color: "text-status-done" },
               ].map((s) => (
                 <div key={s.label} className="bg-muted/40 rounded-lg px-3 py-2 text-center">
                   <p data-numeric className={`font-numeric text-lg font-bold ${s.color}`}>{s.value}</p>
@@ -158,7 +158,7 @@ function DriveCard({ projects }: Props) {
                       <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: project.color }} />
                       <p className="text-sm font-medium text-foreground truncate">{project.name}</p>
                       <Badge variant="outline"
-                        className="text-[10px] px-1.5 py-0 h-4 gap-0.5 font-medium bg-blue-500/15 text-blue-600 dark:text-blue-400 border-blue-500/20 ml-auto shrink-0">
+                        className="text-[10px] px-1.5 py-0 h-4 gap-0.5 font-medium bg-priority-normal/15 text-priority-normal border-priority-normal/20 ml-auto shrink-0">
                         <FileText className="w-3 h-3" />
                         {fileCounts[project.id] ?? 0}
                       </Badge>
@@ -242,8 +242,8 @@ function CanvaCard({ projects }: Props) {
             <div className="grid grid-cols-3 gap-2 mb-3">
               {[
                 { label: "Designs", value: totalDesigns, color: "text-primary" },
-                { label: "Projets", value: projectsWithDesigns.length, color: "text-amber-500" },
-                { label: "Récents", value: Math.min(totalDesigns, 5), color: "text-emerald-500" },
+                { label: "Projets", value: projectsWithDesigns.length, color: "text-priority-high" },
+                { label: "Récents", value: Math.min(totalDesigns, 5), color: "text-status-done" },
               ].map((s) => (
                 <div key={s.label} className="bg-muted/40 rounded-lg px-3 py-2 text-center">
                   <p data-numeric className={`font-numeric text-lg font-bold ${s.color}`}>{s.value}</p>

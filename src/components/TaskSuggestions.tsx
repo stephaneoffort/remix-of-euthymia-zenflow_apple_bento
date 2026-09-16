@@ -135,8 +135,8 @@ export default function TaskSuggestions({ open, onClose }: TaskSuggestionsProps)
                 const isAdded = added.has(i);
                 const prioColors: Record<string, string> = {
                   urgent: 'bg-destructive/10 text-destructive',
-                  high: 'bg-orange-500/10 text-orange-600',
-                  normal: 'bg-blue-500/10 text-blue-600',
+                  high: 'bg-priority-high/10 text-priority-high',
+                  normal: 'bg-priority-normal/10 text-priority-normal',
                   low: 'bg-muted text-muted-foreground',
                 };
                 return (

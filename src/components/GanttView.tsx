@@ -1165,7 +1165,7 @@ function DependencyArrows({
       {arrows.map((a, i) => {
         const midX = a.fromX + 10;
         const color = a.isCritical ? "hsl(var(--destructive))" : 
-          a.type === "SS" ? "#4A7FA5" : a.type === "FF" ? "#5A9A6A" : "hsl(var(--muted-foreground))";
+          a.type === "SS" ? "hsl(var(--tone-slate-fg))" : a.type === "FF" ? "hsl(var(--tone-sage-fg))" : "hsl(var(--muted-foreground))";
         const markerId = a.isCritical ? "arrowhead-critical" : "arrowhead";
 
         const path = `M ${a.fromX} ${a.fromY} H ${midX} V ${a.toY} H ${a.toX}`;

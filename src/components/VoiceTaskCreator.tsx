@@ -686,7 +686,7 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
                   {parseStep === 'transcribe'
                     ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
                     : (parseStep === 'analyze' || parseStep === 'done')
-                      ? <Check className="w-3.5 h-3.5 text-emerald-500" />
+                      ? <Check className="w-3.5 h-3.5 text-status-done" />
                       : <div className="w-3.5 h-3.5 rounded-full border border-current" />}
                   Transcription
                 </div>
@@ -695,7 +695,7 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
                   {parseStep === 'analyze'
                     ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
                     : parseStep === 'done'
-                      ? <Check className="w-3.5 h-3.5 text-emerald-500" />
+                      ? <Check className="w-3.5 h-3.5 text-status-done" />
                       : <div className="w-3.5 h-3.5 rounded-full border border-current" />}
                   Analyse IA
                 </div>
@@ -734,7 +734,7 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
                   <PriorityBadge priority={parsedTask.priority} />
                   <StatusBadge status="todo" />
                   {parsedTask.dueDate && /^\d{4}-\d{2}-\d{2}$/.test(parsedTask.dueDate) && (
-                    <span className="text-xs bg-amber-500/15 text-amber-500 px-2 py-0.5 rounded-full font-medium">
+                    <span className="text-xs bg-priority-high/15 text-priority-high px-2 py-0.5 rounded-full font-medium">
                       📅 {format(parseISO(parsedTask.dueDate), 'd MMM yyyy', { locale: fr })}
                       {parsedTask.dueTime && ` à ${parsedTask.dueTime}`}
                     </span>
@@ -893,7 +893,7 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
 
           {/* Browser support hint */}
           {phase === 'idle' && !SpeechRecognition && (
-            <div className="text-xs text-center text-amber-500 bg-amber-500/10 p-2 rounded-lg">
+            <div className="text-xs text-center text-priority-high bg-priority-high/10 p-2 rounded-lg">
               ⚠️ La reconnaissance vocale nécessite Chrome, Edge ou Safari.
             </div>
           )}

@@ -66,9 +66,9 @@ const MONTHS_FR = [
 const MONTHS_FR_SHORT = ["Jan", "Fév", "Mar", "Avr", "Mai", "Jun", "Jul", "Aoû", "Sep", "Oct", "Nov", "Déc"];
 
 const PRIORITY_COLORS: Record<string, string> = {
-  urgent: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
-  high: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
-  normal: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  urgent: "bg-priority-urgent/15 text-priority-urgent",
+  high: "bg-priority-high/15 text-priority-high",
+  normal: "bg-priority-normal/15 text-priority-normal",
   low: "bg-muted text-muted-foreground",
 };
 
@@ -82,9 +82,9 @@ const STATUS_LABELS: Record<string, string> = {
 const STATUS_DOT_COLORS: Record<string, string> = {
   todo: "bg-muted-foreground",
   in_progress: "bg-primary",
-  in_review: "bg-amber-500",
-  done: "bg-green-500",
-  blocked: "bg-red-500",
+  in_review: "bg-status-review",
+  done: "bg-status-done",
+  blocked: "bg-status-blocked",
 };
 
 const MODE_LABELS: Record<CalendarMode, string> = { day: "Jour", week: "Semaine", month: "Mois" };
@@ -1279,7 +1279,7 @@ export default function CalendarView() {
       <div className="flex items-center gap-1.5 px-3 pb-2">
         <button
           onClick={handleConnectGoogle}
-          className="flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-md bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 transition-colors"
+          className="flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-md bg-tone-terracotta-bg text-tone-terracotta-fg hover:bg-tone-terracotta-bg/70 transition-colors"
         >
           📅 Google
         </button>

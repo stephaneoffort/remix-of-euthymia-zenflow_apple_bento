@@ -63,10 +63,10 @@ function playZoomAlertSound() {
 }
 
 const ENTITY_BADGE: Record<string, { label: string; className: string; icon: React.ReactNode }> = {
-  event:   { label: "Événement",  className: "bg-blue-500/15 text-blue-600 dark:text-blue-400 border-blue-500/20",   icon: <CalendarDays className="w-3 h-3" /> },
-  task:    { label: "Tâche",      className: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/20", icon: <CheckSquare className="w-3 h-3" /> },
-  subtask: { label: "Sous-tâche", className: "bg-orange-500/15 text-orange-600 dark:text-orange-400 border-orange-500/20",  icon: <Layers className="w-3 h-3" /> },
-  project: { label: "Projet",     className: "bg-purple-500/15 text-purple-600 dark:text-purple-400 border-purple-500/20",  icon: <Layers className="w-3 h-3" /> },
+  event:   { label: "Événement",  className: "bg-priority-normal/15 text-priority-normal border-priority-normal/20",   icon: <CalendarDays className="w-3 h-3" /> },
+  task:    { label: "Tâche",      className: "bg-status-done/15 text-status-done border-status-done/20", icon: <CheckSquare className="w-3 h-3" /> },
+  subtask: { label: "Sous-tâche", className: "bg-priority-high/15 text-priority-high border-priority-high/20",  icon: <Layers className="w-3 h-3" /> },
+  project: { label: "Projet",     className: "bg-tone-sand-bg text-tone-sand-fg border-tone-sand-fg/20",  icon: <Layers className="w-3 h-3" /> },
 };
 
 function formatMeetingDate(startTime: string): string {
@@ -325,8 +325,8 @@ export default function ZoomMeetingsDashboard() {
               <div className="grid grid-cols-3 gap-2 mb-3">
                 {[
                   { label: "À venir", value: upcomingCount, color: "text-primary" },
-                  { label: "Aujourd'hui", value: todayCount, color: "text-amber-500" },
-                  { label: "Ce mois", value: thisMonthCount, color: "text-emerald-500" },
+                  { label: "Aujourd'hui", value: todayCount, color: "text-priority-high" },
+                  { label: "Ce mois", value: thisMonthCount, color: "text-status-done" },
                 ].map((s) => (
                   <div key={s.label} className="bg-muted/40 rounded-lg px-3 py-2 text-center">
                     <p data-numeric className={`font-numeric text-lg font-bold ${s.color}`}>{s.value}</p>

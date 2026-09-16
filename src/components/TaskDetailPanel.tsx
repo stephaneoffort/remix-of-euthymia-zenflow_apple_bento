@@ -154,11 +154,11 @@ function DateTimeField({ value, onChange }: { value: string | null | undefined; 
 }
 
 const STATUS_LINE_COLORS: Record<string, string> = {
-  todo: '#5A5040',
-  in_progress: '#7A4518',
-  in_review: '#2A4878',
-  done: '#2A5828',
-  blocked: '#7A1E0E',
+  todo: 'hsl(var(--status-todo))',
+  in_progress: 'hsl(var(--status-progress))',
+  in_review: 'hsl(var(--status-review))',
+  done: 'hsl(var(--status-done))',
+  blocked: 'hsl(var(--status-blocked))',
 };
 
 export default function TaskDetailPanel() {
@@ -436,7 +436,7 @@ export default function TaskDetailPanel() {
                     className="h-full rounded-full transition-all duration-300"
                     style={{
                       width: `${Math.round((doneSubtasks.length / subtasks.length) * 100)}%`,
-                      backgroundColor: doneSubtasks.length === subtasks.length ? '#2A5828' : '#5A8A58',
+                      backgroundColor: doneSubtasks.length === subtasks.length ? 'hsl(var(--status-done))' : 'hsl(var(--primary))',
                     }}
                   />
                 </div>
@@ -871,7 +871,7 @@ export default function TaskDetailPanel() {
                   const author = getMemberById(c.authorId);
                   return (
                     <div key={c.id} className="flex gap-2">
-                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-label font-bold shrink-0 mt-0.5" style={{ backgroundColor: author?.avatarColor || '#888', color: 'white' }}>
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-label font-bold shrink-0 mt-0.5" style={{ backgroundColor: author?.avatarColor || 'hsl(var(--muted-foreground))', color: 'white' }}>
                         {author?.name.split(' ').map(n => n[0]).join('').slice(0, 2) || '?'}
                       </div>
                       <div className="min-w-0 flex-1">
@@ -955,7 +955,7 @@ function SubtaskTree({ taskId, depth }: { taskId: string; depth: number }) {
           <div key={st.id}>
             <div
               className={`rounded-md hover:bg-muted/50 group transition-colors cursor-pointer border-l-2`}
-              style={{ borderLeftColor: STATUS_LINE_COLORS[st.status] ?? '#8A7060' }}
+              style={{ borderLeftColor: STATUS_LINE_COLORS[st.status] ?? 'hsl(var(--muted-foreground))' }}
               onClick={() => setSelectedTaskId(st.id)}
             >
               <div className="flex items-center gap-1.5 sm:gap-2 py-1.5 px-1.5 sm:px-2">

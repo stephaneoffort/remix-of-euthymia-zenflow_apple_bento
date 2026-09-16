@@ -86,7 +86,7 @@ a, button, [role="button"], label, select, summary,
 ───────────────────────────────────────────────────── */
 @layer base {
   :root {
-    --background: 60 11% 96%;          /* #F5F5F3 */
+    --background: 60 11% 93%;          /* #EFEFEB */
     --foreground: 240 3% 12%;          /* #1D1D1F */
     --card: 0 0% 100%;                 /* #FFFFFF */
     --card-foreground: 240 3% 12%;
@@ -114,7 +114,7 @@ a, button, [role="button"], label, select, summary,
     --sidebar-hover: 220 25% 12%;
     --sidebar-active: 173 80% 29%;
     --sidebar-active-fg: 0 0% 100%;
-    --sidebar-background: 60 11% 96%;
+    --sidebar-background: 60 11% 93%;
     --sidebar-foreground: 240 3% 12%;
     --sidebar-primary: 129 14% 44%;
     --sidebar-primary-foreground: 0 0% 100%;

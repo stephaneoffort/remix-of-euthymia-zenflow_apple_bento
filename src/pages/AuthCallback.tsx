@@ -60,7 +60,7 @@ export default function AuthCallback() {
         )}
         {status === 'success' && (
           <>
-            <CheckCircle className="w-12 h-12 text-green-500 mx-auto" />
+            <CheckCircle className="w-12 h-12 text-primary mx-auto" />
             <p className="font-semibold text-foreground text-lg">Email confirmé !</p>
             <p className="text-muted-foreground text-sm">Redirection en cours…</p>
           </>

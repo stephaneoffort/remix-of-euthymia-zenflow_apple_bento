@@ -89,7 +89,7 @@ export default function Auth() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4">
+    <div className="flex items-center justify-center min-h-screen bg-background p-4">
       <Card className="w-full max-w-sm mx-auto bg-card">
         <CardHeader className="text-center">
           <div className="flex flex-col items-center gap-3 mb-2">

@@ -157,8 +157,8 @@ export default function NotificationsDropdown() {
 
   const typeIcon = (type: string) => {
     if (type === 'overdue') return <AlertTriangle className="w-4 h-4 text-destructive shrink-0" />;
-    if (type === 'due_today') return <Clock className="w-4 h-4 text-amber-500 shrink-0" />;
-    if (type === 'due_tomorrow') return <Clock className="w-4 h-4 text-blue-500 shrink-0" />;
+    if (type === 'due_today') return <Clock className="w-4 h-4 text-priority-high shrink-0" />;
+    if (type === 'due_tomorrow') return <Clock className="w-4 h-4 text-priority-normal shrink-0" />;
     if (type === 'reminder') return <BellRing className="w-4 h-4 text-primary shrink-0" />;
     return <AlertTriangle className="w-4 h-4 text-destructive shrink-0" />;
   };

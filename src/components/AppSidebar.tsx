@@ -1652,7 +1652,7 @@ export default function AppSidebar() {
                         </div>
                       )}
                       {isOnline(m.id) && (
-                        <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-card rounded-full" />
+                        <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-done border-2 border-card rounded-full" />
                       )}
                     </div>
                   ))}
@@ -1699,7 +1699,7 @@ export default function AppSidebar() {
                       </div>
                     )}
                     {isOnline(m.id) && (
-                      <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-card rounded-full" />
+                      <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-done border-2 border-card rounded-full" />
                     )}
                   </div>
                 ))}

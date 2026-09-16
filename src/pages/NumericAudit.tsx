@@ -368,7 +368,7 @@ function StatCard({ label, value, tone }: { label: string; value: number; tone: 
     tone === "destructive"
       ? "text-destructive"
       : tone === "success"
-      ? "text-emerald-600 dark:text-emerald-400"
+      ? "text-status-done"
       : "text-foreground";
   return (
     <Card>
@@ -411,13 +411,13 @@ function ViolationRow({
   };
 
   return (
-    <Card className={row.status === "accepted" ? "border-emerald-500/30 bg-emerald-500/5" : ""}>
+    <Card className={row.status === "accepted" ? "border-status-done/30 bg-status-done/5" : ""}>
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
               {row.status === "accepted" ? (
-                <Badge variant="outline" className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30">
+                <Badge variant="outline" className="bg-status-done/10 text-status-done border-status-done/30">
                   <Check className="w-3 h-3 mr-1" />
                   Faux positif accepté
                 </Badge>
@@ -475,7 +475,7 @@ function ViolationRow({
                 {context.map(l => (
                   <div
                     key={l.lineNumber}
-                    className={`flex ${l.isTarget ? "bg-amber-500/10" : ""}`}
+                    className={`flex ${l.isTarget ? "bg-priority-high/10" : ""}`}
                   >
                     <span data-numeric className="font-numeric tabular-nums shrink-0 w-12 text-right pr-3 py-0.5 text-muted-foreground border-r border-border bg-muted/30 select-none">
                       {l.lineNumber}
@@ -490,7 +490,7 @@ function ViolationRow({
 
         {/* Acceptance note */}
         {row.status === "accepted" && row.acceptance?.note && (
-          <p className="text-xs italic text-muted-foreground border-l-2 border-emerald-500/40 pl-3">
+          <p className="text-xs italic text-muted-foreground border-l-2 border-status-done/40 pl-3">
             « {row.acceptance.note} »
           </p>
         )}

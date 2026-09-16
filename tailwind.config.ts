@@ -40,6 +40,7 @@ export default {
         glass: "0 4px 24px rgba(0,0,0,.45), 0 1px 0 rgba(255,255,255,.04) inset",
         "glass-lg": "0 8px 40px rgba(0,0,0,.6),  0 1px 0 rgba(255,255,255,.06) inset",
         "glow-teal": "0 0 20px rgba(13,205,165,.2), 0 0 40px rgba(13,205,165,.08)",
+        float: "var(--shadow-float)",
       },
       colors: {
         border: "hsl(var(--border))",
@@ -101,6 +102,16 @@ export default {
         "status-review": "hsl(var(--status-review))",
         "status-done": "hsl(var(--status-done))",
         "status-blocked": "hsl(var(--status-blocked))",
+        tone: {
+          "sage-bg": "hsl(var(--tone-sage-bg))",
+          "sage-fg": "hsl(var(--tone-sage-fg))",
+          "slate-bg": "hsl(var(--tone-slate-bg))",
+          "slate-fg": "hsl(var(--tone-slate-fg))",
+          "sand-bg": "hsl(var(--tone-sand-bg))",
+          "sand-fg": "hsl(var(--tone-sand-fg))",
+          "terracotta-bg": "hsl(var(--tone-terracotta-bg))",
+          "terracotta-fg": "hsl(var(--tone-terracotta-fg))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

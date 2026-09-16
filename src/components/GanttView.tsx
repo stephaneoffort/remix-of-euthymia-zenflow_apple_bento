@@ -3,6 +3,7 @@ import { useApp } from "@/context/AppContext";
 import { Task, TaskDependency } from "@/types";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { TONE_ORDER, TONE_SOLID_HEX } from "@/lib/toneColor";
 import {
   ChevronLeft,
   ChevronRight,
@@ -459,7 +460,7 @@ export default function GanttView() {
     return () => document.removeEventListener("click", close);
   }, [ctxMenu]);
 
-  const COLORS = ["#5A9A6A", "#4A7FA5", "#B06060", "#B09A50", "#7B5EA7", "#D97706", "#0EA5E9", "#EC4899", "#8B5CF6", "#14B8A6"];
+  const COLORS = TONE_ORDER.map((id) => TONE_SOLID_HEX[id]);
 
   return (
     <div className="flex flex-col h-full overflow-hidden bg-background">

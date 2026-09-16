@@ -73,11 +73,17 @@ Remplacer les variables de `src/index.css` par celles-ci (format shadcn : valeur
     --sidebar-border: 60 9% 89%;
     --sidebar-ring: 128 13% 50%;
 
-    /* Tons de projets et étiquettes : fond / texte */
-    --tone-sage-bg: 105 21% 93%;       --tone-sage-fg: 129 15% 37%;
-    --tone-slate-bg: 213 24% 94%;      --tone-slate-fg: 213 18% 41%;
-    --tone-sand-bg: 38 50% 93%;        --tone-sand-fg: 34 39% 40%;
-    --tone-terracotta-bg: 9 58% 94%;   --tone-terracotta-fg: 8 47% 44%;
+    /* Palette douce commune (10 tons) : projets, avatars, tâches, étiquettes, équipes */
+    --tone-sage-solid: 128 13% 50%;       --tone-sage-bg: 108 22% 87%;       --tone-sage-fg: 129 18% 30%;
+    --tone-slate-solid: 214 17% 51%;      --tone-slate-bg: 213 30% 88%;      --tone-slate-fg: 212 22% 34%;
+    --tone-sand-solid: 34 35% 57%;        --tone-sand-bg: 37 51% 86%;        --tone-sand-fg: 33 43% 32%;
+    --tone-terracotta-solid: 11 40% 54%;  --tone-terracotta-bg: 13 50% 87%;  --tone-terracotta-fg: 11 44% 34%;
+    --tone-lavender-solid: 259 19% 58%;   --tone-lavender-bg: 258 31% 89%;   --tone-lavender-fg: 257 23% 37%;
+    --tone-rose-solid: 347 28% 61%;       --tone-rose-bg: 346 37% 89%;       --tone-rose-fg: 343 26% 37%;
+    --tone-mist-solid: 192 25% 53%;       --tone-mist-bg: 191 33% 88%;       --tone-mist-fg: 192 28% 32%;
+    --tone-olive-solid: 69 20% 47%;       --tone-olive-bg: 66 28% 85%;       --tone-olive-fg: 69 28% 28%;
+    --tone-ochre-solid: 39 49% 54%;       --tone-ochre-bg: 40 61% 85%;       --tone-ochre-fg: 39 55% 28%;
+    --tone-stone-solid: 60 3% 51%;        --tone-stone-bg: 60 8% 88%;        --tone-stone-fg: 60 3% 30%;
 
     --shadow-float: 0 8px 30px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
   }
@@ -112,10 +118,16 @@ Remplacer les variables de `src/index.css` par celles-ci (format shadcn : valeur
     --sidebar-border: 60 2% 18%;
     --sidebar-ring: 129 15% 56%;
 
-    --tone-sage-bg: 135 13% 18%;       --tone-sage-fg: 129 19% 72%;
-    --tone-slate-bg: 215 18% 18%;      --tone-slate-fg: 213 24% 73%;
-    --tone-sand-bg: 35 19% 17%;        --tone-sand-fg: 37 46% 71%;
-    --tone-terracotta-bg: 9 26% 18%;   --tone-terracotta-fg: 10 64% 72%;
+    --tone-sage-solid: 127 17% 62%;       --tone-sage-bg: 135 13% 18%;       --tone-sage-fg: 129 19% 72%;
+    --tone-slate-solid: 214 22% 65%;      --tone-slate-bg: 215 18% 18%;      --tone-slate-fg: 214 25% 73%;
+    --tone-sand-solid: 34 40% 67%;        --tone-sand-bg: 35 19% 17%;        --tone-sand-fg: 37 44% 71%;
+    --tone-terracotta-solid: 12 47% 65%;  --tone-terracotta-bg: 10 26% 18%;  --tone-terracotta-fg: 10 63% 72%;
+    --tone-lavender-solid: 258 24% 70%;   --tone-lavender-bg: 257 14% 19%;   --tone-lavender-fg: 257 30% 77%;
+    --tone-rose-solid: 347 33% 72%;       --tone-rose-bg: 343 14% 19%;       --tone-rose-fg: 347 39% 78%;
+    --tone-mist-solid: 192 31% 66%;       --tone-mist-bg: 200 26% 18%;       --tone-mist-fg: 192 34% 71%;
+    --tone-olive-solid: 69 24% 59%;       --tone-olive-bg: 70 14% 16%;       --tone-olive-fg: 68 27% 65%;
+    --tone-ochre-solid: 39 56% 64%;       --tone-ochre-bg: 37 29% 18%;       --tone-ochre-fg: 39 59% 67%;
+    --tone-stone-solid: 60 4% 63%;        --tone-stone-bg: 60 2% 16%;        --tone-stone-fg: 60 4% 68%;
 
     --shadow-float: 0 8px 30px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3);
   }
@@ -146,6 +158,29 @@ Références hex pour contrôle visuel :
 | Filet / bordure | #E6E6E1 | #2E2E2C |
 | Sauge (bouton) | #5F7F64 | #7FA184 |
 | Sauge (icône, coche) | #6F8F73 | #A2C0A6 |
+
+### Palette douce commune (10 tons)
+
+Utilisée partout où une couleur est choisie par l'utilisateur : avatars de membres, couleur de projet, couleur de tâche (vue Gantt), couleur d'équipe. Chaque ton a une pastille pleine (mode clair / mode sombre) et une paire fond+texte d'étiquette (mode clair / mode sombre).
+
+| Ton | Pastille claire | Pastille sombre | Étiquette claire (fond / texte) | Étiquette sombre (fond / texte) |
+|---|---|---|---|---|
+| Sauge | #6F8F73 | #8FAF93 | #D9E5D6 / #3F5A43 | #27332A / #A9C4AD |
+| Ardoise | #6E8098 | #93A4BA | #D8E0EA / #435468 | #262D37 / #A9B8CB |
+| Sable | #B8966A | #CDB08A | #EDDFC8 / #74552E | #352E24 / #D6BD95 |
+| Terre cuite | #B86B5A | #D08E7E | #EFD6CF / #7E3F31 | #3A2622 / #E59B8C |
+| Lavande | #8C7FA8 | #AA9FC4 | #E0DBEC / #544873 | #2E2A38 / #BDB3D6 |
+| Rose poudré | #B8808C | #CFA0AA | #EDD8DD / #764553 | #382A2E / #DDB2BB |
+| Bleu brume | #6A9AA6 | #8DB8C3 | #D5E6EA / #3A5F68 | #22323A / #9CC4CE |
+| Olive | #8A9160 | #A9B07F | #E2E4CF / #545A33 | #2E3024 / #B9BF8F |
+| Ocre | #C39A4E | #D6B26E | #F0E1C2 / #6E5320 | #3A3020 / #DDBB7A |
+| Pierre | #86867F | #A3A39C | #E2E2DD / #50504B | #2A2A28 / #B0B0A9 |
+
+Implémentée dans `src/lib/toneColor.ts` : la fonction `getClosestTone(hex)` renvoie, pour une couleur déjà enregistrée en base, le ton le plus proche à afficher — jamais utilisée pour modifier les données. Elle vérifie d'abord une table fixe (couleurs connues des anciennes palettes, validées à la main pour rester distinctes entre membres/projets/équipes), puis calcule en repli une distance de couleur ("redmean") vis-à-vis des 10 pastilles de référence.
+
+Sélecteurs mis à jour pour proposer ces 10 tons (`TONE_SOLID_HEX`, ou `TONE_LABEL_TEXT_HEX` pour une couleur de texte) : `SelectTeamMember.tsx`, `MemberProfileEditor.tsx`, `AppSidebar.tsx` (couleur de projet), `GanttView.tsx` (couleur de tâche), `RichTextEditor.tsx` (couleur de texte), `orgColors.ts` (couleur d'équipe). Le format des valeurs enregistrées (hex simple) est inchangé.
+
+Non couvert pour l'instant : les icônes d'espace (`SpaceIcon.tsx`), qui utilisent un système de préréglages icône+dégradé incompatible avec une couleur plate — à revisiter avec le logo, en fin de refonte. Le bouton de surlignage de `RichTextEditor.tsx` (jaune fixe) reste également inchangé, ce n'est pas une palette.
 
 ## Phase 2 — Composants de base (`src/components/ui/`)
 

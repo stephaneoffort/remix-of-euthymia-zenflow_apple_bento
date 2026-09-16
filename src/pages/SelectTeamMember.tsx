@@ -8,11 +8,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { UserPlus, Loader2 } from 'lucide-react';
+import { TONE_ORDER, TONE_SOLID_HEX } from '@/lib/toneColor';
 
-const AVATAR_COLORS = [
-  '#6366f1', '#f43f5e', '#10b981', '#f59e0b',
-  '#3b82f6', '#8b5cf6', '#ec4899', '#14b8a6',
-];
+const AVATAR_COLORS = TONE_ORDER.map((id) => TONE_SOLID_HEX[id]);
 
 const SelectTeamMember = React.forwardRef<HTMLDivElement>(function SelectTeamMember(_, ref) {
   const { user, teamMemberId, loading, linkTeamMember } = useAuth();

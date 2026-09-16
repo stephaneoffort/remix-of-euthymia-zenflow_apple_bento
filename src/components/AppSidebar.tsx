@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { useUserLogo, ZENFLOW_LOGO } from "@/hooks/useUserLogo";
+import { TONE_ORDER, TONE_SOLID_HEX } from "@/lib/toneColor";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import {
   ChevronRight,
@@ -127,7 +128,7 @@ const QUICK_FILTERS: { key: QuickFilter; label: string; icon: React.ReactNode }[
 ];
 
 // Premium icon presets are defined in SpaceIcon.tsx
-const PROJECT_COLORS = ["#C9A84C", "#E2D08A", "#F5EFE0", "#D4915C", "#4A6FA5", "#3D8B7A", "#C47B7B", "#7B68AE"];
+const PROJECT_COLORS = TONE_ORDER.map((id) => TONE_SOLID_HEX[id]);
 
 export default function AppSidebar() {
   // Logo personnalisé de l'utilisateur (repli automatique sur ZenFlow)

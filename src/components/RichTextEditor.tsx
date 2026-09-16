@@ -20,6 +20,7 @@ import {
   Highlighter, Palette, Undo, Redo, Minus, Mic, MicOff
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { TONE_ORDER, TONE_LABEL_TEXT_HEX } from '@/lib/toneColor';
 
 interface RichTextEditorProps {
   content: string;
@@ -33,9 +34,7 @@ interface RichTextEditorProps {
   autofocus?: boolean;
 }
 
-const COLORS = [
-  '#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899', '#6b7280',
-];
+const COLORS = TONE_ORDER.map((id) => TONE_LABEL_TEXT_HEX[id]);
 
 const ToolbarButton = forwardRef<HTMLButtonElement, {
   active?: boolean;

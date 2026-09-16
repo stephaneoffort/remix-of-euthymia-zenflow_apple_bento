@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import AvatarUploader from './AvatarUploader';
+import { TONE_ORDER, TONE_SOLID_HEX } from '@/lib/toneColor';
 
 export interface EditableMember {
   id: string;
@@ -17,11 +18,7 @@ export interface EditableMember {
   avatarUrl?: string | null;
 }
 
-export const AVATAR_COLORS = [
-  '#6366f1', '#f43f5e', '#10b981', '#f59e0b',
-  '#3b82f6', '#8b5cf6', '#ec4899', '#14b8a6',
-  '#155E75', '#F4633A', '#64748b', '#0ea5e9',
-];
+export const AVATAR_COLORS = TONE_ORDER.map((id) => TONE_SOLID_HEX[id]);
 
 interface Props {
   member: EditableMember | null;

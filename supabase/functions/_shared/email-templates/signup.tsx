@@ -11,6 +11,7 @@ import {
   Html,
   Link,
   Preview,
+  Section,
   Text,
 } from 'npm:@react-email/components@0.0.22'
 
@@ -22,39 +23,36 @@ interface SignupEmailProps {
 }
 
 export const SignupEmail = ({
-  siteName,
   siteUrl,
   recipient,
   confirmationUrl,
 }: SignupEmailProps) => (
-  <Html lang="en" dir="ltr">
-    <Head>
-      <style>{darkModeCss}</style>
-    </Head>
-    <Preview>Confirm your email for {siteName}</Preview>
+  <Html lang="fr" dir="ltr">
+    <Head />
+    <Preview>Confirmez votre adresse email — ZenFlow</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Heading style={h1}>Confirm your email</Heading>
-        <Text style={text}>
-          Thanks for signing up for{' '}
-          <Link href={siteUrl} style={link}>
-            <strong>{siteName}</strong>
-          </Link>
-          !
-        </Text>
-        <Text style={text}>
-          Please confirm your email address (
-          <Link href={`mailto:${recipient}`} style={link}>
-            {recipient}
-          </Link>
-          ) by clicking the button below:
-        </Text>
-        <Button className="dm-btn" style={button} href={confirmationUrl}>
-          Verify Email
-        </Button>
-        <Text style={footer}>
-          If you didn't create an account, you can safely ignore this email.
-        </Text>
+        <Section style={header}>
+          <Text style={brand}>ZenFlow</Text>
+          <Text style={tagline}>Gestion de projets</Text>
+        </Section>
+        <Section style={content}>
+          <Heading style={h1}>Confirmez votre adresse email</Heading>
+          <Text style={text}>
+            Merci de vous être inscrit sur{' '}
+            <Link href={siteUrl} style={link}>
+              <strong>ZenFlow</strong>
+            </Link>
+            . Cliquez sur le bouton ci-dessous pour confirmer votre adresse
+            {recipient ? ` (${recipient})` : ''} et activer votre compte.
+          </Text>
+          <Button style={button} href={confirmationUrl}>
+            Confirmer mon email
+          </Button>
+          <Text style={footer}>
+            Si vous n'avez pas créé de compte sur ZenFlow, ignorez cet email.
+          </Text>
+        </Section>
       </Container>
     </Body>
   </Html>
@@ -62,36 +60,46 @@ export const SignupEmail = ({
 
 export default SignupEmail
 
-const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
-const container = { padding: '20px 25px' }
+const main = {
+  backgroundColor: '#ffffff',
+  fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif",
+}
+const container = { padding: '0', maxWidth: '520px' }
+const header = {
+  backgroundColor: '#155E75',
+  borderRadius: '12px 12px 0 0',
+  padding: '28px 32px',
+  textAlign: 'center' as const,
+}
+const brand = {
+  margin: '0',
+  fontSize: '20px',
+  fontWeight: 'bold' as const,
+  color: '#ffffff',
+  letterSpacing: '-0.3px',
+}
+const tagline = { margin: '6px 0 0', fontSize: '12px', color: '#BAE6FD' }
+const content = { padding: '32px' }
 const h1 = {
   fontSize: '22px',
   fontWeight: 'bold' as const,
-  color: '#000000',
-  margin: '0 0 20px',
+  color: '#0F2A33',
+  margin: '0 0 16px',
 }
 const text = {
-  fontSize: '14px',
-  color: '#55575d',
-  lineHeight: '1.5',
+  fontSize: '15px',
+  color: '#52525b',
+  lineHeight: '1.6',
   margin: '0 0 25px',
 }
-const link = { color: 'inherit', textDecoration: 'underline' }
+const link = { color: '#155E75', textDecoration: 'underline' }
 const button = {
-  backgroundColor: '#000000',
+  backgroundColor: '#F4633A',
   color: '#ffffff',
   fontSize: '14px',
-  border: '1px solid #000000',
+  fontWeight: 'bold' as const,
   borderRadius: '8px',
-  padding: '12px 20px',
+  padding: '13px 28px',
   textDecoration: 'none',
 }
-const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
-// Rendered as a text child, which React may HTML-escape: keep this CSS free of >, &, and quotes.
-const darkModeCss = `
-  @media (prefers-color-scheme: dark) {
-    .dm-btn { background-color: #ffffff !important; color: #000000 !important; }
-  }
-  [data-ogsc] .dm-btn { background-color: #ffffff !important; color: #000000 !important; }
-  [data-ogsb] .dm-btn { background-color: #ffffff !important; color: #000000 !important; }
-`
+const footer = { fontSize: '12px', color: '#8E8E93', margin: '30px 0 0' }

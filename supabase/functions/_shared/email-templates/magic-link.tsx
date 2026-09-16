@@ -10,7 +10,6 @@ import {
   Heading,
   Html,
   Preview,
-  Section,
   Text,
 } from 'npm:@react-email/components@0.0.22'
 
@@ -19,30 +18,28 @@ interface MagicLinkEmailProps {
   confirmationUrl: string
 }
 
-export const MagicLinkEmail = ({ confirmationUrl }: MagicLinkEmailProps) => (
-  <Html lang="fr" dir="ltr">
-    <Head />
-    <Preview>Votre lien de connexion — ZenFlow</Preview>
+export const MagicLinkEmail = ({
+  siteName,
+  confirmationUrl,
+}: MagicLinkEmailProps) => (
+  <Html lang="en" dir="ltr">
+    <Head>
+      <style>{darkModeCss}</style>
+    </Head>
+    <Preview>Your login link for {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Section style={header}>
-          <Text style={brand}>ZenFlow</Text>
-          <Text style={tagline}>Gestion de projets</Text>
-        </Section>
-        <Section style={content}>
-          <Heading style={h1}>Votre lien de connexion</Heading>
-          <Text style={text}>
-            Cliquez sur le bouton ci-dessous pour vous connecter à ZenFlow. Ce
-            lien est à usage unique.
-          </Text>
-          <Button style={button} href={confirmationUrl}>
-            Se connecter
-          </Button>
-          <Text style={footer}>
-            Si vous n'avez pas demandé ce lien, ignorez cet email. Ce lien
-            expire dans 1 heure.
-          </Text>
-        </Section>
+        <Heading style={h1}>Your login link</Heading>
+        <Text style={text}>
+          Click the button below to log in to {siteName}. This link will expire
+          shortly.
+        </Text>
+        <Button className="dm-btn" style={button} href={confirmationUrl}>
+          Log In
+        </Button>
+        <Text style={footer}>
+          If you didn't request this link, you can safely ignore this email.
+        </Text>
       </Container>
     </Body>
   </Html>
@@ -50,45 +47,35 @@ export const MagicLinkEmail = ({ confirmationUrl }: MagicLinkEmailProps) => (
 
 export default MagicLinkEmail
 
-const main = {
-  backgroundColor: '#ffffff',
-  fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif",
-}
-const container = { padding: '0', maxWidth: '520px' }
-const header = {
-  backgroundColor: '#155E75',
-  borderRadius: '12px 12px 0 0',
-  padding: '28px 32px',
-  textAlign: 'center' as const,
-}
-const brand = {
-  margin: '0',
-  fontSize: '20px',
-  fontWeight: 'bold' as const,
-  color: '#ffffff',
-  letterSpacing: '-0.3px',
-}
-const tagline = { margin: '6px 0 0', fontSize: '12px', color: '#BAE6FD' }
-const content = { padding: '32px' }
+const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
+const container = { padding: '20px 25px' }
 const h1 = {
   fontSize: '22px',
   fontWeight: 'bold' as const,
-  color: '#0F2A33',
-  margin: '0 0 16px',
+  color: '#000000',
+  margin: '0 0 20px',
 }
 const text = {
-  fontSize: '15px',
-  color: '#52525b',
-  lineHeight: '1.6',
+  fontSize: '14px',
+  color: '#55575d',
+  lineHeight: '1.5',
   margin: '0 0 25px',
 }
 const button = {
-  backgroundColor: '#F4633A',
+  backgroundColor: '#000000',
   color: '#ffffff',
   fontSize: '14px',
-  fontWeight: 'bold' as const,
+  border: '1px solid #000000',
   borderRadius: '8px',
-  padding: '13px 28px',
+  padding: '12px 20px',
   textDecoration: 'none',
 }
-const footer = { fontSize: '12px', color: '#8E8E93', margin: '30px 0 0' }
+const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
+// Rendered as a text child, which React may HTML-escape: keep this CSS free of >, &, and quotes.
+const darkModeCss = `
+  @media (prefers-color-scheme: dark) {
+    .dm-btn { background-color: #ffffff !important; color: #000000 !important; }
+  }
+  [data-ogsc] .dm-btn { background-color: #ffffff !important; color: #000000 !important; }
+  [data-ogsb] .dm-btn { background-color: #ffffff !important; color: #000000 !important; }
+`

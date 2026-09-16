@@ -150,7 +150,7 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, 
             >
               <div
                 className="w-7 h-7 rounded-xl flex items-center justify-center text-[10px] font-bold text-white shadow-sm"
-                style={{ backgroundColor: member.avatar_color || '#6366f1' }}
+                style={{ backgroundColor: member.avatar_color || 'hsl(var(--muted-foreground))' }}
               >
                 {member.name[0]?.toUpperCase()}
               </div>

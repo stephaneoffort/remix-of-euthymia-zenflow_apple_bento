@@ -227,12 +227,12 @@ export function MessageList({
                   {showHeader ? (
                     <div className="relative mt-0.5 shrink-0">
                       <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-sm font-bold text-white shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
-                        style={{ backgroundColor: profile?.avatar_color || '#6366f1' }}
+                        style={{ backgroundColor: profile?.avatar_color || 'hsl(var(--muted-foreground))' }}
                       >
                         {(profile?.name || '?')[0].toUpperCase()}
                       </div>
                       <div className="absolute inset-0 rounded-2xl blur-lg opacity-25 -z-10"
-                        style={{ backgroundColor: profile?.avatar_color || '#6366f1' }}
+                        style={{ backgroundColor: profile?.avatar_color || 'hsl(var(--muted-foreground))' }}
                       />
                     </div>
                   ) : (

@@ -119,11 +119,11 @@ export function MembersPanel({ memberProfiles, onDmCreated, onlineTeamMemberIds 
       >
         <div className="relative">
           <div className="w-8 h-8 rounded-xl flex items-center justify-center text-[10px] font-bold text-white shadow-sm"
-            style={{ backgroundColor: member.avatarColor || '#6366f1' }}>
+            style={{ backgroundColor: member.avatarColor || 'hsl(var(--muted-foreground))' }}>
             {(member.name || '?')[0].toUpperCase()}
           </div>
           <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-card ${
-            isOnline ? 'bg-green-500 shadow-[0_0_6px_rgba(34,197,94,0.4)]' : 'bg-muted-foreground/30'
+            isOnline ? 'bg-status-done shadow-[0_0_6px_hsl(var(--status-done)/0.4)]' : 'bg-muted-foreground/30'
           }`} />
         </div>
         <div className="flex-1 min-w-0">
@@ -155,7 +155,7 @@ export function MembersPanel({ memberProfiles, onDmCreated, onlineTeamMemberIds 
 
         {onlineList.length > 0 && (
           <>
-            <p data-numeric className="font-numeric tabular-nums text-[10px] text-green-500/70 uppercase tracking-widest px-2 mb-1.5 font-semibold">
+            <p data-numeric className="font-numeric tabular-nums text-[10px] text-status-done/70 uppercase tracking-widest px-2 mb-1.5 font-semibold">
               En ligne — {onlineList.length}
             </p>
             <div className="space-y-0.5 mb-4">
@@ -194,11 +194,11 @@ export function MembersPanel({ memberProfiles, onDmCreated, onlineTeamMemberIds 
                 } />
                 <div className="relative">
                   <div className="w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold text-white"
-                    style={{ backgroundColor: member.avatarColor || '#6366f1' }}>
+                    style={{ backgroundColor: member.avatarColor || 'hsl(var(--muted-foreground))' }}>
                     {member.name[0]?.toUpperCase()}
                   </div>
                   <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-background ${
-                    onlineTeamMemberIds.has(member.id) ? 'bg-green-500' : 'bg-muted-foreground/30'
+                    onlineTeamMemberIds.has(member.id) ? 'bg-status-done' : 'bg-muted-foreground/30'
                   }`} />
                 </div>
                 <div className="min-w-0">

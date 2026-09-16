@@ -50,7 +50,7 @@ export function ThreadPanel({ parentMessage, replies, memberProfiles, onSendRepl
       <div className="px-4 py-3 border-b border-border/15 bg-primary/[0.03]">
         <div className="flex gap-3">
           <div className="w-8 h-8 rounded-xl shrink-0 flex items-center justify-center text-xs font-bold text-white"
-            style={{ backgroundColor: parentProfile?.avatar_color || '#6366f1' }}>
+            style={{ backgroundColor: parentProfile?.avatar_color || 'hsl(var(--muted-foreground))' }}>
             {(parentProfile?.name || '?')[0].toUpperCase()}
           </div>
           <div className="min-w-0">
@@ -77,7 +77,7 @@ export function ThreadPanel({ parentMessage, replies, memberProfiles, onSendRepl
               className="flex gap-3 py-2"
             >
               <div className="w-7 h-7 rounded-lg shrink-0 flex items-center justify-center text-[10px] font-bold text-white"
-                style={{ backgroundColor: profile?.avatar_color || '#6366f1' }}>
+                style={{ backgroundColor: profile?.avatar_color || 'hsl(var(--muted-foreground))' }}>
                 {(profile?.name || '?')[0].toUpperCase()}
               </div>
               <div className="min-w-0">

@@ -78,7 +78,7 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
         if (!partner) continue;
 
         let name: string | undefined;
-        let avatarColor = '#6366f1';
+        let avatarColor = 'hsl(var(--muted-foreground))';
 
         // 1) try local team members via auth mapping
         const tmId = authIdToTeamMember[partner.user_id];
@@ -385,14 +385,14 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
             <div className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl backdrop-blur-xl bg-card/20 border border-border/15">
               <div className="relative">
                 <div className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-white shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
-                  style={{ backgroundColor: currentUserProfile.avatar_color || '#6366f1' }}>
+                  style={{ backgroundColor: currentUserProfile.avatar_color || 'hsl(var(--muted-foreground))' }}>
                   {currentUserProfile.name[0]?.toUpperCase()}
                 </div>
-                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-500 border-2 border-card ring-1 ring-green-500/20" />
+                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-status-done border-2 border-card ring-1 ring-status-done/20" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-foreground truncate">{currentUserProfile.name}</p>
-                <p className="text-[10px] text-green-500 font-medium">En ligne</p>
+                <p className="text-[10px] text-status-done font-medium">En ligne</p>
               </div>
             </div>
           </div>
@@ -467,7 +467,7 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
                 >
                   <div className="relative">
                     <div className="w-8 h-8 rounded-xl flex items-center justify-center text-[10px] font-bold text-white shadow-sm"
-                      style={{ backgroundColor: member.avatarColor || '#6366f1' }}>
+                      style={{ backgroundColor: member.avatarColor || 'hsl(var(--muted-foreground))' }}>
                       {member.name[0]?.toUpperCase()}
                     </div>
                     {!hasAccount && (
@@ -539,7 +539,7 @@ function DmItem({ channelId, isActive, onClick, partnerName, partnerColor, unrea
   channelId: string; isActive: boolean; onClick: () => void; partnerName?: string; partnerColor?: string; unread?: number; onDelete?: () => void; selectionMode?: boolean; selected?: boolean;
 }) {
   const displayName = partnerName || 'Membre';
-  const color = partnerColor || '#6366f1';
+  const color = partnerColor || 'hsl(var(--muted-foreground))';
 
   return (
     <div className={`group relative w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all duration-200 ${

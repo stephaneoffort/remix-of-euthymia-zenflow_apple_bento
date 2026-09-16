@@ -21,7 +21,7 @@ export function SearchPanel({ onSearch, results, searching, memberProfiles, onCl
   // Author options from currently known profiles
   const authorOptions = useMemo(() => {
     return Object.entries(memberProfiles)
-      .map(([id, p]) => ({ id, name: p?.name || 'Utilisateur', color: p?.avatar_color || '#6366f1' }))
+      .map(([id, p]) => ({ id, name: p?.name || 'Utilisateur', color: p?.avatar_color || 'hsl(var(--muted-foreground))' }))
       .sort((a, b) => a.name.localeCompare(b.name, 'fr'));
   }, [memberProfiles]);
 
@@ -167,7 +167,7 @@ export function SearchPanel({ onSearch, results, searching, memberProfiles, onCl
             >
               <div className="flex items-center gap-2 mb-1">
                 <div className="w-6 h-6 rounded-lg flex items-center justify-center text-[9px] font-bold text-white"
-                  style={{ backgroundColor: profile?.avatar_color || '#6366f1' }}>
+                  style={{ backgroundColor: profile?.avatar_color || 'hsl(var(--muted-foreground))' }}>
                   {(profile?.name || '?')[0].toUpperCase()}
                 </div>
                 <span className="text-xs font-medium text-foreground">{profile?.name || 'Utilisateur'}</span>

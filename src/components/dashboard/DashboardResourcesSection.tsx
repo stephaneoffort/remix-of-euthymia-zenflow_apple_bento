@@ -135,7 +135,7 @@ function DriveCard({ projects }: Props) {
                 { label: "Récents", value: Math.min(totalFiles, 5), color: "text-status-done" },
               ].map((s) => (
                 <div key={s.label} className="bg-muted/40 rounded-lg px-3 py-2 text-center">
-                  <p data-numeric className={`font-numeric text-lg font-bold ${s.color}`}>{s.value}</p>
+                  <p data-numeric className={`font-numeric text-lg font-semibold ${s.color}`}>{s.value}</p>
                   <p className="text-[10px] text-muted-foreground font-medium">{s.label}</p>
                 </div>
               ))}
@@ -152,7 +152,7 @@ function DriveCard({ projects }: Props) {
                 </p>
               </div>
             ) : (
-              <div className="space-y-1">
+              <div className="divide-y divide-border">
                 {visible.map((project) => (
                   <div key={project.id} onClick={() => onProjectClick(project.id)} className="py-2.5 px-2 rounded-md hover:bg-muted/50 transition-colors group cursor-pointer">
                     <div className="flex items-center gap-2 mb-1.5">
@@ -247,7 +247,7 @@ function CanvaCard({ projects }: Props) {
                 { label: "Récents", value: Math.min(totalDesigns, 5), color: "text-status-done" },
               ].map((s) => (
                 <div key={s.label} className="bg-muted/40 rounded-lg px-3 py-2 text-center">
-                  <p data-numeric className={`font-numeric text-lg font-bold ${s.color}`}>{s.value}</p>
+                  <p data-numeric className={`font-numeric text-lg font-semibold ${s.color}`}>{s.value}</p>
                   <p className="text-[10px] text-muted-foreground font-medium">{s.label}</p>
                 </div>
               ))}
@@ -264,14 +264,14 @@ function CanvaCard({ projects }: Props) {
                 </p>
               </div>
             ) : (
-              <div className="space-y-1">
+              <div className="divide-y divide-border">
                 {visible.map((project) => (
                   <div key={project.id} onClick={() => onProjectClick(project.id)} className="py-2.5 px-2 rounded-md hover:bg-muted/50 transition-colors group cursor-pointer">
                     <div className="flex items-center gap-2 mb-1.5">
                       <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: getClosestToneSolidVar(project.color) }} />
                       <p className="text-sm font-medium text-foreground truncate">{project.name}</p>
                       <Badge variant="outline"
-                        className="text-[10px] px-1.5 py-0 h-4 gap-0.5 font-medium bg-purple-500/15 text-purple-600 dark:text-purple-400 border-purple-500/20 ml-auto shrink-0">
+                        className="text-[10px] px-1.5 py-0 h-4 gap-0.5 font-medium bg-tone-lavender-bg text-tone-lavender-fg border-border ml-auto shrink-0">
                         <Image className="w-3 h-3" />
                         {designCounts[project.id] ?? 0}
                       </Badge>

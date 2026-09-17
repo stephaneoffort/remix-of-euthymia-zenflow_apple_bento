@@ -62,7 +62,7 @@ export default function BrevoStats() {
         ) : campaigns.length === 0 ? (
           <p className="text-sm text-muted-foreground py-4 text-center">Aucune campagne</p>
         ) : (
-          <div className="space-y-1">
+          <div className="divide-y divide-border">
             {visible.map((c: any) => {
               const sent = c.statistics?.globalStats?.sent ?? 0;
               const opens = c.statistics?.globalStats?.uniqueOpens ?? 0;
@@ -76,7 +76,7 @@ export default function BrevoStats() {
                   key={c.id}
                   className="w-full text-left py-2.5 hover:bg-muted/50 transition-colors flex items-center gap-3 px-1 rounded-md"
                 >
-                  <div className="p-1.5 rounded-md bg-muted/50 shrink-0">
+                  <div className="p-1.5 rounded-full bg-muted/50 shrink-0">
                     <img src={INTEGRATION_CONFIG.brevo.icon} alt="" className="w-4 h-4" />
                   </div>
                   <div className="min-w-0 flex-1">

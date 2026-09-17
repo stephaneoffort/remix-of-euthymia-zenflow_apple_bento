@@ -159,7 +159,7 @@ export default function DashboardMeetSection() {
                 { label: "Ce mois", value: thisMonthCount, color: "text-status-done" },
               ].map((s) => (
                 <div key={s.label} className="bg-muted/40 rounded-lg px-3 py-2 text-center">
-                  <p data-numeric className={`font-numeric text-lg font-bold ${s.color}`}>{s.value}</p>
+                  <p data-numeric className={`font-numeric text-lg font-semibold ${s.color}`}>{s.value}</p>
                   <p className="text-[10px] text-muted-foreground font-medium">{s.label}</p>
                 </div>
               ))}
@@ -178,7 +178,7 @@ export default function DashboardMeetSection() {
                 </p>
               </div>
             ) : (
-              <div className="space-y-1">
+              <div className="divide-y divide-border">
                 {visible.map((ev) => {
                   const isSoon =
                     differenceInMinutes(parseISO(ev.start_time), now) <= 15 &&
@@ -191,7 +191,7 @@ export default function DashboardMeetSection() {
                         isSoon ? "bg-destructive/10 border border-destructive/20 animate-pulse" : ""
                       }`}
                     >
-                      <div className={`p-1.5 rounded-md shrink-0 ${isSoon ? "bg-destructive/20" : "bg-muted/50"}`}>
+                      <div className={`p-1.5 rounded-full shrink-0 ${isSoon ? "bg-destructive/20" : "bg-muted/50"}`}>
                         {isSoon ? (
                           <AlertCircle className="w-4 h-4 text-destructive" />
                         ) : (
@@ -202,7 +202,7 @@ export default function DashboardMeetSection() {
                         <div className="flex items-center gap-1.5 flex-wrap">
                           <Badge
                             variant="outline"
-                            className="text-[10px] px-1.5 py-0 h-4 gap-0.5 font-medium bg-green-500/15 text-green-600 dark:text-green-400 border-green-500/20"
+                            className="text-[10px] px-1.5 py-0 h-4 gap-0.5 font-medium bg-tone-sage-bg text-tone-sage-fg border-border"
                           >
                             <Video className="w-3 h-3" /> Meet
                           </Badge>

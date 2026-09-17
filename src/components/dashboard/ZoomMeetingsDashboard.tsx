@@ -329,7 +329,7 @@ export default function ZoomMeetingsDashboard() {
                   { label: "Ce mois", value: thisMonthCount, color: "text-status-done" },
                 ].map((s) => (
                   <div key={s.label} className="bg-muted/40 rounded-lg px-3 py-2 text-center">
-                    <p data-numeric className={`font-numeric text-lg font-bold ${s.color}`}>{s.value}</p>
+                    <p data-numeric className={`font-numeric text-lg font-semibold ${s.color}`}>{s.value}</p>
                     <p className="text-[10px] text-muted-foreground font-medium">{s.label}</p>
                   </div>
                 ))}
@@ -348,7 +348,7 @@ export default function ZoomMeetingsDashboard() {
                   </p>
                 </div>
               ) : (
-                <div className="space-y-1">
+                <div className="divide-y divide-border">
                   {visible.map((m) => {
                     const isSoon = m.start_time && differenceInMinutes(parseISO(m.start_time), now) <= 15 && differenceInMinutes(parseISO(m.start_time), now) >= 0;
                     const b = badge(m.entity_type);
@@ -356,7 +356,7 @@ export default function ZoomMeetingsDashboard() {
                       <div key={m.id}
                         onClick={() => handleItemClick(m)}
                         className={`w-full text-left py-2.5 hover:bg-muted/50 transition-colors flex items-center gap-3 px-2 rounded-md group cursor-pointer ${isSoon ? "bg-destructive/10 border border-destructive/20 animate-pulse" : ""}`}>
-                        <div className={`p-1.5 rounded-md shrink-0 ${isSoon ? "bg-destructive/20" : "bg-muted/50"}`}>
+                        <div className={`p-1.5 rounded-full shrink-0 ${isSoon ? "bg-destructive/20" : "bg-muted/50"}`}>
                           {isSoon ? <AlertCircle className="w-4 h-4 text-destructive" /> : <img src={INTEGRATION_CONFIG.zoom.icon} alt="" className="w-4 h-4" />}
                         </div>
                         <div className="min-w-0 flex-1">

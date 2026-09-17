@@ -503,7 +503,7 @@ export default function DashboardView() {
           {teamWorkload.map((m, i) => (
             <motion.div key={m.name} custom={9 + i} variants={fadeUp} initial="hidden" animate="show">
               <Card className="bg-card border-border">
-                <CardContent className="p-3">
+                <CardContent className="p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <div
                       className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
@@ -538,7 +538,7 @@ export default function DashboardView() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-1">
+            <div className="divide-y divide-border">
               {upcomingTasks.length === 0 && (
                 <p className="text-sm text-muted-foreground py-4 text-center">Aucune échéance à venir</p>
               )}
@@ -580,7 +580,7 @@ export default function DashboardView() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-1">
+            <div className="divide-y divide-border">
               {recentlyDone.length === 0 && (
                 <p className="text-sm text-muted-foreground py-4 text-center">Aucune tâche terminée</p>
               )}

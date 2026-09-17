@@ -263,14 +263,14 @@ export default function DashboardView() {
 
   // ═══ RENDU ═══
   return (
-    <div className="p-4 sm:p-6 space-y-8 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 space-y-10 max-w-7xl mx-auto">
       {/* ═══ GREETING + MY TASKS ═══ */}
       <section>
         <div className="mb-5">
-          <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
+          <h1 className="font-display text-[26px] sm:text-[28px] font-semibold text-foreground tracking-[-0.02em]">
             {greeting}, {firstName}
           </h1>
-          <p className="text-sm text-muted-foreground mt-1.5 font-medium">
+          <p className="text-sm text-muted-foreground mt-1.5 font-normal">
             {myPendingTasks.length === 0
               ? "Aucune tâche en attente — profite de ta journée !"
               : `${myPendingTasks.length} tâche${myPendingTasks.length > 1 ? "s" : ""} en attente`}

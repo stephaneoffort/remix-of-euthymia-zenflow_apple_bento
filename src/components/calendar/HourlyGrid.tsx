@@ -40,31 +40,31 @@ function getModeConfig(mode: 'day' | 'week') {
 function getCardClasses(item: PositionedItem): string {
   const base = 'border-l-[3px]';
   if (item.type === 'event') {
-    return `${base} bg-primary/80 border-l-primary text-primary-foreground`;
+    return `${base} bg-primary/15 border-l-primary text-[hsl(var(--tone-sage-fg))] dark:text-primary`;
   }
   const t = item.task!;
   if (t.status === 'done') {
-    return `${base} bg-muted border-l-[hsl(var(--status-done))] text-muted-foreground`;
+    return `${base} bg-muted border-l-status-done text-muted-foreground`;
   }
   if (t.dueDate && t.dueDate < new Date().toISOString().split('T')[0] && t.status !== 'done') {
-    return `${base} bg-destructive/80 border-l-destructive text-destructive-foreground`;
+    return `${base} bg-priority-urgent/15 border-l-priority-urgent text-[hsl(var(--tone-terracotta-fg))] dark:text-priority-urgent`;
   }
   if (t.status === 'in_progress') {
-    return `${base} bg-[hsl(var(--status-progress))]/20 border-l-[hsl(var(--status-progress))] text-foreground`;
+    return `${base} bg-status-progress/15 border-l-status-progress text-[hsl(var(--tone-slate-fg))] dark:text-status-progress`;
   }
   if (item.type === 'subtask') {
     return `${base} bg-accent border-l-accent-foreground text-accent-foreground`;
   }
-  return `${base} bg-secondary border-l-[hsl(var(--status-todo))] text-secondary-foreground`;
+  return `${base} bg-secondary border-l-status-todo text-secondary-foreground`;
 }
 
 // Chip color for all-day zone
 function getChipColor(item: PositionedItem): string {
-  if (item.type === 'event') return 'bg-primary text-primary-foreground';
+  if (item.type === 'event') return 'bg-primary/15 text-[hsl(var(--tone-sage-fg))] dark:text-primary';
   const t = item.task!;
-  if (t.status === 'done') return 'bg-[hsl(var(--status-done))] text-primary-foreground';
-  if (t.dueDate && t.dueDate < new Date().toISOString().split('T')[0]) return 'bg-destructive text-destructive-foreground';
-  if (t.status === 'in_progress') return 'bg-[hsl(var(--status-progress))] text-primary-foreground';
+  if (t.status === 'done') return 'bg-status-done/15 text-[hsl(var(--tone-sage-fg))] dark:text-status-done';
+  if (t.dueDate && t.dueDate < new Date().toISOString().split('T')[0]) return 'bg-priority-urgent/15 text-[hsl(var(--tone-terracotta-fg))] dark:text-priority-urgent';
+  if (t.status === 'in_progress') return 'bg-status-progress/15 text-[hsl(var(--tone-slate-fg))] dark:text-status-progress';
   if (item.type === 'subtask') return 'bg-accent text-accent-foreground';
   return 'bg-secondary text-secondary-foreground';
 }
@@ -354,8 +354,8 @@ function CurrentTimeLine({ dateStr, hourHeight }: { dateStr: string; hourHeight:
   return (
     <div className="absolute left-0 right-0 z-40 pointer-events-none" style={{ top }}>
       <div className="flex items-center">
-        <div className="w-[10px] h-[10px] rounded-full bg-destructive -ml-[5px] shrink-0 shadow-sm" />
-        <div className="flex-1 h-[2px] bg-destructive shadow-sm" />
+        <div className="w-[10px] h-[10px] rounded-full bg-destructive -ml-[5px] shrink-0" />
+        <div className="flex-1 h-[2px] bg-destructive" />
       </div>
       <span className="absolute -left-0 -top-4 text-[9px] font-bold text-destructive ml-2">{timeLabel}</span>
     </div>
@@ -561,7 +561,7 @@ export default function HourlyGrid({
           const isToday = ds === todayStr;
           const frIdx = d.getDay() === 0 ? 6 : d.getDay() - 1;
           return (
-            <div key={i} className={`flex-1 text-center py-1.5 border-r border-border/30 last:border-r-0 ${isToday ? 'bg-primary/10' : ''}`} style={{ minWidth: isDay ? undefined : 120 }}>
+            <div key={i} className="flex-1 text-center py-1.5 border-r border-border/30 last:border-r-0" style={{ minWidth: isDay ? undefined : 120 }}>
               <div className="text-[10px] font-medium text-muted-foreground/60 uppercase">{DAYS_FR[frIdx]}</div>
               <div className={`text-sm font-medium ${isToday ? 'text-primary' : 'text-foreground'}`}>
                 <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full ${isToday ? 'bg-primary text-primary-foreground' : ''}`}>

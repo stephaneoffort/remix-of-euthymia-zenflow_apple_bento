@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
+import { getClosestToneSolidVar, TONE_ON_SOLID } from '@/lib/toneColor';
 
 interface SpaceAccessDialogProps {
   open: boolean;
@@ -117,8 +118,8 @@ export default function SpaceAccessDialog({
                       <img src={m.avatarUrl} alt={m.name} className="w-7 h-7 rounded-full object-cover" />
                     ) : (
                       <div
-                        className="w-7 h-7 rounded-full flex items-center justify-center text-label font-bold text-white"
-                        style={{ backgroundColor: m.avatarColor }}
+                        className="w-7 h-7 rounded-full flex items-center justify-center text-label font-bold"
+                        style={{ backgroundColor: getClosestToneSolidVar(m.avatarColor), color: TONE_ON_SOLID }}
                       >
                         {m.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                       </div>

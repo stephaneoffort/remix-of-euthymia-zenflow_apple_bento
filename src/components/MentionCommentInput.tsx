@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
 import { TeamMember } from '@/types';
 import RichTextEditor from '@/components/RichTextEditor';
+import { getClosestToneSolidVar, TONE_ON_SOLID } from '@/lib/toneColor';
 
 interface MentionCommentInputProps {
   value: string;
@@ -102,8 +103,8 @@ export default function MentionCommentInput({ value, onChange, onSubmit, placeho
               className="w-full flex items-center gap-2 px-3 py-2 hover:bg-accent transition-colors text-left"
             >
               <div
-                className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0"
-                style={{ backgroundColor: member.avatarColor }}
+                className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
+                style={{ backgroundColor: getClosestToneSolidVar(member.avatarColor), color: TONE_ON_SOLID }}
               >
                 {member.name.charAt(0).toUpperCase()}
               </div>

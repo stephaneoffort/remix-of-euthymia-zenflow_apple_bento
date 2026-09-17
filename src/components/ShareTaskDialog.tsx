@@ -7,6 +7,7 @@ import { toast } from '@/hooks/use-toast';
 import { Link2, Bell, Mail, MessageSquare, Check, Clock, Share2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
+import { getClosestToneSolidVar, TONE_ON_SOLID } from '@/lib/toneColor';
 
 interface ShareTaskDialogProps {
   open: boolean;
@@ -208,8 +209,8 @@ export default function ShareTaskDialog({ open, onOpenChange, taskId }: ShareTas
               )}
             >
               <div
-                className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0"
-                style={{ backgroundColor: member.avatarColor }}
+                className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
+                style={{ backgroundColor: getClosestToneSolidVar(member.avatarColor), color: TONE_ON_SOLID }}
               >
                 {member.name.charAt(0).toUpperCase()}
               </div>

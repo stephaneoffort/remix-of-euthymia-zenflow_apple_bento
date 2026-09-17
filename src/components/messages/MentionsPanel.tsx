@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { AtSign, MessageSquare, ArrowRight } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { getClosestToneSolidVar, TONE_ON_SOLID } from '@/lib/toneColor';
 
 const db = supabase as any;
 
@@ -77,8 +78,8 @@ export default function MentionsPanel() {
                 <div className="flex items-start gap-3">
                   {author && (
                     <div
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
-                      style={{ backgroundColor: author.avatarColor }}
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+                      style={{ backgroundColor: getClosestToneSolidVar(author.avatarColor), color: TONE_ON_SOLID }}
                     >
                       {author.name.charAt(0).toUpperCase()}
                     </div>

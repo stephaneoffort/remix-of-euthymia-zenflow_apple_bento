@@ -5,6 +5,7 @@ import { Users } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useApp } from '@/context/AppContext';
 import { toast } from 'sonner';
+import { getClosestToneSolidVar, TONE_ON_SOLID } from '@/lib/toneColor';
 
 interface ProjectMembersDialogProps {
   open: boolean;
@@ -77,8 +78,8 @@ export default function ProjectMembersDialog({
                   <img src={m.avatarUrl} alt={m.name} className="w-7 h-7 rounded-full object-cover" />
                 ) : (
                   <div
-                    className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
-                    style={{ backgroundColor: m.avatarColor }}
+                    className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold"
+                    style={{ backgroundColor: getClosestToneSolidVar(m.avatarColor), color: TONE_ON_SOLID }}
                   >
                     {m.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                   </div>

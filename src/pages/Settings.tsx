@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { getClosestToneSolidVar, TONE_ON_SOLID } from '@/lib/toneColor';
 import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown, Palette, BellRing, HardDrive, CalendarSync, ShieldCheck, FileText, ExternalLink, Building2, ImageUp, MailCheck } from 'lucide-react';
 import AppearanceSettings from '@/components/settings/AppearanceSettings';
 import { useOrg } from '@/context/OrgContext';
@@ -402,8 +403,8 @@ function MembersPanel() {
                   <img src={m.avatarUrl} alt={m.name} className="w-10 h-10 rounded-full object-cover" />
                 ) : (
                   <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white"
-                    style={{ backgroundColor: m.avatarColor }}
+                    className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold"
+                    style={{ backgroundColor: getClosestToneSolidVar(m.avatarColor), color: TONE_ON_SOLID }}
                   >
                     {m.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                   </div>
@@ -456,7 +457,7 @@ function MembersPanel() {
                         >
                           <span
                             className="w-1.5 h-1.5 rounded-full shrink-0"
-                            style={{ backgroundColor: org.color || 'hsl(var(--primary))' }}
+                            style={{ backgroundColor: org.color ? getClosestToneSolidVar(org.color) : 'hsl(var(--primary))' }}
                           />
                           {org.name}
                         </span>

@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Pencil } from 'lucide-react';
 import MemberProfileEditor, { type EditableMember } from '@/components/settings/MemberProfileEditor';
+import { getClosestToneSolidVar, TONE_ON_SOLID } from '@/lib/toneColor';
 
 export default function Profile() {
   const { teamMemberId } = useAuth();
@@ -59,8 +60,8 @@ export default function Profile() {
                   <img src={member.avatarUrl} alt={member.name} className="w-16 h-16 rounded-full object-cover" />
                 ) : (
                   <div
-                    className="w-16 h-16 rounded-full flex items-center justify-center text-lg font-bold text-white"
-                    style={{ backgroundColor: member.avatarColor }}
+                    className="w-16 h-16 rounded-full flex items-center justify-center text-lg font-bold"
+                    style={{ backgroundColor: getClosestToneSolidVar(member.avatarColor), color: TONE_ON_SOLID }}
                   >
                     {member.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                   </div>

@@ -63,10 +63,10 @@ function MyTasksCard({
   const hasMore = tasks.length > COLLAPSED_COUNT;
 
   return (
-    <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-lg overflow-hidden">
+    <Card className="bg-card/80 backdrop-blur-sm border-border overflow-hidden">
       <CardHeader className="pb-3 pt-4 px-5">
         <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2.5 tracking-wide uppercase">
-          <div className="p-1.5 rounded-md bg-destructive/10">
+          <div className="p-1.5 rounded-full bg-destructive/10">
             <Flame className="w-3.5 h-3.5 text-destructive" />
           </div>
           À traiter
@@ -75,7 +75,7 @@ function MyTasksCard({
           </span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="px-3 pb-3">
+      <CardContent className="px-4 pb-4">
         <div className="space-y-px">
           {visibleTasks.map((task: any, index: number) => {
             const daysLeft = task.dueDate ? differenceInDays(parseISO(task.dueDate), new Date()) : null;
@@ -297,10 +297,10 @@ export default function DashboardView() {
           ].map((stat, i) => (
             <motion.div key={stat.label} custom={i} variants={fadeUp} initial="hidden" animate="show">
               <Card className="bg-card border-border">
-                <CardContent className="p-4 flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-primary/10">{stat.icon}</div>
+                <CardContent className="p-5 flex items-center gap-3">
+                  <div className="p-2 rounded-full bg-primary/10">{stat.icon}</div>
                   <div>
-                    <p data-numeric className="font-numeric text-2xl font-bold text-foreground">{stat.value}</p>
+                    <p data-numeric className="font-numeric text-2xl font-semibold text-foreground">{stat.value}</p>
                     <p className="text-xs text-muted-foreground">{stat.label}</p>
                   </div>
                 </CardContent>
@@ -393,14 +393,14 @@ export default function DashboardView() {
         {/* Global progress bar */}
         <motion.div custom={6} variants={fadeUp} initial="hidden" animate="show">
           <Card className="bg-card border-border">
-            <CardContent className="p-4">
+            <CardContent className="p-5">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-foreground">Progression globale</span>
                 <span data-numeric className="font-numeric tabular-nums text-sm text-muted-foreground">
                   {globalCompletion}% · {globalDone}/{totalTasks}
                 </span>
               </div>
-              <Progress value={globalCompletion} className="h-2" />
+              <Progress value={globalCompletion} className="h-1.5" />
               {globalOverdue > 0 && (
                 <div className="flex items-center gap-1.5 mt-2 text-xs text-destructive">
                   <AlertTriangle className="w-3.5 h-3.5" />

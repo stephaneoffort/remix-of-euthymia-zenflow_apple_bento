@@ -265,7 +265,7 @@ export default function KanbanBoard() {
               <ChevronRight className="w-3.5 h-3.5 text-muted-foreground rotate-90" />
             </button>
             <div className={`w-2.5 h-2.5 rounded-full ${getStatusColor(status)}`} />
-            <h3 className="font-semibold text-xs sm:text-sm text-foreground select-none truncate">{getStatusLabel(status)}</h3>
+            <h3 className="font-semibold text-xs sm:text-sm text-foreground select-none truncate min-w-[4rem]">{getStatusLabel(status)}</h3>
             <span data-numeric className="font-numeric tabular-nums text-xs text-muted-foreground ml-auto shrink-0">{count}/{filteredTasks.length}</span>
             <UseTemplateButton
               listId={selectedProjectId ? (getListsForProject(selectedProjectId)[0]?.id || 'l1') : 'l1'}
@@ -534,7 +534,7 @@ export default function KanbanBoard() {
           </div>
         </div>
       ) : (
-        <div className={`grid p-3 overflow-hidden flex-1 ${collapsedStatuses.length > 0 ? 'pt-1' : ''}`} style={{ gridTemplateColumns: `repeat(${expandedStatuses.length}, minmax(0, 1fr))`, gap: '0.5rem' }}>
+        <div className={`grid p-3 overflow-x-auto flex-1 ${collapsedStatuses.length > 0 ? 'pt-1' : ''}`} style={{ gridTemplateColumns: `repeat(${expandedStatuses.length}, minmax(240px, 1fr))`, gap: '0.5rem' }}>
           {expandedStatuses.map(renderExpandedColumn)}
         </div>
       )}

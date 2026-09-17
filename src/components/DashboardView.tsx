@@ -450,8 +450,8 @@ export default function DashboardView() {
                       <Area
                         type="monotone"
                         dataKey="completed"
-                        stroke="hsl(142, 71%, 45%)"
-                        fill="hsl(142, 71%, 45%)"
+                        stroke="hsl(var(--status-done))"
+                        fill="hsl(var(--status-done))"
                         fillOpacity={0.15}
                         name="Terminées"
                       />
@@ -479,7 +479,7 @@ export default function DashboardView() {
                       <Bar
                         dataKey="done"
                         stackId="a"
-                        fill="hsl(142, 71%, 45%)"
+                        fill="hsl(var(--status-done))"
                         name="Terminées"
                         radius={[0, 0, 0, 0]}
                       />

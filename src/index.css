@@ -140,18 +140,18 @@ a, button, [role="button"], label, select, summary,
 
     --shadow-float: 0 8px 30px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
 
-    /* Priorités */
-    --priority-urgent: 0 80% 62%;
-    --priority-high: 25 95% 58%;
-    --priority-normal: 217 91% 65%;
-    --priority-low: 215 15% 52%;
+    /* Priorités (Phase 4, lot 4 — tons de la palette douce) */
+    --priority-urgent: var(--tone-terracotta-solid);
+    --priority-high: var(--tone-ochre-solid);
+    --priority-normal: var(--tone-slate-solid);
+    --priority-low: var(--tone-stone-solid);
 
-    /* Statuts */
-    --status-todo: 215 15% 52%;
-    --status-progress: 217 91% 65%;
-    --status-review: 45 95% 52%;
-    --status-done: 142 71% 48%;
-    --status-blocked: 0 80% 62%;
+    /* Statuts (Phase 4, lot 4 — tons de la palette douce) */
+    --status-todo: var(--tone-stone-solid);
+    --status-progress: var(--tone-slate-solid);
+    --status-review: var(--tone-sand-solid);
+    --status-done: var(--tone-sage-solid);
+    --status-blocked: var(--tone-terracotta-solid);
 
     /* Bento tokens */
     --bento-gap: 13px;
@@ -212,6 +212,17 @@ a, button, [role="button"], label, select, summary,
     --tone-olive-solid: 69 24% 59%;       --tone-olive-bg: 70 14% 16%;       --tone-olive-fg: 68 27% 65%;
     --tone-ochre-solid: 39 56% 64%;       --tone-ochre-bg: 37 29% 18%;       --tone-ochre-fg: 39 59% 67%;
     --tone-stone-solid: 60 4% 63%;        --tone-stone-bg: 60 2% 16%;        --tone-stone-fg: 60 4% 68%;
+
+    /* Priorités et statuts (Phase 4, lot 4 — tons de la palette douce) */
+    --priority-urgent: var(--tone-terracotta-solid);
+    --priority-high: var(--tone-ochre-solid);
+    --priority-normal: var(--tone-slate-solid);
+    --priority-low: var(--tone-stone-solid);
+    --status-todo: var(--tone-stone-solid);
+    --status-progress: var(--tone-slate-solid);
+    --status-review: var(--tone-sand-solid);
+    --status-done: var(--tone-sage-solid);
+    --status-blocked: var(--tone-terracotta-solid);
 
     --shadow-float: 0 8px 30px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3);
   }

@@ -1980,7 +1980,7 @@ function ThemeSwitcher() {
             key={opt.key}
             onClick={() => setTheme(opt.key)}
             className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors flex-1 justify-center ${
-              theme === opt.key ? "bg-sidebar-active text-white" : "text-sidebar-fg hover:text-sidebar-fg-bright"
+              theme === opt.key ? "bg-sidebar-active text-sidebar-active-fg" : "text-sidebar-fg hover:text-sidebar-fg-bright"
             }`}
             title={opt.title}
           >

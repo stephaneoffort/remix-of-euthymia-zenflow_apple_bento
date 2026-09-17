@@ -107,13 +107,13 @@ a, button, [role="button"], label, select, summary,
     --ring: 128 13% 50%;               /* #6F8F73 */
     --radius: 0.875rem;
 
-    /* Sidebar (legacy — restylée en Phase 2) */
-    --sidebar-bg: 220 32% 6%;
-    --sidebar-fg: 210 15% 72%;
-    --sidebar-fg-bright: 0 0% 94%;
-    --sidebar-hover: 220 25% 12%;
-    --sidebar-active: 173 80% 29%;
-    --sidebar-active-fg: 0 0% 100%;
+    /* Sidebar (legacy — restylée en Phase 4, lot 1) */
+    --sidebar-bg: 60 11% 93%;
+    --sidebar-fg: 60 2% 41%;
+    --sidebar-fg-bright: 240 3% 12%;
+    --sidebar-hover: 60 9% 89%;
+    --sidebar-active: 108 22% 87%;
+    --sidebar-active-fg: 129 18% 30%;
     --sidebar-background: 60 11% 93%;
     --sidebar-foreground: 240 3% 12%;
     --sidebar-primary: 129 14% 44%;
@@ -184,6 +184,13 @@ a, button, [role="button"], label, select, summary,
     --input: 60 2% 18%;
     --ring: 129 15% 56%;
 
+    /* Sidebar (legacy — restylée en Phase 4, lot 1) */
+    --sidebar-bg: 0 0% 7%;
+    --sidebar-fg: 60 2% 55%;
+    --sidebar-fg-bright: 60 9% 94%;
+    --sidebar-hover: 60 2% 18%;
+    --sidebar-active: 135 13% 18%;
+    --sidebar-active-fg: 129 19% 72%;
     --sidebar-background: 0 0% 7%;
     --sidebar-foreground: 60 9% 94%;
     --sidebar-primary: 129 15% 56%;

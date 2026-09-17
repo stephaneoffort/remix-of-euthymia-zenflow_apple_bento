@@ -10,10 +10,8 @@ export default {
       padding: "2rem",
       screens: { "2xl": "1400px" },
     },
-    screens: {
-        xs: "480px",
-      },
-      extend: {
+    extend: {
+      screens: { xs: "480px" },
       fontSize: {
         label: ["0.6875rem", { lineHeight: "1rem" }], // 11px — badges, counters
         caption: ["0.75rem", { lineHeight: "1rem" }], // 12px — metadata, timestamps

@@ -3,7 +3,7 @@ import { useApp } from "@/context/AppContext";
 import { Task, TaskDependency } from "@/types";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { TONE_ORDER, TONE_SOLID_HEX } from "@/lib/toneColor";
+import { TONE_ORDER, TONE_SOLID_HEX, getClosestToneSolidVar } from "@/lib/toneColor";
 import {
   ChevronLeft,
   ChevronRight,
@@ -972,7 +972,9 @@ function GanttBar({
     );
   }
 
-  const barColor = task.color || (task.hasChildren ? "hsl(var(--muted-foreground))" : "hsl(var(--primary))");
+  const barColor = task.color
+    ? getClosestToneSolidVar(task.color)
+    : (task.hasChildren ? "hsl(var(--muted-foreground))" : "hsl(var(--primary))");
   const isDragging = dragState !== null;
 
   const handleBarMouseDown = (e: React.MouseEvent) => {

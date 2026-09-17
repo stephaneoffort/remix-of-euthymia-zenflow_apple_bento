@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { getClosestToneSolidVar, TONE_ON_SOLID } from '@/lib/toneColor';
 import { useApp } from '@/context/AppContext';
 import { useThemeMode } from '@/context/ThemeContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -122,8 +123,8 @@ export default function WorkloadView() {
             <ArrowLeft className="w-5 h-5 text-muted-foreground" />
           </button>
           <div
-            className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0"
-            style={{ backgroundColor: selectedMember.member.avatarColor }}
+            className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
+            style={{ backgroundColor: getClosestToneSolidVar(selectedMember.member.avatarColor), color: TONE_ON_SOLID }}
           >
             {selectedMember.member.name.charAt(0).toUpperCase()}
           </div>
@@ -310,8 +311,8 @@ export default function WorkloadView() {
             <CardContent className="pt-4 pb-4 space-y-3">
               <div className="flex items-center gap-3">
                 <div
-                  className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0"
-                  style={{ backgroundColor: member.avatarColor }}
+                  className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
+                  style={{ backgroundColor: getClosestToneSolidVar(member.avatarColor), color: TONE_ON_SOLID }}
                 >
                   {member.name.charAt(0).toUpperCase()}
                 </div>

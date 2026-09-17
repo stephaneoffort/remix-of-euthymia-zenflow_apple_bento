@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getClosestToneSolidVar } from '@/lib/toneColor';
 import HighlightText from '@/components/HighlightText';
 import TaskPathBreadcrumb from '@/components/TaskPathBreadcrumb';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -134,7 +135,7 @@ export default function ListView() {
                   const proj = getProjectForTask(task.listId);
                   return proj ? (
                     <span className="text-label text-muted-foreground flex items-center gap-1 mb-0.5">
-                      <span className="w-1.5 h-1.5 rounded-sm shrink-0" style={{ backgroundColor: proj.color }} />
+                      <span className="w-1.5 h-1.5 rounded-sm shrink-0" style={{ backgroundColor: getClosestToneSolidVar(proj.color) }} />
                       {proj.name}
                     </span>
                   ) : null;
@@ -250,7 +251,7 @@ export default function ListView() {
                   const proj = getProjectForTask(task.listId);
                   return proj ? (
                     <span className="text-label text-muted-foreground flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-sm shrink-0" style={{ backgroundColor: proj.color }} />
+                      <span className="w-1.5 h-1.5 rounded-sm shrink-0" style={{ backgroundColor: getClosestToneSolidVar(proj.color) }} />
                       {proj.name}
                     </span>
                   ) : null;

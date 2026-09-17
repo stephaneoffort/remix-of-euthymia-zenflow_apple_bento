@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
+import { getClosestToneSolidVar, TONE_ON_SOLID } from "@/lib/toneColor";
 import { useTaskMeetings } from "@/hooks/useTaskMeetings";
 import zoomIcon from "@/assets/integrations/zoom.png";
 import googleMeetIcon from "@/assets/integrations/google-meet.png";
@@ -242,8 +243,8 @@ function TaskHoverContent({
             {assignees.map((a) => (
               <span key={a.id} className="inline-flex items-center gap-1">
                 <span
-                  className="w-4 h-4 rounded-full text-[8px] font-bold text-white flex items-center justify-center"
-                  style={{ backgroundColor: a.avatarColor }}
+                  className="w-4 h-4 rounded-full text-[8px] font-bold flex items-center justify-center"
+                  style={{ backgroundColor: getClosestToneSolidVar(a.avatarColor), color: TONE_ON_SOLID }}
                 >
                   {a.name.charAt(0).toUpperCase()}
                 </span>
@@ -464,8 +465,8 @@ function MobileTaskCard({
             {assignees.slice(0, 3).map((a) => (
               <span
                 key={a.id}
-                className="w-5 h-5 rounded-full text-label font-bold text-white flex items-center justify-center border-2 border-card"
-                style={{ backgroundColor: a.avatarColor }}
+                className="w-5 h-5 rounded-full text-label font-bold flex items-center justify-center border-2 border-card"
+                style={{ backgroundColor: getClosestToneSolidVar(a.avatarColor), color: TONE_ON_SOLID }}
               >
                 {a.name.charAt(0).toUpperCase()}
               </span>

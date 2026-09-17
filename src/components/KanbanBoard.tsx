@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { getClosestToneSolidVar } from '@/lib/toneColor';
 import HighlightText from '@/components/HighlightText';
 import TaskPathBreadcrumb from '@/components/TaskPathBreadcrumb';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -372,12 +373,12 @@ export default function KanbanBoard() {
         return (
           <div className="px-3 sm:px-6 pt-3 sm:pt-4 pb-1">
             <div className="flex items-center gap-2.5">
-              <div className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: project.color }} />
+              <div className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: getClosestToneSolidVar(project.color) }} />
               <span className="text-xs font-medium text-foreground">{project.name}</span>
               <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all duration-500"
-                  style={{ width: `${pct}%`, backgroundColor: project.color }}
+                  style={{ width: `${pct}%`, backgroundColor: getClosestToneSolidVar(project.color) }}
                 />
               </div>
               <span data-numeric className="font-numeric text-xs font-semibold tabular-nums text-foreground">{pct}%</span>
@@ -632,7 +633,7 @@ function KanbanCard({
             const proj = getProjectName(task.listId);
             return proj ? (
               <span className="text-label text-muted-foreground flex items-center gap-1 mb-1">
-                <span className="w-1.5 h-1.5 rounded-sm shrink-0" style={{ backgroundColor: proj.color }} />
+                <span className="w-1.5 h-1.5 rounded-sm shrink-0" style={{ backgroundColor: getClosestToneSolidVar(proj.color) }} />
                 {proj.name}
               </span>
             ) : null;

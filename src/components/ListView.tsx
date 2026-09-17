@@ -117,10 +117,9 @@ export default function ListView() {
             whileHover={{ y: -2, scale: 1.01, transition: { duration: 0.2 } }}
             whileTap={{ scale: 0.98 }}
             transition={{ type: 'spring', stiffness: 400, damping: 28 }}
-            className={`relative overflow-hidden bg-card rounded-lg border p-3 cursor-pointer hover:shadow-md group ${isOverdue ? 'border-l-2 border-l-priority-urgent' : ''}`}
+            className={`relative overflow-hidden bg-card rounded-lg border p-3 cursor-pointer group ${isOverdue ? 'border-l-2 border-l-priority-urgent' : ''}`}
             onClick={() => setSelectedTaskId(task.id)}
           >
-            <div className="pointer-events-none absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-white/10 via-transparent to-white/5" />
             <div className="flex items-start gap-2">
               {hasChildren && (
                 <button
@@ -179,7 +178,7 @@ export default function ListView() {
           <EmptyState variant="list" onAction={() => setIsAdding(true)} />
         )}
         {isAdding ? (
-          <div className="flex items-center gap-2 p-2 bg-card/95 backdrop-blur-sm rounded-lg border border-border shadow-sm">
+          <div className="flex items-center gap-2 p-2 bg-card/95 backdrop-blur-sm rounded-lg border border-border">
             <input
               autoFocus
               value={newTaskTitle}
@@ -236,7 +235,7 @@ export default function ListView() {
           }}
           onClick={() => setSelectedTaskId(task.id)}
         >
-          <td className="py-2.5 px-3" style={{ paddingLeft: `${12 + depth * 24}px` }}>
+          <td className="py-3 px-3" style={{ paddingLeft: `${12 + depth * 24}px` }}>
             <div className="flex items-center gap-2">
               {hasChildren ? (
                 <button
@@ -268,12 +267,12 @@ export default function ListView() {
               </div>
             </div>
           </td>
-          <td className="py-2.5 px-3"><StatusBadge status={task.status} /></td>
-          <td className="py-2.5 px-3"><PriorityBadge priority={task.priority} /></td>
-          <td className="py-2.5 px-3">
+          <td className="py-3 px-3"><StatusBadge status={task.status} /></td>
+          <td className="py-3 px-3"><PriorityBadge priority={task.priority} /></td>
+          <td className="py-3 px-3">
             <AvatarGroup memberIds={task.assigneeIds} getMemberById={getMemberById} />
           </td>
-          <td className="py-2.5 px-3">
+          <td className="py-3 px-3">
             {task.dueDate ? (
               <span className={`text-sm px-1.5 py-0.5 rounded transition-colors dark:bg-muted dark:text-foreground dark:hover:bg-accent ${isOverdue ? 'text-priority-urgent font-medium' : 'text-foreground'}`}>
                 {new Date(task.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
@@ -288,7 +287,7 @@ export default function ListView() {
 
   const SortHeader = ({ label, sortKeyName }: { label: string; sortKeyName: SortKey }) => (
     <th
-      className="text-left py-2.5 px-3 text-xs font-semibold text-foreground/70 uppercase tracking-wider cursor-pointer hover:text-foreground select-none"
+      className="text-left py-3 px-3 text-xs font-semibold text-foreground/70 uppercase tracking-wider cursor-pointer hover:text-foreground select-none"
       onClick={() => toggleSort(sortKeyName)}
     >
       <span className="inline-flex items-center gap-1">
@@ -307,7 +306,7 @@ export default function ListView() {
               <SortHeader label="Tâche" sortKeyName="title" />
               <SortHeader label="Statut" sortKeyName="status" />
               <SortHeader label="Priorité" sortKeyName="priority" />
-              <th className="text-left py-2.5 px-3 text-xs font-semibold text-foreground/70 uppercase tracking-wider">Assignée à</th>
+              <th className="text-left py-3 px-3 text-xs font-semibold text-foreground/70 uppercase tracking-wider">Assignée à</th>
               <SortHeader label="Échéance" sortKeyName="dueDate" />
             </tr>
           </thead>

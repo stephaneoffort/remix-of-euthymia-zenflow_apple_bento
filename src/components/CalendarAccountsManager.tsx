@@ -7,17 +7,17 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Badge } from '@/components/ui/badge';
-import { Plus, RefreshCw, Trash2, CheckCircle2, Loader2, ChevronDown } from 'lucide-react';
+import { Plus, RefreshCw, Trash2, CheckCircle2, Loader2, ChevronDown, Calendar, Link, Cloud, Lock, Mail, FileText, type LucideIcon } from 'lucide-react';
 import type { CalendarAccount } from '@/hooks/useCalendarSync';
 
-const PROVIDER_META: Record<string, { label: string; icon: string; color: string; dot: string }> = {
-  google: { label: 'Google Calendar', icon: '📅', color: 'text-[#EA4335]', dot: 'bg-[#EA4335]' },
-  caldav: { label: 'CalDAV', icon: '🔗', color: 'text-tone-stone-fg', dot: 'bg-tone-stone-solid' },
-  icloud: { label: 'Apple iCal', icon: '🍎', color: 'text-tone-slate-fg', dot: 'bg-tone-slate-solid' },
-  nextcloud: { label: 'Nextcloud', icon: '☁️', color: 'text-tone-mist-fg', dot: 'bg-tone-mist-solid' },
-  proton: { label: 'Proton Calendar', icon: '🔒', color: 'text-tone-lavender-fg', dot: 'bg-tone-lavender-solid' },
-  fastmail: { label: 'Fastmail', icon: '✉️', color: 'text-tone-olive-fg', dot: 'bg-tone-olive-solid' },
-  ics: { label: 'Agenda ICS', icon: '📄', color: 'text-tone-sand-fg', dot: 'bg-tone-sand-solid' },
+const PROVIDER_META: Record<string, { label: string; icon: LucideIcon; color: string; dot: string; bg: string }> = {
+  google: { label: 'Google Calendar', icon: Calendar, color: 'text-[#EA4335]', dot: 'bg-[#EA4335]', bg: 'bg-[#EA4335]/15' },
+  caldav: { label: 'CalDAV', icon: Link, color: 'text-tone-stone-fg', dot: 'bg-tone-stone-solid', bg: 'bg-tone-stone-bg' },
+  icloud: { label: 'Apple iCal', icon: Calendar, color: 'text-tone-slate-fg', dot: 'bg-tone-slate-solid', bg: 'bg-tone-slate-bg' },
+  nextcloud: { label: 'Nextcloud', icon: Cloud, color: 'text-tone-mist-fg', dot: 'bg-tone-mist-solid', bg: 'bg-tone-mist-bg' },
+  proton: { label: 'Proton Calendar', icon: Lock, color: 'text-tone-lavender-fg', dot: 'bg-tone-lavender-solid', bg: 'bg-tone-lavender-bg' },
+  fastmail: { label: 'Fastmail', icon: Mail, color: 'text-tone-olive-fg', dot: 'bg-tone-olive-solid', bg: 'bg-tone-olive-bg' },
+  ics: { label: 'Agenda ICS', icon: FileText, color: 'text-tone-sand-fg', dot: 'bg-tone-sand-solid', bg: 'bg-tone-sand-bg' },
 };
 
 export function getProviderMeta(provider: string) {
@@ -233,7 +233,9 @@ export default function CalendarAccountsManager({ accounts, syncing, visibleAcco
               {/* Google */}
               <button onClick={handleConnectGoogle}
                 className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-border hover:border-[#EA4335]/40 hover:bg-[#EA4335]/5 dark:hover:bg-[#EA4335]/10 transition-all text-center group">
-                <span className="text-3xl">📅</span>
+                <span className={`inline-flex items-center justify-center w-12 h-12 rounded-full ${PROVIDER_META.google.bg}`}>
+                  <Calendar className={`w-6 h-6 ${PROVIDER_META.google.color}`} />
+                </span>
                 <span className="text-sm font-semibold text-foreground">Google Calendar</span>
                 <span className="text-[11px] text-muted-foreground">OAuth sécurisé</span>
                 <Badge variant="secondary" className="text-[10px] mt-1">Bidirectionnel</Badge>
@@ -242,7 +244,9 @@ export default function CalendarAccountsManager({ accounts, syncing, visibleAcco
               {/* Apple iCal */}
               <button onClick={handleStartIcloud}
                 className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-border hover:border-border/80 hover:bg-muted/50 transition-all text-center group">
-                <span className="text-3xl">🍎</span>
+                <span className={`inline-flex items-center justify-center w-12 h-12 rounded-full ${PROVIDER_META.icloud.bg}`}>
+                  <Calendar className={`w-6 h-6 ${PROVIDER_META.icloud.color}`} />
+                </span>
                 <span className="text-sm font-semibold text-foreground">Apple iCal</span>
                 <span className="text-[11px] text-muted-foreground">iCloud CalDAV</span>
                 <Badge variant="secondary" className="text-[10px] mt-1">Bidirectionnel</Badge>
@@ -251,7 +255,9 @@ export default function CalendarAccountsManager({ accounts, syncing, visibleAcco
               {/* CalDAV */}
               <button onClick={() => setStep('caldav')}
                 className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-border hover:border-tone-stone-solid/40 hover:bg-tone-stone-bg transition-all text-center group">
-                <span className="text-3xl">🔗</span>
+                <span className={`inline-flex items-center justify-center w-12 h-12 rounded-full ${PROVIDER_META.caldav.bg}`}>
+                  <Link className={`w-6 h-6 ${PROVIDER_META.caldav.color}`} />
+                </span>
                 <span className="text-sm font-semibold text-foreground">CalDAV</span>
                 <span className="text-[11px] text-muted-foreground">Nextcloud · Proton · Fastmail</span>
                 <Badge variant="secondary" className="text-[10px] mt-1">Bidirectionnel</Badge>
@@ -260,7 +266,9 @@ export default function CalendarAccountsManager({ accounts, syncing, visibleAcco
               {/* ICS */}
               <button onClick={() => setStep('ics')}
                 className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-border hover:border-foreground/40 hover:bg-muted transition-all text-center col-span-2 group">
-                <span className="text-3xl">📄</span>
+                <span className={`inline-flex items-center justify-center w-12 h-12 rounded-full ${PROVIDER_META.ics.bg}`}>
+                  <FileText className={`w-6 h-6 ${PROVIDER_META.ics.color}`} />
+                </span>
                 <span className="text-sm font-semibold text-foreground">Agenda ICS</span>
                 <span className="text-[11px] text-muted-foreground">Tout calendrier public</span>
                 <Badge variant="outline" className="text-[10px] mt-1">Lecture seule</Badge>

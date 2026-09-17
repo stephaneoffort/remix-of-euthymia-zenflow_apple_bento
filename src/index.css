@@ -232,6 +232,13 @@ a, button, [role="button"], label, select, summary,
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+
+  /* Couleur de bordure par défaut : sans ça, la classe "border" seule
+     (sans suffixe de couleur) retombe sur le gris Tailwind par défaut
+     au lieu de notre token --border. */
+  * {
+    @apply border-border;
+  }
 }
 
 /* ─────────────────────────────────────────────────────

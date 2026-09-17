@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Search, FileText, FolderOpen, Tag, Hash, User } from 'lucide-react';
 import { StatusCircle } from '@/components/TaskBadges';
+import { getClosestToneSolidVar, TONE_ON_SOLID } from '@/lib/toneColor';
 
 interface CommandPaletteProps {
   externalOpen?: boolean;
@@ -198,7 +199,7 @@ export default function CommandPalette({ externalOpen, onExternalOpenChange }: C
               {item.type === 'task' && item.status ? (
                 <StatusCircle status={item.status} className="w-4 h-4 shrink-0" />
               ) : item.type === 'member' && item.avatarColor ? (
-                <div className="w-6 h-6 rounded-full flex items-center justify-center text-label font-bold text-primary-foreground shrink-0" style={{ backgroundColor: item.avatarColor }}>
+                <div className="w-6 h-6 rounded-full flex items-center justify-center text-label font-bold shrink-0" style={{ backgroundColor: getClosestToneSolidVar(item.avatarColor), color: TONE_ON_SOLID }}>
                   {item.title.charAt(0).toUpperCase()}
                 </div>
               ) : (

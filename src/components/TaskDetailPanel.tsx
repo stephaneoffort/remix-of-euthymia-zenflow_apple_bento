@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { getClosestToneSolidVar, TONE_ON_SOLID } from '@/lib/toneColor';
 import { toast } from '@/hooks/use-toast';
 import { ToastAction } from '@/components/ui/toast';
 import { useApp } from '@/context/AppContext';
@@ -539,7 +540,7 @@ export default function TaskDetailPanel() {
                       }}
                       className="rounded border-border"
                     />
-                    <div className="w-5 h-5 rounded-full flex items-center justify-center text-label font-bold" style={{ backgroundColor: m.avatarColor, color: 'white' }}>
+                    <div className="w-5 h-5 rounded-full flex items-center justify-center text-label font-bold" style={{ backgroundColor: getClosestToneSolidVar(m.avatarColor), color: TONE_ON_SOLID }}>
                       {m.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                     </div>
                     <span className="truncate text-foreground">{m.name}</span>
@@ -871,7 +872,7 @@ export default function TaskDetailPanel() {
                   const author = getMemberById(c.authorId);
                   return (
                     <div key={c.id} className="flex gap-2">
-                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-label font-bold shrink-0 mt-0.5" style={{ backgroundColor: author?.avatarColor || 'hsl(var(--muted-foreground))', color: 'white' }}>
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-label font-bold shrink-0 mt-0.5" style={{ backgroundColor: author?.avatarColor ? getClosestToneSolidVar(author.avatarColor) : 'hsl(var(--muted-foreground))', color: TONE_ON_SOLID }}>
                         {author?.name.split(' ').map(n => n[0]).join('').slice(0, 2) || '?'}
                       </div>
                       <div className="min-w-0 flex-1">

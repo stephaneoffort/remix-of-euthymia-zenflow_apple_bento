@@ -123,6 +123,9 @@ a, button, [role="button"], label, select, summary,
     --sidebar-border: 60 9% 89%;
     --sidebar-ring: 128 13% 50%;
 
+    /* Texte sur pastille pleine (tous tons confondus) */
+    --tone-on-solid: 0 0% 100%;
+
     /* Palette douce commune (10 tons) : projets, avatars, tâches, étiquettes */
     --tone-sage-solid: 128 13% 50%;       --tone-sage-bg: 108 22% 87%;       --tone-sage-fg: 129 18% 30%;
     --tone-slate-solid: 214 17% 51%;      --tone-slate-bg: 213 30% 88%;      --tone-slate-fg: 212 22% 34%;
@@ -189,6 +192,8 @@ a, button, [role="button"], label, select, summary,
     --sidebar-accent-foreground: 129 19% 72%;
     --sidebar-border: 60 2% 18%;
     --sidebar-ring: 129 15% 56%;
+
+    --tone-on-solid: 0 0% 7%;
 
     --tone-sage-solid: 127 17% 62%;       --tone-sage-bg: 135 13% 18%;       --tone-sage-fg: 129 19% 72%;
     --tone-slate-solid: 214 22% 65%;      --tone-slate-bg: 215 18% 18%;      --tone-slate-fg: 214 25% 73%;

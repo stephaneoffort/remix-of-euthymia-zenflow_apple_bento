@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { useUserLogo, ZENFLOW_LOGO } from "@/hooks/useUserLogo";
-import { TONE_ORDER, TONE_SOLID_HEX } from "@/lib/toneColor";
+import { TONE_ORDER, TONE_SOLID_HEX, getClosestToneSolidVar, TONE_ON_SOLID } from "@/lib/toneColor";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import {
   ChevronRight,
@@ -668,13 +668,13 @@ export default function AppSidebar() {
                           >
                             <div
                               className={`w-3 h-3 rounded-sm transition-transform ${isActive ? "scale-125" : ""}`}
-                              style={{ backgroundColor: proj.color }}
+                              style={{ backgroundColor: getClosestToneSolidVar(proj.color) }}
                             />
                           </button>
                         </TooltipTrigger>
                         <TooltipContent side="right">
                           <span className="flex items-center gap-1.5">
-                            <span className="w-2 h-2 rounded-sm" style={{ backgroundColor: proj.color }} />
+                            <span className="w-2 h-2 rounded-sm" style={{ backgroundColor: getClosestToneSolidVar(proj.color) }} />
                             {proj.name}
                           </span>
                         </TooltipContent>
@@ -949,7 +949,7 @@ export default function AppSidebar() {
               <span
                 aria-hidden
                 className="w-2.5 h-2.5 rounded-full shrink-0"
-                style={{ background: currentOrg?.color || "hsl(var(--primary))" }}
+                style={{ background: currentOrg?.color ? getClosestToneSolidVar(currentOrg.color) : "hsl(var(--primary))" }}
               />
               <span className="text-sm font-semibold text-sidebar-fg-bright truncate">
                 {currentOrg?.name ?? "Espaces"}
@@ -1261,7 +1261,7 @@ export default function AppSidebar() {
                               <div key={project.id} className="flex items-center gap-2 px-2 py-1.5">
                                 <span
                                   className="w-2.5 h-2.5 rounded-sm shrink-0"
-                                  style={{ backgroundColor: project.color }}
+                                  style={{ backgroundColor: getClosestToneSolidVar(project.color) }}
                                 />
                                 <input
                                   autoFocus
@@ -1316,7 +1316,7 @@ export default function AppSidebar() {
                                     >
                                       <span
                                         className="w-2.5 h-2.5 rounded-sm shrink-0"
-                                        style={{ backgroundColor: project.color }}
+                                        style={{ backgroundColor: getClosestToneSolidVar(project.color) }}
                                       />
                                       <span className="flex-1 min-w-0 truncate">{project.name}</span>
                                     </button>
@@ -1505,8 +1505,8 @@ export default function AppSidebar() {
                                     }`}
                                   >
                                     <span
-                                      className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold text-white shrink-0"
-                                      style={{ backgroundColor: member.avatarColor }}
+                                      className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold shrink-0"
+                                      style={{ backgroundColor: getClosestToneSolidVar(member.avatarColor), color: TONE_ON_SOLID }}
                                     >
                                       {member.name.charAt(0).toUpperCase()}
                                     </span>
@@ -1566,7 +1566,7 @@ export default function AppSidebar() {
                   <span
                     aria-hidden
                     className="w-2.5 h-2.5 rounded-full shrink-0"
-                    style={{ background: org.color || "hsl(var(--primary))" }}
+                    style={{ background: org.color ? getClosestToneSolidVar(org.color) : "hsl(var(--primary))" }}
                   />
                   <span className="text-sm text-sidebar-fg truncate">{org.name}</span>
                   {/* Signalement discret pour un super-admin non membre */}
@@ -1643,7 +1643,7 @@ export default function AppSidebar() {
                         <div
                           title={`${m.name} — ${m.role}`}
                           className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold cursor-default"
-                          style={{ backgroundColor: m.avatarColor, color: "white" }}
+                          style={{ backgroundColor: getClosestToneSolidVar(m.avatarColor), color: TONE_ON_SOLID }}
                         >
                           {m.name
                             .split(" ")
@@ -1690,7 +1690,7 @@ export default function AppSidebar() {
                       <div
                         title={`${m.name} — ${m.role}`}
                         className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold cursor-default"
-                        style={{ backgroundColor: m.avatarColor, color: "white" }}
+                        style={{ backgroundColor: getClosestToneSolidVar(m.avatarColor), color: TONE_ON_SOLID }}
                       >
                         {m.name
                           .split(" ")
@@ -1918,7 +1918,7 @@ function ArchivesSection() {
               key={project.id}
               className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-fg group ml-2"
             >
-              <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: project.color }} />
+              <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: getClosestToneSolidVar(project.color) }} />
               <span className="flex-1 truncate opacity-60">{project.name}</span>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -2006,7 +2006,7 @@ function CurrentUserBadge() {
       ) : (
         <div
           className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
-          style={{ backgroundColor: member.avatarColor, color: "white" }}
+          style={{ backgroundColor: getClosestToneSolidVar(member.avatarColor), color: TONE_ON_SOLID }}
         >
           {member.name
             .split(" ")

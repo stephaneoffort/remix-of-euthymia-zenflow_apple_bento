@@ -167,3 +167,34 @@ export function getClosestTone(value: string | null | undefined): ToneId {
   }
   return best;
 }
+
+/**
+ * Aides pour l'AFFICHAGE d'une couleur déjà enregistrée : renvoient une référence
+ * à la variable CSS du ton (pas une couleur figée), pour suivre correctement le
+ * mode clair/sombre. Ne modifient jamais la valeur enregistrée.
+ */
+export function getToneSolidVar(id: ToneId): string {
+  return `hsl(var(--tone-${id}-solid))`;
+}
+export function getToneBgVar(id: ToneId): string {
+  return `hsl(var(--tone-${id}-bg))`;
+}
+export function getToneFgVar(id: ToneId): string {
+  return `hsl(var(--tone-${id}-fg))`;
+}
+
+/** Pastille pleine (points de couleur, cercles d'avatar) — couleur la plus proche. */
+export function getClosestToneSolidVar(value: string | null | undefined): string {
+  return getToneSolidVar(getClosestTone(value));
+}
+/** Fond d'étiquette/badge (à utiliser avec getClosestToneFgVar pour le texte). */
+export function getClosestToneBgVar(value: string | null | undefined): string {
+  return getToneBgVar(getClosestTone(value));
+}
+/** Texte d'étiquette/badge — à utiliser avec getClosestToneBgVar pour le fond. */
+export function getClosestToneFgVar(value: string | null | undefined): string {
+  return getToneFgVar(getClosestTone(value));
+}
+
+/** Texte à poser sur une pastille pleine (blanc en clair, #121212 en sombre). */
+export const TONE_ON_SOLID = "hsl(var(--tone-on-solid))";

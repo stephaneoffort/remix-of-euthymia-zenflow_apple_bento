@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Search, X } from 'lucide-react';
 import { StatusCircle } from '@/components/TaskBadges';
 import { SpaceIcon } from '@/components/SpaceIcon';
+import { getClosestToneSolidVar } from '@/lib/toneColor';
 
 const GLOBAL_SEARCH_EVENT = 'zenflow:global-task-search';
 
@@ -160,7 +161,7 @@ export default function GlobalTaskSearch() {
               {availableProjects.map((p) => (
                 <SelectItem key={p.id} value={p.id}>
                   <span className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-sm" style={{ backgroundColor: p.color }} />
+                    <span className="w-2 h-2 rounded-sm" style={{ backgroundColor: getClosestToneSolidVar(p.color) }} />
                     {p.name}
                   </span>
                 </SelectItem>

@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/TaskBadges';
 import { cn } from '@/lib/utils';
+import { getClosestToneSolidVar } from '@/lib/toneColor';
 
 interface Props {
   taskId: string;
@@ -107,7 +108,7 @@ export default function TaskLinksSection({ taskId }: Props) {
           <div className="flex items-center gap-1.5">
             {project && (
               <>
-                <span className="w-1.5 h-1.5 rounded-sm shrink-0" style={{ backgroundColor: project.color }} />
+                <span className="w-1.5 h-1.5 rounded-sm shrink-0" style={{ backgroundColor: getClosestToneSolidVar(project.color) }} />
                 <span className="text-[11px] text-muted-foreground truncate">
                   {space?.name} · {project.name}
                 </span>

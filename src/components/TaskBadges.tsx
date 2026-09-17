@@ -3,6 +3,7 @@ import { Priority } from '@/types';
 import { AlertCircle, ArrowUp, Minus, ArrowDown, Circle, Loader, Eye, CheckCircle, Ban, CalendarSync } from 'lucide-react';
 import zoomIcon from '@/assets/integrations/zoom.png';
 import googleMeetIcon from '@/assets/integrations/google-meet.png';
+import { getClosestToneSolidVar, TONE_ON_SOLID } from '@/lib/toneColor';
 
 export const PriorityBadge = React.forwardRef<HTMLSpanElement, { priority: Priority }>(({ priority }, ref) => {
   const config: Record<Priority, { label: string; className: string; icon: React.ReactNode }> = {
@@ -74,7 +75,7 @@ export function AvatarGroup({ memberIds, getMemberById }: { memberIds: string[];
               key={id}
               title={m.name}
               className="w-6 h-6 rounded-full flex items-center justify-center text-label font-bold ring-2 ring-card"
-              style={{ backgroundColor: m.avatarColor, color: 'white' }}
+              style={{ backgroundColor: getClosestToneSolidVar(m.avatarColor), color: TONE_ON_SOLID }}
             >
               {m.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
             </div>

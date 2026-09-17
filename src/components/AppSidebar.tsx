@@ -814,9 +814,9 @@ export default function AppSidebar() {
               type="button"
               onClick={() => setFiltersExpanded((prev) => !prev)}
               aria-label="Afficher/masquer les filtres"
+              title="Afficher/masquer les filtres"
               className="flex items-center gap-1 text-xs font-semibold text-sidebar-fg uppercase tracking-wider hover:opacity-80"
             >
-              <span className="hidden sm:inline">Filtres</span>
               <ChevronDown
                 className={`w-3.5 h-3.5 text-sidebar-fg transition-transform ${filtersExpanded ? "" : "-rotate-90"}`}
               />

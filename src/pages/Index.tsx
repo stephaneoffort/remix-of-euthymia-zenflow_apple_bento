@@ -3,6 +3,7 @@ import GanttView from "@/components/GanttView";
 import TimelineView from "@/components/TimelineView";
 import VoiceTaskCreator from "@/components/VoiceTaskCreator";
 import React, { useState, useCallback, useEffect, useMemo, useRef } from "react";
+import { getClosestToneSolidVar, TONE_ON_SOLID } from "@/lib/toneColor";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -287,7 +288,7 @@ export default function Index() {
         icon: parentSpace.icon,
         onClick: () => navigateToSpace(parentSpace.id),
       });
-      breadcrumbs.push({ label: project.name, color: project.color });
+      breadcrumbs.push({ label: project.name, color: getClosestToneSolidVar(project.color) });
     } else if (space) {
       // ZenFlow > Space
       breadcrumbs.push({ label: "ZenFlow", onClick: navigateToAll });
@@ -373,8 +374,8 @@ export default function Index() {
                             />
                           ) : (
                             <div
-                              className="w-6 h-6 rounded-full border-2 border-card flex items-center justify-center text-[10px] font-bold text-white"
-                              style={{ backgroundColor: m.avatarColor }}
+                              className="w-6 h-6 rounded-full border-2 border-card flex items-center justify-center text-[10px] font-bold"
+                              style={{ backgroundColor: getClosestToneSolidVar(m.avatarColor), color: TONE_ON_SOLID }}
                             >
                               {m.name
                                 .split(" ")

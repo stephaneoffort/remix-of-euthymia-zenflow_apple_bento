@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { getClosestToneSolidVar } from "@/lib/toneColor";
 import { useApp } from "@/context/AppContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -155,7 +156,7 @@ function DriveCard({ projects }: Props) {
                 {visible.map((project) => (
                   <div key={project.id} onClick={() => onProjectClick(project.id)} className="py-2.5 px-2 rounded-md hover:bg-muted/50 transition-colors group cursor-pointer">
                     <div className="flex items-center gap-2 mb-1.5">
-                      <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: project.color }} />
+                      <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: getClosestToneSolidVar(project.color) }} />
                       <p className="text-sm font-medium text-foreground truncate">{project.name}</p>
                       <Badge variant="outline"
                         className="text-[10px] px-1.5 py-0 h-4 gap-0.5 font-medium bg-priority-normal/15 text-priority-normal border-priority-normal/20 ml-auto shrink-0">
@@ -267,7 +268,7 @@ function CanvaCard({ projects }: Props) {
                 {visible.map((project) => (
                   <div key={project.id} onClick={() => onProjectClick(project.id)} className="py-2.5 px-2 rounded-md hover:bg-muted/50 transition-colors group cursor-pointer">
                     <div className="flex items-center gap-2 mb-1.5">
-                      <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: project.color }} />
+                      <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: getClosestToneSolidVar(project.color) }} />
                       <p className="text-sm font-medium text-foreground truncate">{project.name}</p>
                       <Badge variant="outline"
                         className="text-[10px] px-1.5 py-0 h-4 gap-0.5 font-medium bg-purple-500/15 text-purple-600 dark:text-purple-400 border-purple-500/20 ml-auto shrink-0">

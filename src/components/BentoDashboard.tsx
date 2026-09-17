@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { getClosestToneSolidVar, TONE_ON_SOLID } from "@/lib/toneColor";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { usePresence } from "@/hooks/usePresence";
@@ -254,7 +255,7 @@ export default function BentoDashboard() {
                   {m.avatarUrl ? (
                     <img src={m.avatarUrl} alt={m.name} className="bento-member-avatar" />
                   ) : (
-                    <div className="bento-member-initials" style={{ background: m.avatarColor }}>
+                    <div className="bento-member-initials" style={{ background: getClosestToneSolidVar(m.avatarColor), color: TONE_ON_SOLID }}>
                       {m.name
                         .split(" ")
                         .map((n) => n[0])
@@ -321,11 +322,11 @@ export default function BentoDashboard() {
                   setSelectedView("kanban");
                 }}
               >
-                <div className="bento-project-dot" style={{ background: p.color }} />
+                <div className="bento-project-dot" style={{ background: getClosestToneSolidVar(p.color) }} />
                 <div className="bento-project-info">
                   <p className="bento-project-name">{p.name}</p>
                   <div className="bento-mini-bar">
-                    <div className="bento-mini-fill" style={{ width: `${p.pct}%`, background: p.color }} />
+                    <div className="bento-mini-fill" style={{ width: `${p.pct}%`, background: getClosestToneSolidVar(p.color) }} />
                   </div>
                 </div>
                 <div style={{ textAlign: "right", flexShrink: 0 }}>

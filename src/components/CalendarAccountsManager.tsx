@@ -11,13 +11,13 @@ import { Plus, RefreshCw, Trash2, CheckCircle2, Loader2, ChevronDown } from 'luc
 import type { CalendarAccount } from '@/hooks/useCalendarSync';
 
 const PROVIDER_META: Record<string, { label: string; icon: string; color: string; dot: string }> = {
-  google: { label: 'Google Calendar', icon: '📅', color: 'text-red-500', dot: 'bg-[#EA4335]' },
-  caldav: { label: 'CalDAV', icon: '🔗', color: 'text-purple-500', dot: 'bg-[#8B5CF6]' },
-  icloud: { label: 'Apple iCal', icon: '🍎', color: 'text-muted-foreground', dot: 'bg-[#8B5CF6]' },
-  nextcloud: { label: 'Nextcloud', icon: '☁️', color: 'text-blue-500', dot: 'bg-[#8B5CF6]' },
-  proton: { label: 'Proton Calendar', icon: '🔒', color: 'text-purple-500', dot: 'bg-[#8B5CF6]' },
-  fastmail: { label: 'Fastmail', icon: '✉️', color: 'text-purple-500', dot: 'bg-[#8B5CF6]' },
-  ics: { label: 'Agenda ICS', icon: '📄', color: 'text-muted-foreground', dot: 'bg-[#6B7280]' },
+  google: { label: 'Google Calendar', icon: '📅', color: 'text-[#EA4335]', dot: 'bg-[#EA4335]' },
+  caldav: { label: 'CalDAV', icon: '🔗', color: 'text-tone-stone-fg', dot: 'bg-tone-stone-solid' },
+  icloud: { label: 'Apple iCal', icon: '🍎', color: 'text-tone-slate-fg', dot: 'bg-tone-slate-solid' },
+  nextcloud: { label: 'Nextcloud', icon: '☁️', color: 'text-tone-mist-fg', dot: 'bg-tone-mist-solid' },
+  proton: { label: 'Proton Calendar', icon: '🔒', color: 'text-tone-lavender-fg', dot: 'bg-tone-lavender-solid' },
+  fastmail: { label: 'Fastmail', icon: '✉️', color: 'text-tone-olive-fg', dot: 'bg-tone-olive-solid' },
+  ics: { label: 'Agenda ICS', icon: '📄', color: 'text-tone-sand-fg', dot: 'bg-tone-sand-solid' },
 };
 
 export function getProviderMeta(provider: string) {
@@ -232,7 +232,7 @@ export default function CalendarAccountsManager({ accounts, syncing, visibleAcco
             <div className="grid grid-cols-2 gap-3 mt-2">
               {/* Google */}
               <button onClick={handleConnectGoogle}
-                className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-border hover:border-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all text-center group">
+                className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-border hover:border-[#EA4335]/40 hover:bg-[#EA4335]/5 dark:hover:bg-[#EA4335]/10 transition-all text-center group">
                 <span className="text-3xl">📅</span>
                 <span className="text-sm font-semibold text-foreground">Google Calendar</span>
                 <span className="text-[11px] text-muted-foreground">OAuth sécurisé</span>
@@ -250,7 +250,7 @@ export default function CalendarAccountsManager({ accounts, syncing, visibleAcco
 
               {/* CalDAV */}
               <button onClick={() => setStep('caldav')}
-                className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-border hover:border-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/20 transition-all text-center group">
+                className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-border hover:border-tone-stone-solid/40 hover:bg-tone-stone-bg transition-all text-center group">
                 <span className="text-3xl">🔗</span>
                 <span className="text-sm font-semibold text-foreground">CalDAV</span>
                 <span className="text-[11px] text-muted-foreground">Nextcloud · Proton · Fastmail</span>

@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { getClosestToneSolidVar, TONE_ON_SOLID } from '@/lib/toneColor';
 import { useAuth } from '@/context/AuthContext';
 import { useApp } from '@/context/AppContext';
 import type { ChatChannel, MemberProfile } from '@/types/chat';
@@ -384,8 +385,8 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
           <div className="border-t border-border/15 p-2.5">
             <div className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl backdrop-blur-xl bg-card/20 border border-border/15">
               <div className="relative">
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-white shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
-                  style={{ backgroundColor: currentUserProfile.avatar_color || 'hsl(var(--muted-foreground))' }}>
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+                  style={{ backgroundColor: getClosestToneSolidVar(currentUserProfile.avatar_color), color: TONE_ON_SOLID }}>
                   {currentUserProfile.name[0]?.toUpperCase()}
                 </div>
                 <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-status-done border-2 border-card ring-1 ring-status-done/20" />
@@ -466,8 +467,8 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
                   }`}
                 >
                   <div className="relative">
-                    <div className="w-8 h-8 rounded-xl flex items-center justify-center text-[10px] font-bold text-white shadow-sm"
-                      style={{ backgroundColor: member.avatarColor || 'hsl(var(--muted-foreground))' }}>
+                    <div className="w-8 h-8 rounded-xl flex items-center justify-center text-[10px] font-bold shadow-sm"
+                      style={{ backgroundColor: getClosestToneSolidVar(member.avatarColor), color: TONE_ON_SOLID }}>
                       {member.name[0]?.toUpperCase()}
                     </div>
                     {!hasAccount && (
@@ -539,7 +540,7 @@ function DmItem({ channelId, isActive, onClick, partnerName, partnerColor, unrea
   channelId: string; isActive: boolean; onClick: () => void; partnerName?: string; partnerColor?: string; unread?: number; onDelete?: () => void; selectionMode?: boolean; selected?: boolean;
 }) {
   const displayName = partnerName || 'Membre';
-  const color = partnerColor || 'hsl(var(--muted-foreground))';
+  const color = getClosestToneSolidVar(partnerColor);
 
   return (
     <div className={`group relative w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all duration-200 ${
@@ -556,8 +557,8 @@ function DmItem({ channelId, isActive, onClick, partnerName, partnerColor, unrea
           selected ? <CheckSquare className="w-4 h-4 shrink-0 text-primary" /> : <Square className="w-4 h-4 shrink-0 opacity-50" />
         ) : (
           <div className="relative shrink-0">
-            <div className="w-6 h-6 rounded-lg flex items-center justify-center text-[9px] font-bold text-white"
-              style={{ backgroundColor: color }}>
+            <div className="w-6 h-6 rounded-lg flex items-center justify-center text-[9px] font-bold"
+              style={{ backgroundColor: color, color: TONE_ON_SOLID }}>
               {displayName[0]?.toUpperCase()}
             </div>
           </div>

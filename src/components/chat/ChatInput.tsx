@@ -7,6 +7,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import type { MemberProfile } from '@/types/chat';
+import { getClosestToneSolidVar, TONE_ON_SOLID } from '@/lib/toneColor';
 
 const EMOJI_LIST = ['😊', '😂', '❤️', '👍', '🎉', '🔥', '🤔', '👀', '✅', '💯', '🙏', '😍', '🚀', '💪', '👏', '😭'];
 
@@ -149,8 +150,8 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, 
               className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-muted/40 text-sm transition-all"
             >
               <div
-                className="w-7 h-7 rounded-xl flex items-center justify-center text-[10px] font-bold text-white shadow-sm"
-                style={{ backgroundColor: member.avatar_color || 'hsl(var(--muted-foreground))' }}
+                className="w-7 h-7 rounded-xl flex items-center justify-center text-[10px] font-bold shadow-sm"
+                style={{ backgroundColor: getClosestToneSolidVar(member.avatar_color), color: TONE_ON_SOLID }}
               >
                 {member.name[0]?.toUpperCase()}
               </div>

@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { useApp } from '@/context/AppContext';
 import type { MemberProfile } from '@/types/chat';
+import { getClosestToneSolidVar, TONE_ON_SOLID } from '@/lib/toneColor';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
@@ -118,8 +119,8 @@ export function MembersPanel({ memberProfiles, onDmCreated, onlineTeamMemberIds 
         }`}
       >
         <div className="relative">
-          <div className="w-8 h-8 rounded-xl flex items-center justify-center text-[10px] font-bold text-white shadow-sm"
-            style={{ backgroundColor: member.avatarColor || 'hsl(var(--muted-foreground))' }}>
+          <div className="w-8 h-8 rounded-xl flex items-center justify-center text-[10px] font-bold shadow-sm"
+            style={{ backgroundColor: getClosestToneSolidVar(member.avatarColor), color: TONE_ON_SOLID }}>
             {(member.name || '?')[0].toUpperCase()}
           </div>
           <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-card ${
@@ -193,8 +194,8 @@ export function MembersPanel({ memberProfiles, onDmCreated, onlineTeamMemberIds 
                   setSelectedForGroup(prev => prev.includes(member.id) ? prev.filter(id => id !== member.id) : [...prev, member.id])
                 } />
                 <div className="relative">
-                  <div className="w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold text-white"
-                    style={{ backgroundColor: member.avatarColor || 'hsl(var(--muted-foreground))' }}>
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold"
+                    style={{ backgroundColor: getClosestToneSolidVar(member.avatarColor), color: TONE_ON_SOLID }}>
                     {member.name[0]?.toUpperCase()}
                   </div>
                   <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-background ${

@@ -4,6 +4,7 @@ import { format, isToday, isYesterday, isSameDay } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Pin, MoreHorizontal, Smile, MessageCircle, Trash2, Pencil, Check, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getClosestToneSolidVar, TONE_ON_SOLID } from '@/lib/toneColor';
 import {
   Popover, PopoverContent, PopoverTrigger,
 } from '@/components/ui/popover';
@@ -226,13 +227,13 @@ export function MessageList({
                 <div className="flex gap-3">
                   {showHeader ? (
                     <div className="relative mt-0.5 shrink-0">
-                      <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-sm font-bold text-white shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
-                        style={{ backgroundColor: profile?.avatar_color || 'hsl(var(--muted-foreground))' }}
+                      <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-sm font-bold shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
+                        style={{ backgroundColor: getClosestToneSolidVar(profile?.avatar_color), color: TONE_ON_SOLID }}
                       >
                         {(profile?.name || '?')[0].toUpperCase()}
                       </div>
                       <div className="absolute inset-0 rounded-2xl blur-lg opacity-25 -z-10"
-                        style={{ backgroundColor: profile?.avatar_color || 'hsl(var(--muted-foreground))' }}
+                        style={{ backgroundColor: getClosestToneSolidVar(profile?.avatar_color) }}
                       />
                     </div>
                   ) : (

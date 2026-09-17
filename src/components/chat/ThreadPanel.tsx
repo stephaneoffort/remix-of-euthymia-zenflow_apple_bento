@@ -3,6 +3,7 @@ import type { ChatMessage, MemberProfile } from '@/types/chat';
 import { format } from 'date-fns';
 import { X, Send, MessageCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { getClosestToneSolidVar, TONE_ON_SOLID } from '@/lib/toneColor';
 
 interface Props {
   parentMessage: ChatMessage;
@@ -49,8 +50,8 @@ export function ThreadPanel({ parentMessage, replies, memberProfiles, onSendRepl
       {/* Parent message */}
       <div className="px-4 py-3 border-b border-border/15 bg-primary/[0.03]">
         <div className="flex gap-3">
-          <div className="w-8 h-8 rounded-xl shrink-0 flex items-center justify-center text-xs font-bold text-white"
-            style={{ backgroundColor: parentProfile?.avatar_color || 'hsl(var(--muted-foreground))' }}>
+          <div className="w-8 h-8 rounded-xl shrink-0 flex items-center justify-center text-xs font-bold"
+            style={{ backgroundColor: getClosestToneSolidVar(parentProfile?.avatar_color), color: TONE_ON_SOLID }}>
             {(parentProfile?.name || '?')[0].toUpperCase()}
           </div>
           <div className="min-w-0">
@@ -76,8 +77,8 @@ export function ThreadPanel({ parentMessage, replies, memberProfiles, onSendRepl
             <motion.div key={reply.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
               className="flex gap-3 py-2"
             >
-              <div className="w-7 h-7 rounded-lg shrink-0 flex items-center justify-center text-[10px] font-bold text-white"
-                style={{ backgroundColor: profile?.avatar_color || 'hsl(var(--muted-foreground))' }}>
+              <div className="w-7 h-7 rounded-lg shrink-0 flex items-center justify-center text-[10px] font-bold"
+                style={{ backgroundColor: getClosestToneSolidVar(profile?.avatar_color), color: TONE_ON_SOLID }}>
                 {(profile?.name || '?')[0].toUpperCase()}
               </div>
               <div className="min-w-0">

@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { X, Search, User, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { getClosestToneSolidVar, TONE_ON_SOLID } from '@/lib/toneColor';
 
 interface Props {
   onSearch: (query: string, authorId?: string | null) => void;
@@ -21,7 +22,7 @@ export function SearchPanel({ onSearch, results, searching, memberProfiles, onCl
   // Author options from currently known profiles
   const authorOptions = useMemo(() => {
     return Object.entries(memberProfiles)
-      .map(([id, p]) => ({ id, name: p?.name || 'Utilisateur', color: p?.avatar_color || 'hsl(var(--muted-foreground))' }))
+      .map(([id, p]) => ({ id, name: p?.name || 'Utilisateur', color: getClosestToneSolidVar(p?.avatar_color) }))
       .sort((a, b) => a.name.localeCompare(b.name, 'fr'));
   }, [memberProfiles]);
 
@@ -81,8 +82,8 @@ export function SearchPanel({ onSearch, results, searching, memberProfiles, onCl
           >
             {selectedAuthor ? (
               <>
-                <div className="w-5 h-5 rounded-md flex items-center justify-center text-[9px] font-bold text-white shrink-0"
-                  style={{ backgroundColor: selectedAuthor.color }}>
+                <div className="w-5 h-5 rounded-md flex items-center justify-center text-[9px] font-bold shrink-0"
+                  style={{ backgroundColor: selectedAuthor.color, color: TONE_ON_SOLID }}>
                   {selectedAuthor.name[0]?.toUpperCase()}
                 </div>
                 <span className="flex-1 truncate text-foreground">{selectedAuthor.name}</span>
@@ -121,8 +122,8 @@ export function SearchPanel({ onSearch, results, searching, memberProfiles, onCl
                   onClick={() => { setAuthorId(a.id); setAuthorMenuOpen(false); }}
                   className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-muted/40 ${authorId === a.id ? 'bg-muted/30' : ''}`}
                 >
-                  <div className="w-5 h-5 rounded-md flex items-center justify-center text-[9px] font-bold text-white shrink-0"
-                    style={{ backgroundColor: a.color }}>
+                  <div className="w-5 h-5 rounded-md flex items-center justify-center text-[9px] font-bold shrink-0"
+                    style={{ backgroundColor: a.color, color: TONE_ON_SOLID }}>
                     {a.name[0]?.toUpperCase()}
                   </div>
                   <span className="truncate">{a.name}</span>
@@ -166,8 +167,8 @@ export function SearchPanel({ onSearch, results, searching, memberProfiles, onCl
               className="py-2.5 px-2 rounded-xl hover:bg-muted/20 transition-all cursor-pointer border-b border-border/10 last:border-0"
             >
               <div className="flex items-center gap-2 mb-1">
-                <div className="w-6 h-6 rounded-lg flex items-center justify-center text-[9px] font-bold text-white"
-                  style={{ backgroundColor: profile?.avatar_color || 'hsl(var(--muted-foreground))' }}>
+                <div className="w-6 h-6 rounded-lg flex items-center justify-center text-[9px] font-bold"
+                  style={{ backgroundColor: getClosestToneSolidVar(profile?.avatar_color), color: TONE_ON_SOLID }}>
                   {(profile?.name || '?')[0].toUpperCase()}
                 </div>
                 <span className="text-xs font-medium text-foreground">{profile?.name || 'Utilisateur'}</span>

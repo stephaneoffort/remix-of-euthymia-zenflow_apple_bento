@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { X, Pin } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { getClosestToneSolidVar, TONE_ON_SOLID } from '@/lib/toneColor';
 
 interface Props {
   messages: ChatMessage[];
@@ -42,8 +43,8 @@ export function PinnedMessagesPanel({ messages, memberProfiles, onUnpin, onClose
               className="py-3 px-3 rounded-xl hover:bg-muted/15 transition-all border-b border-border/10 last:border-0 group"
             >
               <div className="flex items-start gap-2.5">
-                <div className="w-7 h-7 rounded-lg shrink-0 flex items-center justify-center text-[10px] font-bold text-white mt-0.5"
-                  style={{ backgroundColor: profile?.avatar_color || 'hsl(var(--muted-foreground))' }}>
+                <div className="w-7 h-7 rounded-lg shrink-0 flex items-center justify-center text-[10px] font-bold mt-0.5"
+                  style={{ backgroundColor: getClosestToneSolidVar(profile?.avatar_color), color: TONE_ON_SOLID }}>
                   {(profile?.name || '?')[0].toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">

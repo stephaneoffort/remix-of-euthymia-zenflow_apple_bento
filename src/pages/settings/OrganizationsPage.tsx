@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/select';
 import { ArrowLeft, Building2, Plus, Archive, RotateCcw, Users, Pencil, X } from 'lucide-react';
 import { ORG_COLOR_PALETTE, ORG_COLOR_FALLBACK, nextAvailableOrgColor } from '@/lib/orgColors';
+import { getClosestToneSolidVar } from '@/lib/toneColor';
 
 /** Sélecteur de couleur d'équipe : pastilles de la palette + couleur libre */
 function OrgColorPicker({
@@ -353,7 +354,7 @@ export default function OrganizationsPage() {
               >
                 <span
                   className="w-3 h-3 rounded-full shrink-0"
-                  style={{ backgroundColor: org.color || 'hsl(var(--primary))' }}
+                  style={{ backgroundColor: org.color ? getClosestToneSolidVar(org.color) : 'hsl(var(--primary))' }}
                 />
                 <div className="flex-1 min-w-[180px]">
                   <div className="font-medium flex items-center gap-2">

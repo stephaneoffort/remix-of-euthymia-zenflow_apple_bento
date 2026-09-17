@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useOrg } from '@/context/OrgContext';
+import { getClosestToneSolidVar } from '@/lib/toneColor';
 
 /**
  * Sélecteur d'équipe affiché en haut de la barre latérale.
@@ -33,7 +34,7 @@ export default function OrgSwitcher({ onNavigate }: { onNavigate?: () => void })
     >
       <span
         className="w-2.5 h-2.5 rounded-full shrink-0"
-        style={{ backgroundColor: org.color || 'hsl(var(--primary))' }}
+        style={{ backgroundColor: org.color ? getClosestToneSolidVar(org.color) : 'hsl(var(--primary))' }}
       />
       <span className="flex-1 truncate">{org.name}</span>
       {org.is_active === false && (
@@ -53,7 +54,7 @@ export default function OrgSwitcher({ onNavigate }: { onNavigate?: () => void })
           >
             <span
               className="w-2.5 h-2.5 rounded-full shrink-0"
-              style={{ backgroundColor: currentOrg.color || 'hsl(var(--primary))' }}
+              style={{ backgroundColor: currentOrg.color ? getClosestToneSolidVar(currentOrg.color) : 'hsl(var(--primary))' }}
             />
             <span className="flex-1 truncate text-left font-medium text-sidebar-fg-bright">
               {currentOrg.name}

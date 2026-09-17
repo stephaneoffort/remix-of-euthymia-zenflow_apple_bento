@@ -297,11 +297,11 @@ export default function DashboardView() {
           ].map((stat, i) => (
             <motion.div key={stat.label} custom={i} variants={fadeUp} initial="hidden" animate="show">
               <Card className="bg-card border-border">
-                <CardContent className="p-5 flex items-center gap-3">
-                  <div className="p-2 rounded-full bg-primary/10">{stat.icon}</div>
-                  <div>
-                    <p data-numeric className="font-numeric text-2xl font-semibold text-foreground">{stat.value}</p>
-                    <p className="text-xs text-muted-foreground">{stat.label}</p>
+                <CardContent className="p-4 md:p-5 flex flex-col items-start gap-1.5 md:flex-row md:items-center md:gap-3">
+                  <div className="p-1.5 md:p-2 rounded-full bg-primary/10">{stat.icon}</div>
+                  <div className="min-w-0">
+                    <p data-numeric className="font-numeric text-2xl font-semibold text-foreground truncate">{stat.value}</p>
+                    <p className="text-xs text-muted-foreground truncate">{stat.label}</p>
                   </div>
                 </CardContent>
               </Card>

@@ -233,13 +233,13 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
 
   return (
     <>
-      <div className="w-64 backdrop-blur-2xl bg-card/15 border-r border-border/15 flex flex-col shrink-0 h-full shadow-[inset_-1px_0_0_rgba(255,255,255,0.03)] sm:w-64 max-sm:w-full">
+      <div className="w-64 bg-card border-r border-border flex flex-col shrink-0 h-full sm:w-64 max-sm:w-full">
         {/* Header */}
         {selectionMode ? (
-          <div className="h-14 flex items-center gap-2 px-3 border-b border-border/15 bg-primary/10">
+          <div className="h-14 flex items-center gap-2 px-3 border-b border-border bg-primary/10">
             <button
               onClick={exitSelectionMode}
-              className="p-1.5 rounded-xl hover:bg-muted/40 text-foreground transition-all backdrop-blur-sm"
+              className="p-1.5 rounded-xl hover:bg-muted/40 text-foreground transition-all"
               title="Quitter la sélection"
             >
               <X className="w-5 h-5" />
@@ -275,23 +275,23 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
             </div>
           </div>
         ) : (
-          <div className="h-14 flex items-center gap-2 px-3 border-b border-border/15 bg-card/20">
+          <div className="h-14 flex items-center gap-2 px-3 border-b border-border">
             <button onClick={() => navigate('/')}
-              className="p-1.5 rounded-xl hover:bg-muted/40 text-muted-foreground hover:text-foreground transition-all backdrop-blur-sm"
+              className="p-1.5 rounded-xl hover:bg-muted/40 text-muted-foreground hover:text-foreground transition-all"
               title="Retour à l'accueil">
               <ChevronLeft className="w-5 h-5" />
             </button>
             <div className="flex items-center gap-2 flex-1 min-w-0">
-              <div className="w-7 h-7 rounded-xl bg-primary/10 border border-primary/15 flex items-center justify-center shadow-[0_0_10px_hsl(var(--primary)/0.1)]">
+              <div className="w-7 h-7 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
                 <MessageCircle className="w-4 h-4 text-primary" />
               </div>
-              <h3 className="font-bold text-foreground text-sm truncate" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.15)' }}>
+              <h3 className="font-bold text-foreground text-sm truncate">
                 Chat d'équipe
               </h3>
             </div>
             <button
               onClick={() => setSelectionMode(true)}
-              className="p-1.5 rounded-xl transition-all backdrop-blur-sm hover:bg-muted/40 text-muted-foreground hover:text-foreground"
+              className="p-1.5 rounded-xl transition-all hover:bg-muted/40 text-muted-foreground hover:text-foreground"
               title="Sélectionner plusieurs conversations"
             >
               <CheckSquare className="w-4 h-4" />
@@ -370,7 +370,7 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
               {dmChannels.length === 0 && (
                 <button
                   onClick={() => setDmPickerOpen(true)}
-                  className="w-full flex items-center gap-2.5 px-3 py-3 rounded-xl text-sm text-muted-foreground/40 hover:bg-muted/20 hover:text-foreground transition-all border border-dashed border-border/15"
+                  className="w-full flex items-center gap-2.5 px-3 py-3 rounded-xl text-sm text-muted-foreground/40 hover:bg-muted/20 hover:text-foreground transition-all border border-dashed border-border"
                 >
                   <Mail className="w-4 h-4" />
                   <span className="text-xs">Démarrer une conversation</span>
@@ -382,10 +382,10 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
 
         {/* User status footer */}
         {currentUserProfile && (
-          <div className="border-t border-border/15 p-2.5">
-            <div className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl backdrop-blur-xl bg-card/20 border border-border/15">
+          <div className="border-t border-border p-2.5">
+            <div className="flex items-center gap-2.5 px-2.5 py-2.5">
               <div className="relative">
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold"
                   style={{ backgroundColor: getClosestToneSolidVar(currentUserProfile.avatar_color), color: TONE_ON_SOLID }}>
                   {currentUserProfile.name[0]?.toUpperCase()}
                 </div>
@@ -505,10 +505,10 @@ function ChannelItem({ channel, isActive, onClick, icon, unread = 0, onDelete, s
       selectionMode && selected
         ? 'bg-primary/15 text-foreground border border-primary/25'
         : isActive
-          ? 'bg-primary/10 text-primary font-semibold backdrop-blur-xl border border-primary/15 shadow-[0_0_14px_hsl(var(--primary)/0.1),inset_0_1px_0_rgba(255,255,255,0.05)]'
+          ? 'bg-primary/10 text-primary font-semibold border border-primary/20'
           : unread > 0
             ? 'text-foreground font-medium hover:bg-muted/20'
-            : 'text-muted-foreground/60 hover:bg-muted/20 hover:text-foreground hover:backdrop-blur-sm'
+            : 'text-muted-foreground/60 hover:bg-muted/20 hover:text-foreground'
     }`}>
       <button onClick={onClick} className="flex items-center gap-2.5 flex-1 min-w-0 text-left">
         {selectionMode ? (
@@ -547,10 +547,10 @@ function DmItem({ channelId, isActive, onClick, partnerName, partnerColor, unrea
       selectionMode && selected
         ? 'bg-primary/15 text-foreground border border-primary/25'
         : isActive
-          ? 'bg-primary/10 text-primary font-semibold backdrop-blur-xl border border-primary/15 shadow-[0_0_14px_hsl(var(--primary)/0.1),inset_0_1px_0_rgba(255,255,255,0.05)]'
+          ? 'bg-primary/10 text-primary font-semibold border border-primary/20'
           : unread > 0
             ? 'text-foreground font-medium hover:bg-muted/20'
-            : 'text-muted-foreground/60 hover:bg-muted/20 hover:text-foreground hover:backdrop-blur-sm'
+            : 'text-muted-foreground/60 hover:bg-muted/20 hover:text-foreground'
     }`}>
       <button onClick={onClick} className="flex items-center gap-2.5 flex-1 min-w-0 text-left">
         {selectionMode ? (

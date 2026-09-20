@@ -162,7 +162,7 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, 
         </div>
       )}
 
-      <div className={`flex flex-col backdrop-blur-xl bg-card/30 border border-border/30 overflow-hidden focus-within:ring-2 focus-within:ring-primary/15 focus-within:border-primary/30 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.05)] ${isMobile ? 'rounded-xl' : 'rounded-2xl'}`}>
+      <div className={`flex flex-col bg-card border border-border overflow-hidden focus-within:ring-2 focus-within:ring-primary/15 focus-within:border-primary/30 transition-all ${isMobile ? 'rounded-xl' : 'rounded-2xl'}`}>
         {/* Format toolbar - hidden on mobile for space */}
         {!isMobile && (
           <div className="flex items-center gap-0.5 px-3 pt-2.5 pb-0">
@@ -255,7 +255,7 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, 
           {content.trim() && (
             <button
               onClick={handleSend}
-              className={`rounded-xl bg-primary text-primary-foreground shrink-0 mb-0.5 hover:bg-primary/90 transition-all hover:scale-105 active:scale-95 shadow-[0_4px_16px_hsl(var(--primary)/0.3)] ${isMobile ? 'p-2' : 'p-2.5'}`}
+              className={`rounded-xl bg-primary text-primary-foreground shrink-0 mb-0.5 hover:bg-primary/90 transition-all hover:scale-105 active:scale-95 ${isMobile ? 'p-2' : 'p-2.5'}`}
             >
               <Send className="w-4 h-4" />
             </button>

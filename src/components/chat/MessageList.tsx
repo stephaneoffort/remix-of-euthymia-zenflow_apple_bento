@@ -104,12 +104,12 @@ export function MessageList({
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-5 p-8">
         <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: 'spring', damping: 20 }}
-          className="w-20 h-20 rounded-3xl backdrop-blur-2xl bg-primary/8 border border-primary/15 flex items-center justify-center shadow-[0_8px_32px_hsl(var(--primary)/0.12)]"
+          className="w-20 h-20 rounded-3xl bg-primary/10 border border-primary/20 flex items-center justify-center"
         >
           <MessageCircle className="w-10 h-10 text-primary/40" />
         </motion.div>
         <motion.div initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.15 }} className="text-center">
-          <p className="font-display text-lg font-semibold text-foreground mb-1" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.15)' }}>
+          <p className="font-display text-lg font-semibold text-foreground mb-1">
             Bienvenue dans ce canal !
           </p>
           <p className="text-sm text-muted-foreground/70 max-w-xs leading-relaxed">
@@ -145,7 +145,7 @@ export function MessageList({
               {showDate && (
                 <div className="flex items-center gap-3 my-6">
                   <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border/40 to-transparent" />
-                  <span className="text-[10px] font-semibold text-muted-foreground/70 backdrop-blur-2xl bg-card/30 px-4 py-1.5 rounded-full border border-border/20 shadow-[0_2px_8px_rgba(0,0,0,0.1)]">
+                  <span className="text-[10px] font-semibold text-muted-foreground/70 bg-muted px-4 py-1.5 rounded-full border border-border">
                     {formatMessageDate(msg.created_at)}
                   </span>
                   <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border/40 to-transparent" />
@@ -227,14 +227,11 @@ export function MessageList({
                 <div className="flex gap-3">
                   {showHeader ? (
                     <div className="relative mt-0.5 shrink-0">
-                      <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-sm font-bold shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
+                      <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-sm font-bold"
                         style={{ backgroundColor: getClosestToneSolidVar(profile?.avatar_color), color: TONE_ON_SOLID }}
                       >
                         {(profile?.name || '?')[0].toUpperCase()}
                       </div>
-                      <div className="absolute inset-0 rounded-2xl blur-lg opacity-25 -z-10"
-                        style={{ backgroundColor: getClosestToneSolidVar(profile?.avatar_color) }}
-                      />
                     </div>
                   ) : (
                     <div className="w-10 shrink-0 flex items-center justify-center">
@@ -247,8 +244,7 @@ export function MessageList({
                   <div className="flex-1 min-w-0 pb-1">
                     {showHeader && (
                       <div className="flex items-baseline gap-2 mb-0.5">
-                        <span className="font-semibold text-sm text-foreground hover:underline cursor-pointer"
-                          style={{ textShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>
+                        <span className="font-semibold text-sm text-foreground hover:underline cursor-pointer">
                           {profile?.name || 'Utilisateur'}
                         </span>
                         <span className="text-[11px] text-muted-foreground/40">
@@ -283,9 +279,9 @@ export function MessageList({
                           return (
                             <motion.button key={emoji} whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.95 }}
                               onClick={() => onToggleReaction(msg.id, emoji)}
-                              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs border backdrop-blur-sm transition-all ${
+                              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs border transition-all ${
                                 hasReacted
-                                  ? 'bg-primary/10 border-primary/20 text-primary font-medium shadow-[0_0_8px_hsl(var(--primary)/0.1)]'
+                                  ? 'bg-primary/10 border-primary/20 text-primary font-medium'
                                   : 'bg-card/20 border-border/20 hover:bg-muted/30 text-foreground'
                               }`}
                             >

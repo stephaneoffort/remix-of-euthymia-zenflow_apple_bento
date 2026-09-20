@@ -231,6 +231,7 @@ a, button, [role="button"], label, select, summary,
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    @apply text-foreground;
   }
 
   /* Couleur de bordure par défaut : sans ça, la classe "border" seule

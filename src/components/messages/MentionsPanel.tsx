@@ -45,7 +45,7 @@ export default function MentionsPanel() {
   return (
     <div className="flex flex-col h-full">
       <div className="px-6 py-4 border-b border-border">
-        <h2 className="text-lg font-semibold flex items-center gap-2">
+        <h2 className="text-lg font-semibold flex items-center gap-2 text-foreground">
           <AtSign className="w-5 h-5 text-primary" />
           Mes mentions
         </h2>

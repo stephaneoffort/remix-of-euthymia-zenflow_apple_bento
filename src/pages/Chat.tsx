@@ -16,6 +16,7 @@ import { usePresence } from '@/hooks/usePresence';
 import { motion, AnimatePresence } from 'framer-motion';
 import AppSidebar from '@/components/AppSidebar';
 import { PanelLeft } from 'lucide-react';
+import { getClosestToneSolidVar, TONE_ON_SOLID } from '@/lib/toneColor';
 
 export default function Chat() {
   const chat = useDiscordChat();
@@ -82,33 +83,14 @@ export default function Chat() {
       {!isMobile && sidebarCollapsed && (
         <button
           onClick={() => setSidebarCollapsed(false)}
-          className="absolute top-3 left-3 z-50 p-1.5 rounded-md bg-card/80 backdrop-blur-md border border-border hover:bg-muted transition-colors"
+          className="absolute top-3 left-3 z-50 p-1.5 rounded-md bg-card border border-border hover:bg-muted transition-colors"
           title="Afficher la barre latérale"
         >
           <PanelLeft className="w-5 h-5" />
         </button>
       )}
 
-      <div className="flex-1 flex h-full relative overflow-hidden min-w-0">
-      {/* ── Mesh gradient background ── */}
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute inset-0 bg-background" />
-        <div
-          className="absolute inset-0 animate-[bentoMeshMoveDark_25s_ease-in-out_infinite]"
-          style={{
-            backgroundSize: '200% 200%',
-            background:
-              'radial-gradient(ellipse 80% 60% at 15% 30%, hsl(var(--primary) / 0.18) 0%, transparent 65%), ' +
-              'radial-gradient(ellipse 60% 80% at 85% 70%, hsl(var(--accent) / 0.12) 0%, transparent 65%), ' +
-              'radial-gradient(ellipse 70% 50% at 50% 90%, hsl(var(--primary) / 0.08) 0%, transparent 55%)',
-          }}
-        />
-        <div
-          className="absolute inset-0 opacity-[0.02] mix-blend-overlay pointer-events-none"
-          style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\' opacity=\'1\'/%3E%3C/svg%3E")' }}
-        />
-      </div>
-
+      <div className="flex-1 flex h-full relative overflow-hidden min-w-0 bg-background">
       {/* ── Channel sidebar ── */}
       <AnimatePresence>
         {(!isMobile || showChannels) && (
@@ -149,7 +131,7 @@ export default function Chat() {
       {/* ── Main content ── */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <div className={`border-b border-border/20 flex items-center px-3 gap-2 shrink-0 backdrop-blur-2xl bg-card/25 shadow-[0_1px_0_rgba(255,255,255,0.04)_inset,0_4px_16px_rgba(0,0,0,0.1)] ${isMobile ? 'h-12' : 'h-14 px-4 gap-3'}`}>
+        <div className={`border-b border-border flex items-center px-3 gap-2 shrink-0 bg-card ${isMobile ? 'h-12' : 'h-14 px-4 gap-3'}`}>
           {isMobile && (
             <button onClick={() => setShowChannels(true)} className="p-1.5 rounded-xl hover:bg-muted/50 transition-all shrink-0">
               <Menu className="w-5 h-5 text-muted-foreground" />
@@ -158,12 +140,12 @@ export default function Chat() {
           <div className="flex items-center gap-2 min-w-0 flex-1">
             {activeChannel?.type === 'dm' && dmPartnerInfo ? (
               <>
-                <div className={`${isMobile ? 'w-7 h-7 text-[10px]' : 'w-8 h-8 text-[11px]'} rounded-xl flex items-center justify-center font-bold text-white shrink-0 shadow-[0_0_16px_rgba(0,0,0,0.15)]`}
-                  style={{ backgroundColor: dmPartnerInfo.color }}>
+                <div className={`${isMobile ? 'w-7 h-7 text-[10px]' : 'w-8 h-8 text-[11px]'} rounded-xl flex items-center justify-center font-bold shrink-0`}
+                  style={{ backgroundColor: getClosestToneSolidVar(dmPartnerInfo.color), color: TONE_ON_SOLID }}>
                   {dmPartnerInfo.name[0]?.toUpperCase()}
                 </div>
                 <div className="min-w-0">
-                  <h2 className={`font-display font-semibold text-foreground truncate ${isMobile ? 'text-xs' : 'text-sm'}`} style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                  <h2 className={`font-display font-semibold text-foreground truncate ${isMobile ? 'text-xs' : 'text-sm'}`}>
                     {dmPartnerInfo.name}
                   </h2>
                   {!isMobile && <p className="text-[11px] text-muted-foreground/60 truncate">Message privé</p>}
@@ -171,11 +153,11 @@ export default function Chat() {
               </>
             ) : (
               <>
-                <div className={`${isMobile ? 'w-7 h-7' : 'w-8 h-8'} rounded-xl bg-primary/10 backdrop-blur-sm border border-primary/20 flex items-center justify-center shrink-0 shadow-[0_0_16px_hsl(var(--primary)/0.15)]`}>
+                <div className={`${isMobile ? 'w-7 h-7' : 'w-8 h-8'} rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0`}>
                   <Hash className={`${isMobile ? 'w-3.5 h-3.5' : 'w-4 h-4'} text-primary`} />
                 </div>
                 <div className="min-w-0">
-                  <h2 className={`font-display font-semibold text-foreground truncate ${isMobile ? 'text-xs' : 'text-sm'}`} style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                  <h2 className={`font-display font-semibold text-foreground truncate ${isMobile ? 'text-xs' : 'text-sm'}`}>
                     {activeChannel?.name || 'Sélectionner un canal'}
                   </h2>
                   {activeChannel?.description && !isMobile && (
@@ -190,7 +172,7 @@ export default function Chat() {
               onClick={toggleSearch}
               className={`p-1.5 rounded-xl transition-all duration-200 ${
                 showSearch
-                  ? 'text-primary bg-primary/10 border border-primary/20 shadow-[0_0_10px_hsl(var(--primary)/0.12)]'
+                  ? 'text-primary bg-primary/10 border border-primary/20'
                   : 'text-muted-foreground hover:bg-muted/40 hover:text-foreground'
               }`}
               title="Rechercher"
@@ -201,7 +183,7 @@ export default function Chat() {
               onClick={togglePinned}
               className={`p-1.5 rounded-xl transition-all duration-200 relative ${
                 showPinned
-                  ? 'text-primary bg-primary/10 border border-primary/20 shadow-[0_0_10px_hsl(var(--primary)/0.12)]'
+                  ? 'text-primary bg-primary/10 border border-primary/20'
                   : 'text-muted-foreground hover:bg-muted/40 hover:text-foreground'
               }`}
               title="Messages épinglés"
@@ -230,7 +212,7 @@ export default function Chat() {
                 onClick={() => setShowMembers(!showMembers)}
                 className={`p-2 rounded-xl transition-all duration-200 ${
                   showMembers
-                    ? 'text-primary bg-primary/10 border border-primary/20 shadow-[0_0_10px_hsl(var(--primary)/0.12)]'
+                    ? 'text-primary bg-primary/10 border border-primary/20'
                     : 'text-muted-foreground hover:bg-muted/40'
                 }`}
                 title="Membres"

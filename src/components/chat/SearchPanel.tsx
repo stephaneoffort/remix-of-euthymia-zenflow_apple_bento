@@ -42,9 +42,9 @@ export function SearchPanel({ onSearch, results, searching, memberProfiles, onCl
   }, [query, authorId]);
 
   return (
-    <div className="w-full h-full flex flex-col border-l border-border/20 backdrop-blur-2xl bg-card/15 shadow-[inset_1px_0_0_rgba(255,255,255,0.03)]">
+    <div className="w-full h-full flex flex-col border-l border-border bg-card">
       {/* Header */}
-      <div className="h-14 flex items-center justify-between px-4 border-b border-border/20 shrink-0 bg-card/20">
+      <div className="h-14 flex items-center justify-between px-4 border-b border-border shrink-0">
         <div className="flex items-center gap-2">
           <Search className="w-4 h-4 text-primary" />
           <h3 className="font-semibold text-sm text-foreground">Rechercher</h3>
@@ -55,9 +55,9 @@ export function SearchPanel({ onSearch, results, searching, memberProfiles, onCl
       </div>
 
       {/* Filters */}
-      <div className="px-3 py-3 border-b border-border/15 space-y-2">
+      <div className="px-3 py-3 border-b border-border space-y-2">
         {/* Keyword input */}
-        <div className="flex items-center gap-2 backdrop-blur-xl bg-muted/20 border border-border/20 rounded-xl px-3 py-2 focus-within:ring-1 focus-within:ring-primary/20 transition-all">
+        <div className="flex items-center gap-2 bg-muted/20 border border-border rounded-xl px-3 py-2 focus-within:ring-1 focus-within:ring-primary/20 transition-all">
           <Search className="w-4 h-4 text-muted-foreground/50 shrink-0" />
           <input
             value={query}
@@ -78,7 +78,7 @@ export function SearchPanel({ onSearch, results, searching, memberProfiles, onCl
           <button
             type="button"
             onClick={() => setAuthorMenuOpen(o => !o)}
-            className="w-full flex items-center gap-2 backdrop-blur-xl bg-muted/20 border border-border/20 rounded-xl px-3 py-2 text-sm text-left hover:bg-muted/30 transition-all"
+            className="w-full flex items-center gap-2 bg-muted/20 border border-border rounded-xl px-3 py-2 text-sm text-left hover:bg-muted/30 transition-all"
           >
             {selectedAuthor ? (
               <>

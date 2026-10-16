@@ -34,9 +34,9 @@ export function ThreadPanel({ parentMessage, replies, memberProfiles, onSendRepl
   const parentProfile = memberProfiles[parentMessage.user_id];
 
   return (
-    <div className="w-full h-full flex flex-col border-l border-border/20 backdrop-blur-2xl bg-card/15 shadow-[inset_1px_0_0_rgba(255,255,255,0.03)]">
+    <div className="w-full h-full flex flex-col border-l border-border bg-card">
       {/* Header */}
-      <div className="h-14 flex items-center justify-between px-4 border-b border-border/20 shrink-0 bg-card/20">
+      <div className="h-14 flex items-center justify-between px-4 border-b border-border shrink-0">
         <div className="flex items-center gap-2">
           <MessageCircle className="w-4 h-4 text-primary" />
           <h3 className="font-semibold text-sm text-foreground">Thread</h3>
@@ -48,7 +48,7 @@ export function ThreadPanel({ parentMessage, replies, memberProfiles, onSendRepl
       </div>
 
       {/* Parent message */}
-      <div className="px-4 py-3 border-b border-border/15 bg-primary/[0.03]">
+      <div className="px-4 py-3 border-b border-border bg-primary/[0.03]">
         <div className="flex gap-3">
           <div className="w-8 h-8 rounded-xl shrink-0 flex items-center justify-center text-xs font-bold"
             style={{ backgroundColor: getClosestToneSolidVar(parentProfile?.avatar_color), color: TONE_ON_SOLID }}>
@@ -96,7 +96,7 @@ export function ThreadPanel({ parentMessage, replies, memberProfiles, onSendRepl
 
       {/* Input */}
       <div className="px-3 pb-3 pt-2 shrink-0">
-        <div className="flex items-end gap-2 backdrop-blur-2xl bg-card/25 border border-border/20 rounded-xl px-3 py-2 focus-within:ring-1 focus-within:ring-primary/20 transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+        <div className="flex items-end gap-2 bg-card border border-border rounded-xl px-3 py-2 focus-within:ring-1 focus-within:ring-primary/20 transition-all">
           <textarea
             ref={inputRef}
             value={content}
@@ -113,7 +113,7 @@ export function ThreadPanel({ parentMessage, replies, memberProfiles, onSendRepl
           />
           {content.trim() && (
             <button onClick={handleSend}
-              className="p-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all hover:scale-105 active:scale-95 shadow-[0_4px_12px_hsl(var(--primary)/0.25)]">
+              className="p-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all hover:scale-105 active:scale-95">
               <Send className="w-3.5 h-3.5" />
             </button>
           )}

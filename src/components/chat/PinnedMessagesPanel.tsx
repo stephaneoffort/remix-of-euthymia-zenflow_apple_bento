@@ -14,9 +14,9 @@ interface Props {
 
 export function PinnedMessagesPanel({ messages, memberProfiles, onUnpin, onClose }: Props) {
   return (
-    <div className="w-full h-full flex flex-col border-l border-border/20 backdrop-blur-2xl bg-card/15 shadow-[inset_1px_0_0_rgba(255,255,255,0.03)]">
+    <div className="w-full h-full flex flex-col border-l border-border bg-card">
       {/* Header */}
-      <div className="h-14 flex items-center justify-between px-4 border-b border-border/20 shrink-0 bg-card/20">
+      <div className="h-14 flex items-center justify-between px-4 border-b border-border shrink-0">
         <div className="flex items-center gap-2">
           <Pin className="w-4 h-4 text-primary" />
           <h3 className="font-semibold text-sm text-foreground">Messages épinglés</h3>

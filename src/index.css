@@ -240,6 +240,14 @@ a, button, [role="button"], label, select, summary,
   * {
     @apply border-border;
   }
+
+  /* Focus clavier visible partout : contour sauge discret, uniquement au
+     clavier (:focus-visible), jamais à la souris ou au doigt. Les composants
+     qui ont leur propre anneau (focus-visible:outline-none + ring) le gardent. */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
 }
 
 /* ─────────────────────────────────────────────────────
@@ -1056,12 +1064,10 @@ a, button, [role="button"], label, select, summary,
     background: hsl(var(--popover));
     color: hsl(var(--popover-foreground));
   }
-  .dark input:focus,
-  .dark textarea:focus,
-  .dark select:focus,
-  .mixed input:focus,
-  .mixed textarea:focus,
-  .mixed select:focus {
+  /* Champs de saisie au focus : bordure sauge + halo léger, dans les deux thèmes. */
+  input:focus,
+  textarea:focus,
+  select:focus {
     border-color: hsl(var(--primary)) !important;
     box-shadow: 0 0 0 3px hsl(var(--primary) / 0.15) !important;
     outline: none !important;

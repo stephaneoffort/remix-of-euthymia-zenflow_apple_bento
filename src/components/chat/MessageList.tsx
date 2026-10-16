@@ -112,7 +112,7 @@ export function MessageList({
           <p className="font-display text-lg font-semibold text-foreground mb-1">
             Bienvenue dans ce canal !
           </p>
-          <p className="text-sm text-muted-foreground/70 max-w-xs leading-relaxed">
+          <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
             C'est le début de la conversation. Envoie un message pour commencer.
           </p>
         </motion.div>
@@ -145,7 +145,7 @@ export function MessageList({
               {showDate && (
                 <div className="flex items-center gap-3 my-6">
                   <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border/40 to-transparent" />
-                  <span className="text-[10px] font-semibold text-muted-foreground/70 bg-muted px-4 py-1.5 rounded-full border border-border">
+                  <span className="text-[10px] font-semibold text-muted-foreground bg-muted px-4 py-1.5 rounded-full border border-border">
                     {formatMessageDate(msg.created_at)}
                   </span>
                   <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border/40 to-transparent" />
@@ -235,7 +235,7 @@ export function MessageList({
                     </div>
                   ) : (
                     <div className="w-10 shrink-0 flex items-center justify-center">
-                      <span data-numeric className="font-numeric text-[10px] text-transparent group-hover:text-muted-foreground/40 transition-colors tabular-nums">
+                      <span data-numeric className="font-numeric text-[10px] text-transparent group-hover:text-muted-foreground transition-colors tabular-nums">
                         {format(new Date(msg.created_at), 'HH:mm')}
                       </span>
                     </div>
@@ -247,11 +247,11 @@ export function MessageList({
                         <span className="font-semibold text-sm text-foreground hover:underline cursor-pointer">
                           {profile?.name || 'Utilisateur'}
                         </span>
-                        <span className="text-[11px] text-muted-foreground/40">
+                        <span className="text-[11px] text-muted-foreground">
                           {format(new Date(msg.created_at), 'HH:mm')}
                         </span>
                         {isPinned && <Pin className="w-3 h-3 text-primary/50 fill-primary/20" />}
-                        {msg.is_edited && <span className="text-[10px] text-muted-foreground/35 italic">(modifié)</span>}
+                        {msg.is_edited && <span className="text-[10px] text-muted-foreground italic">(modifié)</span>}
                       </div>
                     )}
 

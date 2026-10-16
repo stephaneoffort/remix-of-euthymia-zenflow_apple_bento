@@ -156,7 +156,7 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, 
                 {member.name[0]?.toUpperCase()}
               </div>
               <span className="font-medium text-foreground">{member.name}</span>
-              <span className="text-muted-foreground/60 text-xs ml-auto">{member.role}</span>
+              <span className="text-muted-foreground text-xs ml-auto">{member.role}</span>
             </button>
           ))}
         </div>
@@ -168,21 +168,21 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, 
           <div className="flex items-center gap-0.5 px-3 pt-2.5 pb-0">
             <button
               onClick={() => insertFormat('**', '**')}
-              className="p-1.5 rounded-lg hover:bg-muted/40 text-muted-foreground/60 hover:text-foreground transition-all"
+              className="p-1.5 rounded-lg hover:bg-muted/40 text-muted-foreground hover:text-foreground transition-all"
               title="Gras"
             >
               <Bold className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => insertFormat('*', '*')}
-              className="p-1.5 rounded-lg hover:bg-muted/40 text-muted-foreground/60 hover:text-foreground transition-all"
+              className="p-1.5 rounded-lg hover:bg-muted/40 text-muted-foreground hover:text-foreground transition-all"
               title="Italique"
             >
               <Italic className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => insertFormat('`', '`')}
-              className="p-1.5 rounded-lg hover:bg-muted/40 text-muted-foreground/60 hover:text-foreground transition-all"
+              className="p-1.5 rounded-lg hover:bg-muted/40 text-muted-foreground hover:text-foreground transition-all"
               title="Code"
             >
               <Code className="w-3.5 h-3.5" />
@@ -193,7 +193,7 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, 
         <div className={`flex items-end gap-1.5 ${isMobile ? 'px-2 py-2' : 'px-3 py-2.5 gap-2'}`}>
           <Popover>
             <PopoverTrigger asChild>
-              <button className={`rounded-xl hover:bg-muted/40 text-muted-foreground/60 shrink-0 mb-0.5 transition-all ${isMobile ? 'p-1' : 'p-1.5'}`} title="Joindre">
+              <button className={`rounded-xl hover:bg-muted/40 text-muted-foreground shrink-0 mb-0.5 transition-all ${isMobile ? 'p-1' : 'p-1.5'}`} title="Joindre">
                 <Plus className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'}`} />
               </button>
             </PopoverTrigger>
@@ -222,7 +222,7 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, 
             onChange={e => handleChange(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={channelName ? `Écrire dans #${channelName}...` : 'Écrire un message...'}
-            className={`flex-1 bg-transparent border-none outline-none resize-none text-foreground placeholder:text-muted-foreground/40 leading-relaxed ${isMobile ? 'text-[14px] min-h-[22px] max-h-[80px]' : 'text-sm min-h-[24px] max-h-[120px]'}`}
+            className={`flex-1 bg-transparent border-none outline-none resize-none text-foreground placeholder:text-muted-foreground leading-relaxed ${isMobile ? 'text-[14px] min-h-[22px] max-h-[80px]' : 'text-sm min-h-[24px] max-h-[120px]'}`}
             rows={1}
             onInput={e => {
               const target = e.target as HTMLTextAreaElement;
@@ -233,7 +233,7 @@ export function ChatInput({ onSend, channelName, onTyping, memberProfiles = {}, 
 
           <Popover>
             <PopoverTrigger asChild>
-              <button className={`rounded-xl hover:bg-muted/40 text-muted-foreground/60 shrink-0 mb-0.5 transition-all ${isMobile ? 'p-1' : 'p-1.5'}`} title="Émojis">
+              <button className={`rounded-xl hover:bg-muted/40 text-muted-foreground shrink-0 mb-0.5 transition-all ${isMobile ? 'p-1' : 'p-1.5'}`} title="Émojis">
                 <Smile className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'}`} />
               </button>
             </PopoverTrigger>

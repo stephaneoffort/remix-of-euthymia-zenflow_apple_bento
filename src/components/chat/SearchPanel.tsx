@@ -58,16 +58,16 @@ export function SearchPanel({ onSearch, results, searching, memberProfiles, onCl
       <div className="px-3 py-3 border-b border-border space-y-2">
         {/* Keyword input */}
         <div className="flex items-center gap-2 bg-muted/20 border border-border rounded-xl px-3 py-2 focus-within:ring-1 focus-within:ring-primary/20 transition-all">
-          <Search className="w-4 h-4 text-muted-foreground/50 shrink-0" />
+          <Search className="w-4 h-4 text-muted-foreground shrink-0" />
           <input
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder="Mots-clés…"
-            className="flex-1 bg-transparent border-none outline-none text-sm text-foreground placeholder:text-muted-foreground/35"
+            className="flex-1 bg-transparent border-none outline-none text-sm text-foreground placeholder:text-muted-foreground"
             autoFocus
           />
           {query && (
-            <button onClick={() => setQuery('')} className="p-0.5 rounded text-muted-foreground/60 hover:text-foreground" title="Effacer">
+            <button onClick={() => setQuery('')} className="p-0.5 rounded text-muted-foreground hover:text-foreground" title="Effacer">
               <X className="w-3.5 h-3.5" />
             </button>
           )}
@@ -89,7 +89,7 @@ export function SearchPanel({ onSearch, results, searching, memberProfiles, onCl
                 <span className="flex-1 truncate text-foreground">{selectedAuthor.name}</span>
                 <button
                   onClick={(e) => { e.stopPropagation(); setAuthorId(null); }}
-                  className="p-0.5 rounded text-muted-foreground/60 hover:text-foreground"
+                  className="p-0.5 rounded text-muted-foreground hover:text-foreground"
                   title="Retirer le filtre auteur"
                 >
                   <X className="w-3.5 h-3.5" />
@@ -97,9 +97,9 @@ export function SearchPanel({ onSearch, results, searching, memberProfiles, onCl
               </>
             ) : (
               <>
-                <User className="w-4 h-4 text-muted-foreground/50 shrink-0" />
-                <span className="flex-1 text-muted-foreground/60">Tous les auteurs</span>
-                <ChevronDown className="w-3.5 h-3.5 text-muted-foreground/60" />
+                <User className="w-4 h-4 text-muted-foreground shrink-0" />
+                <span className="flex-1 text-muted-foreground">Tous les auteurs</span>
+                <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
               </>
             )}
           </button>
@@ -110,11 +110,11 @@ export function SearchPanel({ onSearch, results, searching, memberProfiles, onCl
                 onClick={() => { setAuthorId(null); setAuthorMenuOpen(false); }}
                 className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted/40 text-left"
               >
-                <User className="w-4 h-4 text-muted-foreground/60" />
+                <User className="w-4 h-4 text-muted-foreground" />
                 <span>Tous les auteurs</span>
               </button>
               {authorOptions.length === 0 && (
-                <p className="px-3 py-2 text-xs text-muted-foreground/60">Aucun auteur disponible</p>
+                <p className="px-3 py-2 text-xs text-muted-foreground">Aucun auteur disponible</p>
               )}
               {authorOptions.map(a => (
                 <button
@@ -150,13 +150,13 @@ export function SearchPanel({ onSearch, results, searching, memberProfiles, onCl
 
         {!searching && results.length === 0 && (query || authorId) && (
           <div className="text-center py-8">
-            <p className="text-xs text-muted-foreground/60">Aucun résultat</p>
+            <p className="text-xs text-muted-foreground">Aucun résultat</p>
           </div>
         )}
 
         {!searching && results.length === 0 && !query && !authorId && (
           <div className="text-center py-8">
-            <p className="text-xs text-muted-foreground/50">Tape un mot-clé ou choisis un auteur</p>
+            <p className="text-xs text-muted-foreground">Tape un mot-clé ou choisis un auteur</p>
           </div>
         )}
 
@@ -172,7 +172,7 @@ export function SearchPanel({ onSearch, results, searching, memberProfiles, onCl
                   {(profile?.name || '?')[0].toUpperCase()}
                 </div>
                 <span className="text-xs font-medium text-foreground">{profile?.name || 'Utilisateur'}</span>
-                <span className="text-[10px] text-muted-foreground/60 ml-auto">
+                <span className="text-[10px] text-muted-foreground ml-auto">
                   {format(new Date(msg.created_at), 'd MMM HH:mm', { locale: fr })}
                 </span>
               </div>

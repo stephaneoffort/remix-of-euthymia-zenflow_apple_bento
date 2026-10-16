@@ -128,11 +128,11 @@ export function MembersPanel({ memberProfiles, onDmCreated, onlineTeamMemberIds 
           }`} />
         </div>
         <div className="flex-1 min-w-0">
-          <p className={`text-[13px] truncate font-medium ${isOnline ? 'text-foreground' : 'text-muted-foreground/60'}`}>
+          <p className={`text-[13px] truncate font-medium ${isOnline ? 'text-foreground' : 'text-muted-foreground'}`}>
             {member.name}
-            {isSelf && <span className="text-[10px] text-muted-foreground/40 ml-1">(vous)</span>}
+            {isSelf && <span className="text-[10px] text-muted-foreground ml-1">(vous)</span>}
           </p>
-          <p className="text-[10px] text-muted-foreground/40 truncate">{member.role}</p>
+          <p className="text-[10px] text-muted-foreground truncate">{member.role}</p>
         </div>
         {canDm && (
           <MessageSquare className="w-3.5 h-3.5 text-muted-foreground/0 group-hover:text-primary transition-all shrink-0" />
@@ -145,11 +145,11 @@ export function MembersPanel({ memberProfiles, onDmCreated, onlineTeamMemberIds 
     <div className="w-60 max-sm:w-full border-l border-border bg-card shrink-0 overflow-y-auto">
       <div className="p-3">
         <div className="flex items-center justify-between mb-4 px-2">
-          <h4 data-numeric className="font-numeric tabular-nums text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">
+          <h4 data-numeric className="font-numeric tabular-nums text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
             Membres — {teamMembers.length}
           </h4>
           <button onClick={() => setShowGroupDm(true)}
-            className="p-1 rounded-lg hover:bg-muted/30 text-muted-foreground/50 hover:text-foreground transition-all" title="Créer un groupe">
+            className="p-1 rounded-lg hover:bg-muted/30 text-muted-foreground hover:text-foreground transition-all" title="Créer un groupe">
             <Users className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -167,7 +167,7 @@ export function MembersPanel({ memberProfiles, onDmCreated, onlineTeamMemberIds 
 
         {offlineList.length > 0 && (
           <>
-            <p data-numeric className="font-numeric tabular-nums text-[10px] text-muted-foreground/40 uppercase tracking-widest px-2 mb-1.5 font-semibold">
+            <p data-numeric className="font-numeric tabular-nums text-[10px] text-muted-foreground uppercase tracking-widest px-2 mb-1.5 font-semibold">
               Hors ligne — {offlineList.length}
             </p>
             <div className="space-y-0.5">
@@ -178,7 +178,7 @@ export function MembersPanel({ memberProfiles, onDmCreated, onlineTeamMemberIds 
 
         {teamMembers.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-xs text-muted-foreground/40">Aucun membre</p>
+            <p className="text-xs text-muted-foreground">Aucun membre</p>
           </div>
         )}
       </div>
@@ -204,7 +204,7 @@ export function MembersPanel({ memberProfiles, onDmCreated, onlineTeamMemberIds 
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-medium truncate">{member.name}</p>
-                  <p className="text-[10px] text-muted-foreground/50">{member.role}</p>
+                  <p className="text-[10px] text-muted-foreground">{member.role}</p>
                 </div>
               </label>
             ))}

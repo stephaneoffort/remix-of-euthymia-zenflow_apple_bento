@@ -304,9 +304,9 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
           {/* Public channels */}
           <div>
             <div className="flex items-center justify-between px-4 mb-2">
-              <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">Canaux</span>
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Canaux</span>
               <button onClick={() => setCreateOpen(true)}
-                className="p-1 rounded-lg hover:bg-primary/10 text-muted-foreground/50 hover:text-primary transition-all" title="Créer un canal">
+                className="p-1 rounded-lg hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all" title="Créer un canal">
                 <Plus className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -318,7 +318,7 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
                   selectionMode={selectionMode} selected={selectedIds.has(ch.id)} />
               ))}
               {publicChannels.length === 0 && (
-                <p className="text-[11px] text-muted-foreground/40 px-3 py-2 italic">Aucun canal</p>
+                <p className="text-[11px] text-muted-foreground px-3 py-2 italic">Aucun canal</p>
               )}
             </div>
           </div>
@@ -327,7 +327,7 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
           {privateChannels.length > 0 && (
             <div>
               <div className="flex items-center px-4 mb-2">
-                <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">Privés</span>
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Privés</span>
               </div>
               <div className="space-y-0.5 px-2">
                 {privateChannels.map(ch => (
@@ -343,9 +343,9 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
           {/* DMs section - always visible */}
           <div>
             <div className="flex items-center justify-between px-4 mb-2">
-              <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">Messages privés</span>
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Messages privés</span>
               <button onClick={() => setDmPickerOpen(true)}
-                className="p-1 rounded-lg hover:bg-primary/10 text-muted-foreground/50 hover:text-primary transition-all" title="Nouveau message privé">
+                className="p-1 rounded-lg hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all" title="Nouveau message privé">
                 <Plus className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -370,7 +370,7 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
               {dmChannels.length === 0 && (
                 <button
                   onClick={() => setDmPickerOpen(true)}
-                  className="w-full flex items-center gap-2.5 px-3 py-3 rounded-xl text-sm text-muted-foreground/40 hover:bg-muted/20 hover:text-foreground transition-all border border-dashed border-border"
+                  className="w-full flex items-center gap-2.5 px-3 py-3 rounded-xl text-sm text-muted-foreground hover:bg-muted/20 hover:text-foreground transition-all border border-dashed border-border"
                 >
                   <Mail className="w-4 h-4" />
                   <span className="text-xs">Démarrer une conversation</span>
@@ -477,7 +477,7 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">{member.name}</p>
-                    <p className="text-[10px] text-muted-foreground/50 truncate">
+                    <p className="text-[10px] text-muted-foreground truncate">
                       {hasAccount ? member.role : `${member.role} · Pas encore inscrit`}
                     </p>
                   </div>
@@ -488,7 +488,7 @@ export function ChannelSidebar({ channels, activeChannelId, onSelectChannel, cur
               );
             })}
             {availableForDm.length === 0 && (
-              <p className="text-sm text-muted-foreground/50 text-center py-6">Aucun membre disponible</p>
+              <p className="text-sm text-muted-foreground text-center py-6">Aucun membre disponible</p>
             )}
           </div>
         </DialogContent>
@@ -508,7 +508,7 @@ function ChannelItem({ channel, isActive, onClick, icon, unread = 0, onDelete, s
           ? 'bg-primary/10 text-primary font-semibold border border-primary/20'
           : unread > 0
             ? 'text-foreground font-medium hover:bg-muted/20'
-            : 'text-muted-foreground/60 hover:bg-muted/20 hover:text-foreground'
+            : 'text-muted-foreground hover:bg-muted/20 hover:text-foreground'
     }`}>
       <button onClick={onClick} className="flex items-center gap-2.5 flex-1 min-w-0 text-left">
         {selectionMode ? (
@@ -550,7 +550,7 @@ function DmItem({ channelId, isActive, onClick, partnerName, partnerColor, unrea
           ? 'bg-primary/10 text-primary font-semibold border border-primary/20'
           : unread > 0
             ? 'text-foreground font-medium hover:bg-muted/20'
-            : 'text-muted-foreground/60 hover:bg-muted/20 hover:text-foreground'
+            : 'text-muted-foreground hover:bg-muted/20 hover:text-foreground'
     }`}>
       <button onClick={onClick} className="flex items-center gap-2.5 flex-1 min-w-0 text-left">
         {selectionMode ? (

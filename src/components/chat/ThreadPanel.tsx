@@ -40,7 +40,7 @@ export function ThreadPanel({ parentMessage, replies, memberProfiles, onSendRepl
         <div className="flex items-center gap-2">
           <MessageCircle className="w-4 h-4 text-primary" />
           <h3 className="font-semibold text-sm text-foreground">Thread</h3>
-          <span data-numeric className="font-numeric tabular-nums text-[11px] text-muted-foreground/50">{replies.length} réponse{replies.length !== 1 ? 's' : ''}</span>
+          <span data-numeric className="font-numeric tabular-nums text-[11px] text-muted-foreground">{replies.length} réponse{replies.length !== 1 ? 's' : ''}</span>
         </div>
         <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-muted/40 text-muted-foreground transition-all">
           <X className="w-4 h-4" />
@@ -57,7 +57,7 @@ export function ThreadPanel({ parentMessage, replies, memberProfiles, onSendRepl
           <div className="min-w-0">
             <div className="flex items-baseline gap-2 mb-0.5">
               <span className="font-semibold text-sm text-foreground">{parentProfile?.name || 'Utilisateur'}</span>
-              <span className="text-[10px] text-muted-foreground/40">{format(new Date(parentMessage.created_at), 'HH:mm')}</span>
+              <span className="text-[10px] text-muted-foreground">{format(new Date(parentMessage.created_at), 'HH:mm')}</span>
             </div>
             <p className="text-[13px] text-foreground/80 whitespace-pre-wrap break-words leading-relaxed">{parentMessage.content}</p>
           </div>
@@ -67,7 +67,7 @@ export function ThreadPanel({ parentMessage, replies, memberProfiles, onSendRepl
       {/* Replies */}
       <div className="flex-1 overflow-y-auto scrollbar-thin px-4 py-3">
         {replies.length === 0 && (
-          <div className="text-center py-8 text-xs text-muted-foreground/50">
+          <div className="text-center py-8 text-xs text-muted-foreground">
             Aucune réponse pour l'instant
           </div>
         )}
@@ -84,7 +84,7 @@ export function ThreadPanel({ parentMessage, replies, memberProfiles, onSendRepl
               <div className="min-w-0">
                 <div className="flex items-baseline gap-2 mb-0.5">
                   <span className="font-medium text-[13px] text-foreground">{profile?.name || 'Utilisateur'}</span>
-                  <span className="text-[10px] text-muted-foreground/40">{format(new Date(reply.created_at), 'HH:mm')}</span>
+                  <span className="text-[10px] text-muted-foreground">{format(new Date(reply.created_at), 'HH:mm')}</span>
                 </div>
                 <p className="text-[13px] text-foreground/85 whitespace-pre-wrap break-words leading-relaxed">{reply.content}</p>
               </div>
@@ -103,7 +103,7 @@ export function ThreadPanel({ parentMessage, replies, memberProfiles, onSendRepl
             onChange={e => setContent(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
             placeholder="Répondre au thread…"
-            className="flex-1 bg-transparent border-none outline-none resize-none text-sm text-foreground placeholder:text-muted-foreground/35 min-h-[24px] max-h-[80px] leading-relaxed"
+            className="flex-1 bg-transparent border-none outline-none resize-none text-sm text-foreground placeholder:text-muted-foreground min-h-[24px] max-h-[80px] leading-relaxed"
             rows={1}
             onInput={e => {
               const t = e.target as HTMLTextAreaElement;

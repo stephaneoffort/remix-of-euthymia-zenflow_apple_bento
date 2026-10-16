@@ -148,7 +148,7 @@ export default function Chat() {
                   <h2 className={`font-display font-semibold text-foreground truncate ${isMobile ? 'text-xs' : 'text-sm'}`}>
                     {dmPartnerInfo.name}
                   </h2>
-                  {!isMobile && <p className="text-[11px] text-muted-foreground/60 truncate">Message privé</p>}
+                  {!isMobile && <p className="text-[11px] text-muted-foreground truncate">Message privé</p>}
                 </div>
               </>
             ) : (
@@ -161,7 +161,7 @@ export default function Chat() {
                     {activeChannel?.name || 'Sélectionner un canal'}
                   </h2>
                   {activeChannel?.description && !isMobile && (
-                    <p className="text-[11px] text-muted-foreground/60 truncate">{activeChannel.description}</p>
+                    <p className="text-[11px] text-muted-foreground truncate">{activeChannel.description}</p>
                   )}
                 </div>
               </>

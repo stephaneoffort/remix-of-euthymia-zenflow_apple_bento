@@ -20,7 +20,7 @@ export function PinnedMessagesPanel({ messages, memberProfiles, onUnpin, onClose
         <div className="flex items-center gap-2">
           <Pin className="w-4 h-4 text-primary" />
           <h3 className="font-semibold text-sm text-foreground">Messages épinglés</h3>
-          <span data-numeric className="font-numeric tabular-nums text-[11px] text-muted-foreground/50">{messages.length}</span>
+          <span data-numeric className="font-numeric tabular-nums text-[11px] text-muted-foreground">{messages.length}</span>
         </div>
         <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-muted/40 text-muted-foreground transition-all">
           <X className="w-4 h-4" />
@@ -32,7 +32,7 @@ export function PinnedMessagesPanel({ messages, memberProfiles, onUnpin, onClose
         {messages.length === 0 && (
           <div className="text-center py-12">
             <Pin className="w-8 h-8 text-muted-foreground/20 mx-auto mb-3" />
-            <p className="text-xs text-muted-foreground/40">Aucun message épinglé</p>
+            <p className="text-xs text-muted-foreground">Aucun message épinglé</p>
           </div>
         )}
 
@@ -50,7 +50,7 @@ export function PinnedMessagesPanel({ messages, memberProfiles, onUnpin, onClose
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
                     <span className="text-xs font-semibold text-foreground">{profile?.name || 'Utilisateur'}</span>
-                    <span className="text-[10px] text-muted-foreground/40">
+                    <span className="text-[10px] text-muted-foreground">
                       {format(new Date(msg.created_at), 'd MMM HH:mm', { locale: fr })}
                     </span>
                   </div>

@@ -512,10 +512,10 @@ export default function TimelineView() {
                         <Tooltip key={item.task.id}>
                           <TooltipTrigger asChild>
                             <div
-                              className={`absolute rounded-md cursor-pointer transition-all hover:shadow-lg hover:z-10 group/bar ${
+                              className={`absolute rounded-md cursor-pointer transition-all hover:z-10 group/bar ${
                                 item.hasOverlap
                                   ? "ring-1 ring-destructive/40"
-                                  : ""
+                                  : "hover:ring-1 hover:ring-primary/30"
                               }`}
                               style={{
                                 left,

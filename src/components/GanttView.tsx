@@ -1001,7 +1001,7 @@ function GanttBar({
         <div
           ref={barRef}
           className={`absolute rounded z-[2] cursor-grab transition-shadow group/bar select-none ${
-            isDragging ? "shadow-lg opacity-80 cursor-grabbing z-[10]" : "hover:shadow-md"
+            isDragging ? "shadow-lg opacity-80 cursor-grabbing z-[10]" : isCritical ? "" : "hover:ring-1 hover:ring-primary/30"
           } ${isCritical ? "ring-2 ring-destructive" : ""} ${task.hasChildren ? "h-3" : "h-6"}`}
           style={{
             left: displayLeft,

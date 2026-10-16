@@ -48,7 +48,7 @@ const STATUS_CIRCLE_CLASSES: Record<string, string> = {
 
 export function StatusCircle({ status, className = 'w-4 h-4' }: { status: string; className?: string }) {
   const colorClass = STATUS_CIRCLE_CLASSES[status] || 'text-muted-foreground';
-  if (status === 'done') return <CheckCircle className={`${className} ${colorClass}`} />;
+  if (status === 'done') return <CheckCircle className={`${className} ${colorClass} animate-in zoom-in-50 duration-200`} />;
   if (status === 'blocked') return <Ban className={`${className} ${colorClass}`} />;
   if (status === 'in_progress') return <Loader className={`${className} ${colorClass}`} />;
   if (status === 'in_review') return <Eye className={`${className} ${colorClass}`} />;

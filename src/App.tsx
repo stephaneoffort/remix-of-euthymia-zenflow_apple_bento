@@ -11,6 +11,7 @@ import { AppProvider } from "@/context/AppContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Loader2 } from "lucide-react";
+import { MotionConfig } from "framer-motion";
 import InstallPrompt from "@/components/InstallPrompt";
 import { useRealtimeNotifications } from "@/hooks/useRealtimeNotifications";
 import { QuickNote } from "@/components/QuickNote";
@@ -107,6 +108,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 const App = () => (
+  <MotionConfig reducedMotion="user">
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
     <TooltipProvider>
@@ -263,6 +265,7 @@ const App = () => (
     </TooltipProvider>
     </ThemeProvider>
   </QueryClientProvider>
+  </MotionConfig>
 );
 
 export default App;

@@ -248,6 +248,19 @@ a, button, [role="button"], label, select, summary,
     outline: 2px solid hsl(var(--ring));
     outline-offset: 2px;
   }
+
+  /* Réglage « réduire les animations » du système : animations et
+     transitions CSS quasi instantanées (squelettes, spinners, fondus). */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
 
 /* ─────────────────────────────────────────────────────

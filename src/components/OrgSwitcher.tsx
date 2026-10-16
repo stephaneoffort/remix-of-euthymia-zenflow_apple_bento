@@ -70,7 +70,7 @@ export default function OrgSwitcher({ onNavigate }: { onNavigate?: () => void })
               style={{ backgroundColor: currentOrg.color ? getClosestToneSolidVar(currentOrg.color) : 'hsl(var(--primary))' }}
             />
             <span className="flex-1 min-w-0 text-left">
-              <span className="block text-[10px] uppercase tracking-wide opacity-70">Équipe active</span>
+              <span className="block text-[10px] uppercase tracking-wide">Équipe active</span>
               <span className="block truncate font-medium text-sidebar-fg-bright">{currentOrg.name}</span>
             </span>
             <ChevronsUpDown className="w-3.5 h-3.5 opacity-70" />

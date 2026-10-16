@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { getClosestToneSolidVar, TONE_ON_SOLID } from '@/lib/toneColor';
-import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown, Palette, BellRing, HardDrive, CalendarSync, ShieldCheck, FileText, ExternalLink, Building2, ImageUp, MailCheck } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, MessageCircle, DatabaseBackup, Crown, Palette, BellRing, HardDrive, CalendarSync, ShieldCheck, FileText, ExternalLink, Building2, ImageUp, MailCheck, Loader2 } from 'lucide-react';
 import AppearanceSettings from '@/components/settings/AppearanceSettings';
 import { useOrg } from '@/context/OrgContext';
 import TaskTemplatesPanel from '@/components/settings/TaskTemplatesPanel';
@@ -58,7 +58,7 @@ export default function Settings() {
   if (loading || isAdmin === null) {
     return (
       <div className="flex items-center justify-center h-screen bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
       </div>
     );
   }

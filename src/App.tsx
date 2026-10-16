@@ -10,6 +10,7 @@ import { OrgProvider } from "@/context/OrgContext";
 import { AppProvider } from "@/context/AppContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Loader2 } from "lucide-react";
 import InstallPrompt from "@/components/InstallPrompt";
 import { useRealtimeNotifications } from "@/hooks/useRealtimeNotifications";
 import { QuickNote } from "@/components/QuickNote";
@@ -94,7 +95,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
       </div>
     );
   }

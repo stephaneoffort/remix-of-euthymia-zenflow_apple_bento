@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Building2, Check, ChevronsUpDown, Settings2 } from 'lucide-react';
+import { Building2, Check, ChevronsUpDown, Settings2, Users } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +21,6 @@ export default function OrgSwitcher({ onNavigate }: { onNavigate?: () => void })
   const navigate = useNavigate();
 
   if (loading || !currentOrg) return null;
-  if (myOrgs.length <= 1 && !isSuperAdmin) return null;
 
   const mine = myOrgs.filter((o) => memberOrgIds.includes(o.id));
   const others = myOrgs.filter((o) => !memberOrgIds.includes(o.id));
@@ -41,6 +40,20 @@ export default function OrgSwitcher({ onNavigate }: { onNavigate?: () => void })
         <span className="text-[10px] text-muted-foreground">archivée</span>
       )}
       {org.id === currentOrg.id && <Check className="w-3.5 h-3.5 text-primary" />}
+      <button
+        type="button"
+        title={`Gérer l'équipe ${org.name}`}
+        aria-label={`Gérer l'équipe ${org.name}`}
+        className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          onNavigate?.();
+          navigate(`/profile/team?org=${org.id}`);
+        }}
+      >
+        <Users className="w-3.5 h-3.5" />
+      </button>
     </DropdownMenuItem>
   );
 
@@ -56,8 +69,9 @@ export default function OrgSwitcher({ onNavigate }: { onNavigate?: () => void })
               className="w-2.5 h-2.5 rounded-full shrink-0"
               style={{ backgroundColor: currentOrg.color ? getClosestToneSolidVar(currentOrg.color) : 'hsl(var(--primary))' }}
             />
-            <span className="flex-1 truncate text-left font-medium text-sidebar-fg-bright">
-              {currentOrg.name}
+            <span className="flex-1 min-w-0 text-left">
+              <span className="block text-[10px] uppercase tracking-wide opacity-70">Équipe active</span>
+              <span className="block truncate font-medium text-sidebar-fg-bright">{currentOrg.name}</span>
             </span>
             <ChevronsUpDown className="w-3.5 h-3.5 opacity-70" />
           </button>

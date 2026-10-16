@@ -44,6 +44,7 @@ const OAuthConsent = lazyRetry(() => import("./pages/OAuthConsent.tsx"));
 const AuditLog = lazyRetry(() => import("./pages/AuditLog.tsx"));
 const Support = lazyRetry(() => import("./pages/Support.tsx"));
 const Profile = lazyRetry(() => import("./pages/Profile.tsx"));
+const TeamManage = lazyRetry(() => import("./pages/TeamManage.tsx"));
 import SupportFab from "@/components/SupportFab";
 
 
@@ -168,6 +169,14 @@ const App = () => (
                         }
                       />
 
+                      <Route
+                        path="/profile/team"
+                        element={
+                          <ProtectedRoute>
+                            <TeamManage />
+                          </ProtectedRoute>
+                        }
+                      />
                       <Route
                         path="/settings/organizations"
                         element={

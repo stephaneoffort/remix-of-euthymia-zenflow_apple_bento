@@ -7,9 +7,14 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Pencil } from 'lucide-react';
 import MemberProfileEditor, { type EditableMember } from '@/components/settings/MemberProfileEditor';
 import { getClosestToneSolidVar, TONE_ON_SOLID } from '@/lib/toneColor';
+import { useOrg } from '@/context/OrgContext';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+const ROLE_LABELS = { owner: 'Propriétaire', admin: 'Administrateur', member: 'Membre' } as const;
 
 export default function Profile() {
   const { teamMemberId } = useAuth();
+  const { currentOrg, myOrgs, myRole, isSuperAdmin, switchOrg, switching } = useOrg();
   const navigate = useNavigate();
   const [member, setMember] = useState<EditableMember | null>(null);
   const [editing, setEditing] = useState(false);
@@ -75,6 +80,43 @@ export default function Profile() {
                   Modifier
                 </Button>
               </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Équipe active</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {!currentOrg ? (
+              <p className="text-sm text-muted-foreground">Aucune équipe rattachée à ce compte.</p>
+            ) : (
+              <div className="flex items-center gap-3">
+                <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: currentOrg.color || 'hsl(var(--primary))' }} />
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-foreground truncate">{currentOrg.name}</p>
+                  {myRole && <p className="text-sm text-muted-foreground">{ROLE_LABELS[myRole]}</p>}
+                </div>
+              </div>
+            )}
+            {myOrgs.length > 1 && currentOrg && (
+              <div className="space-y-1.5">
+                <p className="text-sm text-muted-foreground">Changer d'équipe :</p>
+                <Select value={currentOrg.id} onValueChange={(id) => id !== currentOrg.id && switchOrg(id)} disabled={switching}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent className="bg-popover text-popover-foreground">
+                    {myOrgs.map((o) => (
+                      <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            {currentOrg && (
+              <Button size="sm" variant="outline" onClick={() => navigate('/profile/team')}>
+                Gérer les équipes
+              </Button>
             )}
           </CardContent>
         </Card>

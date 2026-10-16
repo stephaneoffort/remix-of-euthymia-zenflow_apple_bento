@@ -124,7 +124,7 @@ function TemplateRow({
             )}
             {template.subtasks.length > 0 && (
               <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground flex items-center gap-1">
-                <Layers className="w-3 h-3" /> {template.subtasks.length}
+                <Layers className="w-3 h-3" /> <span data-numeric className="font-numeric tabular-nums">{template.subtasks.length}</span>
               </span>
             )}
           </div>

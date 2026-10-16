@@ -50,7 +50,7 @@ export default function MentionsPanel() {
           Mes mentions
         </h2>
         <p className="text-sm text-muted-foreground mt-1">
-          {mentions.length} commentaire{mentions.length !== 1 ? 's' : ''} où vous êtes mentionné
+          <span data-numeric className="font-numeric tabular-nums">{mentions.length}</span> commentaire{mentions.length !== 1 ? 's' : ''} où vous êtes mentionné
         </p>
       </div>
 

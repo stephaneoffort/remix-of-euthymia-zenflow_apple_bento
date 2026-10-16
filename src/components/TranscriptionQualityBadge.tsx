@@ -56,7 +56,7 @@ export function TranscriptionQualityBadge({ quality, className = '' }: {
       {pct != null && (
         <>
           <span aria-hidden className="opacity-40">·</span>
-          <span className="tabular-nums">{pct}%</span>
+          <span data-numeric className="font-numeric tabular-nums">{pct}%</span>
           <span className="relative h-1 w-10 rounded-full bg-foreground/10 overflow-hidden">
             <span
               className={`absolute inset-y-0 left-0 ${warn ? 'bg-destructive' : 'bg-primary'}`}

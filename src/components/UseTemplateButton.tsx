@@ -84,7 +84,7 @@ export default function UseTemplateButton({
                 <span className="truncate">{t.title}</span>
                 {t.subtasks.length > 0 && (
                   <span className="flex items-center gap-0.5 shrink-0">
-                    <Layers className="w-3 h-3" /> {t.subtasks.length}
+                    <Layers className="w-3 h-3" /> <span data-numeric className="font-numeric tabular-nums">{t.subtasks.length}</span>
                   </span>
                 )}
                 {t.due_offset_days !== null && (

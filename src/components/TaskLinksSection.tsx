@@ -143,7 +143,7 @@ export default function TaskLinksSection({ taskId }: Props) {
         {blockingCount > 0 && (
           <span className="ml-1 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-priority-urgent/15 text-priority-urgent normal-case tracking-normal text-[10px] font-medium">
             <Lock className="w-3 h-3" />
-            Bloquée par {blockingCount}
+            Bloquée par <span data-numeric className="font-numeric tabular-nums">{blockingCount}</span>
           </span>
         )}
       </label>

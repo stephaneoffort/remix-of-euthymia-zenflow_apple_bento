@@ -711,7 +711,7 @@ export function QuickNote() {
                 <FileText className="w-3.5 h-3.5" />
                 Mes notes
                 {savedNotes.length > 0 && (
-                  <span className="ml-1 text-[10px] bg-muted text-muted-foreground rounded-full px-1.5 py-0.5 tabular-nums">
+                  <span data-numeric className="ml-1 text-[10px] bg-muted text-muted-foreground rounded-full px-1.5 py-0.5 font-numeric tabular-nums">
                     {savedNotes.length}
                   </span>
                 )}

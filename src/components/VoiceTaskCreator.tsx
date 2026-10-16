@@ -715,7 +715,7 @@ export default function VoiceTaskCreator({ onClose, defaultListId, parentTaskId 
                 {parseStep === 'done' && 'Terminé !'}
               </p>
               {transcript && (
-                <p className="text-xs text-muted-foreground/60 max-w-sm mx-auto text-center italic">"{transcript}"</p>
+                <p className="text-xs text-muted-foreground max-w-sm mx-auto text-center italic">"{transcript}"</p>
               )}
             </div>
           )}

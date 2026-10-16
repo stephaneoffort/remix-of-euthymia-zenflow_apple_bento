@@ -427,7 +427,7 @@ export default function TimelineView() {
                   {col.label}
                 </span>
                 {col.subLabel && (
-                  <span className="text-muted-foreground/60">{col.subLabel}</span>
+                  <span className="text-muted-foreground">{col.subLabel}</span>
                 )}
               </div>
             ))}

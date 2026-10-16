@@ -256,7 +256,7 @@ export default function KanbanBoard() {
           className="flex flex-col gap-1.5 mb-3 px-1 group/header cursor-grab active:cursor-grabbing"
         >
           <div className="flex items-center gap-2">
-            <GripHorizontal className="w-3.5 h-3.5 text-muted-foreground/50 opacity-0 group-hover/header:opacity-100 transition-opacity shrink-0 hidden sm:block" />
+            <GripHorizontal className="w-3.5 h-3.5 text-muted-foreground opacity-0 group-hover/header:opacity-100 transition-opacity shrink-0 hidden sm:block" />
             <button
               onClick={e => { e.stopPropagation(); toggleColumnCollapse(status); }}
               className="p-0.5 hover:bg-muted rounded transition-colors"
@@ -441,7 +441,7 @@ export default function KanbanBoard() {
                 >
                   <div className={`w-2 h-2 rounded-full ${isActive ? 'bg-primary-foreground/70' : getStatusColor(status)}`} />
                   {getStatusLabel(status)}
-                  <span data-numeric className={`font-numeric ml-0.5 tabular-nums ${isActive ? 'text-primary-foreground/80' : 'text-muted-foreground/60'}`}>{count}</span>
+                  <span data-numeric className={`font-numeric ml-0.5 tabular-nums ${isActive ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>{count}</span>
                 </button>
               );
             })}
@@ -625,7 +625,7 @@ function KanbanCard({
       style={{ willChange: 'transform' }}
     >
       <div className="flex items-start gap-1.5">
-        <GripVertical className="w-4 h-4 text-muted-foreground/60 opacity-0 group-hover:opacity-100 mt-0.5 shrink-0 cursor-grab hidden sm:block" />
+        <GripVertical className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 mt-0.5 shrink-0 cursor-grab hidden sm:block" />
         <div className="flex-1 min-w-0">
           {!selectedProjectId && (() => {
             const proj = getProjectName(task.listId);

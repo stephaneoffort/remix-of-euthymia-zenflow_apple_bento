@@ -562,7 +562,7 @@ export default function HourlyGrid({
           const frIdx = d.getDay() === 0 ? 6 : d.getDay() - 1;
           return (
             <div key={i} className="flex-1 text-center py-1.5 border-r border-border/30 last:border-r-0" style={{ minWidth: isDay ? undefined : 120 }}>
-              <div className="text-[10px] font-medium text-muted-foreground/60 uppercase">{DAYS_FR[frIdx]}</div>
+              <div className="text-[10px] font-medium text-muted-foreground uppercase">{DAYS_FR[frIdx]}</div>
               <div className={`text-sm font-medium ${isToday ? 'text-primary' : 'text-foreground'}`}>
                 <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full ${isToday ? 'bg-primary text-primary-foreground' : ''}`}>
                   {d.getDate()}
@@ -586,7 +586,7 @@ export default function HourlyGrid({
           {/* Hour labels */}
           <div className="shrink-0 relative border-r border-border" style={{ width: labelWidth }}>
             {HOURS.map(h => (
-              <div key={h} className="absolute w-full text-right pr-1.5 text-[10px] text-muted-foreground/40 font-medium"
+              <div key={h} className="absolute w-full text-right pr-1.5 text-[10px] text-muted-foreground font-medium"
                 style={{ top: h * hourHeight - 6 }}>
                 {h === 0 ? '' : `${String(h).padStart(2, '0')}h`}
               </div>

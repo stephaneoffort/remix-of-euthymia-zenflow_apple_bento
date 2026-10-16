@@ -73,10 +73,10 @@ export default function TaskChecklist({ taskId }: TaskChecklistProps) {
 
   return (
     <div>
-      <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider mb-2 flex items-center gap-1">
+      <label className="text-xs font-semibold text-foreground/70 uppercase tracking-wider mb-2 flex items-center gap-1">
         <CheckSquare className="w-3.5 h-3.5" /> Checklist
         {items.length > 0 && (
-          <span data-numeric className="font-numeric tabular-nums text-foreground/60">({checkedCount}/{items.length})</span>
+          <span data-numeric className="font-numeric tabular-nums text-foreground/70">({checkedCount}/{items.length})</span>
         )}
       </label>
 
@@ -90,7 +90,7 @@ export default function TaskChecklist({ taskId }: TaskChecklistProps) {
       )}
 
       {loading ? (
-        <p className="text-xs text-foreground/60">Chargement...</p>
+        <p className="text-xs text-foreground/70">Chargement...</p>
       ) : (
         <div className="space-y-1">
           {items.map(item => (
@@ -104,14 +104,14 @@ export default function TaskChecklist({ taskId }: TaskChecklistProps) {
               />
               <span
                 className={`flex-1 text-sm transition-colors ${
-                  item.is_checked ? 'line-through text-foreground/50' : 'text-foreground'
+                  item.is_checked ? 'line-through text-foreground/70' : 'text-foreground'
                 }`}
               >
                 {item.title}
               </span>
               <button
                 onClick={() => deleteItem(item.id)}
-                className="p-0.5 opacity-60 group-hover:opacity-100 text-foreground/45 hover:text-destructive transition-all shrink-0"
+                className="p-0.5 text-foreground/70 hover:text-destructive transition-all shrink-0"
                 title="Supprimer"
               >
                 <Trash2 className="w-3 h-3" />
@@ -143,7 +143,7 @@ export default function TaskChecklist({ taskId }: TaskChecklistProps) {
           </button>
           <button
             onClick={() => { setIsAdding(false); setNewTitle(''); }}
-            className="px-2 py-1.5 text-xs text-foreground/60 hover:text-foreground"
+            className="px-2 py-1.5 text-xs text-foreground/70 hover:text-foreground"
           >
             Annuler
           </button>
@@ -151,7 +151,7 @@ export default function TaskChecklist({ taskId }: TaskChecklistProps) {
       ) : (
         <button
           onClick={() => setIsAdding(true)}
-          className="inline-flex items-center gap-1 text-xs text-foreground/60 hover:text-foreground mt-2 transition-colors"
+          className="inline-flex items-center gap-1 text-xs text-foreground/70 hover:text-foreground mt-2 transition-colors"
         >
           <Plus className="w-3.5 h-3.5" /> Ajouter un élément
         </button>

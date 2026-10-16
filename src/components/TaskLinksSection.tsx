@@ -122,10 +122,10 @@ export default function TaskLinksSection({ taskId }: Props) {
             <StatusBadge status={task.status} />
           </div>
         </button>
-        <ExternalLink className="w-3 h-3 text-foreground/45 opacity-60 group-hover:opacity-100 shrink-0 transition-opacity" />
+        <ExternalLink className="w-3 h-3 text-foreground/70 opacity-60 group-hover:opacity-100 shrink-0 transition-opacity" />
         <button
           onClick={onRemove}
-          className="p-0.5 opacity-60 group-hover:opacity-100 text-foreground/45 hover:text-destructive transition-all shrink-0"
+          className="p-0.5 opacity-60 group-hover:opacity-100 text-foreground/70 hover:text-destructive transition-all shrink-0"
           title="Retirer"
         >
           <X className="w-3.5 h-3.5" />

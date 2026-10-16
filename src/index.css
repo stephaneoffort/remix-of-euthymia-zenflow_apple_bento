@@ -97,7 +97,7 @@ a, button, [role="button"], label, select, summary,
     --secondary: 72 15% 94%;           /* #F0F1EC */
     --secondary-foreground: 240 3% 12%;
     --muted: 72 15% 94%;
-    --muted-foreground: 60 2% 41%;     /* #6B6B66 */
+    --muted-foreground: 60 2% 39%;     /* #656561 */
     --accent: 105 21% 93%;             /* #EAF0E8 teinte sauge */
     --accent-foreground: 129 15% 37%;  /* #4F6B53 */
     --destructive: 8 45% 44%;          /* terre cuite */
@@ -175,7 +175,7 @@ a, button, [role="button"], label, select, summary,
     --secondary: 60 2% 16%;            /* #2A2A28 */
     --secondary-foreground: 60 9% 94%;
     --muted: 60 2% 16%;
-    --muted-foreground: 60 2% 55%;     /* #8E8E89 */
+    --muted-foreground: 60 2% 58%;     /* #969692 */
     --accent: 135 13% 18%;             /* #27332A */
     --accent-foreground: 129 19% 72%;  /* #A9C4AD */
     --destructive: 10 64% 72%;         /* #E59B8C */

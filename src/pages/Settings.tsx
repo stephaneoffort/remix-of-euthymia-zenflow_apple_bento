@@ -91,7 +91,7 @@ export default function Settings() {
         <h1 className="font-display font-bold text-foreground text-lg">Administration</h1>
         {activeLabel && (
           <>
-            <span className="text-muted-foreground/50 hidden sm:inline">/</span>
+            <span className="text-muted-foreground hidden sm:inline">/</span>
             <span className="text-sm text-muted-foreground hidden sm:inline">{activeLabel}</span>
           </>
         )}
@@ -127,7 +127,7 @@ export default function Settings() {
         {/* Sidebar verticale */}
         <aside className="w-16 sm:w-60 shrink-0 border-r border-border bg-card/40 min-h-[calc(100vh-3.5rem)]">
           <nav className="p-2 sm:p-4 sticky top-0">
-            <p className="hidden sm:block text-[11px] uppercase tracking-wider text-muted-foreground/70 font-semibold px-2 mb-2">
+            <p className="hidden sm:block text-[11px] uppercase tracking-wider text-muted-foreground font-semibold px-2 mb-2">
               Réglages
             </p>
             <TabsList className="flex flex-col gap-1 h-auto bg-transparent p-0 w-full">

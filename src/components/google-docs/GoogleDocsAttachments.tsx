@@ -197,7 +197,7 @@ export default function GoogleDocsAttachments({ taskId, taskTitle, className }: 
                   {link.preview_text}
                 </p>
               ) : (
-                <p className="px-2 pb-1.5 text-[11px] text-muted-foreground/70 italic">
+                <p className="px-2 pb-1.5 text-[11px] text-muted-foreground italic">
                   Aucun aperçu disponible.
                 </p>
               )}

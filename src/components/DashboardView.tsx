@@ -104,7 +104,7 @@ function MyTasksCard({
                     {isOverdue ? `−${Math.abs(daysLeft)}j` : daysLeft === 0 ? "Auj." : `${daysLeft}j`}
                   </span>
                 ) : (
-                  <span className="text-[11px] text-muted-foreground/40 shrink-0">—</span>
+                  <span className="text-[11px] text-muted-foreground shrink-0">—</span>
                 )}
               </motion.button>
             );

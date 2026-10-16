@@ -6,10 +6,15 @@ export type ThemeMode = "system" | "light" | "dark";
 /** Thème effectivement appliqué à l'écran (résolution de "system"). */
 export type ResolvedTheme = "light" | "dark";
 
+/** Palette de couleurs : Sauge (refonte, par défaut) ou Dunes Cuivre. */
+export type Palette = "sauge" | "dunes-cuivre";
+
 interface ThemeContextType {
   theme: ThemeMode;
   setTheme: (theme: ThemeMode) => void;
   resolvedTheme: ResolvedTheme;
+  palette: Palette;
+  setPalette: (palette: Palette) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | null>(null);
@@ -28,6 +33,12 @@ function readStoredTheme(): ThemeMode {
   return "system";
 }
 
+const PALETTE_KEY = "zenflow-palette";
+
+function readStoredPalette(): Palette {
+  return localStorage.getItem(PALETTE_KEY) === "dunes-cuivre" ? "dunes-cuivre" : "sauge";
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<ThemeMode>(readStoredTheme);
   const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>(() =>
@@ -41,6 +52,23 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem(STORAGE_KEY, t);
     setTimeout(() => root.classList.remove("palette-transitioning"), 500);
   };
+
+  const [palette, setPaletteState] = useState<Palette>(readStoredPalette);
+
+  const setPalette = (p: Palette) => {
+    const root = document.documentElement;
+    root.classList.add("palette-transitioning");
+    setPaletteState(p);
+    localStorage.setItem(PALETTE_KEY, p);
+    setTimeout(() => root.classList.remove("palette-transitioning"), 500);
+  };
+
+  // Applique la palette sur <html> (attribut absent = Sauge).
+  useEffect(() => {
+    const root = document.documentElement;
+    if (palette === "sauge") root.removeAttribute("data-palette");
+    else root.setAttribute("data-palette", palette);
+  }, [palette]);
 
   // Résout le thème effectif et l'applique sur <html>.
   useEffect(() => {
@@ -68,7 +96,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [theme]);
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, resolvedTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme, resolvedTheme, palette, setPalette }}>
       {children}
     </ThemeContext.Provider>
   );

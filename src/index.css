@@ -227,6 +227,54 @@ a, button, [role="button"], label, select, summary,
     --shadow-float: 0 8px 30px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3);
   }
 
+  /* Palette « Dunes Cuivre » (sable + bleu nuit en clair) — couleurs seulement */
+  :root[data-palette="dunes-cuivre"] {
+    --background: 33 38% 93%;   --foreground: 195 47% 12%;
+    --card: 33 30% 96%;         --card-foreground: 195 47% 12%;
+    --popover: 33 25% 97%;      --popover-foreground: 195 47% 12%;
+    --primary: 195 47% 18%;     --primary-foreground: 33 38% 93%;
+    --secondary: 33 22% 88%;    --secondary-foreground: 195 25% 28%;
+    --muted: 33 18% 90%;        --muted-foreground: 195 12% 38%;
+    --accent: 28 36% 38%;       --accent-foreground: 0 0% 100%;
+    --destructive: 0 65% 48%;   --destructive-foreground: 0 0% 100%;
+    --border: 33 18% 82%;       --input: 33 20% 86%;   --ring: 195 47% 18%;
+    --sidebar-background: 33 30% 95%; --sidebar-foreground: 195 22% 28%;
+    --sidebar-primary: 195 47% 18%;   --sidebar-primary-foreground: 33 38% 93%;
+    --sidebar-accent: 33 22% 88%;     --sidebar-accent-foreground: 195 47% 18%;
+    --sidebar-ring: 195 47% 18%;      --sidebar-bg: 33 30% 95%;
+    --sidebar-fg: 195 22% 30%;        --sidebar-fg-bright: 195 47% 12%;
+    --sidebar-hover: 33 22% 88%;      --sidebar-active: 195 47% 18%;
+    --sidebar-active-fg: 33 38% 93%;  --sidebar-border: 33 16% 85%;
+    --priority-urgent: 4 52% 46%;  --priority-high: 28 50% 44%;
+    --priority-normal: 200 30% 40%; --priority-low: 33 16% 46%;
+    --status-todo: 33 16% 46%;  --status-progress: 200 36% 40%;  --status-review: 28 45% 44%;
+    --status-done: 165 38% 36%; --status-blocked: 4 48% 42%;
+  }
+
+  /* Palette « Dunes Cuivre » en sombre (bleu nuit + cuivre) */
+  :root.dark[data-palette="dunes-cuivre"] {
+    --background: 195 47% 10%;  --foreground: 33 33% 90%;
+    --card: 195 38% 13%;        --card-foreground: 33 33% 90%;
+    --popover: 195 47% 11%;     --popover-foreground: 33 33% 92%;
+    --primary: 28 36% 55%;      --primary-foreground: 195 47% 10%;
+    --secondary: 210 14% 22%;   --secondary-foreground: 33 18% 70%;
+    --muted: 200 18% 16%;       --muted-foreground: 33 12% 60%;
+    --accent: 28 30% 22%;       --accent-foreground: 28 50% 78%;
+    --destructive: 0 65% 52%;   --destructive-foreground: 0 0% 100%;
+    --border: 200 16% 22%;      --input: 200 18% 17%;  --ring: 28 36% 55%;
+    --sidebar-background: 195 50% 7%; --sidebar-foreground: 33 14% 78%;
+    --sidebar-primary: 28 36% 55%;    --sidebar-primary-foreground: 195 47% 10%;
+    --sidebar-accent: 200 22% 14%;    --sidebar-accent-foreground: 33 18% 90%;
+    --sidebar-ring: 28 36% 55%;       --sidebar-bg: 195 50% 7%;
+    --sidebar-fg: 33 14% 72%;         --sidebar-fg-bright: 33 30% 92%;
+    --sidebar-hover: 200 22% 14%;     --sidebar-active: 28 36% 55%;
+    --sidebar-active-fg: 195 50% 8%;  --sidebar-border: 200 18% 16%;
+    --priority-urgent: 4 58% 52%;  --priority-high: 28 55% 52%;
+    --priority-normal: 200 35% 48%; --priority-low: 33 18% 52%;
+    --status-todo: 33 18% 52%;  --status-progress: 200 40% 48%;  --status-review: 28 50% 52%;
+    --status-done: 165 38% 42%; --status-blocked: 4 50% 50%;
+  }
+
   body {
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", sans-serif;
     -webkit-font-smoothing: antialiased;

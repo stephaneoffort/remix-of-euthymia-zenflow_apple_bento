@@ -12,7 +12,7 @@ import { ArrowLeft, Plus, Trash2, Shield, Users, ListChecks, Pencil, Check, X, M
 import AppearanceSettings from '@/components/settings/AppearanceSettings';
 import { useOrg } from '@/context/OrgContext';
 import TaskTemplatesPanel from '@/components/settings/TaskTemplatesPanel';
-import { useThemeMode } from '@/context/ThemeContext';
+import { useThemeMode, type Palette as ThemePalette } from '@/context/ThemeContext';
 import DataExportImport from '@/components/DataExportImport';
 import InviteMemberDialog from '@/components/InviteMemberDialog';
 import IntegrationsSettings from '@/components/settings/IntegrationsSettings';
@@ -636,12 +636,17 @@ function StatusesPanel() {
 
 
 function ThemePalettePanel() {
-  const { theme, setTheme } = useThemeMode();
+  const { theme, setTheme, palette, setPalette } = useThemeMode();
 
   const options: { key: 'system' | 'light' | 'dark'; label: string; description: string }[] = [
     { key: 'system', label: 'Automatique', description: 'Suit le réglage clair/sombre du système' },
     { key: 'light', label: 'Clair', description: 'Toujours en apparence claire' },
     { key: 'dark', label: 'Sombre', description: 'Toujours en apparence sombre' },
+  ];
+
+  const palettes: { key: ThemePalette; label: string; description: string; swatches: string[] }[] = [
+    { key: 'sauge', label: 'Sauge', description: 'Gris chaud et vert sauge (par défaut)', swatches: ['#EFEFEB', '#6F8F73', '#121212'] },
+    { key: 'dunes-cuivre', label: 'Dunes Cuivre', description: 'Sable, bleu nuit et cuivre', swatches: ['#F3EDE5', '#10232A', '#B58863'] },
   ];
 
   return (
@@ -665,6 +670,44 @@ function ThemePalettePanel() {
                       : 'border-border bg-card text-muted-foreground hover:border-muted-foreground/30 hover:bg-muted/30'
                   }`}
                 >
+                  <span className="text-sm font-medium text-foreground">{label}</span>
+                  <span className="text-xs text-muted-foreground">{description}</span>
+                  {active && (
+                    <span className="absolute top-3 right-3 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                      <Check className="w-3 h-3 text-primary-foreground" />
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border-border bg-card">
+        <CardHeader>
+          <CardTitle className="text-base text-foreground">Palette</CardTitle>
+          <p className="text-sm text-muted-foreground">Les couleurs de l'appli, en clair comme en sombre.</p>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2">
+            {palettes.map(({ key, label, description, swatches }) => {
+              const active = palette === key;
+              return (
+                <button
+                  key={key}
+                  onClick={() => { setPalette(key); toast.success(`Palette "${label}" appliquée`); }}
+                  className={`relative flex flex-col items-start gap-1 px-4 py-3 rounded-xl border-2 transition-all text-left ${
+                    active
+                      ? 'border-primary bg-accent/40 text-foreground shadow-md ring-1 ring-primary/20'
+                      : 'border-border bg-card text-muted-foreground hover:border-muted-foreground/30 hover:bg-muted/30'
+                  }`}
+                >
+                  <span className="flex gap-1.5 mb-1">
+                    {swatches.map(c => (
+                      <span key={c} className="w-4 h-4 rounded-full border border-border" style={{ backgroundColor: c }} />
+                    ))}
+                  </span>
                   <span className="text-sm font-medium text-foreground">{label}</span>
                   <span className="text-xs text-muted-foreground">{description}</span>
                   {active && (

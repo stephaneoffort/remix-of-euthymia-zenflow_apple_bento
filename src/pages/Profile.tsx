@@ -112,8 +112,8 @@ export default function Profile() {
                 </Select>
               </div>
             )}
-            {isSuperAdmin && (
-              <Button size="sm" variant="outline" onClick={() => navigate('/settings/organizations')}>
+            {currentOrg && (
+              <Button size="sm" variant="outline" onClick={() => navigate('/profile/team')}>
                 Gérer les équipes
               </Button>
             )}

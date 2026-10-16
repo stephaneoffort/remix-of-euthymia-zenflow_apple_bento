@@ -20,7 +20,6 @@ export default function OrgSwitcher({ onNavigate }: { onNavigate?: () => void })
   const navigate = useNavigate();
 
   if (loading || !currentOrg) return null;
-  if (myOrgs.length <= 1 && !isSuperAdmin) return null;
 
   const mine = myOrgs.filter((o) => memberOrgIds.includes(o.id));
   const others = myOrgs.filter((o) => !memberOrgIds.includes(o.id));
@@ -55,8 +54,9 @@ export default function OrgSwitcher({ onNavigate }: { onNavigate?: () => void })
               className="w-2.5 h-2.5 rounded-full shrink-0"
               style={{ backgroundColor: currentOrg.color || 'hsl(var(--primary))' }}
             />
-            <span className="flex-1 truncate text-left font-medium text-sidebar-fg-bright">
-              {currentOrg.name}
+            <span className="flex-1 min-w-0 text-left">
+              <span className="block text-[10px] uppercase tracking-wide opacity-70">Équipe active</span>
+              <span className="block truncate font-medium text-sidebar-fg-bright">{currentOrg.name}</span>
             </span>
             <ChevronsUpDown className="w-3.5 h-3.5 opacity-70" />
           </button>

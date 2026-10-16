@@ -119,12 +119,12 @@ export function MembersPanel({ memberProfiles, onDmCreated, onlineTeamMemberIds 
         }`}
       >
         <div className="relative">
-          <div className="w-8 h-8 rounded-xl flex items-center justify-center text-[10px] font-bold shadow-sm"
+          <div className="w-8 h-8 rounded-xl flex items-center justify-center text-[10px] font-bold"
             style={{ backgroundColor: getClosestToneSolidVar(member.avatarColor), color: TONE_ON_SOLID }}>
             {(member.name || '?')[0].toUpperCase()}
           </div>
           <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-card ${
-            isOnline ? 'bg-status-done shadow-[0_0_6px_hsl(var(--status-done)/0.4)]' : 'bg-muted-foreground/30'
+            isOnline ? 'bg-status-done' :'bg-muted-foreground/30'
           }`} />
         </div>
         <div className="flex-1 min-w-0">
@@ -142,7 +142,7 @@ export function MembersPanel({ memberProfiles, onDmCreated, onlineTeamMemberIds 
   };
 
   return (
-    <div className="w-60 border-l border-border/20 backdrop-blur-2xl bg-card/80 shrink-0 overflow-y-auto shadow-[inset_1px_0_0_rgba(255,255,255,0.06)]">
+    <div className="w-60 max-sm:w-full border-l border-border bg-card shrink-0 overflow-y-auto">
       <div className="p-3">
         <div className="flex items-center justify-between mb-4 px-2">
           <h4 data-numeric className="font-numeric tabular-nums text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">
@@ -198,7 +198,7 @@ export function MembersPanel({ memberProfiles, onDmCreated, onlineTeamMemberIds 
                     style={{ backgroundColor: getClosestToneSolidVar(member.avatarColor), color: TONE_ON_SOLID }}>
                     {member.name[0]?.toUpperCase()}
                   </div>
-                  <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-background ${
+                  <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-popover ${
                     onlineTeamMemberIds.has(member.id) ? 'bg-status-done' : 'bg-muted-foreground/30'
                   }`} />
                 </div>

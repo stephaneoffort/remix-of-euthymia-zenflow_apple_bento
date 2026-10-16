@@ -341,7 +341,7 @@ export default function KanbanBoard() {
 
           {/* Inline add task */}
           {newTaskStatus === status && (
-            <div className="bg-card/95 backdrop-blur-sm rounded-lg border shadow-sm p-2.5 sm:p-3">
+            <div className="bg-card rounded-lg border p-2.5 sm:p-3">
               <input
                 autoFocus
                 value={newTaskTitle}
@@ -435,7 +435,7 @@ export default function KanbanBoard() {
                   onClick={() => setMobileActiveStatus(status)}
                   className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-200 shrink-0 ${
                     isActive
-                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      ? 'bg-primary text-primary-foreground'
                       : 'bg-muted/40 text-muted-foreground hover:bg-muted/70'
                   }`}
                 >
@@ -478,7 +478,7 @@ export default function KanbanBoard() {
 
                 {/* Inline add task */}
                 {newTaskStatus === mobileActiveStatus && (
-                  <div className="bg-card/95 backdrop-blur-sm rounded-lg border shadow-sm p-3">
+                  <div className="bg-card rounded-lg border p-3">
                     <input
                       autoFocus
                       value={newTaskTitle}
@@ -619,13 +619,11 @@ function KanbanCard({
       onTouchEnd={isMobile ? handleTouchEnd : undefined}
       onTouchMove={isMobile ? handleTouchMove : undefined}
       onContextMenu={isMobile ? e => e.preventDefault() : undefined}
-      className={`relative overflow-hidden bg-card rounded-md border p-1.5 sm:p-2 cursor-pointer group transition-shadow duration-200 hover:shadow-lg hover:shadow-primary/5 ${
+      className={`relative overflow-hidden bg-card rounded-md border p-1.5 sm:p-2 cursor-pointer group transition-colors duration-200 hover:border-primary/30 ${
         draggedTaskId === task.id ? 'opacity-50' : ''
-      } ${isOverdue ? 'border-l-2 border-l-priority-urgent' : ''} ${moveOpen ? 'ring-2 ring-primary/40' : ''} ${pressing ? 'shadow-lg ring-2 ring-primary/30' : ''}`}
+      } ${isOverdue ? 'border-l-2 border-l-priority-urgent hover:border-l-priority-urgent' : ''} ${moveOpen ? 'ring-2 ring-primary/40' : ''} ${pressing ? 'shadow-lg ring-2 ring-primary/30' : ''}`}
       style={{ willChange: 'transform' }}
     >
-      {/* Hover shimmer overlay */}
-      <div className="pointer-events-none absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-foreground/[0.03] via-transparent to-foreground/[0.02]" />
       <div className="flex items-start gap-1.5">
         <GripVertical className="w-4 h-4 text-muted-foreground/60 opacity-0 group-hover:opacity-100 mt-0.5 shrink-0 cursor-grab hidden sm:block" />
         <div className="flex-1 min-w-0">

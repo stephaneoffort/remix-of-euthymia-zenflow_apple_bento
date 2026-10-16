@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useOrg, type OrgRole } from '@/context/OrgContext';
 import { useAuth } from '@/context/AuthContext';
@@ -16,8 +16,10 @@ interface Row { member_id: string; role: OrgRole; name: string; email: string }
 export default function TeamManage() {
   const navigate = useNavigate();
   const { teamMemberId } = useAuth();
-  const { currentOrg, myRole, isSuperAdmin } = useOrg();
-  const canManage = isSuperAdmin || myRole === 'owner' || myRole === 'admin';
+  const { currentOrg: activeOrg, myOrgs, isSuperAdmin } = useOrg();
+  const [params] = useSearchParams();
+  const orgParam = params.get('org');
+  const currentOrg = (orgParam && myOrgs.find((o) => o.id === orgParam)) || activeOrg;
   const [rows, setRows] = useState<Row[]>([]);
   const [candidates, setCandidates] = useState<{ id: string; name: string }[]>([]);
   const [addId, setAddId] = useState('');
@@ -42,6 +44,8 @@ export default function TeamManage() {
 
   useEffect(() => { load(); }, [load]);
 
+  const myRole = rows.find((r) => r.member_id === teamMemberId)?.role ?? null;
+  const canManage = isSuperAdmin || myRole === 'owner' || myRole === 'admin';
   const owners = rows.filter((r) => r.role === 'owner').length;
 
   const changeRole = async (r: Row, role: OrgRole) => {
@@ -83,6 +87,14 @@ export default function TeamManage() {
               {currentOrg && <span className="w-3 h-3 rounded-full" style={{ backgroundColor: currentOrg.color || 'hsl(var(--primary))' }} />}
               Gérer l'équipe {currentOrg?.name ?? ''}
             </CardTitle>
+            {myOrgs.length > 1 && currentOrg && (
+              <Select value={currentOrg.id} onValueChange={(id) => navigate(`/profile/team?org=${id}`)}>
+                <SelectTrigger className="w-60 mt-2"><SelectValue /></SelectTrigger>
+                <SelectContent className="bg-popover text-popover-foreground">
+                  {myOrgs.map((o) => <SelectItem key={o.id} value={o.id}>{o.name}{o.id === activeOrg?.id ? ' (active)' : ''}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            )}
           </CardHeader>
           <CardContent className="space-y-4">
             {!canManage && (
